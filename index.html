@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Jardín Mágico de las Multiplicaciones 🌸✨</title>
+    <!-- Tailwind CSS para el diseño responsivo y moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tipografía infantil redondeada y bonita -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #fef6e4 0%, #ffdde1 50%, #e8f5e9 100%);
+            overflow-x: hidden;
+        }
+        
+        .bubble-font {
+            font-family: 'Fredoka One', cursive;
+        }
+
+        /* Animaciones mágicas */
+        @keyframes sway {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+        .animate-sway {
+            animation: sway 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2s ease-in-out infinite;
+        }
+
+        /* Efecto de pétalos o confeti flotando */
+        .confetti-particle {
+            position: absolute;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        /* Flores naciendo */
+        @keyframes bloom {
+            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            70% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .animate-bloom {
+            animation: bloom 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Regadera regando */
+        @keyframes pour {
+            0% { transform: rotate(0deg); }
+            30% { transform: rotate(-35deg) translateX(-10px); }
+            70% { transform: rotate(-35deg) translateX(-10px); }
+            100% { transform: rotate(0deg); }
+        }
+        .animate-pour {
+            animation: pour 1.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Lienzo para efectos de magia / partículas -->
+    <canvas id="magicCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <!-- Contenedor Principal del Juego -->
+    <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl border-4 border-pink-200 shadow-2xl overflow-hidden relative p-6 md:p-8">
+        
+        <!-- ================= PANTALLA 1: BIENVENIDA ================= -->
+        <div id="screen-welcome" class="text-center space-y-6 py-4">
+            <div class="relative inline-block">
+                <span class="text-6xl md:text-8xl animate-float inline-block">🌸</span>
+                <span class="text-4xl absolute -top-2 -right-4 animate-sway inline-block">✨</span>
+            </div>
+            
+            <h1 class="bubble-font text-4xl md:text-5xl text-pink-500 tracking-wide leading-tight">
+                El Jardín Mágico <br>
+                <span class="text-green-500 text-3xl md:text-4xl">de las Multiplicaciones</span>
+            </h1>
+
+            <p class="text-gray-600 text-lg md:text-xl max-w-md mx-auto">
+                ¡Hola, pequeña jardinera! Pon tu nombre para empezar a sembrar hermosas flores respondiendo preguntas mágicas.
+            </p>
+
+            <div class="max-w-xs mx-auto space-y-4">
+                <input type="text" id="player-name" placeholder="Tu nombre aquí..." 
+                       class="w-full px-5 py-3 rounded-2xl border-2 border-pink-300 text-center text-xl font-bold text-pink-600 focus:outline-none focus:border-pink-500 shadow-inner placeholder-pink-200">
+                
+                <button onclick="saveNameAndGo()" 
+                        class="w-full bubble-font bg-gradient-to-r from-pink-400 to-orange-400 hover:from-pink-500 hover:to-orange-500 text-white text-xl px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 transition-all duration-200 animate-pulse-soft">
+                    ¡Comenzar Aventura! 🚀
+                </button>
+            </div>
+        </div>
+
+
+        <!-- ================= PANTALLA 2: SELECCIÓN DE TABLA ================= -->
+        <div id="screen-selector" class="hidden space-y-6">
+            <!-- Encabezado personalizado -->
+            <div class="flex flex-col md:flex-row justify-between items-center bg-pink-50 rounded-2xl p-4 gap-2 border border-pink-100">
+                <div class="text-center md:text-left">
+                    <h2 class="text-xl font-bold text-pink-600">Jardinera: <span id="display-name" class="bubble-font text-pink-500">Invitada</span> 👩‍🌾</h2>
+                    <p class="text-sm text-gray-500">¡Cultiva flores ganando estrellas doradas!</p>
+                </div>
+                <div class="flex items-center gap-2 bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full font-bold">
+                    <span>⭐ Estrellas totales:</span>
+                    <span id="global-stars" class="bubble-font">0</span>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <h3 class="bubble-font text-2xl text-green-600">¿Qué tabla deseas cultivar hoy?</h3>
+                <p class="text-gray-500 text-sm">Cada tabla completada hará florecer tu jardín mágico.</p>
+            </div>
+
+            <!-- Rejilla de selección de tablas del 1 al 9 -->
+            <div class="grid grid-cols-3 gap-4 max-w-md mx-auto">
+                <script>
+                    const emojisTablas = ["🌱", "🍓", "🍊", "🍋", "🍏", "🍇", "🍒", "🍀", "🌻"];
+                    const coloresTablas = [
+                        "from-red-300 to-pink-300 hover:from-red-400 hover:to-pink-400",
+                        "from-orange-300 to-yellow-300 hover:from-orange-400 hover:to-yellow-400",
+                        "from-yellow-300 to-green-300 hover:from-yellow-400 hover:to-green-400",
+                        "from-green-300 to-emerald-300 hover:from-green-400 hover:to-emerald-400",
+                        "from-teal-300 to-cyan-300 hover:from-teal-400 hover:to-cyan-400",
+                        "from-blue-300 to-indigo-300 hover:from-blue-400 hover:to-indigo-400",
+                        "from-purple-300 to-fuchsia-300 hover:from-purple-400 hover:to-fuchsia-400",
+                        "from-pink-300 to-rose-300 hover:from-pink-400 hover:to-rose-400",
+                        "from-rose-300 to-amber-300 hover:from-rose-400 hover:to-amber-400"
+                    ];
+                </script>
+            </div>
+            
+            <div id="grid-tablas-container" class="grid grid-cols-3 gap-3 md:gap-4 max-w-lg mx-auto">
+                <!-- Los botones se insertarán dinámicamente aquí -->
+            </div>
+
+            <!-- Botón Desafío Mezclado -->
+            <div class="max-w-lg mx-auto pt-2">
+                <button onclick="startTable('mix')" 
+                        class="w-full bubble-font bg-gradient-to-r from-violet-400 via-pink-400 to-yellow-400 text-white py-4 rounded-2xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 text-lg flex flex-col items-center justify-center gap-1">
+                    <span class="flex items-center gap-2">🌈 Desafío del Arcoíris (Tablas Mezcladas)</span>
+                    <span class="text-xs opacity-90 font-sans font-semibold">⚠️ ¡Sin multiplicaciones por 1 y con reto dinámico!</span>
+                </button>
+            </div>
+        </div>
+
+
+        <!-- ================= PANTALLA 3: JUEGO ACTIVO ================= -->
+        <div id="screen-game" class="hidden space-y-6 relative">
+            
+            <!-- Barra superior: Información y controles de audio -->
+            <div class="flex justify-between items-center bg-gray-50 rounded-2xl p-3 border border-gray-100">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-500 hover:text-pink-500 transition flex items-center gap-1">
+                    ⬅ Menu
+                </button>
+                <div class="flex items-center gap-3">
+                    <button id="btn-voice" onclick="toggleVoice()" class="p-2 rounded-full bg-white border shadow-sm text-lg hover:bg-pink-50 transition" title="Activar/Desactivar lectura de voz">
+                        🔊
+                    </button>
+                    <!-- Estrellas de este nivel -->
+                    <div class="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-bold">
+                        <span>⭐</span>
+                        <span id="current-stars">0</span>/<span id="target-stars">10</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerta educativa de penalización por fallos -->
+            <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-2 text-xs md:text-sm text-center font-semibold">
+                💡 ¡Piensa bien tu respuesta! Si te equivocas, la meta se aleja y se agregará <span class="text-red-600 font-bold">+1 pregunta extra</span>. ¡Usa la ayuda mágica si tienes dudas!
+            </div>
+
+            <!-- Progreso visual (Camino del gusanito) -->
+            <div class="relative w-full h-4 bg-gray-100 rounded-full overflow-visible">
+                <div id="progress-bar" class="h-full bg-gradient-to-r from-green-300 to-green-500 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                <!-- Caracolito/Gusanito de progreso -->
+                <div id="progress-bug" class="absolute top-1/2 -translate-y-1/2 -ml-3 text-xl transition-all duration-500" style="left: 0%;">🐛</div>
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 text-xl">🍓</div>
+            </div>
+
+            <!-- Área de Pregunta (El Girasol Gigante) -->
+            <div class="flex flex-col items-center justify-center py-2 relative">
+                <div class="relative w-40 h-40 md:w-48 md:h-48 flex items-center justify-center animate-sway">
+                    <svg class="absolute inset-0 w-full h-full text-yellow-400" fill="currentColor" viewBox="0 0 100 100">
+                        <path d="M50 15 C45 2 55 2 50 15 Z" />
+                        <path d="M50 85 C45 98 55 98 50 85 Z" />
+                        <path d="M15 50 C2 45 2 55 15 50 Z" />
+                        <path d="M85 50 C98 45 98 55 85 50 Z" />
+                        <path d="M25 25 C15 15 30 10 25 25 Z" />
+                        <path d="M75 75 C85 85 70 90 75 75 Z" />
+                        <path d="M25 75 C15 85 10 70 25 75 Z" />
+                        <path d="M75 25 C85 15 90 30 75 25 Z" />
+                        <circle cx="50" cy="50" r="30" class="text-amber-500"/>
+                        <circle cx="50" cy="50" r="26" class="text-yellow-600"/>
+                    </svg>
+                    <div class="z-10 text-center text-white">
+                        <div id="question-text" class="bubble-font text-3xl md:text-4xl drop-shadow-md">3 × 4</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Opciones de Respuesta -->
+            <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                <button onclick="selectOption(0)" id="opt-0" class="btn-option bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+                <button onclick="selectOption(1)" id="opt-1" class="btn-option bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+                <button onclick="selectOption(2)" id="opt-2" class="btn-option bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+                <button onclick="selectOption(3)" id="opt-3" class="btn-option bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+            </div>
+
+            <!-- Ayuda Mágica Interactiva -->
+            <div class="text-center pt-1">
+                <button onclick="toggleHelp()" id="btn-help" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold px-4 py-2 rounded-full text-sm shadow-sm transition">
+                    🪄 ¿Necesitas ayuda mágica? (Ver truco)
+                </button>
+            </div>
+
+            <!-- Panel de Ayuda Visual (Grupos de frutas/objetos) -->
+            <div id="help-panel" class="hidden bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 transition duration-300">
+                <p id="help-explain" class="text-indigo-800 text-center font-bold mb-3 text-sm md:text-base">¡Sumamos grupos iguales!</p>
+                <div id="help-visual-container" class="flex flex-wrap gap-4 justify-center items-center">
+                    <!-- Se llenará con grupos dinámicos en JS -->
+                </div>
+            </div>
+
+            <!-- Estado de retroalimentación suave -->
+            <div id="game-feedback" class="h-8 text-center text-xl font-bold transition-all duration-300"></div>
+
+            <!-- El jardín en la base del juego -->
+            <div class="border-t-4 border-dashed border-green-200 pt-4">
+                <div class="flex justify-between items-center px-1 mb-2">
+                    <span class="text-sm font-bold text-green-600">Tu Jardín del Nivel:</span>
+                    <span id="watering-can" class="text-2xl transition-all duration-500 inline-block">💧👩‍🌾</span>
+                </div>
+                <div id="garden-plot" class="w-full h-20 bg-gradient-to-t from-emerald-800 to-emerald-600 rounded-2xl p-2 relative flex items-end justify-around overflow-hidden shadow-inner border-b-8 border-amber-950">
+                    <!-- Las flores irán apareciendo aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= PANTALLA 4: FELICITACIONES / VICTORIA ================= -->
+        <div id="screen-victory" class="hidden text-center space-y-6 py-6">
+            <span class="text-7xl animate-float inline-block">👑🌻👑</span>
+            
+            <h2 class="bubble-font text-4xl text-yellow-500 animate-pulse-soft">¡Felicidades, <span id="victory-player-name" class="text-pink-500">Jardinera</span>!</h2>
+            
+            <p class="text-gray-600 text-lg md:text-xl max-w-md mx-auto">
+                Has cultivado hermosas flores mágicas respondiendo todas las operaciones con éxito. ¡Tu jardín luce espectacular! 🌺🦋
+            </p>
+
+            <div class="bg-yellow-50 border-4 border-dashed border-yellow-300 rounded-3xl p-6 max-w-sm mx-auto shadow-inner space-y-3 relative">
+                <div class="absolute -top-3 -right-3 text-3xl">✨</div>
+                <div class="absolute -bottom-3 -left-3 text-3xl">✨</div>
+                <p class="text-yellow-600 text-xs font-bold uppercase tracking-widest">Premio Especial</p>
+                <h3 class="bubble-font text-2xl text-amber-700">Diploma de Súper Jardinera</h3>
+                <p class="text-gray-700 font-bold text-base">Completado con éxito: <span id="victory-table-name" class="text-green-600">La Tabla del X</span></p>
+                <div class="text-4xl">🌟🌟🌟</div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-xs sm:max-w-md mx-auto">
+                <button onclick="backToSelector()" 
+                        class="bubble-font bg-green-400 hover:bg-green-500 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
+                    Sigue Cultivando 🌱
+                </button>
+                <button onclick="resetGame()" 
+                        class="bubble-font bg-gray-300 hover:bg-gray-400 text-gray-700 text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
+                    Salir / Otro Nombre
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script del Juego -->
+    <script>
+        // --- VARIABLES DEL SISTEMA ---
+        let playerName = "Invitada";
+        let currentTable = 1; // 1-9 o "mix"
+        let globalStars = 0;
+        let score = 0; // Aciertos actuales conseguidos
+        let targetScore = 10; // Meta de aciertos dinámicos (crece con errores)
+        let numA = 0;
+        let numB = 0;
+        let correctAnswer = 0;
+        let voiceActive = true;
+        let canPlayAudio = false; 
+
+        const floresEmojis = ["🌸", "🌹", "🌺", "🌻", "🌼", "🌷", "🌱", "🍀", "🏵️", "💮"];
+        const frutasEmojis = ["🐞", "🍓", "🍊", "🍭", "⭐️", "🦋", "🍒", "🍩", "🐝", "🍉"];
+
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                canPlayAudio = true;
+            }
+        }
+
+        // --- SISTEMA DE AUDIO SINTÉTICO (Sin archivos externos) ---
+        function playTone(freq, type, duration) {
+            if (!canPlayAudio) return;
+            try {
+                initAudio();
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                
+                osc.type = type || "sine";
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Error de audio:", e);
+            }
+        }
+
+        function playCorrectSound() {
+            setTimeout(() => playTone(523.25, "sine", 0.15), 0);   
+            setTimeout(() => playTone(659.25, "sine", 0.15), 100); 
+            setTimeout(() => playTone(783.99, "sine", 0.15), 200); 
+            setTimeout(() => playTone(1046.50, "sine", 0.3), 300);  
+        }
+
+        function playIncorrectSound() {
+            playTone(220, "triangle", 0.3); 
+            setTimeout(() => playTone(180, "triangle", 0.4), 150);
+        }
+
+        function playVictorySound() {
+            setTimeout(() => playTone(523.25, "sine", 0.2), 0);
+            setTimeout(() => playTone(523.25, "sine", 0.2), 200);
+            setTimeout(() => playTone(523.25, "sine", 0.2), 400);
+            setTimeout(() => playTone(659.25, "sine", 0.3), 600);
+            setTimeout(() => playTone(783.99, "sine", 0.3), 800);
+            setTimeout(() => playTone(1046.50, "sine", 0.6), 1000);
+        }
+
+        // --- SISTEMA DE SÍNTESIS DE VOZ ---
+        function speak(text) {
+            if (!voiceActive) return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                let utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'es-MX'; 
+                utterance.rate = 1.0;     
+                utterance.pitch = 1.3;    
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function toggleVoice() {
+            voiceActive = !voiceActive;
+            const btn = document.getElementById("btn-voice");
+            if (voiceActive) {
+                btn.innerText = "🔊";
+                btn.classList.remove("bg-gray-200");
+                btn.classList.add("bg-pink-50");
+                speak("¡Voz activada!");
+            } else {
+                btn.innerText = "🔇";
+                btn.classList.remove("bg-pink-50");
+                btn.classList.add("bg-gray-200");
+            }
+        }
+
+        // --- INICIALIZAR Y CARGAR PANTALLAS ---
+        window.onload = function() {
+            const savedName = localStorage.getItem("jardinera_nombre");
+            const savedStars = localStorage.getItem("jardinera_estrellas");
+            if (savedName) {
+                document.getElementById("player-name").value = savedName;
+                playerName = savedName;
+            }
+            if (savedStars) {
+                globalStars = parseInt(savedStars);
+                document.getElementById("global-stars").innerText = globalStars;
+            }
+
+            buildSelectorGrid();
+            setupMagicParticles();
+        };
+
+        function saveNameAndGo() {
+            initAudio();
+            const inputName = document.getElementById("player-name").value.trim();
+            playerName = inputName || "Jardinera";
+            localStorage.setItem("jardinera_nombre", playerName);
+            
+            playTone(440, "sine", 0.2);
+            setTimeout(() => playTone(554, "sine", 0.2), 150);
+            setTimeout(() => playTone(659, "sine", 0.4), 300);
+
+            document.getElementById("screen-welcome").classList.add("hidden");
+            document.getElementById("screen-selector").classList.remove("hidden");
+            
+            document.getElementById("display-name").innerText = playerName;
+            
+            speak(`¡Hola ${playerName}! Vamos a jugar con las matemáticas.`);
+        }
+
+        function buildSelectorGrid() {
+            const container = document.getElementById("grid-tablas-container");
+            container.innerHTML = "";
+            for (let i = 1; i <= 9; i++) {
+                const btn = document.createElement("button");
+                btn.className = `bg-gradient-to-br ${coloresTablas[i-1]} text-white p-4 rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-150 flex flex-col items-center justify-center relative overflow-hidden group`;
+                btn.onclick = () => startTable(i);
+                
+                btn.innerHTML = `
+                    <span class="text-3xl group-hover:scale-125 transition-transform duration-200">${emojisTablas[i-1]}</span>
+                    <span class="bubble-font text-xl mt-1">Tabla del ${i}</span>
+                `;
+                container.appendChild(btn);
+            }
+        }
+
+        // --- SISTEMA DE INICIO DE PARTIDA ---
+        function startTable(table) {
+            initAudio();
+            currentTable = table;
+            score = 0;
+            targetScore = 10; // Comienza con meta de 10 aciertos obligatorios
+            
+            document.getElementById("garden-plot").innerHTML = "";
+
+            document.getElementById("screen-selector").classList.add("hidden");
+            document.getElementById("screen-game").classList.remove("hidden");
+
+            document.getElementById("help-panel").classList.add("hidden");
+            document.getElementById("btn-help").innerText = "🪄 ¿Necesitas ayuda mágica? (Ver truco)";
+
+            updateHUD();
+            nextQuestion();
+        }
+
+        function backToSelector() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            document.getElementById("screen-game").classList.add("hidden");
+            document.getElementById("screen-selector").classList.remove("hidden");
+            document.getElementById("global-stars").innerText = globalStars;
+        }
+
+        function resetGame() {
+            localStorage.clear();
+            globalStars = 0;
+            playerName = "Invitada";
+            document.getElementById("player-name").value = "";
+            document.getElementById("global-stars").innerText = "0";
+            
+            document.getElementById("screen-victory").classList.add("hidden");
+            document.getElementById("screen-selector").classList.add("hidden");
+            document.getElementById("screen-welcome").classList.remove("hidden");
+        }
+
+        function updateHUD() {
+            document.getElementById("current-stars").innerText = score;
+            document.getElementById("target-stars").innerText = targetScore;
+            
+            // La barra ahora se calcula sobre la meta dinámica
+            const percentage = Math.min((score / targetScore) * 100, 100);
+            document.getElementById("progress-bar").style.width = `${percentage}%`;
+            document.getElementById("progress-bug").style.left = `calc(${percentage}% - 12px)`;
+        }
+
+        // --- LÓGICA DE PREGUNTAS ---
+        function nextQuestion() {
+            document.getElementById("game-feedback").innerText = "";
+            document.getElementById("game-feedback").className = "h-8 text-center text-xl font-bold transition-all duration-300";
+            
+            const buttons = document.querySelectorAll(".btn-option");
+            buttons.forEach(btn => {
+                btn.className = "btn-option bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150";
+                btn.disabled = false;
+            });
+
+            if (currentTable === "mix") {
+                // EXCLUSIÓN DE 1s: Generamos factores entre 2 y 9
+                numA = Math.floor(Math.random() * 8) + 2; 
+                numB = Math.floor(Math.random() * 8) + 2; 
+            } else {
+                numA = currentTable;
+                numB = Math.floor(Math.random() * 10) + 1; // Las individuales siguen normales de 1 a 10
+            }
+            correctAnswer = numA * numB;
+
+            document.getElementById("question-text").innerText = `${numA} × ${numB}`;
+
+            speak(`¿Cuánto es, ${numA} por ${numB}?`);
+
+            let options = new Set();
+            options.add(correctAnswer);
+
+            while (options.size < 4) {
+                let deviation = (Math.floor(Math.random() * 3) + 1) * (Math.random() < 0.5 ? 1 : -1);
+                let fake = correctAnswer + deviation;
+                if (fake > 0 && fake !== correctAnswer) {
+                    options.add(fake);
+                }
+            }
+
+            let optionsArray = Array.from(options).sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < 4; i++) {
+                const optBtn = document.getElementById(`opt-${i}`);
+                optBtn.innerText = optionsArray[i];
+            }
+
+            if (!document.getElementById("help-panel").classList.contains("hidden")) {
+                generateHelpVisual();
+            }
+        }
+
+        // --- SISTEMA DE AYUDA VISUAL (Para entender la lógica) ---
+        function toggleHelp() {
+            const panel = document.getElementById("help-panel");
+            const btn = document.getElementById("btn-help");
+            if (panel.classList.contains("hidden")) {
+                panel.classList.remove("hidden");
+                btn.innerText = "🪄 Ocultar ayuda";
+                generateHelpVisual();
+            } else {
+                panel.classList.add("hidden");
+                btn.innerText = "🪄 ¿Necesitas ayuda mágica? (Ver truco)";
+            }
+        }
+
+        function generateHelpVisual() {
+            const container = document.getElementById("help-visual-container");
+            container.innerHTML = "";
+            
+            document.getElementById("help-explain").innerText = `¡Sumamos ${numA} veces el número ${numB}!`;
+
+            const itemEmoji = frutasEmojis[numA - 1] || "🌸";
+
+            for (let g = 0; g < numA; g++) {
+                const groupDiv = document.createElement("div");
+                groupDiv.className = "bg-white border-2 border-indigo-100 p-2 rounded-xl flex flex-col items-center justify-center min-w-[60px] shadow-sm";
+                
+                const emojiRow = document.createElement("div");
+                emojiRow.className = "grid grid-cols-3 gap-1 justify-center items-center";
+                
+                for (let e = 0; e < numB; e++) {
+                    const span = document.createElement("span");
+                    span.className = "text-xl animate-float";
+                    span.style.animationDelay = `${(g * 0.1) + (e * 0.05)}s`;
+                    span.innerText = itemEmoji;
+                    emojiRow.appendChild(span);
+                }
+
+                groupDiv.appendChild(emojiRow);
+
+                const label = document.createElement("span");
+                label.className = "text-xs font-bold text-indigo-400 mt-1";
+                label.innerText = `Grupo ${g + 1}`;
+                groupDiv.appendChild(label);
+
+                container.appendChild(groupDiv);
+
+                if (g < numA - 1) {
+                    const plus = document.createElement("span");
+                    plus.className = "text-2xl font-bold text-indigo-400";
+                    plus.innerText = "+";
+                    container.appendChild(plus);
+                }
+            }
+        }
+
+        // --- MANEJO DE SELECCIÓN DE RESPUESTA ---
+        function selectOption(index) {
+            const buttons = document.querySelectorAll(".btn-option");
+            const selectedBtn = document.getElementById(`opt-${index}`);
+            const chosenVal = parseInt(selectedBtn.innerText);
+            const feedback = document.getElementById("game-feedback");
+
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (chosenVal === correctAnswer) {
+                // --- RESPUESTA CORRECTA ---
+                selectedBtn.classList.remove("border-pink-200");
+                selectedBtn.classList.add("bg-green-100", "border-green-400", "text-green-700", "scale-105");
+                
+                playCorrectSound();
+                triggerBurstEffect(selectedBtn);
+
+                const felicitaciones = ["¡Espectacular! 🎉", "¡Excelente trabajo! 🌸", "¡Correcto, campeona! ⭐", "¡Súper bien hecho! 🌟", "¡Tu flor va creciendo! 🌱"];
+                const rFrase = felicitaciones[Math.floor(Math.random() * felicitaciones.length)];
+                
+                feedback.innerText = rFrase;
+                feedback.classList.add("text-green-500", "scale-110");
+                
+                speak(rFrase);
+                sproutFlower();
+
+                score++;
+                globalStars++;
+                localStorage.setItem("jardinera_estrellas", globalStars);
+
+                setTimeout(() => {
+                    updateHUD();
+                    if (score >= targetScore) {
+                        endGameSuccess();
+                    } else {
+                        nextQuestion();
+                    }
+                }, 1600);
+
+            } else {
+                // --- RESPUESTA INCORRECTA ---
+                selectedBtn.classList.remove("border-pink-200");
+                selectedBtn.classList.add("bg-red-100", "border-red-400", "text-red-700");
+
+                playIncorrectSound();
+
+                // MARCADOR DINÁMICO: Incrementar la meta en 1 por equivocarse
+                targetScore++;
+
+                buttons.forEach(btn => {
+                    if (parseInt(btn.innerText) === correctAnswer) {
+                        btn.classList.remove("border-pink-200");
+                        btn.classList.add("bg-green-100", "border-green-400", "text-green-700");
+                    }
+                });
+
+                const mensajeError = `¡Casi! ${numA} por ${numB} es igual a ${correctAnswer}. ¡Se agrega +1 pregunta extra! 🌾`;
+                feedback.innerText = mensajeError;
+                feedback.classList.add("text-rose-500");
+                speak(`¡Casi! ¡Se agrega una pregunta extra!`);
+
+                // Actualizar inmediatamente para que vea retroceder al gusanito y crecer el total
+                updateHUD();
+
+                setTimeout(() => {
+                    nextQuestion();
+                }, 3500);
+            }
+        }
+
+        // --- ACCIÓN DE HACER CRECER UNA FLOR EN EL JARDÍN ---
+        function sproutFlower() {
+            const plot = document.getElementById("garden-plot");
+            const flower = document.createElement("div");
+            
+            const can = document.getElementById("watering-can");
+            can.classList.add("animate-pour");
+            setTimeout(() => {
+                can.classList.remove("animate-pour");
+            }, 1500);
+
+            flower.className = "absolute text-4xl animate-bloom transition-all duration-300";
+            
+            // Distribución basada en el porcentaje actual de avance
+            const percentage = (score / targetScore) * 100;
+            const leftPos = Math.min(Math.max(percentage, 5), 90) + (Math.random() * 4 - 2); 
+            
+            const sizeScale = 0.8 + (Math.random() * 0.4);
+            const swayDelay = Math.random() * 2;
+            const rFlower = floresEmojis[Math.floor(Math.random() * floresEmojis.length)];
+
+            flower.style.left = `${leftPos}%`;
+            flower.style.bottom = "8px";
+            flower.style.transform = `scale(${sizeScale})`;
+            flower.style.animationDelay = `${swayDelay}s`;
+            
+            flower.innerHTML = `
+                <div class="relative flex flex-col items-center">
+                    <span class="animate-sway inline-block">${rFlower}</span>
+                    <span class="text-xs text-emerald-300 -mt-2">🌱</span>
+                </div>
+            `;
+
+            plot.appendChild(flower);
+        }
+
+        // --- SISTEMA DE VICTORIA ---
+        function endGameSuccess() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            playVictorySound();
+            
+            for (let i = 0; i < 40; i++) {
+                setTimeout(createConfetti, i * 100);
+            }
+
+            document.getElementById("screen-game").classList.add("hidden");
+            document.getElementById("screen-victory").classList.remove("hidden");
+
+            document.getElementById("victory-player-name").innerText = playerName;
+            
+            const tableName = currentTable === "mix" ? "El Desafío del Arcoíris" : `La Tabla del ${currentTable}`;
+            document.getElementById("victory-table-name").innerText = tableName;
+
+            speak(`¡Increíble, ${playerName}! Has completado ${tableName}. ¡Tu jardín floreció por completo!`);
+        }
+
+
+        // --- EFECTOS VISUALES: PARTÍCULAS / MAGIA DE CANVAS ---
+        const canvas = document.getElementById("magicCanvas");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+
+        function setupMagicParticles() {
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
+            animateParticles();
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function triggerBurstEffect(element) {
+            const rect = element.getBoundingClientRect();
+            const originX = rect.left + rect.width / 2;
+            const originY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 30; i++) {
+                particles.push({
+                    x: originX,
+                    y: originY,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8 - 3,
+                    radius: Math.random() * 5 + 3,
+                    color: `hsl(${Math.random() * 60 + 320}, 100%, 75%)`, 
+                    alpha: 1,
+                    decay: Math.random() * 0.02 + 0.01
+                });
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = p.color;
+                ctx.fill();
+                ctx.restore();
+
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.1; 
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        function createConfetti() {
+            const confetti = document.createElement("div");
+            confetti.className = "confetti-particle text-2xl";
+            confetti.innerText = floresEmojis[Math.floor(Math.random() * floresEmojis.length)];
+            
+            confetti.style.left = Math.random() * 100 + "vw";
+            confetti.style.top = "-5vh";
+            
+            const duration = Math.random() * 3 + 2;
+            confetti.style.animationDuration = duration + "s";
+            confetti.style.transform = `scale(${Math.random() * 0.6 + 0.5})`;
+            
+            document.body.appendChild(confetti);
+
+            setTimeout(() => {
+                confetti.remove();
+            }, duration * 1000);
+        }
+    </script>
+</body>
+</html>
