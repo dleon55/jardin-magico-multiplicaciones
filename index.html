@@ -4,19 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Jardín Mágico de las Multiplicaciones 🌸✨</title>
-    <!-- Tailwind CSS para el diseño responsivo y moderno -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Tipografía infantil redondeada y bonita -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Practica las tablas de multiplicar haciendo crecer un jardín. Funciona sin internet.">
+    <meta name="theme-color" content="#db2777">
+
+    <!-- Instalable en la pantalla de inicio de una tablet o un teléfono. -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="iconos/icono.svg">
+    <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+
+    <!-- Estilos y fuentes SERVIDOS DESDE EL PROPIO SITIO.
+         Antes venían del CDN de Tailwind (un compilador de 407 KB que se
+         ejecutaba en el navegador en cada visita) y de Google Fonts. Sin
+         internet, el juego no se podía usar. Ahora la hoja está compilada
+         (27 KB) y se regenera con `npm run construir`. -->
+    <link rel="preload" href="fuentes/quicksand-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fuentes/fredoka-one-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="estilos.css">
     <style>
+        /* Fuentes con licencia SIL OFL 1.1: ver fuentes/OFL-*.txt.
+           Solo el subconjunto latino, que incluye ñ, tildes, ¡, ¿ y ×. */
+        @font-face {
+            font-family: 'Fredoka One';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(fuentes/fredoka-one-latin.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        /* Quicksand es variable: un solo archivo sirve los pesos 500 y 700. */
+        @font-face {
+            font-family: 'Quicksand';
+            font-style: normal;
+            font-weight: 300 700;
+            font-display: swap;
+            src: url(fuentes/quicksand-latin.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
         body {
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Quicksand', system-ui, sans-serif;
             background: linear-gradient(135deg, #fef6e4 0%, #ffdde1 50%, #e8f5e9 100%);
             overflow-x: hidden;
         }
-        
+
         .bubble-font {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka One', 'Quicksand', system-ui, sans-serif;
         }
 
         /* Animaciones mágicas */
@@ -76,15 +108,87 @@
         .animate-pour {
             animation: pour 1.5s ease-in-out;
         }
+
+        /* Texto solo para lectores de pantalla. No display:none ni
+           visibility:hidden: los dos lo esconden también del lector. */
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+        }
+
+        /* Los atajos de teclado solo se anuncian donde hay teclado: en una
+           tablet serían instrucciones para algo que no existe. */
+        .solo-teclado { display: none; }
+        @media (hover: hover) and (pointer: fine) {
+            .solo-teclado { display: inline; }
+        }
+
+        /* Número del atajo en cada respuesta (1-4), solo donde hay teclado. */
+        @media (hover: hover) and (pointer: fine) {
+            .btn-option::before {
+                content: attr(data-tecla);
+                position: absolute; top: 4px; left: 8px;
+                font-size: 0.75rem; font-weight: 700; color: #4b5563;
+            }
+        }
+
+        /* Foco siempre visible y con contraste. */
+        :focus-visible { outline: 3px solid #be185d; outline-offset: 3px; border-radius: 0.75rem; }
+        [data-foco]:focus { outline: none; }
+
+        /* MENOS MOVIMIENTO. Se activa si el sistema lo pide o si se elige en
+           Ajustes. Para un niño con sensibilidad sensorial, el balanceo, el
+           flotado, el latido y el confeti permanentes hacen el sitio difícil de
+           usar; el juego tiene que ser igual de jugable sin ellos. */
+        html.calma *, html.calma *::before, html.calma *::after {
+            animation-duration: 0.001ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
+            scroll-behavior: auto !important;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <!-- Lienzo para efectos de magia / partículas -->
-    <canvas id="magicCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+    <!-- Lienzo para efectos de magia / partículas.
+         pointer-events y posición van TAMBIÉN en línea, no solo como clases: si
+         la hoja de estilos no carga, el lienzo quedaba encima de los botones y
+         se quedaba con todos los clics. El juego era imposible de usar. -->
+    <canvas id="magicCanvas" aria-hidden="true"
+            style="position:fixed; inset:0; pointer-events:none; z-index:50"
+            class="fixed inset-0 pointer-events-none z-50"></canvas>
 
     <!-- Contenedor Principal del Juego -->
-    <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl border-4 border-pink-200 shadow-2xl overflow-hidden relative p-6 md:p-8">
+    <main class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl border-4 border-pink-200 shadow-2xl overflow-hidden relative p-6 md:p-8">
+
+        <!-- ================= AJUSTES (en todas las pantallas) ================= -->
+        <details id="ajustes" class="absolute top-3 right-3 z-40 text-sm">
+            <summary class="cursor-pointer list-none bg-white border-2 border-pink-200 rounded-full px-3 py-1 font-bold text-gray-700 shadow-sm hover:bg-pink-50">
+                <span aria-hidden="true">⚙️</span> Ajustes
+            </summary>
+            <div class="mt-2 bg-white border-2 border-pink-200 rounded-2xl p-3 shadow-lg w-60 space-y-2">
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="voz" aria-pressed="true">
+                    <span><span aria-hidden="true">🗣️</span> Voz</span><span class="estado font-bold">Sí</span>
+                </button>
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="efectos" aria-pressed="true">
+                    <span><span aria-hidden="true">🎵</span> Sonidos</span><span class="estado font-bold">Sí</span>
+                </button>
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="lenta" aria-pressed="false">
+                    <span><span aria-hidden="true">🐢</span> Voz despacio</span><span class="estado font-bold">No</span>
+                </button>
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="calma" aria-pressed="false">
+                    <span><span aria-hidden="true">🍃</span> Menos movimiento</span><span class="estado font-bold">No</span>
+                </button>
+                <p id="aviso-voz" class="hidden text-xs text-gray-700 px-1"></p>
+            </div>
+        </details>
         
         <!-- ================= PANTALLA 1: BIENVENIDA ================= -->
         <div id="screen-welcome" class="text-center space-y-6 py-4">
@@ -93,21 +197,24 @@
                 <span class="text-4xl absolute -top-2 -right-4 animate-sway inline-block">✨</span>
             </div>
             
-            <h1 class="bubble-font text-4xl md:text-5xl text-pink-500 tracking-wide leading-tight">
+            <h1 data-foco class="bubble-font text-4xl md:text-5xl text-pink-700 tracking-wide leading-tight">
                 El Jardín Mágico <br>
                 <span class="text-green-500 text-3xl md:text-4xl">de las Multiplicaciones</span>
             </h1>
 
             <p class="text-gray-600 text-lg md:text-xl max-w-md mx-auto">
-                ¡Hola, pequeña jardinera! Pon tu nombre para empezar a sembrar hermosas flores respondiendo preguntas mágicas.
+                ¡Hola! Pon tu nombre para empezar a sembrar hermosas flores respondiendo preguntas mágicas.
             </p>
 
             <div class="max-w-xs mx-auto space-y-4">
-                <input type="text" id="player-name" placeholder="Tu nombre aquí..." 
-                       class="w-full px-5 py-3 rounded-2xl border-2 border-pink-300 text-center text-xl font-bold text-pink-600 focus:outline-none focus:border-pink-500 shadow-inner placeholder-pink-200">
+                <!-- Etiqueta real: el placeholder desaparece al escribir y no lo
+                     anuncian todos los lectores de pantalla. -->
+                <label for="player-name" class="block text-gray-700 font-bold">Tu nombre <span class="font-normal text-gray-600">(si quieres)</span></label>
+                <input type="text" id="player-name" placeholder="Escríbelo aquí…" maxlength="20" autocomplete="off"
+                       class="w-full px-5 py-3 rounded-2xl border-2 border-pink-400 text-center text-xl font-bold text-pink-700 focus:border-pink-700 focus:ring-4 focus:ring-pink-200 shadow-inner placeholder-gray-500">
                 
                 <button onclick="saveNameAndGo()" 
-                        class="w-full bubble-font bg-gradient-to-r from-pink-400 to-orange-400 hover:from-pink-500 hover:to-orange-500 text-white text-xl px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 transition-all duration-200 animate-pulse-soft">
+                        class="w-full bubble-font bg-gradient-to-r from-pink-600 to-orange-700 hover:from-pink-700 hover:to-orange-800 text-white text-xl px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 transition-all duration-200 animate-pulse-soft">
                     ¡Comenzar Aventura! 🚀
                 </button>
             </div>
@@ -119,8 +226,8 @@
             <!-- Encabezado personalizado -->
             <div class="flex flex-col md:flex-row justify-between items-center bg-pink-50 rounded-2xl p-4 gap-2 border border-pink-100">
                 <div class="text-center md:text-left">
-                    <h2 class="text-xl font-bold text-pink-600">Jardinera: <span id="display-name" class="bubble-font text-pink-500">Invitada</span> 👩‍🌾</h2>
-                    <p class="text-sm text-gray-500">¡Cultiva flores ganando estrellas doradas!</p>
+                    <h2 class="text-xl font-bold text-pink-700"><span id="display-name" class="bubble-font">Tu jardín</span> <span aria-hidden="true">🧑‍🌾</span></h2>
+                    <p class="text-sm text-gray-600">¡Cultiva flores ganando estrellas doradas!</p>
                 </div>
                 <div class="flex items-center gap-2 bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full font-bold">
                     <span>⭐ Estrellas totales:</span>
@@ -129,8 +236,8 @@
             </div>
 
             <div class="text-center">
-                <h3 class="bubble-font text-2xl text-green-600">¿Qué tabla deseas cultivar hoy?</h3>
-                <p class="text-gray-500 text-sm">Cada tabla completada hará florecer tu jardín mágico.</p>
+                <h3 data-foco class="bubble-font text-2xl text-green-700">¿Qué tabla quieres cultivar hoy?</h3>
+                <p class="text-gray-600 text-sm">Cada tabla completada hará florecer tu jardín mágico. <span class="solo-teclado">Pulsa del 1 al 9 para elegir.</span></p>
             </div>
 
             <!-- Rejilla de selección de tablas del 1 al 9 -->
@@ -158,9 +265,9 @@
             <!-- Botón Desafío Mezclado -->
             <div class="max-w-lg mx-auto pt-2">
                 <button onclick="startTable('mix')" 
-                        class="w-full bubble-font bg-gradient-to-r from-violet-400 via-pink-400 to-yellow-400 text-white py-4 rounded-2xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 text-lg flex flex-col items-center justify-center gap-1">
+                        class="w-full bubble-font bg-gradient-to-r from-violet-300 via-pink-300 to-yellow-300 text-gray-900 py-4 rounded-2xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 text-lg flex flex-col items-center justify-center gap-1">
                     <span class="flex items-center gap-2">🌈 Desafío del Arcoíris (Tablas Mezcladas)</span>
-                    <span class="text-xs opacity-90 font-sans font-semibold">⚠️ ¡Sin multiplicaciones por 1 y con reto dinámico!</span>
+                    <span class="text-xs opacity-90 font-sans font-semibold">Todas las tablas del 2 al 9, mezcladas</span>
                 </button>
             </div>
         </div>
@@ -171,38 +278,35 @@
             
             <!-- Barra superior: Información y controles de audio -->
             <div class="flex justify-between items-center bg-gray-50 rounded-2xl p-3 border border-gray-100">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-500 hover:text-pink-500 transition flex items-center gap-1">
-                    ⬅ Menu
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
-                <div class="flex items-center gap-3">
-                    <button id="btn-voice" onclick="toggleVoice()" class="p-2 rounded-full bg-white border shadow-sm text-lg hover:bg-pink-50 transition" title="Activar/Desactivar lectura de voz">
-                        🔊
-                    </button>
-                    <!-- Estrellas de este nivel -->
-                    <div class="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-bold">
-                        <span>⭐</span>
-                        <span id="current-stars">0</span>/<span id="target-stars">10</span>
-                    </div>
+                <!-- Estrellas de este nivel -->
+                <div class="flex items-center gap-1 bg-yellow-100 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
+                    <span aria-hidden="true">⭐</span>
+                    <span class="sr-only">Aciertos:</span>
+                    <span id="current-stars">0</span><span aria-hidden="true">/</span><span class="sr-only">de</span><span id="target-stars">10</span>
                 </div>
             </div>
 
-            <!-- Alerta educativa de penalización por fallos -->
-            <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-2 text-xs md:text-sm text-center font-semibold">
-                💡 ¡Piensa bien tu respuesta! Si te equivocas, la meta se aleja y se agregará <span class="text-red-600 font-bold">+1 pregunta extra</span>. ¡Usa la ayuda mágica si tienes dudas!
+            <!-- Cómo funciona el repaso: equivocarse no castiga, hace volver -->
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-4 py-2 text-xs md:text-sm text-center font-semibold">
+                🌱 Equivocarse no quita nada: la que falles <span class="font-bold">vuelve a aparecer</span> un poquito después, para que te la aprendas. ¡Usa la ayuda mágica si tienes dudas!
             </div>
 
             <!-- Progreso visual (Camino del gusanito) -->
-            <div class="relative w-full h-4 bg-gray-100 rounded-full overflow-visible">
+            <div id="progreso" role="progressbar" aria-label="Avance de la partida" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"
+                 class="relative w-full h-4 bg-gray-100 rounded-full overflow-visible">
                 <div id="progress-bar" class="h-full bg-gradient-to-r from-green-300 to-green-500 rounded-full transition-all duration-500" style="width: 0%;"></div>
                 <!-- Caracolito/Gusanito de progreso -->
-                <div id="progress-bug" class="absolute top-1/2 -translate-y-1/2 -ml-3 text-xl transition-all duration-500" style="left: 0%;">🐛</div>
-                <div class="absolute right-0 top-1/2 -translate-y-1/2 text-xl">🍓</div>
+                <div id="progress-bug" aria-hidden="true" class="absolute top-1/2 -translate-y-1/2 -ml-3 text-xl transition-all duration-500" style="left: 0%;">🐛</div>
+                <div aria-hidden="true" class="absolute right-0 top-1/2 -translate-y-1/2 text-xl">🍓</div>
             </div>
 
             <!-- Área de Pregunta (El Girasol Gigante) -->
             <div class="flex flex-col items-center justify-center py-2 relative">
                 <div class="relative w-40 h-40 md:w-48 md:h-48 flex items-center justify-center animate-sway">
-                    <svg class="absolute inset-0 w-full h-full text-yellow-400" fill="currentColor" viewBox="0 0 100 100">
+                    <svg aria-hidden="true" class="absolute inset-0 w-full h-full text-yellow-400" fill="currentColor" viewBox="0 0 100 100">
                         <path d="M50 15 C45 2 55 2 50 15 Z" />
                         <path d="M50 85 C45 98 55 98 50 85 Z" />
                         <path d="M15 50 C2 45 2 55 15 50 Z" />
@@ -212,25 +316,34 @@
                         <path d="M25 75 C15 85 10 70 25 75 Z" />
                         <path d="M75 25 C85 15 90 30 75 25 Z" />
                         <circle cx="50" cy="50" r="30" class="text-amber-500"/>
-                        <circle cx="50" cy="50" r="26" class="text-yellow-600"/>
+                        <circle cx="50" cy="50" r="26" class="text-amber-800"/>
                     </svg>
                     <div class="z-10 text-center text-white">
-                        <div id="question-text" class="bubble-font text-3xl md:text-4xl drop-shadow-md">3 × 4</div>
+                        <!-- La pregunta se anuncia sola al lector de pantalla y recibe el foco
+                             al empezar la partida. -->
+                        <div id="question-text" data-foco aria-live="polite" class="bubble-font text-3xl md:text-4xl drop-shadow-md">3 × 4</div>
                     </div>
                 </div>
             </div>
 
             <!-- Opciones de Respuesta -->
-            <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
-                <button onclick="selectOption(0)" id="opt-0" class="btn-option bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
-                <button onclick="selectOption(1)" id="opt-1" class="btn-option bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
-                <button onclick="selectOption(2)" id="opt-2" class="btn-option bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
-                <button onclick="selectOption(3)" id="opt-3" class="btn-option bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+            <div role="group" aria-label="Elige la respuesta" class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                <button onclick="selectOption(0)" id="opt-0" data-tecla="1" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+                <button onclick="selectOption(1)" id="opt-1" data-tecla="2" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+                <button onclick="selectOption(2)" id="opt-2" data-tecla="3" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+                <button onclick="selectOption(3)" id="opt-3" data-tecla="4" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+            </div>
+
+            <!-- Aparece tras responder: permite adelantar la espera -->
+            <div class="text-center">
+                <button id="btn-siguiente" onclick="continuar()" class="hidden bubble-font bg-green-700 hover:bg-green-800 disabled:opacity-50 text-white text-lg px-8 py-3 rounded-2xl shadow-md transition">
+                    Siguiente <span aria-hidden="true">→</span> <span class="solo-teclado text-sm font-sans">(Enter)</span>
+                </button>
             </div>
 
             <!-- Ayuda Mágica Interactiva -->
             <div class="text-center pt-1">
-                <button onclick="toggleHelp()" id="btn-help" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold px-4 py-2 rounded-full text-sm shadow-sm transition">
+                <button onclick="toggleHelp()" id="btn-help" aria-expanded="false" aria-controls="help-panel" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold px-4 py-2 rounded-full text-sm shadow-sm transition">
                     🪄 ¿Necesitas ayuda mágica? (Ver truco)
                 </button>
             </div>
@@ -238,19 +351,19 @@
             <!-- Panel de Ayuda Visual (Grupos de frutas/objetos) -->
             <div id="help-panel" class="hidden bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 transition duration-300">
                 <p id="help-explain" class="text-indigo-800 text-center font-bold mb-3 text-sm md:text-base">¡Sumamos grupos iguales!</p>
-                <div id="help-visual-container" class="flex flex-wrap gap-4 justify-center items-center">
+                <div id="help-visual-container" aria-hidden="true" class="flex flex-wrap gap-4 justify-center items-center">
                     <!-- Se llenará con grupos dinámicos en JS -->
                 </div>
             </div>
 
             <!-- Estado de retroalimentación suave -->
-            <div id="game-feedback" class="h-8 text-center text-xl font-bold transition-all duration-300"></div>
+            <div id="game-feedback" role="status" aria-live="polite" class="min-h-8 text-center text-xl font-bold transition-all duration-300"></div>
 
             <!-- El jardín en la base del juego -->
             <div class="border-t-4 border-dashed border-green-200 pt-4">
                 <div class="flex justify-between items-center px-1 mb-2">
-                    <span class="text-sm font-bold text-green-600">Tu Jardín del Nivel:</span>
-                    <span id="watering-can" class="text-2xl transition-all duration-500 inline-block">💧👩‍🌾</span>
+                    <span class="text-sm font-bold text-green-700">Tu jardín de esta partida:</span>
+                    <span id="watering-can" class="text-2xl transition-all duration-500 inline-block" aria-hidden="true">💧🧑‍🌾</span>
                 </div>
                 <div id="garden-plot" class="w-full h-20 bg-gradient-to-t from-emerald-800 to-emerald-600 rounded-2xl p-2 relative flex items-end justify-around overflow-hidden shadow-inner border-b-8 border-amber-950">
                     <!-- Las flores irán apareciendo aquí dinámicamente -->
@@ -261,26 +374,26 @@
 
         <!-- ================= PANTALLA 4: FELICITACIONES / VICTORIA ================= -->
         <div id="screen-victory" class="hidden text-center space-y-6 py-6">
-            <span class="text-7xl animate-float inline-block">👑🌻👑</span>
-            
-            <h2 class="bubble-font text-4xl text-yellow-500 animate-pulse-soft">¡Felicidades, <span id="victory-player-name" class="text-pink-500">Jardinera</span>!</h2>
+            <span class="text-7xl animate-float inline-block" aria-hidden="true">👑🌻👑</span>
+
+            <h2 data-foco class="bubble-font text-4xl text-amber-700 animate-pulse-soft">¡Lo lograste<span id="victory-player-name" class="text-pink-700"></span>!</h2>
             
             <p class="text-gray-600 text-lg md:text-xl max-w-md mx-auto">
                 Has cultivado hermosas flores mágicas respondiendo todas las operaciones con éxito. ¡Tu jardín luce espectacular! 🌺🦋
             </p>
 
             <div class="bg-yellow-50 border-4 border-dashed border-yellow-300 rounded-3xl p-6 max-w-sm mx-auto shadow-inner space-y-3 relative">
-                <div class="absolute -top-3 -right-3 text-3xl">✨</div>
-                <div class="absolute -bottom-3 -left-3 text-3xl">✨</div>
-                <p class="text-yellow-600 text-xs font-bold uppercase tracking-widest">Premio Especial</p>
-                <h3 class="bubble-font text-2xl text-amber-700">Diploma de Súper Jardinera</h3>
-                <p class="text-gray-700 font-bold text-base">Completado con éxito: <span id="victory-table-name" class="text-green-600">La Tabla del X</span></p>
-                <div class="text-4xl">🌟🌟🌟</div>
+                <div class="absolute -top-3 -right-3 text-3xl" aria-hidden="true">✨</div>
+                <div class="absolute -bottom-3 -left-3 text-3xl" aria-hidden="true">✨</div>
+                <p class="text-amber-800 text-xs font-bold uppercase tracking-widest">Premio Especial</p>
+                <h3 class="bubble-font text-2xl text-amber-700">Diploma del Jardín Mágico</h3>
+                <p class="text-gray-700 font-bold text-base">Completado con éxito: <span id="victory-table-name" class="text-green-700">La Tabla del X</span></p>
+                <div class="text-4xl" aria-hidden="true">🌟🌟🌟</div>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-xs sm:max-w-md mx-auto">
                 <button onclick="backToSelector()" 
-                        class="bubble-font bg-green-400 hover:bg-green-500 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
+                        class="bubble-font bg-green-700 hover:bg-green-800 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
                     Sigue Cultivando 🌱
                 </button>
                 <button onclick="resetGame()" 
@@ -290,46 +403,154 @@
             </div>
         </div>
 
-    </div>
+    </main>
 
     <!-- Script del Juego -->
     <script>
+        // --- ALMACENAMIENTO ---
+        //
+        // Todas las claves llevan el prefijo "jardin:". Antes el botón de salir
+        // hacía localStorage.clear(), que borra TODO lo guardado por cualquier
+        // página del mismo origen (en GitHub Pages, cualquier otro proyecto de
+        // la misma cuenta), no solo lo de este juego.
+        //
+        // Las claves antiguas se migran una vez: quien ya tenía estrellas
+        // guardadas no las pierde al actualizar.
+        const PREFIJO = "jardin:";
+        const almacen = {
+            leer(clave) {
+                try { return localStorage.getItem(PREFIJO + clave); } catch (e) { return null; }
+            },
+            guardar(clave, valor) {
+                // En modo privado o con almacenamiento bloqueado, setItem lanza:
+                // el juego debe seguir funcionando aunque no recuerde nada.
+                try { localStorage.setItem(PREFIJO + clave, valor); } catch (e) { /* sin memoria */ }
+            },
+            borrarTodo() {
+                try {
+                    Object.keys(localStorage)
+                        .filter((k) => k.startsWith(PREFIJO))
+                        .forEach((k) => localStorage.removeItem(k));
+                } catch (e) { /* nada que borrar */ }
+            },
+        };
+
+        (function migrarClavesAntiguas() {
+            try {
+                const antiguas = { jardinera_nombre: "nombre", jardinera_estrellas: "estrellas" };
+                for (const [vieja, nueva] of Object.entries(antiguas)) {
+                    const valor = localStorage.getItem(vieja);
+                    if (valor !== null && almacen.leer(nueva) === null) {
+                        almacen.guardar(nueva, valor);
+                    }
+                    localStorage.removeItem(vieja);
+                }
+            } catch (e) { /* almacenamiento no disponible */ }
+        })();
+
         // --- VARIABLES DEL SISTEMA ---
-        let playerName = "Invitada";
+        let playerName = "";   // vacío = sin nombre: se habla del jardín, no de la persona
         let currentTable = 1; // 1-9 o "mix"
         let globalStars = 0;
         let score = 0; // Aciertos actuales conseguidos
-        let targetScore = 10; // Meta de aciertos dinámicos (crece con errores)
+        let targetScore = 10; // Meta FIJA de aciertos: los fallos ya no la mueven
         let numA = 0;
         let numB = 0;
         let correctAnswer = 0;
-        let voiceActive = true;
-        let canPlayAudio = false; 
+
+        // --- COLA DE REPASO ---
+        // Lo que se falla vuelve. Sin esto, un nino podia fallar 7x8, ver la
+        // respuesta tres segundos y no volver a encontrarsela en toda la
+        // sesion: justo el hecho que necesitaba practicar era el que menos
+        // practicaba. Cada entrada guarda en cuantos turnos reaparece y
+        // cuantas veces ya se repaso, para espaciarla en vez de repetirla
+        // seguida (repetir de inmediato se contesta de memoria corta, no se
+        // aprende).
+        let colaRepaso = [];
+        let repasoActual = null;   // la entrada en curso, si la pregunta es un repaso
+        let ultimoHecho = "";
+        // --- AJUSTES ---
+        //
+        // Antes había un solo botón para todo el sonido. En un aula hace falta
+        // poder silenciar los efectos y conservar la voz (o al revés), y quien
+        // está aprendiendo a leer necesita la voz más despacio. Se guardan entre
+        // sesiones. "calma" (menos movimiento) tiene tres estados: null sigue
+        // al sistema operativo (y a sus cambios); true o false, lo que se eligió
+        // aquí. Si se guardara el valor derivado del sistema, cambiar la voz
+        // congelaría "calma" para siempre.
+        const ajustes = { voz: true, efectos: true, lenta: false, calma: null };
+        const movimientoReducido = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+        function calmaEfectiva() {
+            return ajustes.calma ?? movimientoReducido.matches;
+        }
+
+        function cargarAjustes() {
+            try {
+                Object.assign(ajustes, JSON.parse(almacen.leer("ajustes") || "{}"));
+            } catch (e) { /* ajustes corruptos: se quedan los de serie */ }
+        }
+
+        function aplicarAjustes() {
+            document.documentElement.classList.toggle("calma", calmaEfectiva());
+            document.querySelectorAll(".ajuste").forEach((boton) => {
+                const nombre = boton.dataset.ajuste;
+                const activo = nombre === "calma" ? calmaEfectiva() : Boolean(ajustes[nombre]);
+                boton.setAttribute("aria-pressed", String(activo));
+                boton.querySelector(".estado").textContent = activo ? "Sí" : "No";
+                boton.classList.toggle("bg-green-50", activo);
+            });
+        }
+
+        function cambiarAjuste(nombre) {
+            ajustes[nombre] = nombre === "calma" ? !calmaEfectiva() : !ajustes[nombre];
+            almacen.guardar("ajustes", JSON.stringify(ajustes));
+            aplicarAjustes();
+            if (nombre === "voz") {
+                if (ajustes.voz) speak("Voz activada.");
+                else callarVoz();
+            }
+            if (nombre === "lenta" && ajustes.voz) {
+                callarVoz();
+                speak(ajustes.lenta ? "Ahora hablo más despacio." : "Ahora hablo a velocidad normal.");
+            }
+        }
 
         const floresEmojis = ["🌸", "🌹", "🌺", "🌻", "🌼", "🌷", "🌱", "🍀", "🏵️", "💮"];
         const frutasEmojis = ["🐞", "🍓", "🍊", "🍭", "⭐️", "🦋", "🍒", "🍩", "🐝", "🍉"];
 
         let audioCtx = null;
         function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                canPlayAudio = true;
-            }
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                // iOS suspende el contexto al bloquear la pantalla o cambiar de
+                // app, y no lo reanuda solo: el juego se quedaba mudo sin aviso.
+                // Reanudar solo es posible dentro de un gesto del usuario, por
+                // eso se llama también en cada toque y tecla (ver abajo).
+                if (audioCtx.state === "suspended") {
+                    audioCtx.resume();
+                }
+            } catch (e) { audioCtx = null; }
         }
+        ["pointerdown", "keydown"].forEach((evento) =>
+            document.addEventListener(evento, () => { if (audioCtx) initAudio(); }, { passive: true }));
 
         // --- SISTEMA DE AUDIO SINTÉTICO (Sin archivos externos) ---
-        function playTone(freq, type, duration) {
-            if (!canPlayAudio) return;
+        function playTone(freq, type, duration, volumen = 0.15) {
+            if (!ajustes.efectos) return;
             try {
                 initAudio();
+                if (!audioCtx) return;
                 let osc = audioCtx.createOscillator();
                 let gain = audioCtx.createGain();
-                
+
                 osc.type = type || "sine";
                 osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+
+                gain.gain.setValueAtTime(volumen, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
                 
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
@@ -348,9 +569,12 @@
             setTimeout(() => playTone(1046.50, "sine", 0.3), 300);  
         }
 
+        // Antes: dos tonos graves descendentes (220 -> 180 Hz), el sonido
+        // universal de "has perdido". Para un niño que está aprendiendo, el
+        // error tiene que sonar a "casi", no a derrota: un solo tono suave y
+        // breve. La información va en la voz, que dice la respuesta correcta.
         function playIncorrectSound() {
-            playTone(220, "triangle", 0.3); 
-            setTimeout(() => playTone(180, "triangle", 0.4), 150);
+            playTone(392, "sine", 0.18, 0.08);
         }
 
         function playVictorySound() {
@@ -363,45 +587,113 @@
         }
 
         // --- SISTEMA DE SÍNTESIS DE VOZ ---
-        function speak(text) {
-            if (!voiceActive) return;
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                let utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'es-MX'; 
-                utterance.rate = 1.0;     
-                utterance.pitch = 1.3;    
-                window.speechSynthesis.speak(utterance);
+        //
+        // QUÉ VOZ. Antes se pedía `lang = "es-MX"` y se confiaba. Si el sistema
+        // no tiene esa voz, el navegador lee el español CON UNA VOZ INGLESA, y
+        // "siete por ocho" se vuelve ininteligible. Ahora se elige una voz
+        // española de verdad, por orden de cercanía; y si el dispositivo no
+        // tiene ninguna, la voz se apaga y se avisa en Ajustes, en vez de leer
+        // mal.
+        const PREFERENCIA_VOZ = ["es-mx", "es-us", "es-419", "es-es"];
+        let vozElegida = null;
+        let hayVozEspanol = null;   // null = todavía no se sabe
+
+        function elegirVoz() {
+            if (!("speechSynthesis" in window)) {
+                marcarSinVoz("Este navegador no puede leer en voz alta.");
+                return;
+            }
+            const voces = window.speechSynthesis.getVoices();
+            if (voces.length === 0) return;   // Chrome las entrega más tarde
+            const normal = (v) => v.lang.toLowerCase().replace("_", "-");
+            vozElegida =
+                PREFERENCIA_VOZ.map((l) => voces.find((v) => normal(v) === l)).find(Boolean) ||
+                voces.find((v) => normal(v).startsWith("es")) || null;
+            if (vozElegida) {
+                hayVozEspanol = true;
+                document.getElementById("aviso-voz").classList.add("hidden");
+            } else {
+                marcarSinVoz("Este dispositivo no tiene voz en español, así que la voz está apagada.");
             }
         }
 
-        function toggleVoice() {
-            voiceActive = !voiceActive;
-            const btn = document.getElementById("btn-voice");
-            if (voiceActive) {
-                btn.innerText = "🔊";
-                btn.classList.remove("bg-gray-200");
-                btn.classList.add("bg-pink-50");
-                speak("¡Voz activada!");
+        function marcarSinVoz(motivo) {
+            hayVozEspanol = false;
+            const aviso = document.getElementById("aviso-voz");
+            aviso.textContent = motivo;
+            aviso.classList.remove("hidden");
+        }
+
+        if ("speechSynthesis" in window) {
+            window.speechSynthesis.addEventListener?.("voiceschanged", elegirVoz);
+        }
+
+        // Los emojis no se leen: según el sistema, "🎉" se pronuncia
+        // "cotillón" o "party popper" en mitad de la felicitación.
+        const sinEmojis = (texto) => texto.replace(/\p{Extended_Pictographic}|️|‍/gu, "").trim();
+
+        // QUE NO SE CORTEN. Antes cada frase hacía cancel() y cortaba la
+        // anterior: la felicitación se quedaba a medias en cuanto llegaba la
+        // pregunta siguiente. speechSynthesis ya encola por sí mismo; basta con
+        // no cancelar. Solo se calla a propósito al saltar o al salir.
+        function speak(text) {
+            if (!ajustes.voz || hayVozEspanol === false || !("speechSynthesis" in window)) return;
+            const frase = new SpeechSynthesisUtterance(sinEmojis(text));
+            if (vozElegida) {
+                frase.voice = vozElegida;
+                frase.lang = vozElegida.lang;
             } else {
-                btn.innerText = "🔇";
-                btn.classList.remove("bg-pink-50");
-                btn.classList.add("bg-gray-200");
+                frase.lang = "es-MX";
             }
+            // Antes: velocidad 1.0 y tono 1.3. Un tono alto en una voz sintética
+            // se entiende peor, y 1.0 es rápido para quien empieza a leer.
+            frase.rate = ajustes.lenta ? 0.8 : 0.95;
+            frase.pitch = 1.1;
+            window.speechSynthesis.speak(frase);
+        }
+
+        function callarVoz() {
+            if ("speechSynthesis" in window) window.speechSynthesis.cancel();
         }
 
         // --- INICIALIZAR Y CARGAR PANTALLAS ---
+        // --- MODO SIN INTERNET ---
+        // El service worker guarda el juego entero tras la primera visita. No
+        // funciona abriendo el archivo con doble clic (file://), solo servido
+        // por un servidor web, como GitHub Pages.
+        if ("serviceWorker" in navigator && location.protocol !== "file:") {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("sw.js").catch(() => {
+                    /* sin modo sin internet, pero el juego sigue funcionando */
+                });
+            });
+        }
+
         window.onload = function() {
-            const savedName = localStorage.getItem("jardinera_nombre");
-            const savedStars = localStorage.getItem("jardinera_estrellas");
+            const savedName = almacen.leer("nombre");
+            const savedStars = almacen.leer("estrellas");
             if (savedName) {
                 document.getElementById("player-name").value = savedName;
                 playerName = savedName;
             }
             if (savedStars) {
-                globalStars = parseInt(savedStars);
+                globalStars = parseInt(savedStars, 10) || 0;
                 document.getElementById("global-stars").innerText = globalStars;
             }
+
+            cargarAjustes();
+            aplicarAjustes();
+            movimientoReducido.addEventListener("change", aplicarAjustes);
+            document.querySelectorAll(".ajuste").forEach((boton) =>
+                boton.addEventListener("click", () => cambiarAjuste(boton.dataset.ajuste)));
+
+            elegirVoz();
+            // Si en 3 s el navegador no ha entregado ninguna voz, no la va a
+            // entregar: mejor saberlo y avisar que intentar leer a ciegas.
+            setTimeout(() => { if (hayVozEspanol === null) elegirVoz(); }, 1500);
+            setTimeout(() => {
+                if (hayVozEspanol === null) marcarSinVoz("Este dispositivo no tiene voces para leer en voz alta.");
+            }, 3000);
 
             buildSelectorGrid();
             setupMagicParticles();
@@ -409,20 +701,24 @@
 
         function saveNameAndGo() {
             initAudio();
-            const inputName = document.getElementById("player-name").value.trim();
-            playerName = inputName || "Jardinera";
-            localStorage.setItem("jardinera_nombre", playerName);
-            
+            // Sin género en ninguna parte: el sitio habla del jardín o usa el
+            // nombre. Antes decía "jardinera", "campeona" e "Invitada" a todo el
+            // mundo, de modo que a un niño le hablaba como si no fuera para él.
+            const inputName = document.getElementById("player-name").value.trim().slice(0, 20);
+            playerName = inputName;
+            almacen.guardar("nombre", playerName);
+
             playTone(440, "sine", 0.2);
             setTimeout(() => playTone(554, "sine", 0.2), 150);
             setTimeout(() => playTone(659, "sine", 0.4), 300);
 
-            document.getElementById("screen-welcome").classList.add("hidden");
-            document.getElementById("screen-selector").classList.remove("hidden");
-            
-            document.getElementById("display-name").innerText = playerName;
-            
-            speak(`¡Hola ${playerName}! Vamos a jugar con las matemáticas.`);
+            mostrarPantalla("screen-selector");
+
+            document.getElementById("display-name").innerText =
+                playerName ? `El jardín de ${playerName}` : "Tu jardín";
+
+            speak(playerName ? `¡Hola, ${playerName}! Vamos a jugar con las matemáticas.`
+                             : "¡Hola! Vamos a jugar con las matemáticas.");
         }
 
         function buildSelectorGrid() {
@@ -430,12 +726,15 @@
             container.innerHTML = "";
             for (let i = 1; i <= 9; i++) {
                 const btn = document.createElement("button");
-                btn.className = `bg-gradient-to-br ${coloresTablas[i-1]} text-white p-4 rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-150 flex flex-col items-center justify-center relative overflow-hidden group`;
+                // Texto oscuro sobre los pastel: el blanco de antes daba menos
+                // de 2:1 de contraste, ilegible para quien ve regular.
+                btn.className = `bg-gradient-to-br ${coloresTablas[i-1]} text-gray-900 p-4 rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-150 flex flex-col items-center justify-center relative overflow-hidden group`;
                 btn.onclick = () => startTable(i);
-                
+
                 btn.innerHTML = `
-                    <span class="text-3xl group-hover:scale-125 transition-transform duration-200">${emojisTablas[i-1]}</span>
+                    <span aria-hidden="true" class="text-3xl group-hover:scale-125 transition-transform duration-200">${emojisTablas[i-1]}</span>
                     <span class="bubble-font text-xl mt-1">Tabla del ${i}</span>
+                    <span class="solo-teclado absolute top-1 left-2 text-xs font-bold">${i}</span>
                 `;
                 container.appendChild(btn);
             }
@@ -446,90 +745,381 @@
             initAudio();
             currentTable = table;
             score = 0;
-            targetScore = 10; // Comienza con meta de 10 aciertos obligatorios
+            targetScore = 10; // Meta fija: equivocarse ya no la mueve
+            colaRepaso = [];
+            repasoActual = null;
+            ultimoHecho = "";
+            bolsa = []; // la de otra tabla no sirve: se llena al pedir la primera
             
             document.getElementById("garden-plot").innerHTML = "";
 
-            document.getElementById("screen-selector").classList.add("hidden");
-            document.getElementById("screen-game").classList.remove("hidden");
+            mostrarPantalla("screen-game");
 
             document.getElementById("help-panel").classList.add("hidden");
             document.getElementById("btn-help").innerText = "🪄 ¿Necesitas ayuda mágica? (Ver truco)";
+            document.getElementById("btn-help").setAttribute("aria-expanded", "false");
 
             updateHUD();
             nextQuestion();
         }
 
         function backToSelector() {
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-            document.getElementById("screen-game").classList.add("hidden");
-            document.getElementById("screen-selector").classList.remove("hidden");
+            cancelarEspera();
+            callarVoz();
+            mostrarPantalla("screen-selector");
             document.getElementById("global-stars").innerText = globalStars;
         }
 
         function resetGame() {
-            localStorage.clear();
+            cancelarEspera();
+            callarVoz();
+            almacen.borrarTodo();   // solo las claves del juego, no todo el origen
             globalStars = 0;
-            playerName = "Invitada";
+            playerName = "";
             document.getElementById("player-name").value = "";
             document.getElementById("global-stars").innerText = "0";
-            
-            document.getElementById("screen-victory").classList.add("hidden");
-            document.getElementById("screen-selector").classList.add("hidden");
-            document.getElementById("screen-welcome").classList.remove("hidden");
+            mostrarPantalla("screen-welcome");
         }
+
+        // --- PANTALLAS ---
+        //
+        // Un solo sitio para cambiar de pantalla. Además de mostrar y ocultar,
+        // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
+        // navega con teclado o lector de pantalla se queda con el foco en un
+        // botón que acaba de desaparecer, y no sabe dónde está.
+        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory"];
+        let pantallaActual = "screen-welcome";
+
+        function mostrarPantalla(id) {
+            PANTALLAS.forEach((p) => document.getElementById(p).classList.toggle("hidden", p !== id));
+            pantallaActual = id;
+            const destino = document.querySelector(`#${id} [data-foco]`);
+            if (destino) {
+                destino.setAttribute("tabindex", "-1");
+                destino.focus({ preventScroll: true });
+            }
+        }
+
+        // --- ESPERAS QUE SE PUEDEN ADELANTAR ---
+        //
+        // Antes, tras cada respuesta había una espera fija e insalvable: 1,6 s
+        // al acertar y 3,5 s al fallar. A quien va rápido le frena justo cuando
+        // está ganando fluidez, que es el objetivo de practicar las tablas.
+        //
+        // Ahora cada espera tiene un MÍNIMO (antes no se puede saltar) y un
+        // AUTOMÁTICO (si no se hace nada, avanza sola). Tras fallar, el mínimo
+        // garantiza que la respuesta correcta se vea y se oiga antes de seguir;
+        // tras acertar no hace falta mínimo.
+        let espera = null;   // { alContinuar, desde, temporizador }
+
+        function programarSiguiente(minimoMs, automaticoMs, alContinuar) {
+            cancelarEspera();
+            espera = {
+                alContinuar,
+                desde: performance.now() + minimoMs,
+                temporizador: setTimeout(() => continuar(false), automaticoMs),
+            };
+            const boton = document.getElementById("btn-siguiente");
+            boton.classList.remove("hidden");
+            // Deshabilitado durante el mínimo, para que se entienda por qué no
+            // responde. Se habilita solo cuando ya se puede usar.
+            boton.disabled = minimoMs > 0;
+            if (minimoMs > 0) {
+                setTimeout(() => { if (espera) boton.disabled = false; }, minimoMs);
+            }
+        }
+
+        /**
+         * Pasa a lo siguiente. `porUsuario` distingue saltar de esperar:
+         *
+         *  - Si quien juega SALTA (botón, Enter), corta la voz: ha decidido
+         *    no esperar, y seguir hablando solo retrasaría la pregunta nueva.
+         *  - Si la espera TERMINA SOLA, la voz NO se corta: la felicitación con
+         *    el hecho completo dura unos 3 s y la espera automática 1,6 s, así
+         *    que cortarla aquí era volver al fallo de antes —frases a medias—.
+         *    La pregunta siguiente se encola detrás.
+         */
+        function continuar(porUsuario = true) {
+            if (!espera || performance.now() < espera.desde) {
+                return;
+            }
+            const accion = espera.alContinuar;
+            cancelarEspera();
+            if (porUsuario) callarVoz();
+            accion();
+        }
+
+        function cancelarEspera() {
+            if (espera) {
+                clearTimeout(espera.temporizador);
+                espera = null;
+            }
+            const boton = document.getElementById("btn-siguiente");
+            if (boton) boton.classList.add("hidden");
+        }
+
+        // --- TECLADO ---
+        //
+        // Todo el juego se manejaba solo con el ratón o el dedo. En una laptop,
+        // el teclado multiplica la velocidad de práctica:
+        //
+        //   selector     1-9 eligen la tabla
+        //   pregunta     1-4 responden, H abre o cierra la ayuda
+        //   tras responder   Enter o Espacio continúan
+        //   en el juego  Escape vuelve al menú
+        //   victoria     Enter sigue cultivando
+        document.addEventListener("keydown", (evento) => {
+            if (evento.altKey || evento.ctrlKey || evento.metaKey) {
+                return;
+            }
+            const enCampoDeTexto = evento.target.tagName === "INPUT";
+
+            if (pantallaActual === "screen-welcome") {
+                if (evento.key === "Enter") {
+                    evento.preventDefault();
+                    saveNameAndGo();
+                }
+                return;
+            }
+            if (enCampoDeTexto) {
+                return;
+            }
+
+            if (pantallaActual === "screen-selector" && /^[1-9]$/.test(evento.key)) {
+                evento.preventDefault();
+                startTable(Number(evento.key));
+                return;
+            }
+
+            if (pantallaActual === "screen-game") {
+                if (evento.key === "Escape") {
+                    evento.preventDefault();
+                    backToSelector();
+                    return;
+                }
+                if (espera && (evento.key === "Enter" || evento.key === " ")) {
+                    evento.preventDefault();
+                    continuar();
+                    return;
+                }
+                const opcion = document.getElementById(`opt-${Number(evento.key) - 1}`);
+                if (!espera && /^[1-4]$/.test(evento.key) && opcion && !opcion.disabled) {
+                    evento.preventDefault();
+                    selectOption(Number(evento.key) - 1);
+                    return;
+                }
+                if (!espera && (evento.key === "h" || evento.key === "H")) {
+                    evento.preventDefault();
+                    toggleHelp();
+                }
+                return;
+            }
+
+            if (pantallaActual === "screen-victory" && evento.key === "Enter") {
+                evento.preventDefault();
+                backToSelector();
+            }
+        });
 
         function updateHUD() {
             document.getElementById("current-stars").innerText = score;
             document.getElementById("target-stars").innerText = targetScore;
             
-            // La barra ahora se calcula sobre la meta dinámica
             const percentage = Math.min((score / targetScore) * 100, 100);
             document.getElementById("progress-bar").style.width = `${percentage}%`;
             document.getElementById("progress-bug").style.left = `calc(${percentage}% - 12px)`;
+            const progreso = document.getElementById("progreso");
+            progreso.setAttribute("aria-valuenow", String(score));
+            progreso.setAttribute("aria-valuemax", String(targetScore));
+            progreso.setAttribute("aria-valuetext", `${score} de ${targetScore} aciertos`);
+        }
+
+        // --- OPCIONES INCORRECTAS QUE SÍ ENSEÑAN ---
+        //
+        // Antes las tres falsas se sacaban sumando ±1, ±2 o ±3 al resultado.
+        // Eso tenía dos problemas, y el segundo era grave:
+        //
+        //   1. El error que comete un niño de verdad -decir 49 o 63 en vez de
+        //      56, confundirse de tabla vecina, sumar en lugar de multiplicar-
+        //      no aparecía nunca, así que nunca se corregía.
+        //   2. Para 7 × 8 = 56 las opciones salían del rango 53-59, donde
+        //      NINGUNA es múltiplo de 7 salvo la correcta. Quien reconocía la
+        //      tabla acertaba sin calcular el producto.
+        //
+        // Ahora las falsas son productos plausibles. Elegir exige el hecho
+        // exacto, y cuál se elige dice qué confunde el niño.
+        function generarOpciones(a, b, correcta) {
+            // Por orden de valor pedagógico. El orden importa: las primeras son
+            // las que más se parecen al error real, y son las que se intentan
+            // colocar antes.
+            const candidatos = [
+                a * (b + 1),        // se pasó un grupo al contar
+                a * (b - 1),        // se quedó corto un grupo
+                (a + 1) * b,        // se confundió de tabla, la de arriba
+                (a - 1) * b,        // se confundió de tabla, la de abajo
+                a + b,              // sumó en vez de multiplicar (el clásico)
+                correcta + 10,      // se equivocó en las decenas
+                correcta - 10,
+            ];
+
+            // Dígitos cambiados de sitio (56 -> 65): error de escritura, muy
+            // común al pasar de la cabeza al papel. Solo para dos cifras.
+            if (correcta >= 10 && correcta <= 99) {
+                const texto = String(correcta);
+                candidatos.push(parseInt(texto[1] + texto[0], 10));
+            }
+
+            const opciones = [correcta];
+            const agregar = (valor) => {
+                if (opciones.length < 4 && valor > 0 && !opciones.includes(valor)) {
+                    opciones.push(valor);
+                }
+            };
+
+            // Se barajan los candidatos de prioridad parecida para que las tres
+            // falsas no sean siempre las mismas en el mismo orden.
+            barajar(candidatos.slice(0, 4)).forEach(agregar);
+            barajar(candidatos.slice(4)).forEach(agregar);
+
+            // Red de seguridad: con factores muy pequeños (2 × 2) quedan pocos
+            // candidatos válidos. Se completa con vecinos, que es lo que había
+            // antes y aquí sí es razonable porque los números son chicos.
+            let desvio = 1;
+            while (opciones.length < 4 && desvio < 12) {
+                agregar(correcta + desvio);
+                agregar(correcta - desvio);
+                desvio++;
+            }
+
+            return barajar(opciones);
+        }
+
+        function barajar(lista) {
+            const copia = lista.slice();
+            // Fisher-Yates. `sort(() => Math.random() - 0.5)` no baraja de forma
+            // uniforme: deja sesgos según el algoritmo de ordenación.
+            for (let i = copia.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copia[i], copia[j]] = [copia[j], copia[i]];
+            }
+            return copia;
+        }
+
+        // --- COLA DE REPASO ---
+
+        /** Programa un hecho para que reaparezca dentro de `enTurnos` preguntas. */
+        function programarRepaso(a, b, enTurnos, repasosHechos) {
+            const clave = `${a}x${b}`;
+            const existente = colaRepaso.find((r) => `${r.a}x${r.b}` === clave);
+            if (existente) {
+                existente.enTurnos = enTurnos;
+                return;
+            }
+            colaRepaso.push({ a, b, enTurnos, repasosHechos: repasosHechos || 0 });
+        }
+
+        /**
+         * Devuelve el hecho que toca repasar, o null.
+         *
+         * Cada llamada adelanta el reloj de toda la cola. Espaciado: la primera
+         * vuelta a los 2 turnos y la segunda a los 5. No vale repetir el hecho
+         * justo después de fallarlo -se contesta copiando lo que acaba de
+         * leerse- ni dejarlo para el final, cuando ya se olvidó.
+         */
+        function tomarRepasoPendiente() {
+            colaRepaso.forEach((r) => { r.enTurnos--; });
+            const indice = colaRepaso.findIndex((r) => r.enTurnos <= 0);
+            if (indice === -1) {
+                return null;
+            }
+            return colaRepaso.splice(indice, 1)[0];
+        }
+
+        // --- BOLSA DE PREGUNTAS ---
+        //
+        // Antes cada pregunta se sorteaba de cero, sin memoria. Medido sobre
+        // partidas de 10 preguntas de una tabla:
+        //
+        //   - el 61 % tenía la MISMA pregunta dos veces seguidas;
+        //   - salían de media 6,5 hechos distintos de 10;
+        //   - prácticamente ninguna partida recorría la tabla completa.
+        //
+        // Es decir: en la tabla del 7 se podía jugar sin ver nunca el 7 × 8, y
+        // ver tres veces el 7 × 2. Quien juega lo nota como "siempre me sale lo
+        // mismo", y tiene razón.
+        //
+        // Ahora es como sacar papeletas de una bolsa: cada hecho sale UNA vez,
+        // en orden aleatorio, y solo cuando la bolsa se vacía se vuelve a
+        // llenar. Diez preguntas de una tabla = la tabla entera, sin huecos.
+        let bolsa = [];
+
+        function llenarBolsa() {
+            const hechos = [];
+            if (currentTable === "mix") {
+                // EXCLUSIÓN DE 1s: factores entre 2 y 9, todas las parejas.
+                for (let a = 2; a <= 9; a++) {
+                    for (let b = 2; b <= 9; b++) hechos.push({ a, b });
+                }
+            } else {
+                for (let b = 1; b <= 10; b++) hechos.push({ a: currentTable, b });
+            }
+            bolsa = barajar(hechos);
+
+            // Al rellenar, el primer hecho de la bolsa nueva podría coincidir
+            // con el último de la anterior: se apartaría la bolsa entera para
+            // evitar UNA repetición. Basta con moverlo al fondo.
+            const siguiente = bolsa[bolsa.length - 1];
+            if (bolsa.length > 1 && `${siguiente.a}x${siguiente.b}` === ultimoHecho) {
+                bolsa.unshift(bolsa.pop());
+            }
+        }
+
+        function sacarDeLaBolsa() {
+            if (bolsa.length === 0) {
+                llenarBolsa();
+            }
+            return bolsa.pop();
         }
 
         // --- LÓGICA DE PREGUNTAS ---
         function nextQuestion() {
             document.getElementById("game-feedback").innerText = "";
-            document.getElementById("game-feedback").className = "h-8 text-center text-xl font-bold transition-all duration-300";
-            
+            document.getElementById("game-feedback").className = "min-h-8 text-center text-xl font-bold transition-all duration-300";
+
             const buttons = document.querySelectorAll(".btn-option");
             buttons.forEach(btn => {
-                btn.className = "btn-option bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150";
+                // `relative` es necesario: el número del atajo se posiciona dentro.
+                btn.className = "btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150";
                 btn.disabled = false;
+                btn.removeAttribute("aria-label");
             });
 
-            if (currentTable === "mix") {
-                // EXCLUSIÓN DE 1s: Generamos factores entre 2 y 9
-                numA = Math.floor(Math.random() * 8) + 2; 
-                numB = Math.floor(Math.random() * 8) + 2; 
+            // Primero mira si toca repasar algo fallado; si no, saca de la bolsa.
+            repasoActual = tomarRepasoPendiente();
+            if (repasoActual) {
+                numA = repasoActual.a;
+                numB = repasoActual.b;
             } else {
-                numA = currentTable;
-                numB = Math.floor(Math.random() * 10) + 1; // Las individuales siguen normales de 1 a 10
+                const hecho = sacarDeLaBolsa();
+                numA = hecho.a;
+                numB = hecho.b;
             }
+
+            ultimoHecho = `${numA}x${numB}`;
             correctAnswer = numA * numB;
 
             document.getElementById("question-text").innerText = `${numA} × ${numB}`;
 
             speak(`¿Cuánto es, ${numA} por ${numB}?`);
 
-            let options = new Set();
-            options.add(correctAnswer);
-
-            while (options.size < 4) {
-                let deviation = (Math.floor(Math.random() * 3) + 1) * (Math.random() < 0.5 ? 1 : -1);
-                let fake = correctAnswer + deviation;
-                if (fake > 0 && fake !== correctAnswer) {
-                    options.add(fake);
-                }
-            }
-
-            let optionsArray = Array.from(options).sort(() => Math.random() - 0.5);
+            let optionsArray = generarOpciones(numA, numB, correctAnswer);
 
             for (let i = 0; i < 4; i++) {
                 const optBtn = document.getElementById(`opt-${i}`);
                 optBtn.innerText = optionsArray[i];
+                // El valor se guarda aparte: el texto del botón cambia al
+                // marcarlo (✓/✗) y no debe ser la fuente de verdad.
+                optBtn.dataset.valor = String(optionsArray[i]);
             }
 
             if (!document.getElementById("help-panel").classList.contains("hidden")) {
@@ -544,10 +1134,12 @@
             if (panel.classList.contains("hidden")) {
                 panel.classList.remove("hidden");
                 btn.innerText = "🪄 Ocultar ayuda";
+                btn.setAttribute("aria-expanded", "true");
                 generateHelpVisual();
             } else {
                 panel.classList.add("hidden");
                 btn.innerText = "🪄 ¿Necesitas ayuda mágica? (Ver truco)";
+                btn.setAttribute("aria-expanded", "false");
             }
         }
 
@@ -577,7 +1169,7 @@
                 groupDiv.appendChild(emojiRow);
 
                 const label = document.createElement("span");
-                label.className = "text-xs font-bold text-indigo-400 mt-1";
+                label.className = "text-xs font-bold text-indigo-700 mt-1";
                 label.innerText = `Grupo ${g + 1}`;
                 groupDiv.appendChild(label);
 
@@ -585,7 +1177,7 @@
 
                 if (g < numA - 1) {
                     const plus = document.createElement("span");
-                    plus.className = "text-2xl font-bold text-indigo-400";
+                    plus.className = "text-2xl font-bold text-indigo-700";
                     plus.innerText = "+";
                     container.appendChild(plus);
                 }
@@ -593,72 +1185,119 @@
         }
 
         // --- MANEJO DE SELECCIÓN DE RESPUESTA ---
+        /**
+         * Marca un botón como acertado o fallado con COLOR Y SÍMBOLO. Solo el
+         * color (verde/rojo) no lo distingue quien no ve bien esos dos tonos,
+         * que es uno de cada doce niños.
+         */
+        function marcarOpcion(boton, acierto) {
+            boton.classList.remove("border-pink-200");
+            if (acierto) {
+                boton.classList.add("bg-green-100", "border-green-600", "text-green-800");
+            } else {
+                boton.classList.add("bg-red-100", "border-red-600", "text-red-800");
+            }
+            const marca = document.createElement("span");
+            marca.className = "ml-2 text-2xl";
+            marca.setAttribute("aria-hidden", "true");
+            marca.textContent = acierto ? "✓" : "✗";
+            boton.appendChild(marca);
+            boton.setAttribute("aria-label", `${boton.dataset.valor}, ${acierto ? "correcta" : "incorrecta"}`);
+        }
+
         function selectOption(index) {
             const buttons = document.querySelectorAll(".btn-option");
             const selectedBtn = document.getElementById(`opt-${index}`);
-            const chosenVal = parseInt(selectedBtn.innerText);
+            if (selectedBtn.disabled) return;   // doble toque o tecla repetida
+            const chosenVal = Number(selectedBtn.dataset.valor);
             const feedback = document.getElementById("game-feedback");
 
             buttons.forEach(btn => btn.disabled = true);
+            // La pregunta ya está contestada: si la voz aún la estaba leyendo,
+            // seguir leyéndola solo retrasa lo importante, que es el resultado.
+            callarVoz();
 
             if (chosenVal === correctAnswer) {
                 // --- RESPUESTA CORRECTA ---
-                selectedBtn.classList.remove("border-pink-200");
-                selectedBtn.classList.add("bg-green-100", "border-green-400", "text-green-700", "scale-105");
-                
+                marcarOpcion(selectedBtn, true);
+                selectedBtn.classList.add("scale-105");
+
                 playCorrectSound();
                 triggerBurstEffect(selectedBtn);
 
-                const felicitaciones = ["¡Espectacular! 🎉", "¡Excelente trabajo! 🌸", "¡Correcto, campeona! ⭐", "¡Súper bien hecho! 🌟", "¡Tu flor va creciendo! 🌱"];
+                const felicitaciones = ["¡Espectacular! 🎉", "¡Excelente trabajo! 🌸", "¡Correcto! ⭐", "¡Súper bien hecho! 🌟", "¡Tu flor va creciendo! 🌱"];
                 const rFrase = felicitaciones[Math.floor(Math.random() * felicitaciones.length)];
-                
-                feedback.innerText = rFrase;
-                feedback.classList.add("text-green-500", "scale-110");
-                
-                speak(rFrase);
+
+                feedback.innerText = `${rFrase}  ${numA} × ${numB} = ${correctAnswer}`;
+                feedback.classList.add("text-green-800", "scale-110");
+
+                // La voz ya no solo celebra: también ENSEÑA. Oír el hecho
+                // entero —"siete por ocho, cincuenta y seis"— es de las formas
+                // más eficaces de fijarlo, y en el acierto refuerza lo correcto.
+                speak(`${rFrase} ${numA} por ${numB}, ${correctAnswer}.`);
                 sproutFlower();
+
+                // Si era un repaso, se programa UNA segunda vuelta más tarde:
+                // acertar una vez no es haberlo aprendido, y acertarlo dos
+                // veces separadas en el tiempo sí se parece bastante.
+                if (repasoActual) {
+                    const vueltas = repasoActual.repasosHechos + 1;
+                    if (vueltas < 2) {
+                        programarRepaso(numA, numB, 5, vueltas);
+                    }
+                }
 
                 score++;
                 globalStars++;
-                localStorage.setItem("jardinera_estrellas", globalStars);
+                almacen.guardar("estrellas", String(globalStars));
+                updateHUD();
 
-                setTimeout(() => {
-                    updateHUD();
+                // Sin mínimo: quien acierta rápido puede seguir enseguida.
+                programarSiguiente(0, 1600, () => {
                     if (score >= targetScore) {
                         endGameSuccess();
                     } else {
                         nextQuestion();
                     }
-                }, 1600);
+                });
 
             } else {
                 // --- RESPUESTA INCORRECTA ---
-                selectedBtn.classList.remove("border-pink-200");
-                selectedBtn.classList.add("bg-red-100", "border-red-400", "text-red-700");
+                marcarOpcion(selectedBtn, false);
 
                 playIncorrectSound();
 
-                // MARCADOR DINÁMICO: Incrementar la meta en 1 por equivocarse
-                targetScore++;
+                // Equivocarse NO alarga la partida.
+                //
+                // Antes cada fallo sumaba una pregunta a la meta, sin tope: el
+                // niño que más necesitaba practicar era el que tenía la sesión
+                // más larga -diez fallos eran veinte preguntas- y el gusanito
+                // RETROCEDÍA, que es castigo puro. Además empujaba a no
+                // arriesgar, que es lo contrario de lo que hace falta para
+                // aprender.
+                //
+                // Ahora el fallo manda el hecho a la cola de repaso: volverá en
+                // un par de preguntas. El coste de equivocarse es practicar
+                // eso otra vez, no jugar más rato.
+                programarRepaso(numA, numB, 2, 0);
 
                 buttons.forEach(btn => {
-                    if (parseInt(btn.innerText) === correctAnswer) {
-                        btn.classList.remove("border-pink-200");
-                        btn.classList.add("bg-green-100", "border-green-400", "text-green-700");
+                    if (Number(btn.dataset.valor) === correctAnswer) {
+                        marcarOpcion(btn, true);
                     }
                 });
 
-                const mensajeError = `¡Casi! ${numA} por ${numB} es igual a ${correctAnswer}. ¡Se agrega +1 pregunta extra! 🌾`;
+                const mensajeError = `¡Casi! ${numA} × ${numB} = ${correctAnswer}. Te la vuelvo a preguntar en un ratito 🌱`;
                 feedback.innerText = mensajeError;
-                feedback.classList.add("text-rose-500");
-                speak(`¡Casi! ¡Se agrega una pregunta extra!`);
+                feedback.classList.add("text-rose-800");
+                // La voz lee el hecho COMPLETO, no solo el consuelo: oír
+                // "siete por ocho, cincuenta y seis" es de las formas más
+                // eficaces de fijarlo, y es el momento en que más falta hace.
+                speak(`${numA} por ${numB} es igual a ${correctAnswer}.`);
 
-                // Actualizar inmediatamente para que vea retroceder al gusanito y crecer el total
-                updateHUD();
-
-                setTimeout(() => {
-                    nextQuestion();
-                }, 3500);
+                // Mínimo de 1,2 s: la respuesta correcta tiene que verse y
+                // oírse antes de poder saltarla. Luego, la decide quien juega.
+                programarSiguiente(1200, 3500, nextQuestion);
             }
         }
 
@@ -700,22 +1339,25 @@
 
         // --- SISTEMA DE VICTORIA ---
         function endGameSuccess() {
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            cancelarEspera();
+            callarVoz();
             playVictorySound();
-            
-            for (let i = 0; i < 40; i++) {
-                setTimeout(createConfetti, i * 100);
+
+            if (!calmaEfectiva()) {
+                for (let i = 0; i < 40; i++) {
+                    setTimeout(createConfetti, i * 100);
+                }
             }
 
-            document.getElementById("screen-game").classList.add("hidden");
-            document.getElementById("screen-victory").classList.remove("hidden");
+            document.getElementById("victory-player-name").innerText = playerName ? `, ${playerName}` : "";
 
-            document.getElementById("victory-player-name").innerText = playerName;
-            
             const tableName = currentTable === "mix" ? "El Desafío del Arcoíris" : `La Tabla del ${currentTable}`;
             document.getElementById("victory-table-name").innerText = tableName;
 
-            speak(`¡Increíble, ${playerName}! Has completado ${tableName}. ¡Tu jardín floreció por completo!`);
+            mostrarPantalla("screen-victory");
+
+            speak(playerName ? `¡Increíble, ${playerName}! Has completado ${tableName}. ¡Tu jardín floreció por completo!`
+                             : `¡Increíble! Has completado ${tableName}. ¡Tu jardín floreció por completo!`);
         }
 
 
@@ -723,11 +1365,22 @@
         const canvas = document.getElementById("magicCanvas");
         const ctx = canvas.getContext("2d");
         let particles = [];
+        let animando = false;
 
+        // Antes el bucle de requestAnimationFrame corría SIEMPRE, 60 veces por
+        // segundo, aunque no hubiera ni una partícula: batería gastada en una
+        // tablet para borrar un lienzo vacío. Ahora arranca con la explosión y
+        // se detiene cuando la última partícula se apaga.
         function setupMagicParticles() {
             window.addEventListener("resize", resizeCanvas);
             resizeCanvas();
-            animateParticles();
+        }
+
+        function arrancarAnimacion() {
+            if (!animando) {
+                animando = true;
+                requestAnimationFrame(animateParticles);
+            }
         }
 
         function resizeCanvas() {
@@ -736,6 +1389,7 @@
         }
 
         function triggerBurstEffect(element) {
+            if (calmaEfectiva()) return;
             const rect = element.getBoundingClientRect();
             const originX = rect.left + rect.width / 2;
             const originY = rect.top + rect.height / 2;
@@ -752,6 +1406,7 @@
                     decay: Math.random() * 0.02 + 0.01
                 });
             }
+            arrancarAnimacion();
         }
 
         function animateParticles() {
@@ -780,11 +1435,17 @@
                 }
             }
 
-            requestAnimationFrame(animateParticles);
+            if (particles.length > 0) {
+                requestAnimationFrame(animateParticles);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                animando = false;
+            }
         }
 
         function createConfetti() {
             const confetti = document.createElement("div");
+            confetti.setAttribute("aria-hidden", "true");
             confetti.className = "confetti-particle text-2xl";
             confetti.innerText = floresEmojis[Math.floor(Math.random() * floresEmojis.length)];
             
