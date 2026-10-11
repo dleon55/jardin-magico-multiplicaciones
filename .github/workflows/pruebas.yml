@@ -1,0 +1,101 @@
+# Pruebas del sitio en Chromium (escritorio y tablet).
+#
+# Disciplina de costo: solo corre si cambia algo que afecta al sitio o a las
+# pruebas, cancela las corridas viejas de la misma rama, usa solo ubuntu-latest
+# y guarda en caché tanto npm como el navegador de Playwright.
+name: Pruebas
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "estilos/**"
+      - "estilos.css"
+      - "sw.js"
+      - "manifest.webmanifest"
+      - "fuentes/**"
+      - "iconos/**"
+      - "herramientas/**"
+      - "pruebas/**"
+      - "playwright.config.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/pruebas.yml"
+  pull_request:
+    paths:
+      - "index.html"
+      - "estilos/**"
+      - "estilos.css"
+      - "sw.js"
+      - "manifest.webmanifest"
+      - "fuentes/**"
+      - "iconos/**"
+      - "herramientas/**"
+      - "pruebas/**"
+      - "playwright.config.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/pruebas.yml"
+
+concurrency:
+  group: pruebas-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Versión de Playwright
+        id: pw
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Caché del navegador
+        id: cache-pw
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+      - name: Instalar Chromium
+        if: steps.cache-pw.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Dependencias del sistema para Chromium
+        if: steps.cache-pw.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      # Si alguien cambió index.html sin reconstruir, la hoja de estilos o la
+      # versión del service worker quedan desfasadas y el sitio publicado no
+      # se actualizaría en los dispositivos que ya lo tienen.
+      - name: La construcción está al día
+        run: |
+          npm run construir
+          git diff --exit-code -- estilos.css sw.js
+
+      - run: npx playwright test
+        env:
+          CI: "true"
+
+      - name: Informe si falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-playwright
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 5
