@@ -28,8 +28,8 @@ Con teclado (en una tableta estos atajos no se muestran):
 | `Enter` o `Espacio` | Seguir a la siguiente pregunta |
 | `Esc` | Volver al menú |
 
-En **Ajustes** se pueden apagar por separado la voz y los sonidos, hacer que la
-voz hable más despacio y activar «menos movimiento». Este último se enciende
+En **Ajustes** se pueden apagar por separado la voz y los sonidos, elegir la
+velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento». Este último se enciende
 solo si el dispositivo ya lo pide.
 
 ## Instalarlo y usarlo sin internet
