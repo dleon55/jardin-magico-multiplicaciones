@@ -186,9 +186,9 @@
                 </div>
             </div>
 
-            <!-- Alerta educativa de penalización por fallos -->
-            <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-2 text-xs md:text-sm text-center font-semibold">
-                💡 ¡Piensa bien tu respuesta! Si te equivocas, la meta se aleja y se agregará <span class="text-red-600 font-bold">+1 pregunta extra</span>. ¡Usa la ayuda mágica si tienes dudas!
+            <!-- Cómo funciona el repaso: equivocarse no castiga, hace volver -->
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-4 py-2 text-xs md:text-sm text-center font-semibold">
+                🌱 Equivocarse no quita nada: la que falles <span class="font-bold">vuelve a aparecer</span> un poquito después, para que te la aprendas. ¡Usa la ayuda mágica si tienes dudas!
             </div>
 
             <!-- Progreso visual (Camino del gusanito) -->
@@ -299,10 +299,22 @@
         let currentTable = 1; // 1-9 o "mix"
         let globalStars = 0;
         let score = 0; // Aciertos actuales conseguidos
-        let targetScore = 10; // Meta de aciertos dinámicos (crece con errores)
+        let targetScore = 10; // Meta FIJA de aciertos: los fallos ya no la mueven
         let numA = 0;
         let numB = 0;
         let correctAnswer = 0;
+
+        // --- COLA DE REPASO ---
+        // Lo que se falla vuelve. Sin esto, un nino podia fallar 7x8, ver la
+        // respuesta tres segundos y no volver a encontrarsela en toda la
+        // sesion: justo el hecho que necesitaba practicar era el que menos
+        // practicaba. Cada entrada guarda en cuantos turnos reaparece y
+        // cuantas veces ya se repaso, para espaciarla en vez de repetirla
+        // seguida (repetir de inmediato se contesta de memoria corta, no se
+        // aprende).
+        let colaRepaso = [];
+        let repasoActual = null;   // la entrada en curso, si la pregunta es un repaso
+        let ultimoHecho = "";
         let voiceActive = true;
         let canPlayAudio = false; 
 
@@ -446,7 +458,11 @@
             initAudio();
             currentTable = table;
             score = 0;
-            targetScore = 10; // Comienza con meta de 10 aciertos obligatorios
+            targetScore = 10; // Meta fija: equivocarse ya no la mueve
+            colaRepaso = [];
+            repasoActual = null;
+            ultimoHecho = "";
+            bolsa = []; // la de otra tabla no sirve: se llena al pedir la primera
             
             document.getElementById("garden-plot").innerHTML = "";
 
@@ -489,6 +505,153 @@
             document.getElementById("progress-bug").style.left = `calc(${percentage}% - 12px)`;
         }
 
+        // --- OPCIONES INCORRECTAS QUE SÍ ENSEÑAN ---
+        //
+        // Antes las tres falsas se sacaban sumando ±1, ±2 o ±3 al resultado.
+        // Eso tenía dos problemas, y el segundo era grave:
+        //
+        //   1. El error que comete un niño de verdad -decir 49 o 63 en vez de
+        //      56, confundirse de tabla vecina, sumar en lugar de multiplicar-
+        //      no aparecía nunca, así que nunca se corregía.
+        //   2. Para 7 × 8 = 56 las opciones salían del rango 53-59, donde
+        //      NINGUNA es múltiplo de 7 salvo la correcta. Quien reconocía la
+        //      tabla acertaba sin calcular el producto.
+        //
+        // Ahora las falsas son productos plausibles. Elegir exige el hecho
+        // exacto, y cuál se elige dice qué confunde el niño.
+        function generarOpciones(a, b, correcta) {
+            // Por orden de valor pedagógico. El orden importa: las primeras son
+            // las que más se parecen al error real, y son las que se intentan
+            // colocar antes.
+            const candidatos = [
+                a * (b + 1),        // se pasó un grupo al contar
+                a * (b - 1),        // se quedó corto un grupo
+                (a + 1) * b,        // se confundió de tabla, la de arriba
+                (a - 1) * b,        // se confundió de tabla, la de abajo
+                a + b,              // sumó en vez de multiplicar (el clásico)
+                correcta + 10,      // se equivocó en las decenas
+                correcta - 10,
+            ];
+
+            // Dígitos cambiados de sitio (56 -> 65): error de escritura, muy
+            // común al pasar de la cabeza al papel. Solo para dos cifras.
+            if (correcta >= 10 && correcta <= 99) {
+                const texto = String(correcta);
+                candidatos.push(parseInt(texto[1] + texto[0], 10));
+            }
+
+            const opciones = [correcta];
+            const agregar = (valor) => {
+                if (opciones.length < 4 && valor > 0 && !opciones.includes(valor)) {
+                    opciones.push(valor);
+                }
+            };
+
+            // Se barajan los candidatos de prioridad parecida para que las tres
+            // falsas no sean siempre las mismas en el mismo orden.
+            barajar(candidatos.slice(0, 4)).forEach(agregar);
+            barajar(candidatos.slice(4)).forEach(agregar);
+
+            // Red de seguridad: con factores muy pequeños (2 × 2) quedan pocos
+            // candidatos válidos. Se completa con vecinos, que es lo que había
+            // antes y aquí sí es razonable porque los números son chicos.
+            let desvio = 1;
+            while (opciones.length < 4 && desvio < 12) {
+                agregar(correcta + desvio);
+                agregar(correcta - desvio);
+                desvio++;
+            }
+
+            return barajar(opciones);
+        }
+
+        function barajar(lista) {
+            const copia = lista.slice();
+            // Fisher-Yates. `sort(() => Math.random() - 0.5)` no baraja de forma
+            // uniforme: deja sesgos según el algoritmo de ordenación.
+            for (let i = copia.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copia[i], copia[j]] = [copia[j], copia[i]];
+            }
+            return copia;
+        }
+
+        // --- COLA DE REPASO ---
+
+        /** Programa un hecho para que reaparezca dentro de `enTurnos` preguntas. */
+        function programarRepaso(a, b, enTurnos, repasosHechos) {
+            const clave = `${a}x${b}`;
+            const existente = colaRepaso.find((r) => `${r.a}x${r.b}` === clave);
+            if (existente) {
+                existente.enTurnos = enTurnos;
+                return;
+            }
+            colaRepaso.push({ a, b, enTurnos, repasosHechos: repasosHechos || 0 });
+        }
+
+        /**
+         * Devuelve el hecho que toca repasar, o null.
+         *
+         * Cada llamada adelanta el reloj de toda la cola. Espaciado: la primera
+         * vuelta a los 2 turnos y la segunda a los 5. No vale repetir el hecho
+         * justo después de fallarlo -se contesta copiando lo que acaba de
+         * leerse- ni dejarlo para el final, cuando ya se olvidó.
+         */
+        function tomarRepasoPendiente() {
+            colaRepaso.forEach((r) => { r.enTurnos--; });
+            const indice = colaRepaso.findIndex((r) => r.enTurnos <= 0);
+            if (indice === -1) {
+                return null;
+            }
+            return colaRepaso.splice(indice, 1)[0];
+        }
+
+        // --- BOLSA DE PREGUNTAS ---
+        //
+        // Antes cada pregunta se sorteaba de cero, sin memoria. Medido sobre
+        // partidas de 10 preguntas de una tabla:
+        //
+        //   - el 61 % tenía la MISMA pregunta dos veces seguidas;
+        //   - salían de media 6,5 hechos distintos de 10;
+        //   - prácticamente ninguna partida recorría la tabla completa.
+        //
+        // Es decir: en la tabla del 7 se podía jugar sin ver nunca el 7 × 8, y
+        // ver tres veces el 7 × 2. Quien juega lo nota como "siempre me sale lo
+        // mismo", y tiene razón.
+        //
+        // Ahora es como sacar papeletas de una bolsa: cada hecho sale UNA vez,
+        // en orden aleatorio, y solo cuando la bolsa se vacía se vuelve a
+        // llenar. Diez preguntas de una tabla = la tabla entera, sin huecos.
+        let bolsa = [];
+
+        function llenarBolsa() {
+            const hechos = [];
+            if (currentTable === "mix") {
+                // EXCLUSIÓN DE 1s: factores entre 2 y 9, todas las parejas.
+                for (let a = 2; a <= 9; a++) {
+                    for (let b = 2; b <= 9; b++) hechos.push({ a, b });
+                }
+            } else {
+                for (let b = 1; b <= 10; b++) hechos.push({ a: currentTable, b });
+            }
+            bolsa = barajar(hechos);
+
+            // Al rellenar, el primer hecho de la bolsa nueva podría coincidir
+            // con el último de la anterior: se apartaría la bolsa entera para
+            // evitar UNA repetición. Basta con moverlo al fondo.
+            const siguiente = bolsa[bolsa.length - 1];
+            if (bolsa.length > 1 && `${siguiente.a}x${siguiente.b}` === ultimoHecho) {
+                bolsa.unshift(bolsa.pop());
+            }
+        }
+
+        function sacarDeLaBolsa() {
+            if (bolsa.length === 0) {
+                llenarBolsa();
+            }
+            return bolsa.pop();
+        }
+
         // --- LÓGICA DE PREGUNTAS ---
         function nextQuestion() {
             document.getElementById("game-feedback").innerText = "";
@@ -500,32 +663,25 @@
                 btn.disabled = false;
             });
 
-            if (currentTable === "mix") {
-                // EXCLUSIÓN DE 1s: Generamos factores entre 2 y 9
-                numA = Math.floor(Math.random() * 8) + 2; 
-                numB = Math.floor(Math.random() * 8) + 2; 
+            // Primero mira si toca repasar algo fallado; si no, saca de la bolsa.
+            repasoActual = tomarRepasoPendiente();
+            if (repasoActual) {
+                numA = repasoActual.a;
+                numB = repasoActual.b;
             } else {
-                numA = currentTable;
-                numB = Math.floor(Math.random() * 10) + 1; // Las individuales siguen normales de 1 a 10
+                const hecho = sacarDeLaBolsa();
+                numA = hecho.a;
+                numB = hecho.b;
             }
+
+            ultimoHecho = `${numA}x${numB}`;
             correctAnswer = numA * numB;
 
             document.getElementById("question-text").innerText = `${numA} × ${numB}`;
 
             speak(`¿Cuánto es, ${numA} por ${numB}?`);
 
-            let options = new Set();
-            options.add(correctAnswer);
-
-            while (options.size < 4) {
-                let deviation = (Math.floor(Math.random() * 3) + 1) * (Math.random() < 0.5 ? 1 : -1);
-                let fake = correctAnswer + deviation;
-                if (fake > 0 && fake !== correctAnswer) {
-                    options.add(fake);
-                }
-            }
-
-            let optionsArray = Array.from(options).sort(() => Math.random() - 0.5);
+            let optionsArray = generarOpciones(numA, numB, correctAnswer);
 
             for (let i = 0; i < 4; i++) {
                 const optBtn = document.getElementById(`opt-${i}`);
@@ -618,6 +774,16 @@
                 speak(rFrase);
                 sproutFlower();
 
+                // Si era un repaso, se programa UNA segunda vuelta más tarde:
+                // acertar una vez no es haberlo aprendido, y acertarlo dos
+                // veces separadas en el tiempo sí se parece bastante.
+                if (repasoActual) {
+                    const vueltas = repasoActual.repasosHechos + 1;
+                    if (vueltas < 2) {
+                        programarRepaso(numA, numB, 5, vueltas);
+                    }
+                }
+
                 score++;
                 globalStars++;
                 localStorage.setItem("jardinera_estrellas", globalStars);
@@ -638,8 +804,19 @@
 
                 playIncorrectSound();
 
-                // MARCADOR DINÁMICO: Incrementar la meta en 1 por equivocarse
-                targetScore++;
+                // Equivocarse NO alarga la partida.
+                //
+                // Antes cada fallo sumaba una pregunta a la meta, sin tope: el
+                // niño que más necesitaba practicar era el que tenía la sesión
+                // más larga -diez fallos eran veinte preguntas- y el gusanito
+                // RETROCEDÍA, que es castigo puro. Además empujaba a no
+                // arriesgar, que es lo contrario de lo que hace falta para
+                // aprender.
+                //
+                // Ahora el fallo manda el hecho a la cola de repaso: volverá en
+                // un par de preguntas. El coste de equivocarse es practicar
+                // eso otra vez, no jugar más rato.
+                programarRepaso(numA, numB, 2, 0);
 
                 buttons.forEach(btn => {
                     if (parseInt(btn.innerText) === correctAnswer) {
@@ -648,10 +825,13 @@
                     }
                 });
 
-                const mensajeError = `¡Casi! ${numA} por ${numB} es igual a ${correctAnswer}. ¡Se agrega +1 pregunta extra! 🌾`;
+                const mensajeError = `¡Casi! ${numA} por ${numB} es igual a ${correctAnswer}. Te la vuelvo a preguntar en un ratito 🌱`;
                 feedback.innerText = mensajeError;
                 feedback.classList.add("text-rose-500");
-                speak(`¡Casi! ¡Se agrega una pregunta extra!`);
+                // La voz lee el hecho COMPLETO, no solo el consuelo: oír
+                // "siete por ocho, cincuenta y seis" es de las formas más
+                // eficaces de fijarlo, y es el momento en que más falta hace.
+                speak(`${numA} por ${numB} es igual a ${correctAnswer}`);
 
                 // Actualizar inmediatamente para que vea retroceder al gusanito y crecer el total
                 updateHUD();
