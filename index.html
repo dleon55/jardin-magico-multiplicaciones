@@ -4,19 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Jardín Mágico de las Multiplicaciones 🌸✨</title>
-    <!-- Tailwind CSS para el diseño responsivo y moderno -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Tipografía infantil redondeada y bonita -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Practica las tablas de multiplicar haciendo crecer un jardín. Funciona sin internet.">
+    <meta name="theme-color" content="#db2777">
+
+    <!-- Instalable en la pantalla de inicio de una tablet o un teléfono. -->
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="iconos/icono.svg">
+    <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+
+    <!-- Estilos y fuentes SERVIDOS DESDE EL PROPIO SITIO.
+         Antes venían del CDN de Tailwind (un compilador de 407 KB que se
+         ejecutaba en el navegador en cada visita) y de Google Fonts. Sin
+         internet, el juego no se podía usar. Ahora la hoja está compilada
+         (27 KB) y se regenera con `npm run construir`. -->
+    <link rel="preload" href="fuentes/quicksand-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fuentes/fredoka-one-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="estilos.css">
     <style>
+        /* Fuentes con licencia SIL OFL 1.1: ver fuentes/OFL-*.txt.
+           Solo el subconjunto latino, que incluye ñ, tildes, ¡, ¿ y ×. */
+        @font-face {
+            font-family: 'Fredoka One';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(fuentes/fredoka-one-latin.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        /* Quicksand es variable: un solo archivo sirve los pesos 500 y 700. */
+        @font-face {
+            font-family: 'Quicksand';
+            font-style: normal;
+            font-weight: 300 700;
+            font-display: swap;
+            src: url(fuentes/quicksand-latin.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
         body {
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Quicksand', system-ui, sans-serif;
             background: linear-gradient(135deg, #fef6e4 0%, #ffdde1 50%, #e8f5e9 100%);
             overflow-x: hidden;
         }
-        
+
         .bubble-font {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka One', 'Quicksand', system-ui, sans-serif;
         }
 
         /* Animaciones mágicas */
@@ -442,21 +474,28 @@
         // Antes había un solo botón para todo el sonido. En un aula hace falta
         // poder silenciar los efectos y conservar la voz (o al revés), y quien
         // está aprendiendo a leer necesita la voz más despacio. Se guardan entre
-        // sesiones. "calma" (menos movimiento) arranca encendido si el sistema
-        // operativo ya lo pide.
-        const ajustes = { voz: true, efectos: true, lenta: false, calma: false };
+        // sesiones. "calma" (menos movimiento) tiene tres estados: null sigue
+        // al sistema operativo (y a sus cambios); true o false, lo que se eligió
+        // aquí. Si se guardara el valor derivado del sistema, cambiar la voz
+        // congelaría "calma" para siempre.
+        const ajustes = { voz: true, efectos: true, lenta: false, calma: null };
+        const movimientoReducido = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+        function calmaEfectiva() {
+            return ajustes.calma ?? movimientoReducido.matches;
+        }
 
         function cargarAjustes() {
-            ajustes.calma = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
             try {
                 Object.assign(ajustes, JSON.parse(almacen.leer("ajustes") || "{}"));
             } catch (e) { /* ajustes corruptos: se quedan los de serie */ }
         }
 
         function aplicarAjustes() {
-            document.documentElement.classList.toggle("calma", ajustes.calma);
+            document.documentElement.classList.toggle("calma", calmaEfectiva());
             document.querySelectorAll(".ajuste").forEach((boton) => {
-                const activo = Boolean(ajustes[boton.dataset.ajuste]);
+                const nombre = boton.dataset.ajuste;
+                const activo = nombre === "calma" ? calmaEfectiva() : Boolean(ajustes[nombre]);
                 boton.setAttribute("aria-pressed", String(activo));
                 boton.querySelector(".estado").textContent = activo ? "Sí" : "No";
                 boton.classList.toggle("bg-green-50", activo);
@@ -464,7 +503,7 @@
         }
 
         function cambiarAjuste(nombre) {
-            ajustes[nombre] = !ajustes[nombre];
+            ajustes[nombre] = nombre === "calma" ? !calmaEfectiva() : !ajustes[nombre];
             almacen.guardar("ajustes", JSON.stringify(ajustes));
             aplicarAjustes();
             if (nombre === "voz") {
@@ -618,6 +657,18 @@
         }
 
         // --- INICIALIZAR Y CARGAR PANTALLAS ---
+        // --- MODO SIN INTERNET ---
+        // El service worker guarda el juego entero tras la primera visita. No
+        // funciona abriendo el archivo con doble clic (file://), solo servido
+        // por un servidor web, como GitHub Pages.
+        if ("serviceWorker" in navigator && location.protocol !== "file:") {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("sw.js").catch(() => {
+                    /* sin modo sin internet, pero el juego sigue funcionando */
+                });
+            });
+        }
+
         window.onload = function() {
             const savedName = almacen.leer("nombre");
             const savedStars = almacen.leer("estrellas");
@@ -632,6 +683,7 @@
 
             cargarAjustes();
             aplicarAjustes();
+            movimientoReducido.addEventListener("change", aplicarAjustes);
             document.querySelectorAll(".ajuste").forEach((boton) =>
                 boton.addEventListener("click", () => cambiarAjuste(boton.dataset.ajuste)));
 
@@ -765,7 +817,7 @@
             espera = {
                 alContinuar,
                 desde: performance.now() + minimoMs,
-                temporizador: setTimeout(continuar, automaticoMs),
+                temporizador: setTimeout(() => continuar(false), automaticoMs),
             };
             const boton = document.getElementById("btn-siguiente");
             boton.classList.remove("hidden");
@@ -777,12 +829,23 @@
             }
         }
 
-        function continuar() {
+        /**
+         * Pasa a lo siguiente. `porUsuario` distingue saltar de esperar:
+         *
+         *  - Si quien juega SALTA (botón, Enter), corta la voz: ha decidido
+         *    no esperar, y seguir hablando solo retrasaría la pregunta nueva.
+         *  - Si la espera TERMINA SOLA, la voz NO se corta: la felicitación con
+         *    el hecho completo dura unos 3 s y la espera automática 1,6 s, así
+         *    que cortarla aquí era volver al fallo de antes —frases a medias—.
+         *    La pregunta siguiente se encola detrás.
+         */
+        function continuar(porUsuario = true) {
             if (!espera || performance.now() < espera.desde) {
                 return;
             }
             const accion = espera.alContinuar;
             cancelarEspera();
+            if (porUsuario) callarVoz();
             accion();
         }
 
@@ -1106,7 +1169,7 @@
                 groupDiv.appendChild(emojiRow);
 
                 const label = document.createElement("span");
-                label.className = "text-xs font-bold text-indigo-400 mt-1";
+                label.className = "text-xs font-bold text-indigo-700 mt-1";
                 label.innerText = `Grupo ${g + 1}`;
                 groupDiv.appendChild(label);
 
@@ -1114,7 +1177,7 @@
 
                 if (g < numA - 1) {
                     const plus = document.createElement("span");
-                    plus.className = "text-2xl font-bold text-indigo-400";
+                    plus.className = "text-2xl font-bold text-indigo-700";
                     plus.innerText = "+";
                     container.appendChild(plus);
                 }
@@ -1191,7 +1254,6 @@
 
                 // Sin mínimo: quien acierta rápido puede seguir enseguida.
                 programarSiguiente(0, 1600, () => {
-                    callarVoz();
                     if (score >= targetScore) {
                         endGameSuccess();
                     } else {
@@ -1235,10 +1297,7 @@
 
                 // Mínimo de 1,2 s: la respuesta correcta tiene que verse y
                 // oírse antes de poder saltarla. Luego, la decide quien juega.
-                programarSiguiente(1200, 3500, () => {
-                    callarVoz();
-                    nextQuestion();
-                });
+                programarSiguiente(1200, 3500, nextQuestion);
             }
         }
 
@@ -1284,7 +1343,7 @@
             callarVoz();
             playVictorySound();
 
-            if (!ajustes.calma) {
+            if (!calmaEfectiva()) {
                 for (let i = 0; i < 40; i++) {
                     setTimeout(createConfetti, i * 100);
                 }
@@ -1330,7 +1389,7 @@
         }
 
         function triggerBurstEffect(element) {
-            if (ajustes.calma) return;
+            if (calmaEfectiva()) return;
             const rect = element.getBoundingClientRect();
             const originX = rect.left + rect.width / 2;
             const originY = rect.top + rect.height / 2;

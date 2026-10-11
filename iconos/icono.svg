@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fondo a sangre: el icono "maskable" lo recorta el sistema en círculo,
+       gota o cuadrado redondeado, y no puede quedar ningún borde transparente. -->
+  <rect width="512" height="512" fill="#fef6e4"/>
+  <!-- Todo el dibujo dentro del 70 % central: es la zona segura que ningún
+       recorte de Android corta. -->
+  <g transform="translate(256 256)">
+    <g fill="#facc15">
+      <ellipse rx="34" ry="78" transform="rotate(0)   translate(0 -96)"/>
+      <ellipse rx="34" ry="78" transform="rotate(45)  translate(0 -96)"/>
+      <ellipse rx="34" ry="78" transform="rotate(90)  translate(0 -96)"/>
+      <ellipse rx="34" ry="78" transform="rotate(135) translate(0 -96)"/>
+      <ellipse rx="34" ry="78" transform="rotate(180) translate(0 -96)"/>
+      <ellipse rx="34" ry="78" transform="rotate(225) translate(0 -96)"/>
+      <ellipse rx="34" ry="78" transform="rotate(270) translate(0 -96)"/>
+      <ellipse rx="34" ry="78" transform="rotate(315) translate(0 -96)"/>
+    </g>
+    <circle r="78" fill="#f59e0b"/>
+    <circle r="66" fill="#92400e"/>
+    <!-- Semillas en filas y columnas: un girasol es, literalmente, una tabla
+         de multiplicar. Sin aspa blanca: una "x" en un círculo se lee como
+         "cerrar" o "error", que es lo último que debe decir el icono. -->
+    <g fill="#fbbf24">
+      <circle cx="-30" cy="-30" r="8"/><circle cx="0" cy="-30" r="8"/><circle cx="30" cy="-30" r="8"/>
+      <circle cx="-30" cy="0"   r="8"/><circle cx="0" cy="0"   r="8"/><circle cx="30" cy="0"   r="8"/>
+      <circle cx="-30" cy="30"  r="8"/><circle cx="0" cy="30"  r="8"/><circle cx="30" cy="30"  r="8"/>
+    </g>
+  </g>
+</svg>

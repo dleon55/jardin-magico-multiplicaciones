@@ -1,0 +1,17 @@
+{
+  "name": "jardin-magico-multiplicaciones",
+  "private": true,
+  "description": "Sitio para practicar las tablas de multiplicar. El sitio no tiene dependencias: esto es solo para construirlo y probarlo.",
+  "type": "module",
+  "scripts": {
+    "construir": "node herramientas/construir.mjs",
+    "servir": "node pruebas/servidor.mjs",
+    "test": "playwright test",
+    "comprobar": "npm run construir && git diff --exit-code -- estilos.css sw.js && playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.64.0",
+    "tailwindcss": "3.4.19"
+  }
+}
