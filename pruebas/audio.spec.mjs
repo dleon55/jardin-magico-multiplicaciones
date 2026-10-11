@@ -88,13 +88,50 @@ test("al saltar con «Siguiente», la voz sí se corta: quien juega ha decidido 
   expect(await page.evaluate(() => window.__cancelaciones)).toBe(antes + 1);
 });
 
-test("velocidad normal 0,95 y despacio 0,8; tono 1,1", async ({ page }) => {
+test("tres velocidades: normal 0,95, rápida 1,2 y despacio 0,8; tono 1,1", async ({ page }) => {
   await instalarDobles(page, [{ lang: "es-MX" }]);
   await page.goto("./");
+  const ultimo = async () => (await page.evaluate(() => window.__dicho)).at(-1);
   await page.evaluate(() => speak("prueba"));
-  expect((await page.evaluate(() => window.__dicho)).at(-1).rate).toBe(0.95);
-  await page.evaluate(() => { ajustes.lenta = true; speak("prueba"); });
+  expect((await ultimo()).rate).toBe(0.95);
+
+  await page.click("#ajustes summary");
+  const boton = page.locator('[data-ajuste="velocidad"]');
+  await expect(boton).toContainText("Normal");
+  await expect(boton, "en pantalla dice «Velocidad»; el lector oye el nombre entero").toHaveAccessibleName(/Velocidad de la voz/);
+  const esperado = [["Rápida", 1.2, "más rápido"], ["Despacio", 0.8, "más despacio"], ["Normal", 0.95, "velocidad normal"]];
+  for (const [nombre, rate, aviso] of esperado) {
+    await boton.click();
+    await expect(boton).toContainText(nombre);
+    // El aviso se dice ya con la velocidad nueva: así se oye la diferencia.
+    expect(await ultimo()).toMatchObject({ rate });
+    expect((await ultimo()).texto).toContain(aviso);
+  }
+});
+
+test("la velocidad elegida se recuerda", async ({ page }) => {
+  await instalarDobles(page, [{ lang: "es-MX" }]);
+  await page.goto("./");
+  await page.click("#ajustes summary");
+  await page.click('[data-ajuste="velocidad"]');
+  await page.reload();
+  await page.evaluate(() => speak("prueba"));
+  expect((await page.evaluate(() => window.__dicho)).at(-1).rate).toBe(1.2);
+});
+
+test("quien tenía «Voz despacio» sigue en despacio tras actualizar", async ({ page }) => {
+  await instalarDobles(page, [{ lang: "es-MX" }]);
+  await page.addInitScript(() => {
+    if (!sessionStorage.getItem("sembrado")) {
+      localStorage.setItem("jardin:ajustes", JSON.stringify({ voz: true, efectos: false, lenta: true }));
+      sessionStorage.setItem("sembrado", "1");
+    }
+  });
+  await page.goto("./");
+  await page.evaluate(() => speak("prueba"));
   expect((await page.evaluate(() => window.__dicho)).at(-1).rate).toBe(0.8);
+  await expect(page.locator('[data-ajuste="velocidad"] .estado')).toHaveText("Despacio");
+  await expect(page.locator('[data-ajuste="efectos"]'), "los demás ajustes no se pierden").toHaveAttribute("aria-pressed", "false");
 });
 
 test("voz y sonidos se apagan por separado", async ({ page }) => {

@@ -180,8 +180,10 @@
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="efectos" aria-pressed="true">
                     <span><span aria-hidden="true">🎵</span> Sonidos</span><span class="estado font-bold">Sí</span>
                 </button>
-                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="lenta" aria-pressed="false">
-                    <span><span aria-hidden="true">🐢</span> Voz despacio</span><span class="estado font-bold">No</span>
+                <!-- Tres posiciones: cada toque pasa a la siguiente. Sin aria-pressed:
+                     no es un interruptor, y el nombre accesible ya incluye el valor. -->
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="velocidad">
+                    <span><span aria-hidden="true">⏱️</span> Velocidad<span class="sr-only"> de la voz</span></span><span class="estado font-bold">Normal</span>
                 </button>
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="calma" aria-pressed="false">
                     <span><span aria-hidden="true">🍃</span> Menos movimiento</span><span class="estado font-bold">No</span>
@@ -478,7 +480,16 @@
         // al sistema operativo (y a sus cambios); true o false, lo que se eligió
         // aquí. Si se guardara el valor derivado del sistema, cambiar la voz
         // congelaría "calma" para siempre.
-        const ajustes = { voz: true, efectos: true, lenta: false, calma: null };
+        const ajustes = { voz: true, efectos: true, velocidad: "normal", calma: null };
+
+        // Velocidades de la voz, en el orden en que las recorre el botón. Más de
+        // 1,2 y en español los números se atropellan ("siete por ocho, cincuenta
+        // y seis"); además, cada voz del sistema acelera distinto.
+        const VELOCIDADES = {
+            despacio: { rate: 0.8, nombre: "Despacio", aviso: "Ahora hablo más despacio." },
+            normal: { rate: 0.95, nombre: "Normal", aviso: "Ahora hablo a velocidad normal." },
+            rapida: { rate: 1.2, nombre: "Rápida", aviso: "Ahora hablo más rápido." },
+        };
         const movimientoReducido = window.matchMedia("(prefers-reduced-motion: reduce)");
 
         function calmaEfectiva() {
@@ -487,14 +498,24 @@
 
         function cargarAjustes() {
             try {
-                Object.assign(ajustes, JSON.parse(almacen.leer("ajustes") || "{}"));
+                const guardados = JSON.parse(almacen.leer("ajustes") || "{}");
+                // La versión anterior tenía un interruptor "lenta" en lugar de
+                // tres velocidades: se conserva lo que se había elegido.
+                if (guardados.velocidad === undefined && guardados.lenta) guardados.velocidad = "despacio";
+                delete guardados.lenta;
+                Object.assign(ajustes, guardados);
             } catch (e) { /* ajustes corruptos: se quedan los de serie */ }
+            if (!(ajustes.velocidad in VELOCIDADES)) ajustes.velocidad = "normal";
         }
 
         function aplicarAjustes() {
             document.documentElement.classList.toggle("calma", calmaEfectiva());
             document.querySelectorAll(".ajuste").forEach((boton) => {
                 const nombre = boton.dataset.ajuste;
+                if (nombre === "velocidad") {
+                    boton.querySelector(".estado").textContent = VELOCIDADES[ajustes.velocidad].nombre;
+                    return;
+                }
                 const activo = nombre === "calma" ? calmaEfectiva() : Boolean(ajustes[nombre]);
                 boton.setAttribute("aria-pressed", String(activo));
                 boton.querySelector(".estado").textContent = activo ? "Sí" : "No";
@@ -503,16 +524,21 @@
         }
 
         function cambiarAjuste(nombre) {
-            ajustes[nombre] = nombre === "calma" ? !calmaEfectiva() : !ajustes[nombre];
+            if (nombre === "velocidad") {
+                const orden = Object.keys(VELOCIDADES);
+                ajustes.velocidad = orden[(orden.indexOf(ajustes.velocidad) + 1) % orden.length];
+            } else {
+                ajustes[nombre] = nombre === "calma" ? !calmaEfectiva() : !ajustes[nombre];
+            }
             almacen.guardar("ajustes", JSON.stringify(ajustes));
             aplicarAjustes();
             if (nombre === "voz") {
                 if (ajustes.voz) speak("Voz activada.");
                 else callarVoz();
             }
-            if (nombre === "lenta" && ajustes.voz) {
+            if (nombre === "velocidad" && ajustes.voz) {
                 callarVoz();
-                speak(ajustes.lenta ? "Ahora hablo más despacio." : "Ahora hablo a velocidad normal.");
+                speak(VELOCIDADES[ajustes.velocidad].aviso);
             }
         }
 
@@ -647,7 +673,7 @@
             }
             // Antes: velocidad 1.0 y tono 1.3. Un tono alto en una voz sintética
             // se entiende peor, y 1.0 es rápido para quien empieza a leer.
-            frase.rate = ajustes.lenta ? 0.8 : 0.95;
+            frase.rate = VELOCIDADES[ajustes.velocidad].rate;
             frase.pitch = 1.1;
             window.speechSynthesis.speak(frase);
         }
