@@ -1,0 +1,16 @@
+# Las dependencias de npm son solo para construir y probar el sitio: lo que se
+# publica es CSS ya compilado, sin nada de node_modules.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    # Sin PRs de versión: solo los de seguridad, que no dependen de este límite.
+    open-pull-requests-limit: 0
+    ignore:
+      # Tailwind 4 genera CSS que no funciona en Safari anterior a 16.4 (iPads
+      # que ya no se actualizan) y cambia el aspecto del juego: bordes, colores,
+      # atajos visibles en tableta. Se queda en 3.4.x a propósito; ver PR #2.
+      - dependency-name: tailwindcss
+        update-types: ["version-update:semver-major"]
