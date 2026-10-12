@@ -119,7 +119,10 @@ test("el lienzo de partículas no gasta batería en reposo", async ({ browser })
   await page.locator("#grid-tablas-container button").nth(4).click();
   await responder(page, true);
   expect(await page.evaluate(() => particles.length), "el acierto sí lanza partículas").toBeGreaterThan(0);
-  await page.waitForFunction(() => particles.length === 0, null, { timeout: 5000 });
+  // Las partículas se desvanecen un poco en cada cuadro: en un equipo que
+  // dibuja a 25 cuadros por segundo en lugar de 60 tardan más del doble. Lo que
+  // se mide es lo de después, el reposo, así que aquí hay margen de sobra.
+  await page.waitForFunction(() => particles.length === 0, null, { timeout: 15000 });
   const cuadros = await page.evaluate(() => new Promise((listo) => {
     let n = 0;
     const original = window.requestAnimationFrame;

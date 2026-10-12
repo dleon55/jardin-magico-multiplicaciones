@@ -26,6 +26,12 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **«Mi mapa de tablas»** muestra qué multiplicaciones ya se saben (✓, dos
   aciertos seguidos), cuáles se están practicando (•) y cuáles no se han jugado.
   Tocar una tabla en el mapa la abre para practicar.
+- **«Practicar lo que me falta»** arma una partida con lo que está en
+  «practicando» en el mapa, empezando por lo fallado la última vez. Así el
+  repaso sigue entre días, no solo dentro de una partida. El botón solo aparece
+  si hay algo pendiente.
+- **Al ganar, el juego dice lo aprendido**: qué multiplicaciones pasaron a
+  «ya te la sabes» en esa partida, o cuántas van en camino.
 
 Con teclado (en una tableta estos atajos no se muestran):
 

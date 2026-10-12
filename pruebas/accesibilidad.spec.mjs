@@ -97,3 +97,10 @@ test("mapa de tablas, con hechos en los tres estados", async ({ page }) => {
   await page.click("text=Mi mapa de tablas");
   await auditar(page, "el mapa");
 });
+
+test("selector con «Practicar lo que me falta»", async ({ page }) => {
+  await page.goto("./");
+  await page.evaluate(() => registrarIntento(7, 8, false));
+  await page.click("#screen-welcome button");
+  await auditar(page, "el selector con el botón de lo que falta");
+});
