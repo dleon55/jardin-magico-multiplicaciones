@@ -6,6 +6,10 @@ import AxeBuilder from "@axe-core/playwright";
 import { entrarATabla, responder, siguiente } from "./ayudas.mjs";
 
 async function auditar(page, contexto) {
+  // Se congela el avance automático: axe tarda, y con el equipo cargado la
+  // pregunta seguía sola a mitad de la auditoría. Se audita lo que se ve
+  // mientras se espera, que es lo que tiene que ser accesible.
+  await page.evaluate(() => { if (espera) clearTimeout(espera.temporizador); });
   // Se espera a que acaben las animaciones de entrada: axe mide el contraste
   // de lo que ve, y a mitad de un fundido los colores aún no son los finales.
   await page.waitForTimeout(400);
@@ -74,4 +78,22 @@ test("la pregunta y el resultado se anuncian solos al lector de pantalla", async
   await page.goto("./");
   await expect(page.locator("#question-text")).toHaveAttribute("aria-live", "polite");
   await expect(page.locator("#game-feedback")).toHaveAttribute("aria-live", "polite");
+});
+
+test("ayuda girada", async ({ page }) => {
+  await entrarATabla(page, 9);
+  await page.click("#btn-help");
+  await page.click("#btn-girar");
+  await auditar(page, "la ayuda girada");
+});
+
+test("mapa de tablas, con hechos en los tres estados", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.evaluate(() => {
+    registrarIntento(3, 4, true); registrarIntento(3, 4, true);   // sabido
+    registrarIntento(7, 8, false);                               // practicando
+  });
+  await page.click("text=Mi mapa de tablas");
+  await auditar(page, "el mapa");
 });

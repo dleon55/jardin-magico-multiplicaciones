@@ -16,17 +16,26 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **Equivocarse no resta.** Sale el resultado correcto, se explica y se sigue.
 - **Las opciones se parecen a la respuesta.** Son errores típicos, como el
   resultado de la fila de al lado, así que no basta con adivinar.
-- **La ayuda dibuja la multiplicación** en grupos de objetos para contarlos.
+- **La ayuda dibuja la multiplicación como un rectángulo** de filas × columnas,
+  con huecos cada 5 para contar de 5 en 5. Al girarlo se ve que 9 × 7 y 7 × 9
+  son los mismos puntos.
+- **Cada tabla tiene su truco** (el del 9 es «por 10 y una vez menos»), con los
+  números de la pregunta, y la voz lo lee. El último paso lo da quien juega: la
+  ayuda no da la respuesta.
+- **Tablas del 1 al 12**, y un desafío que mezcla las del 2 al 9.
+- **«Mi mapa de tablas»** muestra qué multiplicaciones ya se saben (✓, dos
+  aciertos seguidos), cuáles se están practicando (•) y cuáles no se han jugado.
+  Tocar una tabla en el mapa la abre para practicar.
 
 Con teclado (en una tableta estos atajos no se muestran):
 
 | Tecla | Qué hace |
 | --- | --- |
-| `1`–`9` | Elegir tabla, en el menú |
+| `1`–`9`, `0` | Elegir tabla en el menú (`0` es la del 10) |
 | `1`–`4` | Elegir respuesta, en el juego |
 | `H` | Abrir o cerrar la ayuda |
 | `Enter` o `Espacio` | Seguir a la siguiente pregunta |
-| `Esc` | Volver al menú |
+| `Esc` | Volver al menú, desde el juego o el mapa |
 
 En **Ajustes** se pueden apagar por separado la voz y los sonidos, elegir la
 velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento».
@@ -81,7 +90,8 @@ npm run servir      # http://localhost:4173/jardin-magico-multiplicaciones/
 
 El CI comprueba que la construcción está al día y falla si no lo está.
 
-Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), el
+Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
+didáctica (rectángulo de ayuda, trucos, tablas hasta el 12 y mapa), el
 uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
 internet y la voz. Si Chromium está instalado fuera de la caché de Playwright,
 su ruta se indica con `CHROMIUM_RUTA`.

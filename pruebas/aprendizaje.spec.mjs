@@ -30,8 +30,8 @@ test("no se puede acertar sin multiplicar eligiendo el único múltiplo de la ta
   // preguntas: la correcta era el único múltiplo de la tabla entre las cuatro.
   const proporcion = await page.evaluate(() => {
     let explotables = 0, total = 0;
-    for (let a = 2; a <= 9; a++) {
-      for (let b = 2; b <= 9; b++) {
+    for (let a = 2; a <= 12; a++) {
+      for (let b = 2; b <= 10; b++) {
         for (let i = 0; i < 40; i++) {
           total++;
           const o = generarOpciones(a, b, a * b);

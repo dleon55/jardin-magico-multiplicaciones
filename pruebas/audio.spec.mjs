@@ -2,42 +2,7 @@
 // dobles que registran lo que se les pide: así se prueba QUÉ dice el juego y
 // con qué voz, sin altavoces.
 import { test, expect } from "@playwright/test";
-import { entrarATabla, preguntaActual, responder } from "./ayudas.mjs";
-
-function instalarDobles(page, voces) {
-  return page.addInitScript((listaVoces) => {
-    window.__dicho = [];
-    window.__cancelaciones = 0;
-    window.__tonos = [];
-    const voces = listaVoces.map((v) => ({ ...v, name: v.lang, localService: true, default: false }));
-    // speechSynthesis es de solo lectura en window: una asignación normal
-    // falla EN SILENCIO y deja la voz real. Hay que redefinir la propiedad.
-    Object.defineProperty(window, "speechSynthesis", {
-      configurable: true,
-      value: {
-        getVoices: () => voces,
-        speak: (u) => window.__dicho.push({ texto: u.text, voz: u.voice?.lang ?? null, lang: u.lang, rate: u.rate }),
-        cancel: () => { window.__cancelaciones++; },
-        addEventListener: () => {},
-      },
-    });
-    Object.defineProperty(window, "SpeechSynthesisUtterance", {
-      configurable: true,
-      value: function (texto) { this.text = texto; },
-    });
-    class Oscilador {
-      constructor() { this.type = "sine"; this.frequency = { setValueAtTime: (f) => window.__tonos.push(f) }; }
-      connect() {} start() {} stop() {}
-    }
-    window.webkitAudioContext = undefined;
-    window.AudioContext = class {
-      constructor() { this.state = "running"; this.currentTime = 0; this.destination = {}; }
-      createOscillator() { return new Oscilador(); }
-      createGain() { return { gain: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect() {} }; }
-      resume() { this.state = "running"; }
-    };
-  }, voces);
-}
+import { entrarATabla, preguntaActual, responder, instalarDobles } from "./ayudas.mjs";
 
 test("elige una voz española aunque haya otras antes en la lista", async ({ page }) => {
   await instalarDobles(page, [{ lang: "en-US" }, { lang: "es-ES" }, { lang: "es-MX" }]);
