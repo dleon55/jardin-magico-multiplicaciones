@@ -6,6 +6,9 @@
 name: Pruebas
 
 on:
+  # A mano, desde la pestaña Actions o la API: para comprobar el CI cuando
+  # cambia la imagen del sistema sin que haya cambiado el sitio.
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
