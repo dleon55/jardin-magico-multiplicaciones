@@ -21,6 +21,16 @@
     <link rel="preload" href="fuentes/fredoka-one-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="estilos.css">
     <style>
+        /* Casillas del mapa de tablas: color Y símbolo (✓ •), no solo color. */
+        .celda-mapa {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 1.6rem; height: 1.6rem; border-radius: 0.4rem;
+            font-weight: 700; font-size: 0.85rem; text-align: center;
+        }
+        td.celda-mapa { display: table-cell; vertical-align: middle; }
+        .celda-dominado { background: #bbf7d0; color: #14532d; }
+        .celda-practica { background: #fef3c7; color: #78350f; }
+        .celda-nuevo { background: #f3f4f6; border: 1px solid #d1d5db; }
         /* Fuentes con licencia SIL OFL 1.1: ver fuentes/OFL-*.txt.
            Solo el subconjunto latino, que incluye ñ, tildes, ¡, ¿ y ×. */
         @font-face {
@@ -239,13 +249,13 @@
 
             <div class="text-center">
                 <h3 data-foco class="bubble-font text-2xl text-green-700">¿Qué tabla quieres cultivar hoy?</h3>
-                <p class="text-gray-600 text-sm">Cada tabla completada hará florecer tu jardín mágico. <span class="solo-teclado">Pulsa del 1 al 9 para elegir.</span></p>
+                <p class="text-gray-600 text-sm">Cada tabla completada hará florecer tu jardín mágico. <span class="solo-teclado">Pulsa del 1 al 9 para elegir, o el 0 para la del 10.</span></p>
             </div>
 
-            <!-- Rejilla de selección de tablas del 1 al 9 -->
+            <!-- Rejilla de selección de tablas del 1 al 12 -->
             <div class="grid grid-cols-3 gap-4 max-w-md mx-auto">
                 <script>
-                    const emojisTablas = ["🌱", "🍓", "🍊", "🍋", "🍏", "🍇", "🍒", "🍀", "🌻"];
+                    const emojisTablas = ["🌱", "🍓", "🍊", "🍋", "🍏", "🍇", "🍒", "🍀", "🌻", "🌷", "🌼", "🌺"];
                     const coloresTablas = [
                         "from-red-300 to-pink-300 hover:from-red-400 hover:to-pink-400",
                         "from-orange-300 to-yellow-300 hover:from-orange-400 hover:to-yellow-400",
@@ -255,7 +265,10 @@
                         "from-blue-300 to-indigo-300 hover:from-blue-400 hover:to-indigo-400",
                         "from-purple-300 to-fuchsia-300 hover:from-purple-400 hover:to-fuchsia-400",
                         "from-pink-300 to-rose-300 hover:from-pink-400 hover:to-rose-400",
-                        "from-rose-300 to-amber-300 hover:from-rose-400 hover:to-amber-400"
+                        "from-rose-300 to-amber-300 hover:from-rose-400 hover:to-amber-400",
+                        "from-sky-300 to-cyan-300 hover:from-sky-400 hover:to-cyan-400",
+                        "from-lime-300 to-green-300 hover:from-lime-400 hover:to-green-400",
+                        "from-amber-300 to-orange-300 hover:from-amber-400 hover:to-orange-400"
                     ];
                 </script>
             </div>
@@ -270,6 +283,12 @@
                         class="w-full bubble-font bg-gradient-to-r from-violet-300 via-pink-300 to-yellow-300 text-gray-900 py-4 rounded-2xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 text-lg flex flex-col items-center justify-center gap-1">
                     <span class="flex items-center gap-2">🌈 Desafío del Arcoíris (Tablas Mezcladas)</span>
                     <span class="text-xs opacity-90 font-sans font-semibold">Todas las tablas del 2 al 9, mezcladas</span>
+                </button>
+            </div>
+
+            <div class="max-w-lg mx-auto">
+                <button onclick="mostrarMapa()" class="w-full bubble-font bg-white hover:bg-green-50 border-2 border-green-300 text-green-800 py-3 rounded-2xl shadow-sm transition text-lg">
+                    <span aria-hidden="true">🗺️</span> Mi mapa de tablas
                 </button>
             </div>
         </div>
@@ -350,11 +369,16 @@
                 </button>
             </div>
 
-            <!-- Panel de Ayuda Visual (Grupos de frutas/objetos) -->
-            <div id="help-panel" class="hidden bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 transition duration-300">
-                <p id="help-explain" class="text-indigo-800 text-center font-bold mb-3 text-sm md:text-base">¡Sumamos grupos iguales!</p>
-                <div id="help-visual-container" aria-hidden="true" class="flex flex-wrap gap-4 justify-center items-center">
-                    <!-- Se llenará con grupos dinámicos en JS -->
+            <!-- Panel de ayuda: la multiplicación como rectángulo de filas × columnas,
+                 y un truco para la tabla de la pregunta -->
+            <div id="help-panel" class="hidden bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 transition duration-300 space-y-3">
+                <p id="help-truco" class="bg-white border border-indigo-200 rounded-xl px-3 py-2 text-indigo-900 text-center text-sm md:text-base"></p>
+                <p id="help-explain" class="text-indigo-800 text-center font-bold text-sm md:text-base"></p>
+                <div id="help-visual-container" aria-hidden="true" class="flex justify-center"></div>
+                <div class="text-center">
+                    <button type="button" id="btn-girar" onclick="girarAyuda()" class="bg-white hover:bg-indigo-100 border-2 border-indigo-200 text-indigo-800 font-bold px-4 py-1 rounded-full text-sm transition">
+                        <span aria-hidden="true">🔄</span> Girar el rectángulo
+                    </button>
                 </div>
             </div>
 
@@ -399,9 +423,33 @@
                     Sigue Cultivando 🌱
                 </button>
                 <button onclick="resetGame()" 
-                        class="bubble-font bg-gray-300 hover:bg-gray-400 text-gray-700 text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
+                        class="bubble-font bg-gray-300 hover:bg-gray-200 text-gray-800 text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
                     Salir / Otro Nombre
                 </button>
+            </div>
+        </div>
+
+        <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
+        <div id="screen-mapa" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-2xl text-green-700">Tu mapa de tablas</h2>
+                <p id="mapa-resumen" class="text-gray-700 font-bold"></p>
+                <p class="text-gray-600 text-sm">Toca una tabla para practicarla.</p>
+            </div>
+            <ul class="flex flex-wrap justify-center gap-3 text-sm text-gray-700" aria-label="Leyenda">
+                <li class="flex items-center gap-1"><span class="celda-mapa celda-dominado" aria-hidden="true">✓</span> Ya te la sabes</li>
+                <li class="flex items-center gap-1"><span class="celda-mapa celda-practica" aria-hidden="true">•</span> Practicando</li>
+                <li class="flex items-center gap-1"><span class="celda-mapa celda-nuevo" aria-hidden="true"></span> Sin jugar</li>
+            </ul>
+            <div class="overflow-x-auto">
+                <table id="mapa-tabla" class="mx-auto border-separate" style="border-spacing: 3px">
+                    <caption class="sr-only">Qué multiplicaciones te sabes, tabla por tabla</caption>
+                </table>
             </div>
         </div>
 
@@ -543,7 +591,6 @@
         }
 
         const floresEmojis = ["🌸", "🌹", "🌺", "🌻", "🌼", "🌷", "🌱", "🍀", "🏵️", "💮"];
-        const frutasEmojis = ["🐞", "🍓", "🍊", "🍭", "⭐️", "🦋", "🍒", "🍩", "🐝", "🍉"];
 
         let audioCtx = null;
         function initAudio() {
@@ -708,6 +755,7 @@
             }
 
             cargarAjustes();
+            cargarHechos();
             aplicarAjustes();
             movimientoReducido.addEventListener("change", aplicarAjustes);
             document.querySelectorAll(".ajuste").forEach((boton) =>
@@ -750,7 +798,8 @@
         function buildSelectorGrid() {
             const container = document.getElementById("grid-tablas-container");
             container.innerHTML = "";
-            for (let i = 1; i <= 9; i++) {
+            // Hasta el 12: es hasta donde llega el currículo en muchas escuelas.
+            for (let i = 1; i <= 12; i++) {
                 const btn = document.createElement("button");
                 // Texto oscuro sobre los pastel: el blanco de antes daba menos
                 // de 2:1 de contraste, ilegible para quien ve regular.
@@ -760,7 +809,7 @@
                 btn.innerHTML = `
                     <span aria-hidden="true" class="text-3xl group-hover:scale-125 transition-transform duration-200">${emojisTablas[i-1]}</span>
                     <span class="bubble-font text-xl mt-1">Tabla del ${i}</span>
-                    <span class="solo-teclado absolute top-1 left-2 text-xs font-bold">${i}</span>
+                    ${i <= 10 ? `<span class="solo-teclado absolute top-1 left-2 text-xs font-bold">${i % 10}</span>` : ""}
                 `;
                 container.appendChild(btn);
             }
@@ -801,6 +850,7 @@
             callarVoz();
             almacen.borrarTodo();   // solo las claves del juego, no todo el origen
             globalStars = 0;
+            hechos = {};
             playerName = "";
             document.getElementById("player-name").value = "";
             document.getElementById("global-stars").innerText = "0";
@@ -813,7 +863,7 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory"];
+        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa"];
         let pantallaActual = "screen-welcome";
 
         function mostrarPantalla(id) {
@@ -911,9 +961,15 @@
                 return;
             }
 
-            if (pantallaActual === "screen-selector" && /^[1-9]$/.test(evento.key)) {
+            if (pantallaActual === "screen-selector" && /^[0-9]$/.test(evento.key)) {
                 evento.preventDefault();
-                startTable(Number(evento.key));
+                startTable(Number(evento.key) || 10);   // el 0 abre la del 10
+                return;
+            }
+
+            if (pantallaActual === "screen-mapa" && evento.key === "Escape") {
+                evento.preventDefault();
+                backToSelector();
                 return;
             }
 
@@ -1079,6 +1135,79 @@
         // llenar. Diez preguntas de una tabla = la tabla entera, sin huecos.
         let bolsa = [];
 
+        // --- MAPA DE HECHOS DOMINADOS ---
+        //
+        // Antes solo se guardaban el nombre y las estrellas: no había forma de
+        // saber qué multiplicaciones se saben y cuáles no. Ahora cada hecho
+        // guarda sus tres últimos resultados ("1" acierto, "0" fallo). Se da
+        // por sabido cuando los dos últimos son aciertos: uno solo puede ser
+        // suerte, y lo fallado vuelve por la cola de repaso.
+        let hechos = {};
+
+        function cargarHechos() {
+            try {
+                hechos = JSON.parse(almacen.leer("hechos") || "{}") || {};
+            } catch (e) { hechos = {}; }
+        }
+
+        function registrarIntento(a, b, acierto) {
+            const clave = `${a}x${b}`;
+            hechos[clave] = ((hechos[clave] || "") + (acierto ? "1" : "0")).slice(-3);
+            almacen.guardar("hechos", JSON.stringify(hechos));
+        }
+
+        function estadoHecho(a, b) {
+            const h = hechos[`${a}x${b}`];
+            if (!h) return "nuevo";
+            return h.endsWith("11") ? "dominado" : "practica";
+        }
+
+        const NOMBRES_ESTADO = { dominado: "ya te la sabes", practica: "practicando", nuevo: "sin jugar" };
+        const SIMBOLOS_ESTADO = { dominado: "✓", practica: "•", nuevo: "" };
+
+        function mostrarMapa() {
+            const tabla = document.getElementById("mapa-tabla");
+            tabla.querySelectorAll("thead, tbody").forEach((n) => n.remove());
+
+            const cabecera = tabla.createTHead().insertRow();
+            const esquina = document.createElement("th");
+            esquina.innerHTML = '<span class="sr-only">Tabla</span>';
+            cabecera.appendChild(esquina);
+            for (let b = 1; b <= 10; b++) {
+                const th = document.createElement("th");
+                th.scope = "col";
+                th.className = "text-xs text-gray-600 font-bold";
+                th.textContent = `×${b}`;
+                cabecera.appendChild(th);
+            }
+
+            const cuerpo = tabla.createTBody();
+            let dominados = 0;
+            for (let a = 1; a <= 12; a++) {
+                const fila = cuerpo.insertRow();
+                const th = document.createElement("th");
+                th.scope = "row";
+                // En pantallas estrechas solo se ve el número: con "Tabla del" la
+                // cuadrícula no cabe en un teléfono. El lector oye el nombre entero.
+                th.innerHTML = `<button type="button" class="text-xs md:text-sm font-bold text-green-800 hover:underline px-1 whitespace-nowrap"><span class="sr-only sm:not-sr-only">Tabla del </span>${a}</button>`;
+                th.querySelector("button").onclick = () => startTable(a);
+                fila.appendChild(th);
+                for (let b = 1; b <= 10; b++) {
+                    const estado = estadoHecho(a, b);
+                    if (estado === "dominado") dominados++;
+                    const td = fila.insertCell();
+                    td.className = `celda-mapa celda-${estado}`;
+                    td.dataset.hecho = `${a}x${b}`;
+                    td.dataset.estado = estado;
+                    td.innerHTML = `<span aria-hidden="true">${SIMBOLOS_ESTADO[estado]}</span><span class="sr-only">${a} por ${b}: ${NOMBRES_ESTADO[estado]}</span>`;
+                }
+            }
+            document.getElementById("mapa-resumen").innerText = dominados === 0
+                ? "Juega una tabla y aquí verás lo que vas aprendiendo."
+                : `Ya te sabes ${dominados} de 120 multiplicaciones.`;
+            mostrarPantalla("screen-mapa");
+        }
+
         function llenarBolsa() {
             const hechos = [];
             if (currentTable === "mix") {
@@ -1133,6 +1262,7 @@
 
             ultimoHecho = `${numA}x${numB}`;
             correctAnswer = numA * numB;
+            ayudaGirada = false;
 
             document.getElementById("question-text").innerText = `${numA} × ${numB}`;
 
@@ -1162,6 +1292,8 @@
                 btn.innerText = "🪄 Ocultar ayuda";
                 btn.setAttribute("aria-expanded", "true");
                 generateHelpVisual();
+                callarVoz();
+                speak(trucoPara(numA, numB).voz);
             } else {
                 panel.classList.add("hidden");
                 btn.innerText = "🪄 ¿Necesitas ayuda mágica? (Ver truco)";
@@ -1169,45 +1301,85 @@
             }
         }
 
+        // Antes la ayuda dibujaba numA grupos de numB emojis: con 9 × 10 eran
+        // 90 emojis sueltos, imposibles de contar. Ahora es un RECTÁNGULO de
+        // filas × columnas: se cuenta de un vistazo (fila a fila, de 5 en 5),
+        // es el modelo del área que verán más adelante, y al girarlo se VE que
+        // 3 × 4 y 4 × 3 son los mismos puntos.
+        let ayudaGirada = false;
+
         function generateHelpVisual() {
-            const container = document.getElementById("help-visual-container");
-            container.innerHTML = "";
-            
-            document.getElementById("help-explain").innerText = `¡Sumamos ${numA} veces el número ${numB}!`;
+            const filas = ayudaGirada ? numB : numA;
+            const columnas = ayudaGirada ? numA : numB;
 
-            const itemEmoji = frutasEmojis[numA - 1] || "🌸";
+            document.getElementById("help-truco").innerText = trucoPara(numA, numB).texto;
+            document.getElementById("help-explain").innerText = ayudaGirada
+                ? `Girado: ${filas} filas de ${columnas}. ¡Son los mismos puntos! ${numA} × ${numB} da lo mismo que ${numB} × ${numA}.`
+                : `${numA} × ${numB}: ${filas} filas de ${columnas} puntos. Cuéntalos fila a fila.`;
 
-            for (let g = 0; g < numA; g++) {
-                const groupDiv = document.createElement("div");
-                groupDiv.className = "bg-white border-2 border-indigo-100 p-2 rounded-xl flex flex-col items-center justify-center min-w-[60px] shadow-sm";
-                
-                const emojiRow = document.createElement("div");
-                emojiRow.className = "grid grid-cols-3 gap-1 justify-center items-center";
-                
-                for (let e = 0; e < numB; e++) {
-                    const span = document.createElement("span");
-                    span.className = "text-xl animate-float";
-                    span.style.animationDelay = `${(g * 0.1) + (e * 0.05)}s`;
-                    span.innerText = itemEmoji;
-                    emojiRow.appendChild(span);
-                }
-
-                groupDiv.appendChild(emojiRow);
-
-                const label = document.createElement("span");
-                label.className = "text-xs font-bold text-indigo-700 mt-1";
-                label.innerText = `Grupo ${g + 1}`;
-                groupDiv.appendChild(label);
-
-                container.appendChild(groupDiv);
-
-                if (g < numA - 1) {
-                    const plus = document.createElement("span");
-                    plus.className = "text-2xl font-bold text-indigo-700";
-                    plus.innerText = "+";
-                    container.appendChild(plus);
+            const rejilla = document.createElement("div");
+            rejilla.className = "inline-grid gap-1 bg-white border-2 border-indigo-100 rounded-xl p-3";
+            rejilla.style.gridTemplateColumns = `repeat(${columnas}, auto)`;
+            for (let f = 0; f < filas; f++) {
+                for (let c = 0; c < columnas; c++) {
+                    const punto = document.createElement("span");
+                    // Filas de dos colores alternos, para no perderse al contar.
+                    punto.className = `punto block w-3 h-3 md:w-4 md:h-4 rounded-full ${f % 2 ? "bg-pink-500" : "bg-indigo-500"}`;
+                    // Un hueco cada 5 columnas y cada 5 filas: contar de 5 en 5.
+                    if (c > 0 && c % 5 === 0) punto.style.marginLeft = "0.5rem";
+                    if (f > 0 && f % 5 === 0) punto.style.marginTop = "0.5rem";
+                    rejilla.appendChild(punto);
                 }
             }
+            const contenedor = document.getElementById("help-visual-container");
+            contenedor.replaceChildren(rejilla);
+        }
+
+        function girarAyuda() {
+            ayudaGirada = !ayudaGirada;
+            generateHelpVisual();
+        }
+
+        // --- TRUCOS POR TABLA ---
+        //
+        // El botón prometía "ver truco" y solo mostraba el conteo. Estos sí
+        // ahorran trabajo: convierten la tabla difícil en una fácil que ya se
+        // sabe. Dan los pasos con los números de la pregunta, pero el último lo
+        // hace quien juega: la ayuda no debe ser la respuesta.
+        //
+        // Se elige el factor con el truco más útil (el orden de abajo), y como
+        // el orden de los factores no importa, sirve igual para 9 × 3 que para
+        // 3 × 9.
+        const ORDEN_TRUCOS = [1, 10, 2, 5, 11, 9, 4, 3, 6, 12, 8, 7];
+
+        function trucoPara(a, b) {
+            const t = ORDEN_TRUCOS.find((x) => x === a || x === b);
+            const n = t === a ? b : a;
+            const textos = {
+                1: `Truco del 1: por 1, el número se queda igual.`,
+                10: `Truco del 10: por 10, se le pone un cero al final.`,
+                2: `Truco del 2: por 2 es el doble. Suma ${n} + ${n}.`,
+                5: `Truco del 5: es la mitad de por 10. ${n} × 10 = ${n * 10}, y busca la mitad.`,
+                11: n <= 9
+                    ? `Truco del 11: hasta el 9, la cifra se repite dos veces, como 11 × ${n === 4 ? 3 : 4} = ${n === 4 ? 33 : 44}.`
+                    : `Truco del 11: es por 10 y una vez más. ${n} × 10 = ${n * 10}, y súmale ${n}.`,
+                9: `Truco del 9: es por 10 y una vez menos. ${n} × 10 = ${n * 10}, y quítale ${n}.`,
+                4: `Truco del 4: es el doble del doble. ${n} + ${n} = ${n * 2}, y ahora el doble de ${n * 2}.`,
+                3: `Truco del 3: es el doble y una vez más. ${n} + ${n} = ${n * 2}, y súmale ${n}.`,
+                6: `Truco del 6: es por 5 y una vez más. ${n} × 5 = ${n * 5}, y súmale ${n}.`,
+                12: `Truco del 12: es por 10 más por 2. ${n} × 10 = ${n * 10}, y súmale ${n} × 2 = ${n * 2}.`,
+                8: `Truco del 8: es el doble del doble del doble. ${n} → ${n * 2} → ${n * 4} → ¿?`,
+                7: `Truco del 7: es por 5 más por 2. ${n} × 5 = ${n * 5}, y súmale ${n} × 2 = ${n * 2}.`,
+            };
+            const texto = textos[t];
+            return { texto, voz: textoParaVoz(texto) };
+        }
+
+        // Los signos se leen mal o no se leen: se dicen con palabras.
+        function textoParaVoz(texto) {
+            return texto
+                .replace(/×/g, " por ").replace(/\+/g, " más ").replace(/ → ¿\?/g, ", y otra vez el doble")
+                .replace(/→/g, ",").replace(/ = /g, " es ").replace(/ +/g, " ").replace(/ ,/g, ",");
         }
 
         // --- MANEJO DE SELECCIÓN DE RESPUESTA ---
@@ -1242,6 +1414,8 @@
             // La pregunta ya está contestada: si la voz aún la estaba leyendo,
             // seguir leyéndola solo retrasa lo importante, que es el resultado.
             callarVoz();
+
+            registrarIntento(numA, numB, chosenVal === correctAnswer);
 
             if (chosenVal === correctAnswer) {
                 // --- RESPUESTA CORRECTA ---
