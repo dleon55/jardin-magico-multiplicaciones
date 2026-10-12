@@ -287,6 +287,9 @@
             </div>
 
             <div class="max-w-lg mx-auto">
+                <button type="button" onclick="startTable('falta')" class="btn-falta hidden w-full bubble-font bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3">
+                    <span aria-hidden="true">🎯</span> Practicar lo que me falta (<span class="cuenta-falta">0</span>)
+                </button>
                 <button onclick="mostrarMapa()" class="w-full bubble-font bg-white hover:bg-green-50 border-2 border-green-300 text-green-800 py-3 rounded-2xl shadow-sm transition text-lg">
                     <span aria-hidden="true">🗺️</span> Mi mapa de tablas
                 </button>
@@ -417,6 +420,8 @@
                 <div class="text-4xl" aria-hidden="true">🌟🌟🌟</div>
             </div>
 
+            <p id="victoria-aprendido" class="text-green-800 font-bold text-lg max-w-md mx-auto"></p>
+
             <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-xs sm:max-w-md mx-auto">
                 <button onclick="backToSelector()" 
                         class="bubble-font bg-green-700 hover:bg-green-800 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
@@ -427,6 +432,9 @@
                     Salir / Otro Nombre
                 </button>
             </div>
+            <button type="button" onclick="mostrarMapa()" class="text-green-800 font-bold underline hover:text-green-900">
+                <span aria-hidden="true">🗺️</span> Ver mi mapa de tablas
+            </button>
         </div>
 
         <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
@@ -440,6 +448,9 @@
                 <h2 data-foco class="bubble-font text-2xl text-green-700">Tu mapa de tablas</h2>
                 <p id="mapa-resumen" class="text-gray-700 font-bold"></p>
                 <p class="text-gray-600 text-sm">Toca una tabla para practicarla.</p>
+                <button type="button" onclick="startTable('falta')" class="btn-falta hidden bubble-font bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 px-5 py-2 rounded-2xl shadow-sm transition mt-2">
+                    <span aria-hidden="true">🎯</span> Practicar lo que me falta (<span class="cuenta-falta">0</span>)
+                </button>
             </div>
             <ul class="flex flex-wrap justify-center gap-3 text-sm text-gray-700" aria-label="Leyenda">
                 <li class="flex items-center gap-1"><span class="celda-mapa celda-dominado" aria-hidden="true">✓</span> Ya te la sabes</li>
@@ -825,6 +836,8 @@
             repasoActual = null;
             ultimoHecho = "";
             bolsa = []; // la de otra tabla no sirve: se llena al pedir la primera
+            dominadosAlEmpezar = clavesDominadas();
+            hechosDeLaPartida = new Set();
             
             document.getElementById("garden-plot").innerHTML = "";
 
@@ -868,6 +881,7 @@
 
         function mostrarPantalla(id) {
             PANTALLAS.forEach((p) => document.getElementById(p).classList.toggle("hidden", p !== id));
+            if (id === "screen-selector") actualizarBotonesFalta();
             pantallaActual = id;
             const destino = document.querySelector(`#${id} [data-foco]`);
             if (destino) {
@@ -1152,6 +1166,7 @@
 
         function registrarIntento(a, b, acierto) {
             const clave = `${a}x${b}`;
+            hechosDeLaPartida.add(clave);
             hechos[clave] = ((hechos[clave] || "") + (acierto ? "1" : "0")).slice(-3);
             almacen.guardar("hechos", JSON.stringify(hechos));
         }
@@ -1160,6 +1175,84 @@
             const h = hechos[`${a}x${b}`];
             if (!h) return "nuevo";
             return h.endsWith("11") ? "dominado" : "practica";
+        }
+
+        // --- PRACTICAR LO QUE FALTA ---
+        //
+        // La cola de repaso solo vive dentro de una partida: al cerrar el juego,
+        // lo fallado se olvidaba. El mapa sí lo recuerda, así que de él sale una
+        // partida que pregunta justo eso, días después.
+        function hechosQueFaltan() {
+            const pendientes = barajar(Object.keys(hechos).filter((k) => {
+                const [a, b] = k.split("x").map(Number);
+                return estadoHecho(a, b) === "practica";
+            }));
+            // Primero lo fallado la última vez; luego, lo que menos aciertos lleva.
+            const prioridad = (k) => (hechos[k].endsWith("0") ? 0 : 10) + [...hechos[k]].filter((r) => r === "1").length;
+            return pendientes.sort((x, y) => prioridad(x) - prioridad(y))
+                .map((k) => { const [a, b] = k.split("x").map(Number); return { a, b }; });
+        }
+
+        function bolsaDeLoQueFalta() {
+            const lista = hechosQueFaltan();
+            // Con muy pocos pendientes se preguntaría lo mismo una y otra vez:
+            // se completa con otros hechos de esas mismas tablas, primero los
+            // ya sabidos (así se mantienen frescos).
+            //
+            // Si a mitad de partida ya no queda nada pendiente (todo pasó a
+            // sabido), se sigue con las tablas que se estaban jugando.
+            if (lista.length < 4) {
+                const usadas = new Set(lista.map((h) => `${h.a}x${h.b}`));
+                const tablas = [...new Set([
+                    ...lista.map((h) => h.a),
+                    ...[...hechosDeLaPartida].map((k) => Number(k.split("x")[0])),
+                ])];
+                if (tablas.length === 0) tablas.push(2);   // sin datos: no debería pasar, el botón no se ve
+                const relleno = barajar(tablas.flatMap((a) =>
+                    Array.from({ length: 10 }, (_, i) => ({ a, b: i + 1 }))
+                        .filter((h) => !usadas.has(`${h.a}x${h.b}`))));
+                relleno.sort((x, y) => (estadoHecho(y.a, y.b) === "dominado") - (estadoHecho(x.a, x.b) === "dominado"));
+                lista.push(...relleno.slice(0, 4 - lista.length));
+            }
+            // La bolsa se saca por el final: se invierte para que salga primero
+            // lo más urgente.
+            return lista.reverse();
+        }
+
+        function actualizarBotonesFalta() {
+            const n = hechosQueFaltan().length;
+            document.querySelectorAll(".btn-falta").forEach((boton) => {
+                boton.classList.toggle("hidden", n === 0);
+                boton.querySelector(".cuenta-falta").textContent = String(n);
+            });
+        }
+
+        // --- LO APRENDIDO EN ESTA PARTIDA ---
+        let dominadosAlEmpezar = new Set();
+        let hechosDeLaPartida = new Set();
+
+        function clavesDominadas() {
+            return new Set(Object.keys(hechos).filter((k) => {
+                const [a, b] = k.split("x").map(Number);
+                return estadoHecho(a, b) === "dominado";
+            }));
+        }
+
+        function enumerar(lista) {
+            return lista.length === 1 ? lista[0] : `${lista.slice(0, -1).join(", ")} y ${lista.at(-1)}`;
+        }
+
+        function fraseDeLoAprendido() {
+            const nuevas = [...clavesDominadas()].filter((k) => !dominadosAlEmpezar.has(k) && hechosDeLaPartida.has(k));
+            if (nuevas.length >= 5) return `¡Ahora ya te sabes ${nuevas.length} multiplicaciones nuevas!`;
+            if (nuevas.length > 0) return `¡Ahora ya te sabes ${enumerar(nuevas.map((k) => k.replace("x", " × ")))}!`;
+            const enCamino = [...hechosDeLaPartida].filter((k) => {
+                const [a, b] = k.split("x").map(Number);
+                return estadoHecho(a, b) === "practica";
+            }).length;
+            return enCamino === 1
+                ? "Llevas 1 multiplicación en camino. Una partida más y pasa a tu mapa como sabida."
+                : `Llevas ${enCamino} multiplicaciones en camino. Una partida más y pasan a tu mapa como sabidas.`;
         }
 
         const NOMBRES_ESTADO = { dominado: "ya te la sabes", practica: "practicando", nuevo: "sin jugar" };
@@ -1202,6 +1295,7 @@
                     td.innerHTML = `<span aria-hidden="true">${SIMBOLOS_ESTADO[estado]}</span><span class="sr-only">${a} por ${b}: ${NOMBRES_ESTADO[estado]}</span>`;
                 }
             }
+            actualizarBotonesFalta();
             document.getElementById("mapa-resumen").innerText = dominados === 0
                 ? "Juega una tabla y aquí verás lo que vas aprendiendo."
                 : `Ya te sabes ${dominados} de 120 multiplicaciones.`;
@@ -1209,16 +1303,21 @@
         }
 
         function llenarBolsa() {
-            const hechos = [];
-            if (currentTable === "mix") {
-                // EXCLUSIÓN DE 1s: factores entre 2 y 9, todas las parejas.
-                for (let a = 2; a <= 9; a++) {
-                    for (let b = 2; b <= 9; b++) hechos.push({ a, b });
-                }
+            if (currentTable === "falta") {
+                // Ya viene ordenada por urgencia: no se baraja.
+                bolsa = bolsaDeLoQueFalta();
             } else {
-                for (let b = 1; b <= 10; b++) hechos.push({ a: currentTable, b });
+                const lista = [];
+                if (currentTable === "mix") {
+                    // EXCLUSIÓN DE 1s: factores entre 2 y 9, todas las parejas.
+                    for (let a = 2; a <= 9; a++) {
+                        for (let b = 2; b <= 9; b++) lista.push({ a, b });
+                    }
+                } else {
+                    for (let b = 1; b <= 10; b++) lista.push({ a: currentTable, b });
+                }
+                bolsa = barajar(lista);
             }
-            bolsa = barajar(hechos);
 
             // Al rellenar, el primer hecho de la bolsa nueva podría coincidir
             // con el último de la anterior: se apartaría la bolsa entera para
@@ -1551,13 +1650,18 @@
 
             document.getElementById("victory-player-name").innerText = playerName ? `, ${playerName}` : "";
 
-            const tableName = currentTable === "mix" ? "El Desafío del Arcoíris" : `La Tabla del ${currentTable}`;
+            const tableName = currentTable === "mix" ? "El Desafío del Arcoíris"
+                : currentTable === "falta" ? "Lo que te faltaba"
+                : `La Tabla del ${currentTable}`;
             document.getElementById("victory-table-name").innerText = tableName;
+
+            const aprendido = fraseDeLoAprendido();
+            document.getElementById("victoria-aprendido").innerText = aprendido;
 
             mostrarPantalla("screen-victory");
 
-            speak(playerName ? `¡Increíble, ${playerName}! Has completado ${tableName}. ¡Tu jardín floreció por completo!`
-                             : `¡Increíble! Has completado ${tableName}. ¡Tu jardín floreció por completo!`);
+            const logro = currentTable === "falta" ? "Has repasado lo que te faltaba" : `Has completado ${tableName}`;
+            speak(`¡Increíble${playerName ? `, ${playerName}` : ""}! ${logro}. ${aprendido.replace(/×/g, "por")}`);
         }
 
 

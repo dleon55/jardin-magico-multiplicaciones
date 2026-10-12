@@ -206,3 +206,113 @@ test.describe("mapa de lo que ya se sabe", () => {
     expect(await page.evaluate(([x, y]) => estadoHecho(x, y), [a, b])).toBe("practica");
   });
 });
+
+test.describe("practicar lo que falta", () => {
+  const botonFalta = (page) => page.locator("#screen-selector .btn-falta");
+
+  test("sin nada pendiente, el botón no aparece", async ({ page }) => {
+    await page.goto("./");
+    await page.click("#screen-welcome button");
+    await expect(botonFalta(page)).toBeHidden();
+  });
+
+  test("con hechos en práctica, aparece con cuántos son, también en el mapa", async ({ page }) => {
+    await page.goto("./");
+    await page.evaluate(() => { registrarIntento(7, 8, false); registrarIntento(6, 9, true); registrarIntento(3, 4, true); registrarIntento(3, 4, true); });
+    await page.click("#screen-welcome button");
+    await expect(botonFalta(page)).toBeVisible();
+    await expect(botonFalta(page)).toContainText("Practicar lo que me falta (2)");
+    await page.click("text=Mi mapa de tablas");
+    await expect(page.locator("#screen-mapa .btn-falta")).toContainText("(2)");
+  });
+
+  test("lo que pasa a sabido deja de contar como pendiente", async ({ page }) => {
+    await page.goto("./");
+    const n = await page.evaluate(() => {
+      registrarIntento(7, 8, false); registrarIntento(6, 9, false);
+      const antes = hechosQueFaltan().length;
+      registrarIntento(7, 8, true); registrarIntento(7, 8, true);
+      return [antes, hechosQueFaltan().map((h) => `${h.a}x${h.b}`)];
+    });
+    expect(n).toEqual([2, ["6x9"]]);
+  });
+
+  test("pregunta primero lo que se falló la última vez", async ({ page }) => {
+    await page.goto("./");
+    await page.evaluate(() => {
+      registrarIntento(6, 9, true);                                   // un acierto
+      registrarIntento(4, 7, true); registrarIntento(4, 7, false);   // falló la última
+      registrarIntento(8, 3, false);                                  // falló la última
+    });
+    await page.click("#screen-welcome button");
+    await botonFalta(page).click();
+    const primeras = [];
+    for (let i = 0; i < 3; i++) {
+      const { a, b } = await preguntaActual(page);
+      primeras.push(`${a}x${b}`);
+      await responder(page, true);
+      await siguiente(page);
+    }
+    expect(primeras.slice(0, 2).sort()).toEqual(["4x7", "8x3"]);
+    expect(primeras[2]).toBe("6x9");
+  });
+
+  test("con un solo pendiente: sale primero, nunca dos iguales seguidas, y no se rompe al quedar todo sabido", async ({ page }) => {
+    await page.goto("./");
+    await page.evaluate(() => { registrarIntento(7, 8, true); registrarIntento(7, 8, false); });
+    await page.click("#screen-welcome button");
+    await botonFalta(page).click();
+    const vistas = [];
+    for (let i = 0; i < 10; i++) {
+      const { a, b } = await preguntaActual(page);
+      vistas.push(`${a}x${b}`);
+      await responder(page, true);
+      await siguiente(page);
+    }
+    for (let i = 1; i < vistas.length; i++) expect(vistas[i], `pregunta ${i + 1}`).not.toBe(vistas[i - 1]);
+    // Antes de este caso, cuando todo lo pendiente pasaba a sabido a mitad de
+    // partida, la bolsa quedaba vacía y el juego se rompía en la pregunta 9.
+    expect(vistas[0]).toBe("7x8");
+    expect(vistas.every((h) => h.startsWith("7x")), "el relleno es de la misma tabla").toBe(true);
+    await expect(page.locator("#victory-table-name")).toHaveText("Lo que te faltaba");
+  });
+});
+
+test.describe("la victoria dice lo aprendido", () => {
+  async function partidaLimpia(page, tabla) {
+    await page.locator("#grid-tablas-container button").nth(tabla - 1).click();
+    for (let i = 0; i < 10; i++) { await responder(page, true); await siguiente(page); }
+    await expect(page.locator("#screen-victory")).toBeVisible();
+  }
+
+  test("la primera vez, lo que va en camino; la segunda, lo nuevo que ya se sabe", async ({ page }) => {
+    await page.goto("./");
+    await page.click("#screen-welcome button");
+    await partidaLimpia(page, 2);
+    await expect(page.locator("#victoria-aprendido")).toHaveText(
+      "Llevas 10 multiplicaciones en camino. Una partida más y pasan a tu mapa como sabidas.");
+    await page.click("text=Sigue Cultivando");
+    await partidaLimpia(page, 2);
+    await expect(page.locator("#victoria-aprendido")).toHaveText("¡Ahora ya te sabes 10 multiplicaciones nuevas!");
+  });
+
+  test("con pocas nuevas, las nombra, y la voz lo dice con palabras", async ({ page }) => {
+    await instalarDobles(page, [{ lang: "es-MX" }]);
+    await page.goto("./");
+    // 7 × 8 y 7 × 9 llevan un acierto: con otro, pasan a sabidas.
+    await page.evaluate(() => { registrarIntento(7, 8, true); registrarIntento(7, 9, true); });
+    await page.click("#screen-welcome button");
+    await page.click("#screen-selector .btn-falta");
+    for (let i = 0; i < 10; i++) { await responder(page, true); await siguiente(page); }
+    await expect(page.locator("#victoria-aprendido")).toContainText(/¡Ahora ya te sabes 7 × [89]/);
+    const dicho = (await page.evaluate(() => window.__dicho)).at(-1).texto;
+    expect(dicho).toMatch(/Has repasado lo que te faltaba\. ¡Ahora ya te sabes 7 por [89]/);
+  });
+
+  test("desde la victoria se llega al mapa", async ({ page }) => {
+    await entrarATabla(page, 3);
+    for (let i = 0; i < 10; i++) { await responder(page, true); await siguiente(page); }
+    await page.click("text=Ver mi mapa de tablas");
+    await expect(page.locator("#screen-mapa")).toBeVisible();
+  });
+});
