@@ -29,8 +29,27 @@ Con teclado (en una tableta estos atajos no se muestran):
 | `Esc` | Volver al menú |
 
 En **Ajustes** se pueden apagar por separado la voz y los sonidos, elegir la
-velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento». Este último se enciende
-solo si el dispositivo ya lo pide.
+velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento».
+Este último se enciende solo si el dispositivo ya lo pide.
+
+### Velocidad de la voz
+
+En **Ajustes**, el botón «Velocidad» cambia de posición con cada toque
+(Despacio → Normal → Rápida → Despacio). La voz anuncia el cambio ya a la
+velocidad nueva, para que se oiga la diferencia.
+
+| Posición | Velocidad | Para quién |
+| --- | --- | --- |
+| Despacio | 0,8 | Quien aún está aprendiendo a leer o a oír los números |
+| Normal | 0,95 | La de serie |
+| Rápida | 1,2 | Quien ya domina la tabla y no quiere esperar a que termine la frase |
+
+La velocidad elegida se recuerda en el dispositivo. Quien tenía activado «Voz
+despacio» en la versión anterior sigue en Despacio.
+
+No se sube de 1,2: a partir de ahí, en español, los números se atropellan
+(«siete por ocho, cincuenta y seis»). Además, cada voz del sistema acelera
+distinto: en iPad la misma velocidad suena más rápida que en Android.
 
 ## Instalarlo y usarlo sin internet
 
@@ -66,6 +85,11 @@ Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), el
 uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
 internet y la voz. Si Chromium está instalado fuera de la caché de Playwright,
 su ruta se indica con `CHROMIUM_RUTA`.
+
+Las velocidades de la voz se definen en la constante `VELOCIDADES` de
+`index.html`; es el único sitio que hay que tocar para ajustarlas. Las pruebas
+de `pruebas/audio.spec.mjs` comprueban esos valores, así que hay que cambiarlas
+a la vez.
 
 ## Archivos
 
