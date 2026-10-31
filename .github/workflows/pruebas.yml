@@ -5,41 +5,12 @@
 # y guarda en caché tanto npm como el navegador de Playwright.
 name: Pruebas
 
+# CI solo local (decisión del 31-oct-2026): no hay presupuesto para GitHub Actions,
+# así que este flujo ya no se dispara solo con push, pull_request ni etiquetas.
+# La compuerta es local: npm run comprobar
+# Para reactivarlo, restaura los disparadores desde el historial de git.
 on:
-  # A mano, desde la pestaña Actions o la API: para comprobar el CI cuando
-  # cambia la imagen del sistema sin que haya cambiado el sitio.
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "index.html"
-      - "estilos/**"
-      - "estilos.css"
-      - "sw.js"
-      - "manifest.webmanifest"
-      - "fuentes/**"
-      - "iconos/**"
-      - "herramientas/**"
-      - "pruebas/**"
-      - "playwright.config.mjs"
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/pruebas.yml"
-  pull_request:
-    paths:
-      - "index.html"
-      - "estilos/**"
-      - "estilos.css"
-      - "sw.js"
-      - "manifest.webmanifest"
-      - "fuentes/**"
-      - "iconos/**"
-      - "herramientas/**"
-      - "pruebas/**"
-      - "playwright.config.mjs"
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/pruebas.yml"
 
 concurrency:
   group: pruebas-${{ github.ref }}
