@@ -29,11 +29,18 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **Tablas del 1 al 9**, cada una del ×1 al ×10, y un desafío que mezcla las
   del 2 al 9. Las del 10, 11 y 12 se quitaron: la del 10 no exige memoria (se
   añade un cero) y la 11 y la 12 dispersaban la práctica.
-- **«Mi mapa de tablas»** muestra las 90 multiplicaciones en cuatro estados:
+- **7 × 8 y 8 × 7 son la misma planta.** Lo que se responde en un orden cuenta
+  para el otro, así que del 1 al 9 (cada una hasta ×10) hay **54 plantas**, no
+  90: la del 1 trae 10 nuevas, la del 2 nueve, y así hasta la del 9, que solo
+  trae dos (9 × 9 y 9 × 10). Al repasar, cada pareja sale en un orden al azar,
+  y el Desafío del Arcoíris pregunta una vez cada pareja del 2 al 9 (36).
+- **«Mi mapa de tablas»** muestra las 90 multiplicaciones (las dos casillas de
+  una pareja dicen lo mismo) en estos estados:
 
   | Estado | Cuándo |
   | --- | --- |
   | 🌸 Florecida | Desde el último fallo, **escrita en 6 segundos o menos en dos días distintos**. Es saberla de memoria |
+  | 🥀 Marchita | Florecida, pero sin repasar en 14 días o más. Pide riego |
   | 🌷 Casi | Desde el último fallo, escrita rápido una vez, o acertada dos veces |
   | 🌱 Practicando | Jugada, sin llegar a «casi» |
   | (gris) | Sin jugar |
@@ -42,14 +49,25 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   corto plazo. El tiempo no cuenta si se abrió la ayuda. Un acierto lento no
   quita lo ganado; solo un fallo reinicia la cuenta. Tocar una tabla en el
   mapa la abre para practicar.
+- **«🌻 Mi jardín»** dibuja las 54 plantas en nueve bancales en escalera, uno
+  por tabla, y cada una crece según se domina: 🟫 por sembrar, 🌱 brote,
+  🌷 capullo, la flor de su tabla cuando florece y 🥀 si se marchita. Cada
+  planta lo dice también con texto («7 por 8 y 8 por 7: flor, te la sabes»).
+  Arriba están la cuenta de flores, una barra de progreso y un consejo de qué
+  hacer ahora; tocar un bancal abre esa tabla. El menú dice cuántas flores hay
+  y la pantalla de victoria lleva al jardín.
+- **Regar: lo que no se repasa se marchita.** Una flor que lleva 14 días o más
+  sin salir se marchita. No se pierde (sigue contando como florecida), pero
+  entra en «lo que me falta» para repasarla, y al acertarla revive. Repasar
+  espaciado es lo que fija la memoria a largo plazo.
 - **«Practicar lo que me falta»** arma una partida con lo que está en
-  «practicando» o «casi»: primero lo fallado la última vez, luego lo que se
-  practica, luego lo «casi» de otro día (que hoy puede florecer). Así el repaso
-  sigue entre días, no solo dentro de una partida. El botón solo aparece si hay
-  algo pendiente.
+  «practicando» o «casi» y lo marchito: primero lo fallado la última vez, luego
+  lo que se practica, luego lo «casi» de otro día (que hoy puede florecer) y
+  las flores marchitas. Así el repaso sigue entre días, no solo dentro de una
+  partida. El botón solo aparece si hay algo pendiente.
 - **Al ganar, el juego dice lo aprendido**: qué multiplicaciones florecieron
-  en esa partida, cuántas quedan «casi» (y qué falta: escribirlas rápido otro
-  día) o cuántas van en camino.
+  en esa partida, cuántas flores se regaron, cuántas quedan «casi» (y qué
+  falta: escribirlas rápido otro día) o cuántas van en camino.
 
 Con teclado (en una tableta estos atajos no se muestran):
 
@@ -60,7 +78,7 @@ Con teclado (en una tableta estos atajos no se muestran):
 | `0`–`9`, `Retroceso`, `Enter` | Escribir la respuesta, borrar y mandarla, cuando se escribe |
 | `H` | Abrir o cerrar la ayuda |
 | `Enter` o `Espacio` | Seguir a la siguiente pregunta |
-| `Esc` | Volver al menú, desde el juego o el mapa |
+| `Esc` | Volver al menú, desde el juego, el mapa o el jardín |
 
 En **Ajustes** se pueden apagar por separado la voz y los sonidos, elegir la
 velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento».
@@ -118,7 +136,7 @@ El CI comprueba que la construcción está al día y falla si no lo está.
 Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, tablas del 1 al 9, estados del mapa y lo
-guardado por la versión anterior), el
+guardado por la versión anterior), el jardín (parejas, bancales y riego), el
 uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
 internet y la voz. Si Chromium está instalado fuera de la caché de Playwright,
 su ruta se indica con `CHROMIUM_RUTA`.
@@ -127,6 +145,9 @@ Lo que cuenta como «rápido» para florecer es la constante `RAPIDO_MS` de
 `index.html` (6000 ms, medidos desde que aparece la pregunta: incluye leerla o
 oírla y teclear la respuesta). Las pruebas de `pruebas/didactica.spec.mjs`
 fijan las reglas de cada estado.
+
+Los días sin repasar que marchitan una flor son la constante `RIEGO_DIAS` de
+`index.html` (14). Las pruebas de `pruebas/jardin.spec.mjs` fijan ese límite.
 
 Las velocidades de la voz se definen en la constante `VELOCIDADES` de
 `index.html`; es el único sitio que hay que tocar para ajustarlas. Las pruebas

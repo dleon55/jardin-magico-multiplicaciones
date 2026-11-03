@@ -3,7 +3,7 @@
 import { test, expect } from "@playwright/test";
 import {
   entrarATabla, preguntaActual, responder, siguiente, instalarDobles, seEscribe,
-  ponerIntentos, rapida, lenta, elegida, conAyuda, fallo,
+  ponerIntentos, rapida, lenta, elegida, conAyuda, fallo, pareja,
 } from "./ayudas.mjs";
 
 const conTeclado = (testInfo) => testInfo.project.name === "escritorio";
@@ -161,7 +161,8 @@ test.describe("mapa de lo que ya se sabe", () => {
     await page.click("text=Mi mapa de tablas");
     // Escritas rápido, pero el mismo día: florecer exige otro día.
     for (let b = 1; b <= 10; b++) await expect(celda(page, 2, b)).toHaveAttribute("data-estado", "casi");
-    await expect(page.locator("#mapa-resumen")).toHaveText("Florecidas: 0 de 90. Casi: 10. Practicando: 0.");
+    // Se cuentan plantas: 2 × 1 y 1 × 2 son una sola. 54 en total.
+    await expect(page.locator("#mapa-resumen")).toHaveText("Florecidas: 0 de 54. Casi: 10. Practicando: 0.");
   });
 
   test("florece al escribirla rápido en dos días distintos, y solo así", async ({ page }) => {
@@ -197,7 +198,7 @@ test.describe("mapa de lo que ya se sabe", () => {
     await expect(celda(page, 5, 6)).toContainText("5 por 6: casi");
     await expect(celda(page, 6, 7)).toContainText("🌱");
     await expect(celda(page, 6, 7)).toContainText("6 por 7: practicando");
-    await expect(page.locator("#mapa-resumen")).toHaveText("Florecidas: 1 de 90. Casi: 1. Practicando: 1.");
+    await expect(page.locator("#mapa-resumen")).toHaveText("Florecidas: 1 de 54. Casi: 1. Practicando: 1.");
   });
 
   test("se conserva al recargar y se borra al salir", async ({ page }) => {
@@ -310,11 +311,11 @@ test.describe("practicar lo que falta", () => {
     const primeras = [];
     for (let i = 0; i < 3; i++) {
       const { a, b } = await preguntaActual(page);
-      primeras.push(`${a}x${b}`);
+      primeras.push(pareja(a, b));   // sale en cualquiera de sus dos órdenes
       await responder(page, true);
       await siguiente(page);
     }
-    expect(primeras.slice(0, 2).sort()).toEqual(["4x7", "8x3"]);
+    expect(primeras.slice(0, 2).sort()).toEqual(["3x8", "4x7"]);
     expect(primeras[2]).toBe("6x9");
   });
 
@@ -326,7 +327,7 @@ test.describe("practicar lo que falta", () => {
     const vistas = [];
     for (let i = 0; i < 10; i++) {
       const { a, b } = await preguntaActual(page);
-      vistas.push(`${a}x${b}`);
+      vistas.push(pareja(a, b));
       await responder(page, true);
       await siguiente(page);
     }
@@ -334,7 +335,7 @@ test.describe("practicar lo que falta", () => {
     // Antes de este caso, cuando todo lo pendiente pasaba a sabido a mitad de
     // partida, la bolsa quedaba vacía y el juego se rompía en la pregunta 9.
     expect(vistas[0]).toBe("7x8");
-    expect(vistas.every((h) => h.startsWith("7x")), "el relleno es de la misma tabla").toBe(true);
+    expect(vistas.every((h) => h.split("x").includes("7")), "el relleno es de la misma tabla").toBe(true);
     await expect(page.locator("#victory-table-name")).toHaveText("Lo que te faltaba");
   });
 });

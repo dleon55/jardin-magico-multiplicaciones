@@ -54,7 +54,16 @@ export async function responder(pagina, acertar) {
  * modo y tiempo a medida. `rapida(d)` y compañía arman cada intento.
  */
 export function ponerIntentos(pagina, clave, intentos) {
-  return pagina.evaluate(([k, lista]) => { hechos[k] = lista; guardarHechos(); }, [clave, intentos]);
+  return pagina.evaluate(([k, lista]) => {
+    const [a, b] = k.split("x").map(Number);
+    hechos[claveHecho(a, b)] = lista;
+    guardarHechos();
+  }, [clave, intentos]);
+}
+
+/** "8x7" -> "7x8": la planta de una multiplicación, sin importar el orden. */
+export function pareja(a, b) {
+  return a <= 9 && b <= 9 && b < a ? `${b}x${a}` : `${a}x${b}`;
 }
 export const rapida = (d) => ({ d, m: "e", ok: 1, ms: 2000 });
 export const lenta = (d) => ({ d, m: "e", ok: 1, ms: 15000 });
