@@ -91,8 +91,8 @@ test("al florecer, se celebra con su nombre", async ({ page }) => {
   for (let i = 0; i < 4; i++) {
     const { a, b } = await preguntaActual(page);
     await responder(page, true);
-    if (a === 7 && b === 8) {
-      await expect(page.locator("#game-feedback")).toContainText("🌸 ¡7 × 8 floreció!");
+    if (a * b === 56) {   // 7 × 8 u 8 × 7: es la misma planta
+      await expect(page.locator("#game-feedback")).toContainText(`🌸 ¡${a} × ${b} floreció!`);
       return;
     }
     await siguiente(page);

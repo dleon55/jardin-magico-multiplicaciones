@@ -108,6 +108,20 @@ test("pregunta que se responde escribiendo, con un número a medias", async ({ p
   await auditar(page, "el teclado de números");
 });
 
+test("mi jardín, con plantas en todos los estados", async ({ page }) => {
+  await page.goto("./");
+  await page.evaluate(() => {
+    const r = (d) => ({ d, t: 1, m: "e", ok: 1, ms: 2000 });
+    hechos["2x3"] = [r("2026-01-01"), r(hoy())];       // flor
+    hechos["3x3"] = [r("2020-01-01"), r("2020-01-02")]; // marchita
+    hechos["4x5"] = [r(hoy())];                         // capullo
+    registrarIntento(6, 7, true);                       // brote
+  });
+  await page.click("#screen-welcome button");
+  await page.click("#screen-selector >> text=Mi jardín");
+  await auditar(page, "el jardín");
+});
+
 test("selector con «Practicar lo que me falta»", async ({ page }) => {
   await page.goto("./");
   await page.evaluate(() => registrarIntento(7, 8, false));

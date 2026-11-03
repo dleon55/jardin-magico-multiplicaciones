@@ -32,6 +32,19 @@
         .celda-casi { background: #fce7f3; color: #831843; }
         .celda-practica { background: #fef3c7; color: #78350f; }
         .celda-nuevo { background: #f3f4f6; border: 1px solid #d1d5db; }
+        .celda-marchita { background: #e7e5e4; color: #44403c; }
+
+        /* Plantas del jardín: el emoji dice el estado; la etiqueta, cuál es. */
+        .planta {
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+            width: 3rem; min-height: 3.4rem; border-radius: 0.75rem; padding: 0.15rem 0;
+            background: #ecfccb;
+        }
+        .planta .emoji { font-size: 1.6rem; line-height: 1.2; }
+        .planta .etiqueta { font-size: 0.7rem; font-weight: 700; color: #365314; }
+        .planta-nuevo { background: #f5f5f4; }
+        .planta-nuevo .emoji { filter: grayscale(0.4); opacity: 0.8; }
+        .planta-marchita { background: #e7e5e4; }
         /* Fuentes con licencia SIL OFL 1.1: ver fuentes/OFL-*.txt.
            Solo el subconjunto latino, que incluye ñ, tildes, ¡, ¿ y ×. */
         @font-face {
@@ -288,6 +301,9 @@
                 <button type="button" onclick="startTable('falta')" class="btn-falta hidden w-full bubble-font bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3">
                     <span aria-hidden="true">🎯</span> Practicar lo que me falta (<span class="cuenta-falta">0</span>)
                 </button>
+                <button onclick="mostrarJardin()" class="w-full bubble-font bg-gradient-to-r from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 border-2 border-green-400 text-green-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3">
+                    <span aria-hidden="true">🌻</span> Mi jardín (<span class="cuenta-flores">0</span> de 54 flores)
+                </button>
                 <button onclick="mostrarMapa()" class="w-full bubble-font bg-white hover:bg-green-50 border-2 border-green-300 text-green-800 py-3 rounded-2xl shadow-sm transition text-lg">
                     <span aria-hidden="true">🗺️</span> Mi mapa de tablas
                 </button>
@@ -451,9 +467,49 @@
                     Salir / Otro Nombre
                 </button>
             </div>
-            <button type="button" onclick="mostrarMapa()" class="text-green-800 font-bold underline hover:text-green-900">
-                <span aria-hidden="true">🗺️</span> Ver mi mapa de tablas
-            </button>
+            <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+                <button type="button" onclick="mostrarJardin()" class="text-green-800 font-bold underline hover:text-green-900">
+                    <span aria-hidden="true">🌻</span> Ver mi jardín
+                </button>
+                <button type="button" onclick="mostrarMapa()" class="text-green-800 font-bold underline hover:text-green-900">
+                    <span aria-hidden="true">🗺️</span> Ver mi mapa de tablas
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= PANTALLA 6: MI JARDÍN ================= -->
+        <!-- Una planta por multiplicación (7 × 8 y 8 × 7 son la misma), que crece
+             según se domina. Es lo que queda de cada partida: el jardín no se
+             vacía al terminar. -->
+        <div id="screen-jardin" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-2xl text-green-700">Mi jardín</h2>
+                <p id="jardin-resumen" class="text-gray-800 font-bold text-lg"></p>
+                <div id="jardin-progreso" role="progressbar" aria-label="Flores del jardín" aria-valuemin="0" aria-valuemax="54" aria-valuenow="0"
+                     class="w-full max-w-sm mx-auto h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div id="jardin-barra" class="h-full bg-gradient-to-r from-pink-300 to-green-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <p id="jardin-consejo" class="text-gray-600 text-sm max-w-md mx-auto"></p>
+                <button type="button" onclick="startTable('falta')" class="btn-falta hidden bubble-font bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 px-5 py-2 rounded-2xl shadow-sm transition mt-2">
+                    <span aria-hidden="true">🎯</span> Practicar lo que me falta (<span class="cuenta-falta">0</span>)
+                </button>
+            </div>
+            <ul class="flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm text-gray-700" aria-label="Cómo crece cada planta">
+                <li><span aria-hidden="true">🟫</span> Por sembrar</li>
+                <li><span aria-hidden="true">🌱</span> Brote: practicando</li>
+                <li><span aria-hidden="true">🌷</span> Capullo: casi</li>
+                <li><span aria-hidden="true">🌸</span> Flor: te la sabes</li>
+                <li><span aria-hidden="true">🥀</span> Marchita: riégala repasándola</li>
+            </ul>
+            <div id="jardin-bancales" class="space-y-2"></div>
+            <p class="text-gray-600 text-xs text-center max-w-md mx-auto">
+                Cada tabla trae menos plantas nuevas: las demás ya las sembraste en las tablas de antes. Del 9 solo quedan 9 × 9 y 9 × 10.
+            </p>
         </div>
 
         <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
@@ -466,13 +522,14 @@
             <div class="text-center space-y-1">
                 <h2 data-foco class="bubble-font text-2xl text-green-700">Tu mapa de tablas</h2>
                 <p id="mapa-resumen" class="text-gray-700 font-bold"></p>
-                <p class="text-gray-600 text-sm">Toca una tabla para practicarla.</p>
+                <p class="text-gray-600 text-sm">Toca una tabla para practicarla. 7 × 8 y 8 × 7 son la misma: aprendes las dos a la vez.</p>
                 <button type="button" onclick="startTable('falta')" class="btn-falta hidden bubble-font bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 px-5 py-2 rounded-2xl shadow-sm transition mt-2">
                     <span aria-hidden="true">🎯</span> Practicar lo que me falta (<span class="cuenta-falta">0</span>)
                 </button>
             </div>
             <ul class="flex flex-wrap justify-center gap-3 text-sm text-gray-700" aria-label="Leyenda">
                 <li class="flex items-center gap-1"><span class="celda-mapa celda-florecida" aria-hidden="true">🌸</span> Florecida: te la sabes de memoria</li>
+                <li class="flex items-center gap-1"><span class="celda-mapa celda-marchita" aria-hidden="true">🥀</span> Marchita: repásala</li>
                 <li class="flex items-center gap-1"><span class="celda-mapa celda-casi" aria-hidden="true">🌷</span> Casi</li>
                 <li class="flex items-center gap-1"><span class="celda-mapa celda-practica" aria-hidden="true">🌱</span> Practicando</li>
                 <li class="flex items-center gap-1"><span class="celda-mapa celda-nuevo" aria-hidden="true"></span> Sin jugar</li>
@@ -872,6 +929,10 @@
             ultimoHecho = "";
             bolsa = []; // la de otra tabla no sirve: se llena al pedir la primera
             florecidasAlEmpezar = clavesEnEstado("florecida");
+            marchitasAlEmpezar = new Set([...florecidasAlEmpezar].filter((k) => {
+                const [a, b] = k.split("x").map(Number);
+                return estaMarchita(a, b);
+            }));
             hechosDeLaPartida = new Set();
             
             document.getElementById("garden-plot").innerHTML = "";
@@ -911,12 +972,15 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa"];
+        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin"];
         let pantallaActual = "screen-welcome";
 
         function mostrarPantalla(id) {
             PANTALLAS.forEach((p) => document.getElementById(p).classList.toggle("hidden", p !== id));
-            if (id === "screen-selector") actualizarBotonesFalta();
+            if (id === "screen-selector") {
+                actualizarBotonesFalta();
+                actualizarCuentaFlores();
+            }
             pantallaActual = id;
             const destino = document.querySelector(`#${id} [data-foco]`);
             if (destino) {
@@ -1018,7 +1082,7 @@
                 return;
             }
 
-            if (pantallaActual === "screen-mapa" && evento.key === "Escape") {
+            if ((pantallaActual === "screen-mapa" || pantallaActual === "screen-jardin") && evento.key === "Escape") {
                 evento.preventDefault();
                 backToSelector();
                 return;
@@ -1225,13 +1289,56 @@
         //   nuevo      sin jugar.
         //
         // Un acierto lento no quita lo ganado: solo un fallo reinicia la cuenta.
+        //
+        // UNA PLANTA POR PAREJA (Fase 2). 7 × 8 y 8 × 7 son la misma
+        // multiplicación: quien se sabe una se sabe la otra, y el rectángulo de
+        // la ayuda lo enseña al girarlo. Se guardan juntas, con la clave del
+        // factor menor primero ("7x8"). Así, de 1 × 1 a 9 × 10 no son 90 cosas que
+        // memorizar sino 54, y la tabla del 9 solo trae dos nuevas: 9 × 9 y 9 × 10.
         const RAPIDO_MS = 6000;
         const MAX_INTENTOS = 6;
-        let hechos = {};   // "7x8" -> [{ d: "2026-11-03", m: "e", ok: 1, ms: 2400 }, ...]
+        let hechos = {};   // "7x8" -> [{ d: "2026-11-03", t: 1793..., m: "e", ok: 1, ms: 2400 }, ...]
 
         function hoy() {
             // Fecha local en AAAA-MM-DD: el «otro día» es el del reloj de quien juega.
             return new Intl.DateTimeFormat("en-CA").format(new Date());
+        }
+
+        /** Clave de la planta: 8 × 7 se guarda como "7x8". El ×10 no tiene pareja. */
+        function claveHecho(a, b) {
+            return a <= TABLAS && b <= TABLAS && b < a ? `${b}x${a}` : `${a}x${b}`;
+        }
+
+        /**
+         * Junta intentos de las dos mitades de una pareja en orden de tiempo.
+         * Los intentos sin instante (`t`, anteriores a la Fase 2) se ordenan por
+         * día; dentro del mismo día, conservan el orden que traían.
+         */
+        function juntarIntentos(...listas) {
+            return listas.flat()
+                .filter((i) => i && typeof i === "object")
+                .map((i, n) => ({ i, n }))
+                .sort((x, y) => (x.i.d || "").localeCompare(y.i.d || "") || (x.i.t || 0) - (y.i.t || 0) || x.n - y.n)
+                .map(({ i }) => i)
+                .slice(-MAX_INTENTOS);
+        }
+
+        /**
+         * Las 54 plantas del jardín, una por pareja: del 1 al 9, el factor menor
+         * primero (3 × 7, no 7 × 3), más el ×10 de cada tabla.
+         */
+        function plantas() {
+            const lista = [];
+            for (let a = 1; a <= TABLAS; a++) {
+                for (let b = a; b <= MULTIPLICADORES; b++) lista.push({ a, b });
+            }
+            return lista;
+        }
+
+        function cuentaPorEstado() {
+            const cuenta = { florecida: 0, casi: 0, practica: 0, nuevo: 0 };
+            plantas().forEach(({ a, b }) => { cuenta[estadoHecho(a, b)]++; });
+            return cuenta;
         }
 
         function claveValida(clave) {
@@ -1246,7 +1353,9 @@
                 const guardados = JSON.parse(almacen.leer("intentos") || "{}") || {};
                 for (const [clave, lista] of Object.entries(guardados)) {
                     if (claveValida(clave) && Array.isArray(lista)) {
-                        hechos[clave] = lista.filter((i) => i && typeof i === "object").slice(-MAX_INTENTOS);
+                        const [a, b] = clave.split("x").map(Number);
+                        const pareja = claveHecho(a, b);
+                        hechos[pareja] = juntarIntentos(hechos[pareja] || [], lista);
                     }
                 }
             } catch (e) { hechos = {}; }
@@ -1264,8 +1373,11 @@
             try {
                 const antiguos = JSON.parse(viejo) || {};
                 for (const [clave, texto] of Object.entries(antiguos)) {
-                    if (claveValida(clave) && !hechos[clave] && typeof texto === "string") {
-                        hechos[clave] = [...texto].map((r) => ({ d: "", m: "o", ok: r === "1" ? 1 : 0, ms: null }));
+                    if (claveValida(clave) && typeof texto === "string") {
+                        const [a, b] = clave.split("x").map(Number);
+                        const pareja = claveHecho(a, b);
+                        const convertidos = [...texto].map((r) => ({ d: "", m: "o", ok: r === "1" ? 1 : 0, ms: null }));
+                        hechos[pareja] = juntarIntentos(hechos[pareja] || [], convertidos);
                     }
                 }
             } catch (e) { /* dañado: se ignora */ }
@@ -1278,13 +1390,13 @@
         }
 
         function intentosDe(a, b) {
-            return hechos[`${a}x${b}`] || [];
+            return hechos[claveHecho(a, b)] || [];
         }
 
         function registrarIntento(a, b, acierto, { modo = "o", ms = null } = {}) {
-            const clave = `${a}x${b}`;
+            const clave = claveHecho(a, b);
             hechosDeLaPartida.add(clave);
-            const intento = { d: hoy(), m: modo, ok: acierto ? 1 : 0, ms: ms === null ? null : Math.round(ms) };
+            const intento = { d: hoy(), t: Date.now(), m: modo, ok: acierto ? 1 : 0, ms: ms === null ? null : Math.round(ms) };
             hechos[clave] = [...intentosDe(a, b), intento].slice(-MAX_INTENTOS);
             guardarHechos();
         }
@@ -1304,6 +1416,23 @@
             return "practica";
         }
 
+        // --- RIEGO ---
+        //
+        // Lo que se sabe y no se repasa se olvida. Una flor que lleva RIEGO_DIAS
+        // sin preguntarse se ve marchita y vuelve a «Practicar lo que me
+        // falta»: repasar es regar. No pierde su estado, porque nada indica que
+        // se haya olvidado; al responderla otra vez, revive.
+        const RIEGO_DIAS = 14;
+
+        function diasDesde(fecha) {
+            if (!fecha) return 0;
+            return Math.round((Date.parse(hoy()) - Date.parse(fecha)) / 86400000);
+        }
+
+        function estaMarchita(a, b) {
+            return estadoHecho(a, b) === "florecida" && diasDesde(intentosDe(a, b).at(-1).d) >= RIEGO_DIAS;
+        }
+
         /**
          * Cómo se pregunta: eligiendo mientras se aprende, escribiendo en cuanto
          * ya salió bien. Lo nuevo y lo recién fallado van con opciones, que
@@ -1320,20 +1449,22 @@
         // lo fallado se olvidaba. El mapa sí lo recuerda, así que de él sale una
         // partida que pregunta justo eso, días después.
         //
-        // Pendiente es todo lo jugado que aún no florece: «practicando» y «casi».
+        // Pendiente es todo lo jugado que aún no florece («practicando» y
+        // «casi») y las flores marchitas, que piden riego.
         function hechosQueFaltan() {
             const pendientes = barajar(Object.keys(hechos).filter((k) => {
                 const [a, b] = k.split("x").map(Number);
-                return ["practica", "casi"].includes(estadoHecho(a, b));
+                return ["practica", "casi"].includes(estadoHecho(a, b)) || estaMarchita(a, b);
             }));
             // Por urgencia: lo fallado la última vez; luego lo que se practica;
-            // luego lo «casi» de otro día, que hoy puede florecer; al final lo
-            // «casi» de hoy, que no florece hasta otro día.
+            // luego lo «casi» de otro día, que hoy puede florecer, y las
+            // marchitas; al final lo «casi» de hoy, que no florece hasta otro día.
             const prioridad = (k) => {
                 const [a, b] = k.split("x").map(Number);
                 const ultimo = intentosDe(a, b).at(-1);
                 if (!ultimo.ok) return 0;
                 if (estadoHecho(a, b) === "practica") return 1;
+                if (estaMarchita(a, b)) return 2;
                 return ultimo.d === hoy() ? 3 : 2;
             };
             return pendientes.sort((x, y) => prioridad(x) - prioridad(y))
@@ -1349,7 +1480,7 @@
             // Si a mitad de partida ya no queda nada pendiente (todo floreció),
             // se sigue con las tablas que se estaban jugando.
             if (lista.length < 4) {
-                const usadas = new Set(lista.map((h) => `${h.a}x${h.b}`));
+                const usadas = new Set(lista.map((h) => claveHecho(h.a, h.b)));
                 const tablas = [...new Set([
                     ...lista.map((h) => h.a),
                     ...[...hechosDeLaPartida].map((k) => Number(k.split("x")[0])),
@@ -1357,7 +1488,7 @@
                 if (tablas.length === 0) tablas.push(2);   // sin datos: no debería pasar, el botón no se ve
                 const relleno = barajar(tablas.flatMap((a) =>
                     Array.from({ length: MULTIPLICADORES }, (_, i) => ({ a, b: i + 1 }))
-                        .filter((h) => !usadas.has(`${h.a}x${h.b}`))));
+                        .filter((h) => !usadas.has(claveHecho(h.a, h.b)))));
                 relleno.sort((x, y) => (estadoHecho(y.a, y.b) === "florecida") - (estadoHecho(x.a, x.b) === "florecida"));
                 lista.push(...relleno.slice(0, 4 - lista.length));
             }
@@ -1376,6 +1507,7 @@
 
         // --- LO APRENDIDO EN ESTA PARTIDA ---
         let florecidasAlEmpezar = new Set();
+        let marchitasAlEmpezar = new Set();
         let hechosDeLaPartida = new Set();
 
         function clavesEnEstado(estado) {
@@ -1400,12 +1532,21 @@
                 return estadoHecho(a, b) === estado;
             });
             const nuevas = jugadas("florecida").filter((k) => !florecidasAlEmpezar.has(k));
+            const regadas = jugadas("florecida").filter((k) => {
+                const [a, b] = k.split("x").map(Number);
+                return marchitasAlEmpezar.has(k) && !estaMarchita(a, b);
+            });
             if (nuevas.length >= 5) return `¡Florecieron ${nuevas.length} multiplicaciones! Ya te las sabes de memoria.`;
             if (nuevas.length > 0) {
                 const lista = enumerar(nuevas.map((k) => k.replace("x", " × ")));
                 return nuevas.length === 1
                     ? `¡Floreció ${lista}! Ya te la sabes de memoria.`
                     : `¡Florecieron ${lista}! Ya te las sabes de memoria.`;
+            }
+            if (regadas.length > 0) {
+                return regadas.length === 1
+                    ? "¡Regaste 1 flor que se estaba marchitando! Sigue fresca en tu jardín."
+                    : `¡Regaste ${regadas.length} flores que se estaban marchitando! Siguen frescas en tu jardín.`;
             }
             const casi = jugadas("casi").length;
             if (casi > 0) {
@@ -1419,8 +1560,88 @@
                 : `Llevas ${enCamino} multiplicaciones en camino. Sigue practicando y florecerán.`;
         }
 
-        const NOMBRES_ESTADO = { florecida: "florecida, ya te la sabes", casi: "casi", practica: "practicando", nuevo: "sin jugar" };
-        const SIMBOLOS_ESTADO = { florecida: "🌸", casi: "🌷", practica: "🌱", nuevo: "" };
+        const NOMBRES_ESTADO = { florecida: "florecida, ya te la sabes", marchita: "marchita, toca repasarla", casi: "casi", practica: "practicando", nuevo: "sin jugar" };
+        const SIMBOLOS_ESTADO = { florecida: "🌸", marchita: "🥀", casi: "🌷", practica: "🌱", nuevo: "" };
+
+        // --- MI JARDÍN ---
+        //
+        // Antes, el jardín se vaciaba al terminar cada partida y lo único que
+        // quedaba eran las estrellas, que cuentan respuestas, no lo aprendido.
+        // Ahora hay un jardín permanente con una planta por multiplicación:
+        // verlo es ver lo que se sabe, y repasar es regarlo.
+        const FLORES_TABLA = ["🌼", "🌸", "🌺", "🌻", "🌹", "💐", "🏵️", "💮", "🌼"];
+        const PLANTA = {
+            nuevo: { emoji: "🟫", nombre: "por sembrar" },
+            practica: { emoji: "🌱", nombre: "brote, practicando" },
+            casi: { emoji: "🌷", nombre: "capullo, casi" },
+            marchita: { emoji: "🥀", nombre: "marchita, riégala repasándola" },
+        };
+
+        function plantaDe(a, b) {
+            if (estaMarchita(a, b)) return { estado: "marchita", ...PLANTA.marchita };
+            const estado = estadoHecho(a, b);
+            if (estado === "florecida") return { estado, emoji: FLORES_TABLA[a - 1], nombre: "flor, te la sabes" };
+            return { estado, ...PLANTA[estado] };
+        }
+
+        function actualizarCuentaFlores() {
+            const n = cuentaPorEstado().florecida;
+            document.querySelectorAll(".cuenta-flores").forEach((e) => { e.textContent = String(n); });
+        }
+
+        function consejoDelJardin(cuenta, marchitas) {
+            if (marchitas > 0) return marchitas === 1
+                ? "Una flor se está marchitando: repásala en «Practicar lo que me falta» y revivirá."
+                : `${marchitas} flores se están marchitando: repásalas en «Practicar lo que me falta» y revivirán.`;
+            if (cuenta.casi > 0) return "Los capullos florecen cuando los escribes rápido otro día.";
+            if (cuenta.practica > 0) return "Los brotes crecen cuando aciertas: sigue practicando.";
+            if (cuenta.nuevo === plantas().length) return "Juega una tabla y verás crecer tus primeras plantas.";
+            return "¡Qué jardín! Repásalo de vez en cuando para que no se marchite.";
+        }
+
+        function mostrarJardin() {
+            const contenedor = document.getElementById("jardin-bancales");
+            contenedor.replaceChildren();
+            let marchitas = 0;
+            for (let a = 1; a <= TABLAS; a++) {
+                const bancal = document.createElement("section");
+                bancal.className = "bg-gradient-to-b from-amber-50 to-amber-100 border-b-4 border-amber-800/40 rounded-2xl px-2 py-2";
+                bancal.setAttribute("aria-labelledby", `bancal-${a}`);
+                const titulo = document.createElement("h3");
+                titulo.id = `bancal-${a}`;
+                titulo.className = "text-sm font-bold text-green-900 mb-1";
+                titulo.innerHTML = `<button type="button" class="hover:underline">Bancal del ${a}</button>`;
+                titulo.querySelector("button").onclick = () => startTable(a);
+                const fila = document.createElement("ul");
+                fila.className = "flex flex-wrap gap-1";
+                for (let b = a; b <= MULTIPLICADORES; b++) {
+                    const p = plantaDe(a, b);
+                    if (p.estado === "marchita") marchitas++;
+                    const li = document.createElement("li");
+                    li.className = `planta planta-${p.estado}`;
+                    li.dataset.planta = `${a}x${b}`;
+                    li.dataset.estado = p.estado;
+                    const otra = b !== a && b <= TABLAS ? ` y ${b} por ${a}` : "";
+                    li.innerHTML = `<span class="emoji" aria-hidden="true">${p.emoji}</span>` +
+                        `<span class="etiqueta" aria-hidden="true">${a}×${b}</span>` +
+                        `<span class="sr-only">${a} por ${b}${otra}: ${p.nombre}</span>`;
+                    fila.appendChild(li);
+                }
+                bancal.append(titulo, fila);
+                contenedor.appendChild(bancal);
+            }
+
+            const cuenta = cuentaPorEstado();
+            const total = plantas().length;
+            document.getElementById("jardin-resumen").innerText = `${cuenta.florecida} de ${total} flores`;
+            const barra = document.getElementById("jardin-progreso");
+            barra.setAttribute("aria-valuenow", String(cuenta.florecida));
+            barra.setAttribute("aria-valuetext", `${cuenta.florecida} de ${total} flores`);
+            document.getElementById("jardin-barra").style.width = `${(cuenta.florecida / total) * 100}%`;
+            document.getElementById("jardin-consejo").innerText = consejoDelJardin(cuenta, marchitas);
+            actualizarBotonesFalta();
+            mostrarPantalla("screen-jardin");
+        }
 
         function mostrarMapa() {
             const tabla = document.getElementById("mapa-tabla");
@@ -1439,7 +1660,6 @@
             }
 
             const cuerpo = tabla.createTBody();
-            const cuenta = { florecida: 0, casi: 0, practica: 0, nuevo: 0 };
             for (let a = 1; a <= TABLAS; a++) {
                 const fila = cuerpo.insertRow();
                 const th = document.createElement("th");
@@ -1450,8 +1670,7 @@
                 th.querySelector("button").onclick = () => startTable(a);
                 fila.appendChild(th);
                 for (let b = 1; b <= MULTIPLICADORES; b++) {
-                    const estado = estadoHecho(a, b);
-                    cuenta[estado]++;
+                    const estado = estaMarchita(a, b) ? "marchita" : estadoHecho(a, b);
                     const td = fila.insertCell();
                     td.className = `celda-mapa celda-${estado}`;
                     td.dataset.hecho = `${a}x${b}`;
@@ -1460,7 +1679,9 @@
                 }
             }
             actualizarBotonesFalta();
-            const total = TABLAS * MULTIPLICADORES;
+            // Se cuentan plantas, no casillas: 7 × 8 y 8 × 7 son una sola.
+            const cuenta = cuentaPorEstado();
+            const total = plantas().length;
             document.getElementById("mapa-resumen").innerText = cuenta.nuevo === total
                 ? "Juega una tabla y aquí verás lo que vas aprendiendo."
                 : `Florecidas: ${cuenta.florecida} de ${total}. Casi: ${cuenta.casi}. Practicando: ${cuenta.practica}.`;
@@ -1474,9 +1695,11 @@
             } else {
                 const lista = [];
                 if (currentTable === "mix") {
-                    // EXCLUSIÓN DE 1s: factores entre 2 y 9, todas las parejas.
+                    // EXCLUSIÓN DE 1s: factores entre 2 y 9. Cada pareja una
+                    // vez (7 × 8 y 8 × 7 son la misma planta), en un orden al
+                    // azar: 36 multiplicaciones distintas.
                     for (let a = 2; a <= 9; a++) {
-                        for (let b = 2; b <= 9; b++) lista.push({ a, b });
+                        for (let b = a; b <= 9; b++) lista.push(Math.random() < 0.5 ? { a, b } : { a: b, b: a });
                     }
                 } else {
                     for (let b = 1; b <= MULTIPLICADORES; b++) lista.push({ a: currentTable, b });
@@ -1488,7 +1711,7 @@
             // con el último de la anterior: se apartaría la bolsa entera para
             // evitar UNA repetición. Basta con moverlo al fondo.
             const siguiente = bolsa[bolsa.length - 1];
-            if (bolsa.length > 1 && `${siguiente.a}x${siguiente.b}` === ultimoHecho) {
+            if (bolsa.length > 1 && claveHecho(siguiente.a, siguiente.b) === ultimoHecho) {
                 bolsa.unshift(bolsa.pop());
             }
         }
@@ -1522,9 +1745,14 @@
                 const hecho = sacarDeLaBolsa();
                 numA = hecho.a;
                 numB = hecho.b;
+                // Al repasar lo pendiente, la pareja sale en cualquiera de sus
+                // dos órdenes: saberse 7 × 8 es saberse también 8 × 7.
+                if (currentTable === "falta" && numA !== numB && numB <= TABLAS && Math.random() < 0.5) {
+                    [numA, numB] = [numB, numA];
+                }
             }
 
-            ultimoHecho = `${numA}x${numB}`;
+            ultimoHecho = claveHecho(numA, numB);
             correctAnswer = numA * numB;
             ayudaGirada = false;
 
