@@ -21,14 +21,15 @@
     <link rel="preload" href="fuentes/fredoka-one-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="estilos.css">
     <style>
-        /* Casillas del mapa de tablas: color Y símbolo (✓ •), no solo color. */
+        /* Casillas del mapa de tablas: color Y símbolo (🌸 🌷 🌱), no solo color. */
         .celda-mapa {
             display: inline-flex; align-items: center; justify-content: center;
             width: 1.6rem; height: 1.6rem; border-radius: 0.4rem;
             font-weight: 700; font-size: 0.85rem; text-align: center;
         }
         td.celda-mapa { display: table-cell; vertical-align: middle; }
-        .celda-dominado { background: #bbf7d0; color: #14532d; }
+        .celda-florecida { background: #bbf7d0; color: #14532d; }
+        .celda-casi { background: #fce7f3; color: #831843; }
         .celda-practica { background: #fef3c7; color: #78350f; }
         .celda-nuevo { background: #f3f4f6; border: 1px solid #d1d5db; }
         /* Fuentes con licencia SIL OFL 1.1: ver fuentes/OFL-*.txt.
@@ -249,13 +250,13 @@
 
             <div class="text-center">
                 <h3 data-foco class="bubble-font text-2xl text-green-700">¿Qué tabla quieres cultivar hoy?</h3>
-                <p class="text-gray-600 text-sm">Cada tabla completada hará florecer tu jardín mágico. <span class="solo-teclado">Pulsa del 1 al 9 para elegir, o el 0 para la del 10.</span></p>
+                <p class="text-gray-600 text-sm">Cada tabla completada hará florecer tu jardín mágico. <span class="solo-teclado">Pulsa del 1 al 9 para elegir.</span></p>
             </div>
 
-            <!-- Rejilla de selección de tablas del 1 al 12 -->
+            <!-- Rejilla de selección de tablas del 1 al 9 -->
             <div class="grid grid-cols-3 gap-4 max-w-md mx-auto">
                 <script>
-                    const emojisTablas = ["🌱", "🍓", "🍊", "🍋", "🍏", "🍇", "🍒", "🍀", "🌻", "🌷", "🌼", "🌺"];
+                    const emojisTablas = ["🌱", "🍓", "🍊", "🍋", "🍏", "🍇", "🍒", "🍀", "🌻"];
                     const coloresTablas = [
                         "from-red-300 to-pink-300 hover:from-red-400 hover:to-pink-400",
                         "from-orange-300 to-yellow-300 hover:from-orange-400 hover:to-yellow-400",
@@ -265,10 +266,7 @@
                         "from-blue-300 to-indigo-300 hover:from-blue-400 hover:to-indigo-400",
                         "from-purple-300 to-fuchsia-300 hover:from-purple-400 hover:to-fuchsia-400",
                         "from-pink-300 to-rose-300 hover:from-pink-400 hover:to-rose-400",
-                        "from-rose-300 to-amber-300 hover:from-rose-400 hover:to-amber-400",
-                        "from-sky-300 to-cyan-300 hover:from-sky-400 hover:to-cyan-400",
-                        "from-lime-300 to-green-300 hover:from-lime-400 hover:to-green-400",
-                        "from-amber-300 to-orange-300 hover:from-amber-400 hover:to-orange-400"
+                        "from-rose-300 to-amber-300 hover:from-rose-400 hover:to-amber-400"
                     ];
                 </script>
             </div>
@@ -350,12 +348,33 @@
                 </div>
             </div>
 
-            <!-- Opciones de Respuesta -->
-            <div role="group" aria-label="Elige la respuesta" class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+            <!-- Opciones de Respuesta: para lo nuevo y lo recién fallado -->
+            <div id="opciones" role="group" aria-label="Elige la respuesta" class="grid grid-cols-2 gap-4 max-w-md mx-auto">
                 <button onclick="selectOption(0)" id="opt-0" data-tecla="1" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
                 <button onclick="selectOption(1)" id="opt-1" data-tecla="2" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
                 <button onclick="selectOption(2)" id="opt-2" data-tecla="3" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
                 <button onclick="selectOption(3)" id="opt-3" data-tecla="4" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+            </div>
+
+            <!-- Respuesta escrita: para lo que ya salió bien. Recordarla sin opciones
+                 delante es saberla; elegirla entre cuatro solo es reconocerla. -->
+            <div id="escritura" class="hidden max-w-xs mx-auto space-y-3">
+                <p class="text-center text-sm font-bold text-indigo-800"><span aria-hidden="true">✍️</span> Esta ya te salió bien: ahora escríbela.</p>
+                <output id="escrito" aria-label="Tu respuesta" class="block min-h-16 bg-white border-4 border-indigo-300 rounded-2xl text-center text-4xl font-bold text-gray-800 py-2 tabular-nums"></output>
+                <div role="group" aria-label="Teclado de números" class="grid grid-cols-3 gap-2">
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="1" onclick="teclear(1)">1</button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="2" onclick="teclear(2)">2</button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="3" onclick="teclear(3)">3</button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="4" onclick="teclear(4)">4</button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="5" onclick="teclear(5)">5</button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="6" onclick="teclear(6)">6</button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="7" onclick="teclear(7)">7</button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="8" onclick="teclear(8)">8</button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="9" onclick="teclear(9)">9</button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-2xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" id="tecla-borrar" onclick="borrarDigito()" aria-label="Borrar"><span aria-hidden="true">⌫</span></button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="0" onclick="teclear(0)">0</button>
+                    <button type="button" id="tecla-listo" onclick="responderEscrito()" disabled class="btn-tecla bg-green-700 hover:bg-green-800 disabled:opacity-50 active:scale-95 py-3 text-xl font-bold rounded-2xl shadow-md text-white transition duration-150">Listo</button>
+                </div>
             </div>
 
             <!-- Aparece tras responder: permite adelantar la espera -->
@@ -453,8 +472,9 @@
                 </button>
             </div>
             <ul class="flex flex-wrap justify-center gap-3 text-sm text-gray-700" aria-label="Leyenda">
-                <li class="flex items-center gap-1"><span class="celda-mapa celda-dominado" aria-hidden="true">✓</span> Ya te la sabes</li>
-                <li class="flex items-center gap-1"><span class="celda-mapa celda-practica" aria-hidden="true">•</span> Practicando</li>
+                <li class="flex items-center gap-1"><span class="celda-mapa celda-florecida" aria-hidden="true">🌸</span> Florecida: te la sabes de memoria</li>
+                <li class="flex items-center gap-1"><span class="celda-mapa celda-casi" aria-hidden="true">🌷</span> Casi</li>
+                <li class="flex items-center gap-1"><span class="celda-mapa celda-practica" aria-hidden="true">🌱</span> Practicando</li>
                 <li class="flex items-center gap-1"><span class="celda-mapa celda-nuevo" aria-hidden="true"></span> Sin jugar</li>
             </ul>
             <div class="overflow-x-auto">
@@ -487,6 +507,9 @@
                 // el juego debe seguir funcionando aunque no recuerde nada.
                 try { localStorage.setItem(PREFIJO + clave, valor); } catch (e) { /* sin memoria */ }
             },
+            borrar(clave) {
+                try { localStorage.removeItem(PREFIJO + clave); } catch (e) { /* sin memoria */ }
+            },
             borrarTodo() {
                 try {
                     Object.keys(localStorage)
@@ -510,6 +533,9 @@
         })();
 
         // --- VARIABLES DEL SISTEMA ---
+        // Tablas del 1 al TABLAS, cada una del ×1 al ×MULTIPLICADORES.
+        const TABLAS = 9;
+        const MULTIPLICADORES = 10;
         let playerName = "";   // vacío = sin nombre: se habla del jardín, no de la persona
         let currentTable = 1; // 1-9 o "mix"
         let globalStars = 0;
@@ -518,6 +544,12 @@
         let numA = 0;
         let numB = 0;
         let correctAnswer = 0;
+        // Cómo se responde la pregunta en curso y cuánto se tarda. El tiempo
+        // no cuenta si se abrió la ayuda: entonces no se mide la memoria.
+        let modoEscrito = false;
+        let escrito = "";
+        let inicioPregunta = 0;
+        let ayudaUsada = false;
 
         // --- COLA DE REPASO ---
         // Lo que se falla vuelve. Sin esto, un nino podia fallar 7x8, ver la
@@ -809,8 +841,11 @@
         function buildSelectorGrid() {
             const container = document.getElementById("grid-tablas-container");
             container.innerHTML = "";
-            // Hasta el 12: es hasta donde llega el currículo en muchas escuelas.
-            for (let i = 1; i <= 12; i++) {
+            // Del 1 al 9: son las tablas que hay que saberse de memoria. Las del
+            // 10, 11 y 12 se quitaron en 2026-11 por decisión del titular: la del
+            // 10 no exige memoria (se añade un cero) y la 11 y la 12 dispersaban
+            // la práctica. El ×10 sigue en cada tabla (7 × 10), como en la escuela.
+            for (let i = 1; i <= TABLAS; i++) {
                 const btn = document.createElement("button");
                 // Texto oscuro sobre los pastel: el blanco de antes daba menos
                 // de 2:1 de contraste, ilegible para quien ve regular.
@@ -820,7 +855,7 @@
                 btn.innerHTML = `
                     <span aria-hidden="true" class="text-3xl group-hover:scale-125 transition-transform duration-200">${emojisTablas[i-1]}</span>
                     <span class="bubble-font text-xl mt-1">Tabla del ${i}</span>
-                    ${i <= 10 ? `<span class="solo-teclado absolute top-1 left-2 text-xs font-bold">${i % 10}</span>` : ""}
+                    <span class="solo-teclado absolute top-1 left-2 text-xs font-bold">${i}</span>
                 `;
                 container.appendChild(btn);
             }
@@ -836,7 +871,7 @@
             repasoActual = null;
             ultimoHecho = "";
             bolsa = []; // la de otra tabla no sirve: se llena al pedir la primera
-            dominadosAlEmpezar = clavesDominadas();
+            florecidasAlEmpezar = clavesEnEstado("florecida");
             hechosDeLaPartida = new Set();
             
             document.getElementById("garden-plot").innerHTML = "";
@@ -954,7 +989,9 @@
         // el teclado multiplica la velocidad de práctica:
         //
         //   selector     1-9 eligen la tabla
-        //   pregunta     1-4 responden, H abre o cierra la ayuda
+        //   pregunta     1-4 eligen la respuesta; si se escribe, 0-9 la
+        //                escriben, Retroceso borra y Enter la manda.
+        //                H abre o cierra la ayuda
         //   tras responder   Enter o Espacio continúan
         //   en el juego  Escape vuelve al menú
         //   victoria     Enter sigue cultivando
@@ -975,9 +1012,9 @@
                 return;
             }
 
-            if (pantallaActual === "screen-selector" && /^[0-9]$/.test(evento.key)) {
+            if (pantallaActual === "screen-selector" && /^[1-9]$/.test(evento.key)) {
                 evento.preventDefault();
-                startTable(Number(evento.key) || 10);   // el 0 abre la del 10
+                startTable(Number(evento.key));
                 return;
             }
 
@@ -998,8 +1035,25 @@
                     continuar();
                     return;
                 }
+                if (!espera && modoEscrito) {
+                    if (/^[0-9]$/.test(evento.key)) {
+                        evento.preventDefault();
+                        teclear(Number(evento.key));
+                        return;
+                    }
+                    if (evento.key === "Backspace") {
+                        evento.preventDefault();
+                        borrarDigito();
+                        return;
+                    }
+                    if (evento.key === "Enter") {
+                        evento.preventDefault();
+                        responderEscrito();
+                        return;
+                    }
+                }
                 const opcion = document.getElementById(`opt-${Number(evento.key) - 1}`);
-                if (!espera && /^[1-4]$/.test(evento.key) && opcion && !opcion.disabled) {
+                if (!espera && !modoEscrito && /^[1-4]$/.test(evento.key) && opcion && !opcion.disabled) {
                     evento.preventDefault();
                     selectOption(Number(evento.key) - 1);
                     return;
@@ -1149,32 +1203,115 @@
         // llenar. Diez preguntas de una tabla = la tabla entera, sin huecos.
         let bolsa = [];
 
-        // --- MAPA DE HECHOS DOMINADOS ---
+        // --- MAPA DE HECHOS: SABÉRSELA ES RECORDARLA RÁPIDO ---
         //
-        // Antes solo se guardaban el nombre y las estrellas: no había forma de
-        // saber qué multiplicaciones se saben y cuáles no. Ahora cada hecho
-        // guarda sus tres últimos resultados ("1" acierto, "0" fallo). Se da
-        // por sabido cuando los dos últimos son aciertos: uno solo puede ser
-        // suerte, y lo fallado vuelve por la cola de repaso.
-        let hechos = {};
+        // Hasta 2026-11, una multiplicación pasaba a «sabida» con dos aciertos
+        // seguidos, eligiendo entre cuatro opciones y tardara lo que tardara.
+        // Eso mide reconocer la respuesta, no recordarla: quien cuenta con los
+        // dedos durante 20 segundos y luego la ve entre las opciones, acierta.
+        // Saberse las tablas es decir «7 × 8, 56» sin pensarlo.
+        //
+        // Ahora cada intento guarda el día, cómo se respondió (eligiendo, «o»,
+        // o escribiendo, «e»), si acertó y cuánto tardó (null si se usó la
+        // ayuda: con la ayuda abierta no se mide la memoria). Y hay cuatro
+        // estados:
+        //
+        //   florecida  desde el último fallo, escrita rápido (RAPIDO_MS) en dos
+        //              días distintos o más. Dos días porque lo que se recuerda
+        //              al día siguiente ya no es memoria de corto plazo.
+        //   casi       desde el último fallo, escrita rápido una vez, o
+        //              acertada dos veces.
+        //   practica   jugada, sin llegar a casi.
+        //   nuevo      sin jugar.
+        //
+        // Un acierto lento no quita lo ganado: solo un fallo reinicia la cuenta.
+        const RAPIDO_MS = 6000;
+        const MAX_INTENTOS = 6;
+        let hechos = {};   // "7x8" -> [{ d: "2026-11-03", m: "e", ok: 1, ms: 2400 }, ...]
 
-        function cargarHechos() {
-            try {
-                hechos = JSON.parse(almacen.leer("hechos") || "{}") || {};
-            } catch (e) { hechos = {}; }
+        function hoy() {
+            // Fecha local en AAAA-MM-DD: el «otro día» es el del reloj de quien juega.
+            return new Intl.DateTimeFormat("en-CA").format(new Date());
         }
 
-        function registrarIntento(a, b, acierto) {
+        function claveValida(clave) {
+            const m = /^(\d+)x(\d+)$/.exec(clave);
+            return Boolean(m) && Number(m[1]) >= 1 && Number(m[1]) <= TABLAS &&
+                Number(m[2]) >= 1 && Number(m[2]) <= MULTIPLICADORES;
+        }
+
+        function cargarHechos() {
+            hechos = {};
+            try {
+                const guardados = JSON.parse(almacen.leer("intentos") || "{}") || {};
+                for (const [clave, lista] of Object.entries(guardados)) {
+                    if (claveValida(clave) && Array.isArray(lista)) {
+                        hechos[clave] = lista.filter((i) => i && typeof i === "object").slice(-MAX_INTENTOS);
+                    }
+                }
+            } catch (e) { hechos = {}; }
+            migrarHechosAntiguos();
+        }
+
+        // La versión anterior guardaba en "hechos" los tres últimos resultados
+        // como texto ("101"). Se convierten una vez, como respuestas elegidas,
+        // sin día ni tiempo: lo que ya se sabía queda en «casi», y para que
+        // florezca hay que demostrarlo escribiendo. Las tablas del 10, 11 y 12
+        // ya no existen y se descartan.
+        function migrarHechosAntiguos() {
+            const viejo = almacen.leer("hechos");
+            if (viejo === null) return;
+            try {
+                const antiguos = JSON.parse(viejo) || {};
+                for (const [clave, texto] of Object.entries(antiguos)) {
+                    if (claveValida(clave) && !hechos[clave] && typeof texto === "string") {
+                        hechos[clave] = [...texto].map((r) => ({ d: "", m: "o", ok: r === "1" ? 1 : 0, ms: null }));
+                    }
+                }
+            } catch (e) { /* dañado: se ignora */ }
+            guardarHechos();
+            almacen.borrar("hechos");
+        }
+
+        function guardarHechos() {
+            almacen.guardar("intentos", JSON.stringify(hechos));
+        }
+
+        function intentosDe(a, b) {
+            return hechos[`${a}x${b}`] || [];
+        }
+
+        function registrarIntento(a, b, acierto, { modo = "o", ms = null } = {}) {
             const clave = `${a}x${b}`;
             hechosDeLaPartida.add(clave);
-            hechos[clave] = ((hechos[clave] || "") + (acierto ? "1" : "0")).slice(-3);
-            almacen.guardar("hechos", JSON.stringify(hechos));
+            const intento = { d: hoy(), m: modo, ok: acierto ? 1 : 0, ms: ms === null ? null : Math.round(ms) };
+            hechos[clave] = [...intentosDe(a, b), intento].slice(-MAX_INTENTOS);
+            guardarHechos();
+        }
+
+        function esRapida(i) {
+            return Boolean(i.ok) && i.m === "e" && typeof i.ms === "number" && i.ms <= RAPIDO_MS;
         }
 
         function estadoHecho(a, b) {
-            const h = hechos[`${a}x${b}`];
-            if (!h) return "nuevo";
-            return h.endsWith("11") ? "dominado" : "practica";
+            const lista = intentosDe(a, b);
+            if (lista.length === 0) return "nuevo";
+            const ultimoFallo = lista.map((i) => i.ok).lastIndexOf(0);
+            const desdeFallo = lista.slice(ultimoFallo + 1);
+            const rapidas = desdeFallo.filter(esRapida);
+            if (new Set(rapidas.map((i) => i.d).filter(Boolean)).size >= 2) return "florecida";
+            if (rapidas.length >= 1 || desdeFallo.length >= 2) return "casi";
+            return "practica";
+        }
+
+        /**
+         * Cómo se pregunta: eligiendo mientras se aprende, escribiendo en cuanto
+         * ya salió bien. Lo nuevo y lo recién fallado van con opciones, que
+         * enseñan; lo que ya se acertó se escribe, que es como se demuestra.
+         */
+        function seEscribe(a, b) {
+            const ultimo = intentosDe(a, b).at(-1);
+            return Boolean(ultimo && ultimo.ok);
         }
 
         // --- PRACTICAR LO QUE FALTA ---
@@ -1182,13 +1319,23 @@
         // La cola de repaso solo vive dentro de una partida: al cerrar el juego,
         // lo fallado se olvidaba. El mapa sí lo recuerda, así que de él sale una
         // partida que pregunta justo eso, días después.
+        //
+        // Pendiente es todo lo jugado que aún no florece: «practicando» y «casi».
         function hechosQueFaltan() {
             const pendientes = barajar(Object.keys(hechos).filter((k) => {
                 const [a, b] = k.split("x").map(Number);
-                return estadoHecho(a, b) === "practica";
+                return ["practica", "casi"].includes(estadoHecho(a, b));
             }));
-            // Primero lo fallado la última vez; luego, lo que menos aciertos lleva.
-            const prioridad = (k) => (hechos[k].endsWith("0") ? 0 : 10) + [...hechos[k]].filter((r) => r === "1").length;
+            // Por urgencia: lo fallado la última vez; luego lo que se practica;
+            // luego lo «casi» de otro día, que hoy puede florecer; al final lo
+            // «casi» de hoy, que no florece hasta otro día.
+            const prioridad = (k) => {
+                const [a, b] = k.split("x").map(Number);
+                const ultimo = intentosDe(a, b).at(-1);
+                if (!ultimo.ok) return 0;
+                if (estadoHecho(a, b) === "practica") return 1;
+                return ultimo.d === hoy() ? 3 : 2;
+            };
             return pendientes.sort((x, y) => prioridad(x) - prioridad(y))
                 .map((k) => { const [a, b] = k.split("x").map(Number); return { a, b }; });
         }
@@ -1197,10 +1344,10 @@
             const lista = hechosQueFaltan();
             // Con muy pocos pendientes se preguntaría lo mismo una y otra vez:
             // se completa con otros hechos de esas mismas tablas, primero los
-            // ya sabidos (así se mantienen frescos).
+            // ya florecidos (así se mantienen frescos).
             //
-            // Si a mitad de partida ya no queda nada pendiente (todo pasó a
-            // sabido), se sigue con las tablas que se estaban jugando.
+            // Si a mitad de partida ya no queda nada pendiente (todo floreció),
+            // se sigue con las tablas que se estaban jugando.
             if (lista.length < 4) {
                 const usadas = new Set(lista.map((h) => `${h.a}x${h.b}`));
                 const tablas = [...new Set([
@@ -1209,9 +1356,9 @@
                 ])];
                 if (tablas.length === 0) tablas.push(2);   // sin datos: no debería pasar, el botón no se ve
                 const relleno = barajar(tablas.flatMap((a) =>
-                    Array.from({ length: 10 }, (_, i) => ({ a, b: i + 1 }))
+                    Array.from({ length: MULTIPLICADORES }, (_, i) => ({ a, b: i + 1 }))
                         .filter((h) => !usadas.has(`${h.a}x${h.b}`))));
-                relleno.sort((x, y) => (estadoHecho(y.a, y.b) === "dominado") - (estadoHecho(x.a, x.b) === "dominado"));
+                relleno.sort((x, y) => (estadoHecho(y.a, y.b) === "florecida") - (estadoHecho(x.a, x.b) === "florecida"));
                 lista.push(...relleno.slice(0, 4 - lista.length));
             }
             // La bolsa se saca por el final: se invierte para que salga primero
@@ -1228,13 +1375,13 @@
         }
 
         // --- LO APRENDIDO EN ESTA PARTIDA ---
-        let dominadosAlEmpezar = new Set();
+        let florecidasAlEmpezar = new Set();
         let hechosDeLaPartida = new Set();
 
-        function clavesDominadas() {
+        function clavesEnEstado(estado) {
             return new Set(Object.keys(hechos).filter((k) => {
                 const [a, b] = k.split("x").map(Number);
-                return estadoHecho(a, b) === "dominado";
+                return estadoHecho(a, b) === estado;
             }));
         }
 
@@ -1242,21 +1389,38 @@
             return lista.length === 1 ? lista[0] : `${lista.slice(0, -1).join(", ")} y ${lista.at(-1)}`;
         }
 
+        /**
+         * Lo que dice la victoria, de mejor a peor noticia. Florecer exige otro
+         * día, así que lo normal tras una partida es que haya cosas «casi»: se
+         * dice qué falta para que florezcan, para que valga la pena volver.
+         */
         function fraseDeLoAprendido() {
-            const nuevas = [...clavesDominadas()].filter((k) => !dominadosAlEmpezar.has(k) && hechosDeLaPartida.has(k));
-            if (nuevas.length >= 5) return `¡Ahora ya te sabes ${nuevas.length} multiplicaciones nuevas!`;
-            if (nuevas.length > 0) return `¡Ahora ya te sabes ${enumerar(nuevas.map((k) => k.replace("x", " × ")))}!`;
-            const enCamino = [...hechosDeLaPartida].filter((k) => {
+            const jugadas = (estado) => [...hechosDeLaPartida].filter((k) => {
                 const [a, b] = k.split("x").map(Number);
-                return estadoHecho(a, b) === "practica";
-            }).length;
+                return estadoHecho(a, b) === estado;
+            });
+            const nuevas = jugadas("florecida").filter((k) => !florecidasAlEmpezar.has(k));
+            if (nuevas.length >= 5) return `¡Florecieron ${nuevas.length} multiplicaciones! Ya te las sabes de memoria.`;
+            if (nuevas.length > 0) {
+                const lista = enumerar(nuevas.map((k) => k.replace("x", " × ")));
+                return nuevas.length === 1
+                    ? `¡Floreció ${lista}! Ya te la sabes de memoria.`
+                    : `¡Florecieron ${lista}! Ya te las sabes de memoria.`;
+            }
+            const casi = jugadas("casi").length;
+            if (casi > 0) {
+                return casi === 1
+                    ? "1 multiplicación está casi. Otro día, escríbela rápido y florecerá."
+                    : `${casi} multiplicaciones están casi. Otro día, escríbelas rápido y florecerán.`;
+            }
+            const enCamino = jugadas("practica").length;
             return enCamino === 1
-                ? "Llevas 1 multiplicación en camino. Una partida más y pasa a tu mapa como sabida."
-                : `Llevas ${enCamino} multiplicaciones en camino. Una partida más y pasan a tu mapa como sabidas.`;
+                ? "Llevas 1 multiplicación en camino. Sigue practicando y florecerá."
+                : `Llevas ${enCamino} multiplicaciones en camino. Sigue practicando y florecerán.`;
         }
 
-        const NOMBRES_ESTADO = { dominado: "ya te la sabes", practica: "practicando", nuevo: "sin jugar" };
-        const SIMBOLOS_ESTADO = { dominado: "✓", practica: "•", nuevo: "" };
+        const NOMBRES_ESTADO = { florecida: "florecida, ya te la sabes", casi: "casi", practica: "practicando", nuevo: "sin jugar" };
+        const SIMBOLOS_ESTADO = { florecida: "🌸", casi: "🌷", practica: "🌱", nuevo: "" };
 
         function mostrarMapa() {
             const tabla = document.getElementById("mapa-tabla");
@@ -1266,7 +1430,7 @@
             const esquina = document.createElement("th");
             esquina.innerHTML = '<span class="sr-only">Tabla</span>';
             cabecera.appendChild(esquina);
-            for (let b = 1; b <= 10; b++) {
+            for (let b = 1; b <= MULTIPLICADORES; b++) {
                 const th = document.createElement("th");
                 th.scope = "col";
                 th.className = "text-xs text-gray-600 font-bold";
@@ -1275,8 +1439,8 @@
             }
 
             const cuerpo = tabla.createTBody();
-            let dominados = 0;
-            for (let a = 1; a <= 12; a++) {
+            const cuenta = { florecida: 0, casi: 0, practica: 0, nuevo: 0 };
+            for (let a = 1; a <= TABLAS; a++) {
                 const fila = cuerpo.insertRow();
                 const th = document.createElement("th");
                 th.scope = "row";
@@ -1285,9 +1449,9 @@
                 th.innerHTML = `<button type="button" class="text-xs md:text-sm font-bold text-green-800 hover:underline px-1 whitespace-nowrap"><span class="sr-only sm:not-sr-only">Tabla del </span>${a}</button>`;
                 th.querySelector("button").onclick = () => startTable(a);
                 fila.appendChild(th);
-                for (let b = 1; b <= 10; b++) {
+                for (let b = 1; b <= MULTIPLICADORES; b++) {
                     const estado = estadoHecho(a, b);
-                    if (estado === "dominado") dominados++;
+                    cuenta[estado]++;
                     const td = fila.insertCell();
                     td.className = `celda-mapa celda-${estado}`;
                     td.dataset.hecho = `${a}x${b}`;
@@ -1296,9 +1460,10 @@
                 }
             }
             actualizarBotonesFalta();
-            document.getElementById("mapa-resumen").innerText = dominados === 0
+            const total = TABLAS * MULTIPLICADORES;
+            document.getElementById("mapa-resumen").innerText = cuenta.nuevo === total
                 ? "Juega una tabla y aquí verás lo que vas aprendiendo."
-                : `Ya te sabes ${dominados} de 120 multiplicaciones.`;
+                : `Florecidas: ${cuenta.florecida} de ${total}. Casi: ${cuenta.casi}. Practicando: ${cuenta.practica}.`;
             mostrarPantalla("screen-mapa");
         }
 
@@ -1314,7 +1479,7 @@
                         for (let b = 2; b <= 9; b++) lista.push({ a, b });
                     }
                 } else {
-                    for (let b = 1; b <= 10; b++) lista.push({ a: currentTable, b });
+                    for (let b = 1; b <= MULTIPLICADORES; b++) lista.push({ a: currentTable, b });
                 }
                 bolsa = barajar(lista);
             }
@@ -1363,6 +1528,16 @@
             correctAnswer = numA * numB;
             ayudaGirada = false;
 
+            modoEscrito = seEscribe(numA, numB);
+            document.getElementById("opciones").classList.toggle("hidden", modoEscrito);
+            document.getElementById("escritura").classList.toggle("hidden", !modoEscrito);
+            escrito = "";
+            mostrarEscrito();
+            document.querySelectorAll("#escritura .btn-tecla").forEach((t) => { t.disabled = false; });
+            actualizarListo();
+            ayudaUsada = !document.getElementById("help-panel").classList.contains("hidden");
+            inicioPregunta = performance.now();
+
             document.getElementById("question-text").innerText = `${numA} × ${numB}`;
 
             speak(`¿Cuánto es, ${numA} por ${numB}?`);
@@ -1388,6 +1563,7 @@
             const btn = document.getElementById("btn-help");
             if (panel.classList.contains("hidden")) {
                 panel.classList.remove("hidden");
+                ayudaUsada = true;
                 btn.innerText = "🪄 Ocultar ayuda";
                 btn.setAttribute("aria-expanded", "true");
                 generateHelpVisual();
@@ -1449,7 +1625,7 @@
         // Se elige el factor con el truco más útil (el orden de abajo), y como
         // el orden de los factores no importa, sirve igual para 9 × 3 que para
         // 3 × 9.
-        const ORDEN_TRUCOS = [1, 10, 2, 5, 11, 9, 4, 3, 6, 12, 8, 7];
+        const ORDEN_TRUCOS = [1, 10, 2, 5, 9, 4, 3, 6, 8, 7];
 
         function trucoPara(a, b) {
             const t = ORDEN_TRUCOS.find((x) => x === a || x === b);
@@ -1459,14 +1635,10 @@
                 10: `Truco del 10: por 10, se le pone un cero al final.`,
                 2: `Truco del 2: por 2 es el doble. Suma ${n} + ${n}.`,
                 5: `Truco del 5: es la mitad de por 10. ${n} × 10 = ${n * 10}, y busca la mitad.`,
-                11: n <= 9
-                    ? `Truco del 11: hasta el 9, la cifra se repite dos veces, como 11 × ${n === 4 ? 3 : 4} = ${n === 4 ? 33 : 44}.`
-                    : `Truco del 11: es por 10 y una vez más. ${n} × 10 = ${n * 10}, y súmale ${n}.`,
                 9: `Truco del 9: es por 10 y una vez menos. ${n} × 10 = ${n * 10}, y quítale ${n}.`,
                 4: `Truco del 4: es el doble del doble. ${n} + ${n} = ${n * 2}, y ahora el doble de ${n * 2}.`,
                 3: `Truco del 3: es el doble y una vez más. ${n} + ${n} = ${n * 2}, y súmale ${n}.`,
                 6: `Truco del 6: es por 5 y una vez más. ${n} × 5 = ${n * 5}, y súmale ${n}.`,
-                12: `Truco del 12: es por 10 más por 2. ${n} × 10 = ${n * 10}, y súmale ${n} × 2 = ${n * 2}.`,
                 8: `Truco del 8: es el doble del doble del doble. ${n} → ${n * 2} → ${n * 4} → ¿?`,
                 7: `Truco del 7: es por 5 más por 2. ${n} × 5 = ${n * 5}, y súmale ${n} × 2 = ${n * 2}.`,
             };
@@ -1503,37 +1675,104 @@
         }
 
         function selectOption(index) {
-            const buttons = document.querySelectorAll(".btn-option");
             const selectedBtn = document.getElementById(`opt-${index}`);
-            if (selectedBtn.disabled) return;   // doble toque o tecla repetida
-            const chosenVal = Number(selectedBtn.dataset.valor);
+            if (selectedBtn.disabled || modoEscrito) return;   // doble toque o tecla repetida
+            evaluar(Number(selectedBtn.dataset.valor), selectedBtn);
+        }
+
+        // --- RESPUESTA ESCRITA ---
+        // Dos cifras bastan: el producto más alto es 9 × 10 = 90.
+        function teclear(digito) {
+            if (!modoEscrito || espera || escrito.length >= 2) return;
+            escrito = escrito === "0" ? String(digito) : escrito + String(digito);
+            mostrarEscrito();
+            actualizarListo();
+        }
+
+        function borrarDigito() {
+            if (!modoEscrito || espera) return;
+            escrito = escrito.slice(0, -1);
+            mostrarEscrito();
+            actualizarListo();
+        }
+
+        // Colores de la caja: los de base se quitan al marcar el resultado. Si
+        // conviven, gana el que la hoja de estilos define después, y el verde
+        // o el rojo podían no verse.
+        const COLOR_CAJA = {
+            base: ["border-indigo-300", "bg-white", "text-gray-800"],
+            bien: ["border-green-600", "bg-green-100", "text-green-800"],
+            mal: ["border-red-600", "bg-red-100", "text-red-800"],
+        };
+
+        function mostrarEscrito(resultado = null) {
+            const caja = document.getElementById("escrito");
+            caja.textContent = escrito + (resultado === "bien" ? " ✓" : resultado === "mal" ? " ✗" : "");
+            caja.classList.remove(...COLOR_CAJA.base, ...COLOR_CAJA.bien, ...COLOR_CAJA.mal);
+            caja.classList.add(...COLOR_CAJA[resultado ?? "base"]);
+        }
+
+        function actualizarListo() {
+            document.getElementById("tecla-listo").disabled = escrito === "" || Boolean(espera);
+        }
+
+        function responderEscrito() {
+            if (!modoEscrito || espera || escrito === "") return;
+            evaluar(Number(escrito), null);
+        }
+
+        /**
+         * Evalúa una respuesta, elegida (`boton`) o escrita (`boton` null).
+         * Ambas pasan por aquí: el mapa, el repaso y la partida tratan igual
+         * un acierto, y solo cambia cómo se marca en pantalla.
+         */
+        function evaluar(chosenVal, selectedBtn) {
+            const buttons = document.querySelectorAll(".btn-option");
             const feedback = document.getElementById("game-feedback");
+            const acierto = chosenVal === correctAnswer;
 
             buttons.forEach(btn => btn.disabled = true);
+            document.querySelectorAll("#escritura .btn-tecla").forEach((t) => { t.disabled = true; });
             // La pregunta ya está contestada: si la voz aún la estaba leyendo,
             // seguir leyéndola solo retrasa lo importante, que es el resultado.
             callarVoz();
 
-            registrarIntento(numA, numB, chosenVal === correctAnswer);
+            const ms = ayudaUsada ? null : performance.now() - inicioPregunta;
+            const estadoAntes = estadoHecho(numA, numB);
+            registrarIntento(numA, numB, acierto, { modo: modoEscrito ? "e" : "o", ms });
+            const florecio = estadoAntes !== "florecida" && estadoHecho(numA, numB) === "florecida";
 
-            if (chosenVal === correctAnswer) {
+            if (modoEscrito) mostrarEscrito(acierto ? "bien" : "mal");
+
+            if (acierto) {
                 // --- RESPUESTA CORRECTA ---
-                marcarOpcion(selectedBtn, true);
-                selectedBtn.classList.add("scale-105");
+                if (selectedBtn) {
+                    marcarOpcion(selectedBtn, true);
+                    selectedBtn.classList.add("scale-105");
+                }
 
                 playCorrectSound();
-                triggerBurstEffect(selectedBtn);
+                triggerBurstEffect(selectedBtn || document.getElementById("escrito"));
 
                 const felicitaciones = ["¡Espectacular! 🎉", "¡Excelente trabajo! 🌸", "¡Correcto! ⭐", "¡Súper bien hecho! 🌟", "¡Tu flor va creciendo! 🌱"];
-                const rFrase = felicitaciones[Math.floor(Math.random() * felicitaciones.length)];
+                const rFrase = florecio
+                    ? `🌸 ¡${numA} × ${numB} floreció!`
+                    : felicitaciones[Math.floor(Math.random() * felicitaciones.length)];
+                // Escrita pero lenta: cuenta como acierto y no reinicia nada,
+                // pero así no florece. Se dice, sin regañar, qué falta.
+                const consejo = modoEscrito && ms !== null && ms > RAPIDO_MS
+                    ? " Cuando te salga sin pensar, florecerá."
+                    : "";
 
-                feedback.innerText = `${rFrase}  ${numA} × ${numB} = ${correctAnswer}`;
+                feedback.innerText = `${rFrase}  ${numA} × ${numB} = ${correctAnswer}${consejo}`;
                 feedback.classList.add("text-green-800", "scale-110");
 
                 // La voz ya no solo celebra: también ENSEÑA. Oír el hecho
                 // entero —"siete por ocho, cincuenta y seis"— es de las formas
                 // más eficaces de fijarlo, y en el acierto refuerza lo correcto.
-                speak(`${rFrase} ${numA} por ${numB}, ${correctAnswer}.`);
+                speak(florecio
+                    ? `¡${numA} por ${numB} floreció! ${numA} por ${numB}, ${correctAnswer}.`
+                    : `${rFrase} ${numA} por ${numB}, ${correctAnswer}.`);
                 sproutFlower();
 
                 // Si era un repaso, se programa UNA segunda vuelta más tarde:
@@ -1562,7 +1801,7 @@
 
             } else {
                 // --- RESPUESTA INCORRECTA ---
-                marcarOpcion(selectedBtn, false);
+                if (selectedBtn) marcarOpcion(selectedBtn, false);
 
                 playIncorrectSound();
 
@@ -1586,7 +1825,9 @@
                     }
                 });
 
-                const mensajeError = `¡Casi! ${numA} × ${numB} = ${correctAnswer}. Te la vuelvo a preguntar en un ratito 🌱`;
+                const mensajeError = modoEscrito
+                    ? `Escribiste ${chosenVal}. ${numA} × ${numB} = ${correctAnswer}. Te la vuelvo a preguntar en un ratito 🌱`
+                    : `¡Casi! ${numA} × ${numB} = ${correctAnswer}. Te la vuelvo a preguntar en un ratito 🌱`;
                 feedback.innerText = mensajeError;
                 feedback.classList.add("text-rose-800");
                 // La voz lee el hecho COMPLETO, no solo el consuelo: oír
