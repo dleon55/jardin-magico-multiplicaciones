@@ -14,6 +14,10 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **Lo que se falla vuelve.** Una multiplicación que salió mal se pregunta otra
   vez a los 2 turnos y de nuevo a los 5.
 - **Equivocarse no resta.** Sale el resultado correcto, se explica y se sigue.
+- **Primero se elige, después se escribe.** Lo nuevo y lo recién fallado se
+  responden eligiendo entre cuatro opciones. Lo que ya salió bien se responde
+  **escribiendo** en un teclado de números grande: recordarlo sin opciones
+  delante es saberlo, y elegirlo entre cuatro solo es reconocerlo.
 - **Las opciones se parecen a la respuesta.** Son errores típicos, como el
   resultado de la fila de al lado, así que no basta con adivinar.
 - **La ayuda dibuja la multiplicación como un rectángulo** de filas × columnas,
@@ -22,23 +26,38 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **Cada tabla tiene su truco** (el del 9 es «por 10 y una vez menos»), con los
   números de la pregunta, y la voz lo lee. El último paso lo da quien juega: la
   ayuda no da la respuesta.
-- **Tablas del 1 al 12**, y un desafío que mezcla las del 2 al 9.
-- **«Mi mapa de tablas»** muestra qué multiplicaciones ya se saben (✓, dos
-  aciertos seguidos), cuáles se están practicando (•) y cuáles no se han jugado.
-  Tocar una tabla en el mapa la abre para practicar.
+- **Tablas del 1 al 9**, cada una del ×1 al ×10, y un desafío que mezcla las
+  del 2 al 9. Las del 10, 11 y 12 se quitaron: la del 10 no exige memoria (se
+  añade un cero) y la 11 y la 12 dispersaban la práctica.
+- **«Mi mapa de tablas»** muestra las 90 multiplicaciones en cuatro estados:
+
+  | Estado | Cuándo |
+  | --- | --- |
+  | 🌸 Florecida | Desde el último fallo, **escrita en 6 segundos o menos en dos días distintos**. Es saberla de memoria |
+  | 🌷 Casi | Desde el último fallo, escrita rápido una vez, o acertada dos veces |
+  | 🌱 Practicando | Jugada, sin llegar a «casi» |
+  | (gris) | Sin jugar |
+
+  Dos días, porque lo que se recuerda al día siguiente ya no es memoria de
+  corto plazo. El tiempo no cuenta si se abrió la ayuda. Un acierto lento no
+  quita lo ganado; solo un fallo reinicia la cuenta. Tocar una tabla en el
+  mapa la abre para practicar.
 - **«Practicar lo que me falta»** arma una partida con lo que está en
-  «practicando» en el mapa, empezando por lo fallado la última vez. Así el
-  repaso sigue entre días, no solo dentro de una partida. El botón solo aparece
-  si hay algo pendiente.
-- **Al ganar, el juego dice lo aprendido**: qué multiplicaciones pasaron a
-  «ya te la sabes» en esa partida, o cuántas van en camino.
+  «practicando» o «casi»: primero lo fallado la última vez, luego lo que se
+  practica, luego lo «casi» de otro día (que hoy puede florecer). Así el repaso
+  sigue entre días, no solo dentro de una partida. El botón solo aparece si hay
+  algo pendiente.
+- **Al ganar, el juego dice lo aprendido**: qué multiplicaciones florecieron
+  en esa partida, cuántas quedan «casi» (y qué falta: escribirlas rápido otro
+  día) o cuántas van en camino.
 
 Con teclado (en una tableta estos atajos no se muestran):
 
 | Tecla | Qué hace |
 | --- | --- |
-| `1`–`9`, `0` | Elegir tabla en el menú (`0` es la del 10) |
-| `1`–`4` | Elegir respuesta, en el juego |
+| `1`–`9` | Elegir tabla en el menú |
+| `1`–`4` | Elegir respuesta, cuando hay opciones |
+| `0`–`9`, `Retroceso`, `Enter` | Escribir la respuesta, borrar y mandarla, cuando se escribe |
 | `H` | Abrir o cerrar la ayuda |
 | `Enter` o `Espacio` | Seguir a la siguiente pregunta |
 | `Esc` | Volver al menú, desde el juego o el mapa |
@@ -97,10 +116,17 @@ npm run servir      # http://localhost:4173/jardin-magico-multiplicaciones/
 El CI comprueba que la construcción está al día y falla si no lo está.
 
 Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
-didáctica (rectángulo de ayuda, trucos, tablas hasta el 12 y mapa), el
+respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
+(rectángulo de ayuda, trucos, tablas del 1 al 9, estados del mapa y lo
+guardado por la versión anterior), el
 uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
 internet y la voz. Si Chromium está instalado fuera de la caché de Playwright,
 su ruta se indica con `CHROMIUM_RUTA`.
+
+Lo que cuenta como «rápido» para florecer es la constante `RAPIDO_MS` de
+`index.html` (6000 ms, medidos desde que aparece la pregunta: incluye leerla o
+oírla y teclear la respuesta). Las pruebas de `pruebas/didactica.spec.mjs`
+fijan las reglas de cada estado.
 
 Las velocidades de la voz se definen en la constante `VELOCIDADES` de
 `index.html`; es el único sitio que hay que tocar para ajustarlas. Las pruebas

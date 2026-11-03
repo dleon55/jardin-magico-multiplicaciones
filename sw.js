@@ -19,7 +19,7 @@
 // olvidara cambiarla, quien ya tuviera el juego instalado se quedaría para
 // siempre en la versión vieja, porque todo se sirve desde la caché.
 
-const VERSION = "ce4f8c6b6efc";
+const VERSION = "968c2ee2bca2";
 const CACHE = `jardin-${VERSION}`;
 
 const ARCHIVOS = [

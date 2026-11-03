@@ -87,15 +87,25 @@ test("ayuda girada", async ({ page }) => {
   await auditar(page, "la ayuda girada");
 });
 
-test("mapa de tablas, con hechos en los tres estados", async ({ page }) => {
+test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
   await page.evaluate(() => {
-    registrarIntento(3, 4, true); registrarIntento(3, 4, true);   // sabido
+    hechos["3x4"] = [{ d: "2026-11-01", m: "e", ok: 1, ms: 2000 }, { d: "2026-11-02", m: "e", ok: 1, ms: 2000 }];   // florecida
+    registrarIntento(5, 6, true); registrarIntento(5, 6, true);   // casi
     registrarIntento(7, 8, false);                               // practicando
   });
   await page.click("text=Mi mapa de tablas");
   await auditar(page, "el mapa");
+});
+
+test("pregunta que se responde escribiendo, con un número a medias", async ({ page }) => {
+  await page.goto("./");
+  await page.evaluate(() => { for (let b = 1; b <= 10; b++) registrarIntento(3, b, true); });
+  await page.click("#screen-welcome button");
+  await page.locator("#grid-tablas-container button").nth(2).click();
+  await page.click('#escritura [data-digito="1"]');
+  await auditar(page, "el teclado de números");
 });
 
 test("selector con «Practicar lo que me falta»", async ({ page }) => {

@@ -21,14 +21,46 @@ export async function entrarATabla(pagina, tabla, nombre = "Ana") {
   await pagina.waitForSelector("#screen-game:not(.hidden)");
 }
 
-/** Responde bien o mal pulsando el botón (funciona en táctil y en escritorio). */
+/** ¿La pregunta en curso se responde escribiendo? */
+export async function seEscribe(pagina) {
+  return (await pagina.locator("#escritura:not(.hidden)").count()) > 0;
+}
+
+/** Escribe un número con el teclado de la pantalla y lo manda. */
+export async function escribir(pagina, numero) {
+  for (const d of String(numero)) await pagina.click(`#escritura [data-digito="${d}"]`);
+  await pagina.click("#tecla-listo");
+}
+
+/**
+ * Responde bien o mal, como toque: eligiendo un botón o escribiendo en el
+ * teclado de la pantalla (funciona en táctil y en escritorio). Devuelve el
+ * índice del botón elegido, o "escrita".
+ */
 export async function responder(pagina, acertar) {
   const { producto } = await preguntaActual(pagina);
+  if (await seEscribe(pagina)) {
+    await escribir(pagina, acertar ? producto : producto + 1);
+    return "escrita";
+  }
   const ops = await opciones(pagina);
   const i = acertar ? ops.indexOf(producto) : ops.findIndex((o) => o !== producto);
   await pagina.click(`#opt-${i}`);
   return i;
 }
+
+/**
+ * Deja guardados en la página unos intentos de una multiplicación, con día,
+ * modo y tiempo a medida. `rapida(d)` y compañía arman cada intento.
+ */
+export function ponerIntentos(pagina, clave, intentos) {
+  return pagina.evaluate(([k, lista]) => { hechos[k] = lista; guardarHechos(); }, [clave, intentos]);
+}
+export const rapida = (d) => ({ d, m: "e", ok: 1, ms: 2000 });
+export const lenta = (d) => ({ d, m: "e", ok: 1, ms: 15000 });
+export const elegida = (d) => ({ d, m: "o", ok: 1, ms: 1500 });
+export const conAyuda = (d) => ({ d, m: "e", ok: 1, ms: null });
+export const fallo = (d) => ({ d, m: "e", ok: 0, ms: 3000 });
 
 /** Avanza a la siguiente pregunta en cuanto el juego lo permite. */
 export async function siguiente(pagina) {
