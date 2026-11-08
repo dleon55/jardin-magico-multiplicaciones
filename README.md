@@ -82,6 +82,25 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   escriban). El menú muestra los últimos 7 días y los días seguidos; **faltar
   un día no quita nada**: las estrellas, los amigos y los días cumplidos se
   quedan, solo la racha vuelve a empezar.
+- **➗ Dividir: la multiplicación al revés.** Pregunta «56 ÷ 8». Las divisiones
+  salen de las multiplicaciones que ya se saben («casi» o florecidas), en los
+  dos sentidos (56 ÷ 8 y 56 ÷ 7). Mientras se sepan menos de 6, se divide entre
+  2, 3, 4 y 5. Las opciones falsas son errores de verdad: un grupo de más, uno
+  de menos y el divisor. La ayuda reparte los puntos en filas y da el camino
+  («8 × ? = 56, cuenta de 8 en 8»), no la respuesta. Al contestar se explica
+  con la multiplicación: «56 ÷ 8 = 7, porque 8 × 7 = 56».
+- **📖 Problemas cortos.** Historias del jardín de una o dos frases, la mitad de
+  multiplicar («4 macetas con 6 flores cada una») y la mitad de dividir
+  («24 semillas en 4 macetas»), con factores del 2 al 9. Lo que enseñan es
+  decidir qué operación hace falta: la pista y la explicación la nombran
+  («Es una división: 24 ÷ 4 = 6»). El problema se escribe encima del girasol y
+  la voz lo lee. Uno fallado vuelve con la misma historia.
+- **Dividir y los problemas no cuentan para el mapa ni el jardín.** Esos miden
+  si la multiplicación se sabe de memoria, escrita en 6 segundos; una división
+  hecha con el truco o un problema que primero hay que leer tardan más y no
+  deben marchitar ni florecer nada. Sí dan estrellas y cuentan para la misión
+  «termina una partida». Se responde escribiendo solo si la multiplicación de
+  debajo ya floreció; si no, eligiendo.
 
 Con teclado (en una tableta estos atajos no se muestran):
 
@@ -152,7 +171,8 @@ respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, tablas del 1 al 9, estados del mapa y lo
 guardado por la versión anterior), el jardín (parejas, bancales y riego), las
 estrellas y la misión del día (vivero, bono por florecer, misión que se elige
-una vez y premia una sola vez, días seguidos), el uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
+una vez y premia una sola vez, días seguidos), dividir y los problemas
+cortos (de dónde salen, opciones, ayuda, repaso y que no tocan el mapa), el uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
 internet y la voz. Si Chromium está instalado fuera de la caché de Playwright,
 su ruta se indica con `CHROMIUM_RUTA`.
 
