@@ -67,7 +67,21 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   partida. El botón solo aparece si hay algo pendiente.
 - **Al ganar, el juego dice lo aprendido**: qué multiplicaciones florecieron
   en esa partida, cuántas flores se regaron, cuántas quedan «casi» (y qué
-  falta: escribirlas rápido otro día) o cuántas van en camino.
+  falta: escribirlas rápido otro día) o cuántas van en camino. También dice
+  cuántas estrellas se ganaron y cuántas faltan para lo siguiente del vivero.
+- **Las estrellas se gastan en el «🛍️ Vivero mágico».** Hay 12 amigos y
+  adornos, de la mariposa (10 ⭐, alcanza con la primera partida) al unicornio
+  (180 ⭐). Lo comprado vive para siempre en «Mi jardín» y acompaña cada
+  partida. Las estrellas premian sobre todo aprender: 1 por acierto, **5 cuando
+  una multiplicación florece** y 10 por la misión del día. El menú dice
+  cuántas faltan para lo siguiente.
+- **Misión del día.** Una meta corta, distinta cada día y con 10 ⭐ de premio:
+  terminar una partida, escribir bien 5 respuestas, ganar el reto de las tablas
+  mezcladas o ganar una partida de repaso. Se elige una vez al día y solo entre
+  las que se pueden cumplir (no pide escribir 5 si aún no hay 5 que se
+  escriban). El menú muestra los últimos 7 días y los días seguidos; **faltar
+  un día no quita nada**: las estrellas, los amigos y los días cumplidos se
+  quedan, solo la racha vuelve a empezar.
 
 Con teclado (en una tableta estos atajos no se muestran):
 
@@ -78,7 +92,7 @@ Con teclado (en una tableta estos atajos no se muestran):
 | `0`–`9`, `Retroceso`, `Enter` | Escribir la respuesta, borrar y mandarla, cuando se escribe |
 | `H` | Abrir o cerrar la ayuda |
 | `Enter` o `Espacio` | Seguir a la siguiente pregunta |
-| `Esc` | Volver al menú, desde el juego, el mapa o el jardín |
+| `Esc` | Volver al menú, desde el juego, el mapa, el jardín o el vivero |
 
 En **Ajustes** se pueden apagar por separado la voz y los sonidos, elegir la
 velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento».
@@ -136,8 +150,9 @@ El CI comprueba que la construcción está al día y falla si no lo está.
 Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, tablas del 1 al 9, estados del mapa y lo
-guardado por la versión anterior), el jardín (parejas, bancales y riego), el
-uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
+guardado por la versión anterior), el jardín (parejas, bancales y riego), las
+estrellas y la misión del día (vivero, bono por florecer, misión que se elige
+una vez y premia una sola vez, días seguidos), el uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
 internet y la voz. Si Chromium está instalado fuera de la caché de Playwright,
 su ruta se indica con `CHROMIUM_RUTA`.
 
