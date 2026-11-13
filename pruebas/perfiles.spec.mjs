@@ -193,3 +193,28 @@ test("una lista de perfiles dañada no rompe nada", async ({ page }) => {
   await page.click("#screen-welcome button");
   await expect(page.locator("#screen-selector")).toBeVisible();
 });
+
+test("dos niños sin nombre son dos jardines, no uno", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button:has-text('Comenzar')");
+  await page.evaluate(() => ganarEstrellas(50));
+  await page.click("text=Cambiar de jugador");
+  await page.click("#screen-welcome button:has-text('Comenzar')");
+  expect(await page.evaluate(() => [perfiles.length, globalStars])).toEqual([2, 0]);
+  await page.click("text=Cambiar de jugador");
+  await expect(page.locator(".btn-perfil")).toHaveCount(2);
+});
+
+test("en la victoria, Enter sobre un botón lo activa (no siempre lleva al menú)", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "escritorio", "solo donde hay teclado");
+  await page.goto("./");
+  await entrarComo(page, "Ana");
+  await page.evaluate(() => { currentTable = 2; endGameSuccess(); });
+  await page.locator("#screen-victory button:has-text('Ver mi jardín')").focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#screen-jardin")).toBeVisible();
+  await page.evaluate(() => { currentTable = 2; endGameSuccess(); });
+  await page.locator("#screen-victory h2").focus();
+  await page.keyboard.press("Enter");   // sin un botón con el foco, sigue llevando al menú
+  await expect(page.locator("#screen-selector")).toBeVisible();
+});

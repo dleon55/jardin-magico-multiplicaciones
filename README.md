@@ -109,9 +109,9 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   en esa partida, cuántas flores se regaron, cuántas quedan «casi» (y qué
   falta: escribirlas rápido otro día) o cuántas van en camino. También dice
   cuántas estrellas se ganaron y cuántas faltan para lo siguiente del vivero.
-- **Las estrellas se gastan en el «🛍️ Vivero mágico».** Hay 12 amigos y
-  adornos, de la mariposa (10 ⭐, alcanza con la primera partida) al unicornio
-  (180 ⭐). Lo comprado vive para siempre en «Mi jardín» y acompaña cada
+- **Las estrellas se gastan en el «🛍️ Vivero mágico».** Hay 18 amigos y
+  adornos, de la mariposa (10 ⭐, alcanza con la primera partida) al dragón y
+  el unicornio (180 ⭐). Lo comprado vive para siempre en «Mi jardín» y acompaña cada
   partida. Las estrellas premian sobre todo aprender: 1 por acierto, **5 cuando
   una multiplicación florece** y 10 por la misión del día. El menú dice
   cuántas faltan para lo siguiente.
@@ -146,7 +146,8 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   intentos, flores, estrellas, amigos del vivero, misiones y tablas
   descubiertas. Al abrir el juego, «¿Quién juega?» muestra un botón por
   jardín con su cuenta de flores; quien es nuevo escribe su nombre. Escribir
-  un nombre que ya tiene jardín sigue con ese, sin duplicarlo.
+  un nombre que ya tiene jardín sigue con ese, sin duplicarlo; sin nombre,
+  cada quien tiene su propio jardín.
   «👥 Cambiar de jugador» (en el menú y al ganar) ya no borra nada: antes
   «Salir / Otro nombre» borraba todo, y otro niño que lo tocara se llevaba
   semanas de práctica. Los ajustes (voz, sonidos, movimiento) son del
@@ -158,6 +159,21 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   «Practicar lo que me falta» empieza justo por ahí. Desde ahí se borra un
   jardín, con confirmación, y solo ese. Todo sale de lo que el juego ya
   guarda y no se envía a ningún lado.
+- **🛟 Cuidar el progreso** (en la vista para adultos). Lo guardado vive solo
+  en el navegador del dispositivo, así que:
+  - «💾 Guardar una copia» descarga un archivo con todos los jardines, y
+    «📂 Recuperar una copia» los restaura aquí o en otro dispositivo (pide
+    confirmar: reemplaza los jardines que haya). Sin servidor ni cuentas. Si
+    el dispositivo no deja guardarla entera (sin espacio), no cambia nada.
+    Lo de la copia se vuelve a validar al cargarlo: fechas que no existen,
+    estrellas negativas o datos de otro tipo no rompen el juego.
+  - En iPad o iPhone sin instalar, avisa que hay que instalarlo: Safari borra
+    lo de un sitio que pasa 7 días sin abrirse si no está en la pantalla de
+    inicio.
+  - Al abrir esta vista, el juego pide al navegador que conserve los datos
+    (en algunos navegadores lo pregunta con un aviso, por eso lo ve un adulto
+    y no el niño al entrar) y dice si aceptó y cuándo se descargó la última
+    copia.
 
 Con teclado (en una tableta estos atajos no se muestran):
 
@@ -200,6 +216,11 @@ Basta con abrir el sitio una vez con conexión. A partir de ahí carga y se jueg
 sin internet, y en una tableta o un teléfono se puede añadir a la pantalla de
 inicio («Añadir a pantalla de inicio» o «Instalar»).
 
+**En iPad o iPhone, instálalo.** Safari borra lo que guardó un sitio que pasa 7
+días sin abrirse, salvo que esté en la pantalla de inicio: Compartir → «Añadir
+a pantalla de inicio», y abrirlo desde ese ícono. Y de vez en cuando, una copia
+desde «Para las personas adultas».
+
 Cuando se publica una versión nueva, el dispositivo la descarga en segundo plano
 y la usa **la siguiente vez que se abre el juego**, nunca a mitad de una partida.
 
@@ -213,6 +234,7 @@ npm ci
 npm run construir   # obligatorio después de tocar index.html
 npm test            # pruebas en Chromium, escritorio y tablet
 npm run servir      # http://localhost:4173/jardin-magico-multiplicaciones/
+npm run comprobar   # compuerta antes de fusionar: construcción al día + pruebas
 ```
 
 `npm run construir` hace dos cosas:
@@ -222,13 +244,19 @@ npm run servir      # http://localhost:4173/jardin-magico-multiplicaciones/
    archivos del sitio. Así cada cambio publicado llega a los dispositivos que ya
    tienen el juego guardado.
 
-El CI comprueba que la construcción está al día y falla si no lo está.
+**La compuerta es local:** `npm run comprobar` construye, falla si
+`estilos.css` o `sw.js` no estaban al día y corre todas las pruebas. Hay que
+pasarla antes de fusionar. Desde el 31 de octubre de 2026 no hay presupuesto
+para GitHub Actions: el flujo `.github/workflows/pruebas.yml` solo se lanza a
+mano.
 
 Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, pistas desde lo que ya se sabe, tablas del 1 al 9, estados del mapa y lo
 guardado por la versión anterior), descubrir una tabla (fila a fila, truco,
-plantas nuevas, cuándo sale y cuándo no), los mundos (elegir, cambiar sin
+plantas nuevas, cuándo sale y cuándo no), la copia de seguridad (guardar y
+recuperar en otro dispositivo, confirmar, archivos dañados o de otra versión,
+aviso en iPad), los mundos (elegir, cambiar sin
 borrar, lo que crece en cada uno, lo guardado de antes, contraste en cada
 fondo), los perfiles y la vista para
 adultos (cada quien lo suyo, cambiar sin borrar, borrar solo uno, lo que
@@ -264,6 +292,13 @@ a la vez.
 | `fuentes/` | Fredoka One y Quicksand |
 | `herramientas/construir.mjs` | Construcción |
 | `pruebas/` | Pruebas automatizadas |
+| `CHANGELOG.md` | Historial de cambios, con el PR de cada uno |
+
+## Estado y pendientes
+
+El estado del proyecto, lo que falta y quién lo tiene están en el
+[issue de estado](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/20).
+Lo que cambió y cuándo está en [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Licencias de las fuentes
 
