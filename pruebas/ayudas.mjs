@@ -18,6 +18,16 @@ export async function entrarATabla(pagina, tabla, nombre = "Ana") {
   await pagina.fill("#player-name", nombre);
   await pagina.click("#screen-welcome button");
   await pagina.locator("#grid-tablas-container button").nth(tabla - 1).click();
+  await pasarDescubrir(pagina);
+}
+
+/**
+ * La primera vez que se elige una tabla en el menú sale «Descubre la tabla».
+ * Si salió, va a practicar; en cualquier caso, espera a la partida.
+ */
+export async function pasarDescubrir(pagina) {
+  await pagina.waitForSelector("#screen-game:not(.hidden), #screen-descubrir:not(.hidden)");
+  if (await pagina.locator("#screen-descubrir:not(.hidden)").count()) await pagina.click("#descubrir-practicar");
   await pagina.waitForSelector("#screen-game:not(.hidden)");
 }
 

@@ -575,6 +575,47 @@
             <p id="vivero-aviso" role="status" aria-live="polite" class="min-h-6 text-center font-bold text-green-800"></p>
         </div>
 
+        <!-- ================= PANTALLA 8: DESCUBRIR UNA TABLA ================= -->
+        <!-- Antes de practicar una tabla nueva, se ve de dónde sale: se arma
+             fila a fila (N, 2N, 3N…), contando de N en N, y al final se dice
+             su truco y cuáles de sus multiplicaciones ya se vieron en tablas
+             de antes. Practicar sin haber visto la tabla es memorizar números
+             sueltos; verla crecer es entender qué son. -->
+        <div id="screen-descubrir" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-2xl text-green-700">Descubre la tabla del <span id="descubrir-tabla">2</span></h2>
+                <p id="descubrir-intro" class="text-gray-700 text-sm max-w-md mx-auto"></p>
+            </div>
+            <div class="text-center">
+                <div id="descubrir-rejilla" aria-hidden="true" class="inline-grid gap-1 bg-white border-2 border-indigo-100 rounded-xl p-3 min-h-10"></div>
+            </div>
+            <p id="descubrir-cuenta" aria-live="polite" class="text-center bubble-font text-2xl text-indigo-800 min-h-8"></p>
+            <div class="text-center">
+                <p class="text-sm font-bold text-gray-700">Contando de <span class="descubrir-n">2</span> en <span class="descubrir-n">2</span>:</p>
+                <ol id="descubrir-saltos" class="flex flex-wrap justify-center gap-1 mt-1" aria-label="Los resultados hasta ahora"></ol>
+            </div>
+            <div class="flex flex-wrap justify-center gap-3">
+                <button id="descubrir-otra" type="button" onclick="otraFila()" class="bubble-font bg-indigo-100 hover:bg-indigo-200 border-2 border-indigo-300 text-indigo-900 px-5 py-3 rounded-2xl shadow-sm transition text-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span aria-hidden="true">➕</span> Otra fila <span class="solo-teclado text-xs font-sans">(Espacio)</span>
+                </button>
+            </div>
+            <section id="descubrir-final" class="hidden bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 space-y-2 max-w-lg mx-auto" aria-labelledby="descubrir-final-titulo">
+                <h3 id="descubrir-final-titulo" class="font-bold text-amber-900">¡Ya tienes la tabla entera!</h3>
+                <p id="descubrir-truco" class="text-gray-800"></p>
+                <p id="descubrir-nuevas" class="text-gray-800"></p>
+            </section>
+            <div class="text-center">
+                <button id="descubrir-practicar" type="button" onclick="practicarDescubierta()" class="bubble-font bg-gradient-to-r from-green-300 to-emerald-300 hover:from-green-400 hover:to-emerald-400 text-gray-900 px-6 py-3 rounded-2xl shadow-md transition text-lg">
+                    <span aria-hidden="true">🌱</span> ¡A practicar la tabla del <span class="descubrir-n">2</span>!
+                </button>
+            </div>
+        </div>
+
         <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
         <div id="screen-mapa" class="hidden space-y-4">
             <div class="flex justify-between items-center">
@@ -926,6 +967,7 @@
             cargarHechos();
             cargarCompras();
             cargarMisiones();
+            cargarDescubiertas();
             actualizarEstrellas();
             aplicarAjustes();
             movimientoReducido.addEventListener("change", aplicarAjustes);
@@ -978,7 +1020,7 @@
                 // Texto oscuro sobre los pastel: el blanco de antes daba menos
                 // de 2:1 de contraste, ilegible para quien ve regular.
                 btn.className = `bg-gradient-to-br ${coloresTablas[i-1]} text-gray-900 p-4 rounded-2xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-150 flex flex-col items-center justify-center relative overflow-hidden group`;
-                btn.onclick = () => startTable(i);
+                btn.onclick = () => elegirTabla(i);
 
                 btn.innerHTML = `
                     <span aria-hidden="true" class="text-3xl group-hover:scale-125 transition-transform duration-200">${emojisTablas[i-1]}</span>
@@ -1046,6 +1088,7 @@
             hechos = {};
             compras = [];
             misiones = { hoy: null, dias: [] };
+            descubiertas = [];
             playerName = "";
             document.getElementById("player-name").value = "";
             document.getElementById("global-stars").innerText = "0";
@@ -1058,7 +1101,7 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero"];
+        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir"];
         let pantallaActual = "screen-welcome";
 
         function mostrarPantalla(id) {
@@ -1166,13 +1209,21 @@
 
             if (pantallaActual === "screen-selector" && /^[1-9]$/.test(evento.key)) {
                 evento.preventDefault();
-                startTable(Number(evento.key));
+                elegirTabla(Number(evento.key));
                 return;
             }
 
-            if (["screen-mapa", "screen-jardin", "screen-vivero"].includes(pantallaActual) && evento.key === "Escape") {
+            if (["screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir"].includes(pantallaActual) && evento.key === "Escape") {
                 evento.preventDefault();
                 backToSelector();
+                return;
+            }
+
+            // Al descubrir, Espacio arma otra fila. Enter no: es lo que activa
+            // el botón con el foco, y podría ser «¡A practicar!».
+            if (pantallaActual === "screen-descubrir" && evento.key === " " && evento.target.tagName !== "BUTTON") {
+                evento.preventDefault();
+                otraFila();
                 return;
             }
 
@@ -1716,9 +1767,12 @@
                 bancal.setAttribute("aria-labelledby", `bancal-${a}`);
                 const titulo = document.createElement("h3");
                 titulo.id = `bancal-${a}`;
-                titulo.className = "text-sm font-bold text-green-900 mb-1";
-                titulo.innerHTML = `<button type="button" class="hover:underline">Bancal del ${a}</button>`;
-                titulo.querySelector("button").onclick = () => startTable(a);
+                titulo.className = "text-sm font-bold text-green-900 mb-1 flex items-center justify-between gap-2";
+                titulo.innerHTML = `<button type="button" class="hover:underline">Bancal del ${a}</button>` +
+                    `<button type="button" class="descubrir-bancal text-xs font-semibold text-indigo-800 hover:underline"><span aria-hidden="true">🔍</span> Ver la tabla del ${a}</button>`;
+                const [practicar, ver] = titulo.querySelectorAll("button");
+                practicar.onclick = () => startTable(a);
+                ver.onclick = () => mostrarDescubrir(a);
                 const fila = document.createElement("ul");
                 fila.className = "flex flex-wrap gap-1";
                 for (let b = a; b <= MULTIPLICADORES; b++) {
@@ -2384,6 +2438,146 @@
         function girarAyuda() {
             ayudaGirada = !ayudaGirada;
             generateHelpVisual();
+        }
+
+        // --- DESCUBRIR UNA TABLA ---
+        //
+        // La primera vez que se elige una tabla en el menú, antes de las
+        // preguntas, se ve cómo se forma: una fila de N puntos, otra, otra…
+        // hasta 10, con la cuenta de N en N y la multiplicación de cada paso.
+        // Al terminar, el truco de la tabla y cuáles de sus multiplicaciones
+        // ya se vieron en tablas de antes (7 × 3 es 3 × 7). Se puede saltar en
+        // cualquier momento, y volver a ver desde «Mi jardín».
+        //
+        // Solo aparece sola si la tabla no se descubrió ni se jugó: a quien ya
+        // la practica no se le interrumpe.
+        let descubiertas = [];
+        let descubriendo = { tabla: 2, filas: 0 };
+
+        function cargarDescubiertas() {
+            try {
+                const g = JSON.parse(almacen.leer("descubiertas") || "[]");
+                descubiertas = Array.isArray(g) ? g.filter((n) => Number.isInteger(n) && n >= 1 && n <= TABLAS) : [];
+            } catch (e) {
+                descubiertas = [];
+            }
+        }
+
+        function tablaYaJugada(n) {
+            for (let b = 1; b <= MULTIPLICADORES; b++) {
+                if (intentosDe(n, b).length > 0) return true;
+            }
+            return false;
+        }
+
+        /** Desde el menú: la primera vez, descubrir; si no, a practicar. */
+        function elegirTabla(n) {
+            if (!descubiertas.includes(n) && !tablaYaJugada(n)) {
+                mostrarDescubrir(n);
+            } else {
+                startTable(n);
+            }
+        }
+
+        function mostrarDescubrir(n) {
+            initAudio();
+            cancelarEspera();
+            callarVoz();
+            descubriendo = { tabla: n, filas: 0 };
+            if (!descubiertas.includes(n)) {
+                descubiertas.push(n);
+                almacen.guardar("descubiertas", JSON.stringify(descubiertas));
+            }
+            document.getElementById("descubrir-tabla").textContent = String(n);
+            document.querySelectorAll(".descubrir-n").forEach((e) => { e.textContent = String(n); });
+            const intro = n === 1
+                ? "Cada fila tiene 1 punto. Toca «Otra fila» y mira cómo crece."
+                : `Cada fila tiene ${n} puntos. Toca «Otra fila» y mira cómo crece.`;
+            document.getElementById("descubrir-intro").textContent = intro;
+            document.getElementById("descubrir-final").classList.add("hidden");
+            pintarDescubrir();
+            mostrarPantalla("screen-descubrir");
+            speak(`Descubre la tabla del ${n}. ${intro.replace(/«|»/g, "")}`);
+        }
+
+        function otraFila() {
+            const d = descubriendo;
+            if (pantallaActual !== "screen-descubrir" || d.filas >= MULTIPLICADORES) return;
+            d.filas++;
+            pintarDescubrir();
+            const total = d.tabla * d.filas;
+            callarVoz();
+            speak(d.filas === 1 ? `Una fila de ${d.tabla}: ${d.tabla}.` : `${d.filas} filas de ${d.tabla}: ${total}.`);
+            if (d.filas === MULTIPLICADORES) {
+                const final = document.getElementById("descubrir-final");
+                final.classList.remove("hidden");
+                speak(`¡Ya tienes la tabla entera! ${textoParaVoz(document.getElementById("descubrir-truco").textContent)}`);
+                document.getElementById("descubrir-practicar").focus();
+            }
+        }
+
+        function pintarDescubrir() {
+            const { tabla: n, filas } = descubriendo;
+            const rejilla = document.getElementById("descubrir-rejilla");
+            rejilla.style.gridTemplateColumns = `repeat(${n}, auto)`;
+            const puntos = [];
+            for (let f = 0; f < filas; f++) {
+                for (let c = 0; c < n; c++) {
+                    const punto = document.createElement("span");
+                    // Como en la ayuda: filas de dos colores y un hueco cada 5.
+                    punto.className = `punto block w-3 h-3 md:w-4 md:h-4 rounded-full ${f % 2 ? "bg-pink-500" : "bg-indigo-500"}`;
+                    if (c > 0 && c % 5 === 0) punto.style.marginLeft = "0.5rem";
+                    if (f > 0 && f % 5 === 0) punto.style.marginTop = "0.5rem";
+                    puntos.push(punto);
+                }
+            }
+            rejilla.replaceChildren(...puntos);
+            rejilla.classList.toggle("hidden", filas === 0);
+
+            document.getElementById("descubrir-cuenta").textContent = filas === 0
+                ? ""
+                : `${filas} ${filas === 1 ? "fila" : "filas"} de ${n}: ${n} × ${filas} = ${n * filas}`;
+            const saltos = document.getElementById("descubrir-saltos");
+            saltos.replaceChildren(...Array.from({ length: filas }, (_, i) => {
+                const li = document.createElement("li");
+                li.className = "bubble-font bg-indigo-50 border border-indigo-200 text-indigo-900 rounded-lg px-2 py-1";
+                li.textContent = String(n * (i + 1));
+                return li;
+            }));
+            if (filas === 0) {
+                const li = document.createElement("li");
+                li.className = "text-sm text-gray-600";
+                li.textContent = "Aún nada: toca «Otra fila».";
+                saltos.appendChild(li);
+            }
+            document.getElementById("descubrir-otra").disabled = filas >= MULTIPLICADORES;
+            document.getElementById("descubrir-truco").textContent = trucoDeTabla(n);
+            document.getElementById("descubrir-nuevas").textContent = nuevasDeTabla(n);
+        }
+
+        /** El truco de la tabla con un ejemplo de la propia tabla (n × n). */
+        function trucoDeTabla(n) {
+            const { texto } = trucoPara(n, n);
+            if (n === 1 || n === 10) return texto;
+            return texto.replace(/^(Truco del \d+: [^.]+\.)\s*/, `$1 Por ejemplo, ${n} × ${n}: `);
+        }
+
+        /**
+         * Cuáles de la tabla son nuevas. Las de antes (7 × 3) ya se vieron
+         * del otro lado (3 × 7): el jardín lo cuenta como la misma planta.
+         */
+        function nuevasDeTabla(n) {
+            if (n === 1) return "Todas sus multiplicaciones son nuevas: es la primera tabla de tu jardín.";
+            const nuevas = [];
+            for (let b = n; b <= MULTIPLICADORES; b++) nuevas.push(`${n} × ${b}`);
+            const lista = nuevas.length === 1 ? nuevas[0] : `${nuevas.slice(0, -1).join(", ")} y ${nuevas.at(-1)}`;
+            const vistas = n === 2 ? "2 × 1 es lo mismo que 1 × 2, que ya está en la tabla del 1"
+                : `De ${n} × 1 a ${n} × ${n - 1} son las mismas que 1 × ${n} a ${n - 1} × ${n}, de las tablas de antes`;
+            return `${vistas}. Las nuevas son ${nuevas.length}: ${lista}.`;
+        }
+
+        function practicarDescubierta() {
+            startTable(descubriendo.tabla);
         }
 
         // --- TRUCOS POR TABLA ---

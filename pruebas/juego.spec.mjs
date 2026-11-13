@@ -1,6 +1,6 @@
 // Experiencia de uso: teclado, esperas, lenguaje, almacenamiento, movimiento.
 import { test, expect } from "@playwright/test";
-import { entrarATabla, preguntaActual, opciones, responder, siguiente } from "./ayudas.mjs";
+import { entrarATabla, preguntaActual, opciones, responder, siguiente, pasarDescubrir } from "./ayudas.mjs";
 
 const conTeclado = (testInfo) => testInfo.project.name === "escritorio";
 
@@ -22,7 +22,7 @@ test("se juega entera con el teclado", async ({ page }, testInfo) => {
   await expect(page.locator("#screen-selector")).toBeVisible();
 
   await page.keyboard.press("7");
-  await expect(page.locator("#screen-game")).toBeVisible();
+  await pasarDescubrir(page);
 
   const { producto } = await preguntaActual(page);
   const i = (await opciones(page)).indexOf(producto);
@@ -117,6 +117,7 @@ test("el lienzo de partículas no gasta batería en reposo", async ({ browser })
   await page.goto("http://localhost:4173/jardin-magico-multiplicaciones/");
   await page.evaluate(() => saveNameAndGo());   // el botón de inicio late: se entra sin él
   await page.locator("#grid-tablas-container button").nth(4).click();
+  await pasarDescubrir(page);
   await responder(page, true);
   expect(await page.evaluate(() => particles.length), "el acierto sí lanza partículas").toBeGreaterThan(0);
   // Las partículas se desvanecen un poco en cada cuadro: en un equipo que
@@ -182,6 +183,7 @@ test.describe("menos movimiento", () => {
     await page.evaluate(() => { ajustes.calma = true; aplicarAjustes(); });
     await page.click("#screen-welcome button");
     await page.locator("#grid-tablas-container button").nth(1).click();
+    await pasarDescubrir(page);
     await responder(page, true);
     expect(await page.evaluate(() => particles.length)).toBe(0);
   });
