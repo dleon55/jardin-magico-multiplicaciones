@@ -9,6 +9,27 @@ Sitio publicado en GitHub Pages: https://dleon55.github.io/jardin-magico-multipl
 
 Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 
+- **Cada quien elige su mundo y su personaje.** El juego empezó como un
+  jardín de flores rosa y a muchos niños eso les decía «no es para ti».
+  Ahora la portada es neutra (verde, cielo y tierra) y, al entrar, se elige
+  entre cinco mundos y doce personajes (🦊 🐸 🦖 🐢 🦉 🐝 🚀 🦁 🐼 🐙 🦄 🐱):
+
+  | Mundo | Lo que crece al saberla (una cosa por tabla) | «Casi» |
+  | --- | --- | --- |
+  | 🥕 Huerto | 🥕 🍅 🌽 🥦 🍆 🥔 🥬 🍓 🎃 | 🌿 |
+  | 🌲 Bosque | 🌲 🌳 🍄 🌰 🍁 🍂 🦔 🦉 🦌 | 🌿 |
+  | 🦖 Selva de dinosaurios | 🦕 🦖 🐊 🦎 🐢 🌴 🌋 🐉 🦕 | 🥚 |
+  | 🌵 Desierto | 🌵 🌴 🦎 🦂 🐪 🌞 🏜️ 🐫 🦅 | 🌾 |
+  | 🌸 Jardín de flores | 🌼 🌸 🌺 🌻 🌹 💐 🏵️ 💮 🌼 | 🌷 |
+
+  Cambian el fondo, lo que brota en cada partida, el jardín, el mapa y sus
+  leyendas. La mecánica es la misma en todos, y «florecer» sigue siendo el
+  nombre de saberla de memoria. Quien no elige empieza en el huerto; los
+  jardines de antes de los mundos siguen siendo de flores. Desde el menú,
+  «🎨 Mi mundo y mi personaje» lo cambia sin borrar nada. Solo se usan emojis
+  que existen en tabletas viejas (Unicode 13 o anterior). El vivero suma
+  premios variados: tortuga, búho, tractor, dinosaurio, cohete y dragón.
+
 - **Cada partida va en otro orden.** Dentro de una tabla no se repite ninguna
   multiplicación hasta haber salido todas.
 - **Lo que se falla vuelve.** Una multiplicación que salió mal se pregunta otra
@@ -58,9 +79,9 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 
   | Estado | Cuándo |
   | --- | --- |
-  | 🌸 Florecida | Desde el último fallo, **escrita en 6 segundos o menos en dos días distintos**. Es saberla de memoria |
+  | 🌸 Florecida (o lo de su mundo) | Desde el último fallo, **escrita en 6 segundos o menos en dos días distintos**. Es saberla de memoria |
   | 🥀 Marchita | Florecida, pero sin repasar en 14 días o más. Pide riego |
-  | 🌷 Casi | Desde el último fallo, escrita rápido una vez, o acertada dos veces |
+  | 🌷 Casi (o lo de su mundo) | Desde el último fallo, escrita rápido una vez, o acertada dos veces |
   | 🌱 Practicando | Jugada, sin llegar a «casi» |
   | (gris) | Sin jugar |
 
@@ -207,7 +228,9 @@ Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, pistas desde lo que ya se sabe, tablas del 1 al 9, estados del mapa y lo
 guardado por la versión anterior), descubrir una tabla (fila a fila, truco,
-plantas nuevas, cuándo sale y cuándo no), los perfiles y la vista para
+plantas nuevas, cuándo sale y cuándo no), los mundos (elegir, cambiar sin
+borrar, lo que crece en cada uno, lo guardado de antes, contraste en cada
+fondo), los perfiles y la vista para
 adultos (cada quien lo suyo, cambiar sin borrar, borrar solo uno, lo que
 más falla, días de práctica, lo de antes de los perfiles), el jardín (parejas, bancales y riego), las
 estrellas y la misión del día (vivero, bono por florecer, misión que se elige

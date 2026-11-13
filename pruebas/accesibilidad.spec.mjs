@@ -150,3 +150,25 @@ test("«¿Quién juega?» y la vista para las personas adultas", async ({ page }
   await page.click(".btn-borrar");
   await auditar(page, "la vista para adultos, pidiendo confirmar el borrado");
 });
+
+test("elegir mundo y personaje, en la bienvenida y en el menú", async ({ page }) => {
+  await page.goto("./");
+  await page.click('#screen-welcome .elegir-mundo label:has(input[value="dinos"])');
+  await auditar(page, "la bienvenida con las fichas de mundo y personaje");
+  await page.click("#screen-welcome button:has-text('Comenzar')");
+  await auditar(page, "el menú en la selva de dinosaurios");
+  await page.click("#screen-selector >> text=Mi mundo y mi personaje");
+  await auditar(page, "cambiar de mundo");
+});
+
+for (const mundo of ["huerto", "bosque", "dinos", "desierto", "flores"]) {
+  test(`el menú y el jardín se leen bien en el mundo «${mundo}»`, async ({ page }) => {
+    await page.goto("./");
+    await page.click(`#screen-welcome .elegir-mundo label:has(input[value="${mundo}"])`);
+    await page.click("#screen-welcome button:has-text('Comenzar')");
+    await page.evaluate(() => { registrarIntento(7, 8, false); registrarIntento(5, 5, true); });
+    await auditar(page, `el menú en ${mundo}`);
+    await page.click("#screen-selector >> text=Mi jardín");
+    await auditar(page, `el jardín en ${mundo}`);
+  });
+}

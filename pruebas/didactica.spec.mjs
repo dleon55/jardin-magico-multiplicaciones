@@ -194,9 +194,9 @@ test.describe("mapa de lo que ya se sabe", () => {
     await ponerIntentos(page, "5x6", [rapida("2026-11-02")]);
     await page.evaluate(() => registrarIntento(6, 7, false));
     await page.click("text=Mi mapa de tablas");
-    await expect(celda(page, 3, 4)).toContainText("🌸");
+    await expect(celda(page, 3, 4)).toContainText("🍅");   // quien no elige mundo, empieza en el huerto
     await expect(celda(page, 3, 4)).toContainText("3 por 4: florecida, ya te la sabes");
-    await expect(celda(page, 5, 6)).toContainText("🌷");
+    await expect(celda(page, 5, 6)).toContainText("🌿");
     await expect(celda(page, 5, 6)).toContainText("5 por 6: casi");
     await expect(celda(page, 6, 7)).toContainText("🌱");
     await expect(celda(page, 6, 7)).toContainText("6 por 7: practicando");
