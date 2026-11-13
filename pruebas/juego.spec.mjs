@@ -94,20 +94,22 @@ test("las estrellas de la versión anterior se conservan al actualizar", async (
   });
   await page.goto("./");
   const guardado = await page.evaluate(() => ({ ...localStorage }));
-  expect(guardado["jardin:estrellas"]).toBe("37");
-  expect(guardado["jardin:nombre"]).toBe("Ana");
+  // Pasan al primer perfil, que ya aparece en «¿Quién juega?».
+  expect(guardado["jardin:p1:estrellas"]).toBe("37");
+  expect(JSON.parse(guardado["jardin:perfiles"])[0]).toMatchObject({ id: "p1", nombre: "Ana", iniciado: true });
+  await expect(page.locator(".btn-perfil")).toContainText("Ana");
   expect(guardado).not.toHaveProperty("jardinera_estrellas");
   await expect(page.locator("#global-stars")).toHaveText("37");
 });
 
-test("salir borra solo lo del juego, no lo de otras páginas del sitio", async ({ page }) => {
+test("borrar un jardín borra solo lo suyo, no lo de otras páginas del sitio", async ({ page }) => {
   await page.goto("./");
   await page.evaluate(() => localStorage.setItem("otra-app:dato", "no-tocar"));
   await page.click("#screen-welcome button");
-  await page.evaluate(() => resetGame());
+  await page.evaluate(() => { registrarIntento(2, 3, true); borrarPerfil(perfilActual); });
   const guardado = await page.evaluate(() => ({ ...localStorage }));
   expect(guardado["otra-app:dato"]).toBe("no-tocar");
-  expect(Object.keys(guardado).some((k) => k.startsWith("jardin:"))).toBe(false);
+  expect(Object.keys(guardado).some((k) => k.startsWith("jardin:p1:"))).toBe(false);
 });
 
 test("el lienzo de partículas no gasta batería en reposo", async ({ browser }) => {

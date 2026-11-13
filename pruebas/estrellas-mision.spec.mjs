@@ -144,7 +144,7 @@ test.describe("misión del día", () => {
       const primera = misionDeHoy().tipo;
       registrarIntento(7, 8, false);   // ahora sí hay algo que repasar
       registrarIntento(6, 9, true);
-      return [primera, misionDeHoy().tipo, JSON.parse(localStorage.getItem("jardin:misiones")).hoy.d];
+      return [primera, misionDeHoy().tipo, JSON.parse(localStorage.getItem("jardin:p1:misiones")).hoy.d];
     });
     expect(r[1]).toBe(r[0]);
     expect(r[2]).toBe(HOY);
@@ -215,12 +215,13 @@ test.describe("días seguidos", () => {
       .toEqual([0, 40, ["mariposa"], 3]);
   });
 
-  test("salir borra estrellas, amigos y misiones del juego", async ({ page }) => {
+  test("borrar el jardín borra sus estrellas, amigos y misiones", async ({ page }) => {
     await preparar(page, { estrellas: 40, compras: ["mariposa"], misiones: { ...mision("partida"), dias: [HOY] } });
     await page.goto("./");
-    await page.evaluate(() => resetGame());
+    expect(await page.evaluate(() => globalStars)).toBe(40);
+    await page.evaluate(() => borrarPerfil(perfilActual));
     const guardado = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith("jardin:")));
-    expect(guardado.filter((k) => ["jardin:estrellas", "jardin:compras", "jardin:misiones"].includes(k))).toEqual([]);
+    expect(guardado.filter((k) => /^jardin:p\d+:(estrellas|compras|misiones)$/.test(k))).toEqual([]);
     expect(await page.evaluate(() => [globalStars, compras, misiones.dias])).toEqual([0, [], []]);
   });
 });

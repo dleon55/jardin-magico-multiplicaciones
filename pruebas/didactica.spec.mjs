@@ -202,13 +202,13 @@ test.describe("mapa de lo que ya se sabe", () => {
     await expect(page.locator("#mapa-resumen")).toHaveText("Florecidas: 1 de 54. Casi: 1. Practicando: 1.");
   });
 
-  test("se conserva al recargar y se borra al salir", async ({ page }) => {
+  test("se conserva al recargar y se borra al borrar el jardín", async ({ page }) => {
     await page.goto("./");
     await page.evaluate(() => { registrarIntento(5, 5, true); registrarIntento(5, 5, true); });
     await page.reload();
     expect(await estado(page, 5, 5)).toBe("casi");
-    await page.evaluate(() => resetGame());
-    expect(await page.evaluate(() => [estadoHecho(5, 5), localStorage.getItem("jardin:intentos")])).toEqual(["nuevo", null]);
+    await page.evaluate(() => borrarPerfil(perfilActual));
+    expect(await page.evaluate(() => [estadoHecho(5, 5), localStorage.getItem("jardin:p1:intentos")])).toEqual(["nuevo", null]);
   });
 
   test("lo guardado por la versión anterior se conserva: lo sabido queda en «casi»", async ({ page }) => {

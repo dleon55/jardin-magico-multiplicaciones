@@ -125,11 +125,12 @@ test("la voz cuenta cada fila y lee el truco al final", async ({ page }) => {
   expect(dicho.at(-1)).toMatch(/^¡Ya tienes la tabla entera! Truco del 3: es el doble y una vez más\. Por ejemplo, 3 por 3/);
 });
 
-test("«Salir» olvida las tablas descubiertas", async ({ page }) => {
+test("borrar un jardín olvida sus tablas descubiertas", async ({ page }) => {
   await alMenu(page);
   await tabla(page, 2).click();
   await page.click("#descubrir-practicar");
-  await page.evaluate(() => resetGame());
+  await page.evaluate(() => borrarPerfil(perfilActual));
+  await page.evaluate(() => mostrarPantalla("screen-welcome"));
   await page.click("#screen-welcome button");
   await tabla(page, 2).click();
   await expect(page.locator("#screen-descubrir")).toBeVisible();
