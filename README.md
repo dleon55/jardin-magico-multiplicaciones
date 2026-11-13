@@ -26,6 +26,15 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **Cada tabla tiene su truco** (el del 9 es «por 10 y una vez menos»), con los
   números de la pregunta, y la voz lo lee. El último paso lo da quien juega: la
   ayuda no da la respuesta.
+- **🔍 Antes de practicar una tabla, se descubre.** La primera vez que se
+  elige una tabla en el menú, se arma fila a fila: cada toque de «Otra fila»
+  añade una fila de N puntos y dice la multiplicación («3 filas de 7:
+  7 × 3 = 21»), mientras se cuenta de N en N (7, 14, 21…). Con las 10 filas
+  aparecen el truco de la tabla, con un ejemplo, y cuáles de sus
+  multiplicaciones son nuevas: las de antes ya se vieron del otro lado
+  (7 × 3 es 3 × 7), así que de la del 7 solo son nuevas 7 × 7, 7 × 8, 7 × 9 y
+  7 × 10. Se puede saltar en cualquier momento; no sale si la tabla ya se
+  jugó, y desde «Mi jardín» («🔍 Ver la tabla del N») se vuelve a ver.
 - **Tablas del 1 al 9**, cada una del ×1 al ×10, y un desafío que mezcla las
   del 2 al 9. Las del 10, 11 y 12 se quitaron: la del 10 no exige memoria (se
   añade un cero) y la 11 y la 12 dispersaban la práctica.
@@ -111,7 +120,8 @@ Con teclado (en una tableta estos atajos no se muestran):
 | `0`–`9`, `Retroceso`, `Enter` | Escribir la respuesta, borrar y mandarla, cuando se escribe |
 | `H` | Abrir o cerrar la ayuda |
 | `Enter` o `Espacio` | Seguir a la siguiente pregunta |
-| `Esc` | Volver al menú, desde el juego, el mapa, el jardín o el vivero |
+| `Espacio` | Otra fila, al descubrir una tabla |
+| `Esc` | Volver al menú, desde el juego, el mapa, el jardín, el vivero o al descubrir una tabla |
 
 En **Ajustes** se pueden apagar por separado la voz y los sonidos, elegir la
 velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento».
@@ -169,7 +179,8 @@ El CI comprueba que la construcción está al día y falla si no lo está.
 Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, tablas del 1 al 9, estados del mapa y lo
-guardado por la versión anterior), el jardín (parejas, bancales y riego), las
+guardado por la versión anterior), descubrir una tabla (fila a fila, truco,
+plantas nuevas, cuándo sale y cuándo no), el jardín (parejas, bancales y riego), las
 estrellas y la misión del día (vivero, bono por florecer, misión que se elige
 una vez y premia una sola vez, días seguidos), dividir y los problemas
 cortos (de dónde salen, opciones, ayuda, repaso y que no tocan el mapa), el uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin

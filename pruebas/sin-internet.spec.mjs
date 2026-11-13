@@ -1,6 +1,6 @@
 // El juego tiene que funcionar en un aula sin wifi.
 import { test, expect } from "@playwright/test";
-import { responder, siguiente } from "./ayudas.mjs";
+import { responder, siguiente, pasarDescubrir } from "./ayudas.mjs";
 
 test("no pide nada a ningún otro dominio", async ({ page }) => {
   const externas = [];
@@ -29,6 +29,7 @@ test("tras la primera visita, se juega sin conexión", async ({ page, context })
 
   await page.click("#screen-welcome button");
   await page.locator("#grid-tablas-container button").nth(2).click();
+  await pasarDescubrir(page);
   await responder(page, true);
   await siguiente(page);
   await expect(page.locator("#current-stars")).toHaveText("1");

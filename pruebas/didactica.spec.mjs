@@ -3,7 +3,7 @@
 import { test, expect } from "@playwright/test";
 import {
   entrarATabla, preguntaActual, responder, siguiente, instalarDobles, seEscribe,
-  ponerIntentos, rapida, lenta, elegida, conAyuda, fallo, pareja,
+  ponerIntentos, rapida, lenta, elegida, conAyuda, fallo, pareja, pasarDescubrir,
 } from "./ayudas.mjs";
 
 const conTeclado = (testInfo) => testInfo.project.name === "escritorio";
@@ -122,7 +122,8 @@ test.describe("tablas del 1 al 9", () => {
     await page.keyboard.press("0");
     await expect(page.locator("#screen-selector")).toBeVisible();
     await page.keyboard.press("9");
-    await expect(page.locator("#screen-game")).toBeVisible();
+    await expect(page.locator("#descubrir-tabla")).toHaveText("9");   // la primera vez, se descubre
+    await pasarDescubrir(page);
     expect((await preguntaActual(page)).a).toBe(9);
   });
 });
@@ -343,6 +344,7 @@ test.describe("practicar lo que falta", () => {
 test.describe("la victoria dice lo aprendido", () => {
   async function partidaLimpia(page, tabla) {
     await page.locator("#grid-tablas-container button").nth(tabla - 1).click();
+    await pasarDescubrir(page);
     for (let i = 0; i < 10; i++) { await responder(page, true); await siguiente(page); }
     await expect(page.locator("#screen-victory")).toBeVisible();
   }

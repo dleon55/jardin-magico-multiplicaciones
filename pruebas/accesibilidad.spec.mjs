@@ -128,3 +128,13 @@ test("selector con «Practicar lo que me falta»", async ({ page }) => {
   await page.click("#screen-welcome button");
   await auditar(page, "el selector con el botón de lo que falta");
 });
+
+test("descubrir una tabla, a medias y entera", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.locator("#grid-tablas-container button").nth(6).click();
+  await page.click("#descubrir-otra");
+  await auditar(page, "descubrir la tabla, con una fila");
+  for (let i = 0; i < 9; i++) await page.click("#descubrir-otra");
+  await auditar(page, "descubrir la tabla, entera");
+});
