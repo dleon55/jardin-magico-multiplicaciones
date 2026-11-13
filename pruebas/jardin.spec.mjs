@@ -14,6 +14,7 @@ test.describe("7 × 8 y 8 × 7 son la misma planta", () => {
   });
 
   test("en el mapa, las dos casillas dicen lo mismo", async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2026-11-03T12:00:00"));   // con el reloj real, sus flores se marchitarían
     await page.goto("./");
     await page.click("#screen-welcome button");
     await ponerIntentos(page, "7x8", [rapida("2026-11-01"), rapida("2026-11-02")]);

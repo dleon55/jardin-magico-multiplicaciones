@@ -2980,7 +2980,12 @@
          * la respuesta.
          */
         function pistaPara() {
-            if (!pregunta || pregunta.tipo === "mult") return trucoPara(numA, numB);
+            if (!pregunta || pregunta.tipo === "mult") {
+                const truco = trucoPara(numA, numB);
+                const puente = puenteDesdeLoSabido(numA, numB);
+                if (!puente) return truco;
+                return { texto: `${puente.texto} Otro camino: ${truco.texto}`, voz: textoParaVoz(puente.texto) };
+            }
             const total = numA * numB;
             const saltos = [1, 2, 3].map((k) => numA * k).join(", ");
             const alReves = `piensa en la multiplicación: ${numA} × ? = ${total}. Cuenta de ${numA} en ${numA} (${saltos}…) hasta llegar a ${total}.`;
@@ -2995,11 +3000,54 @@
             return { texto, voz: textoParaVoz(texto) };
         }
 
+        // --- PISTAS DESDE LO QUE YA SE SABE ---
+        //
+        // El truco de la tabla es el mismo para todos. Pero quien ya se sabe
+        // 7 × 7 llega a 7 × 8 con un paso: «una vez más 7». Partir de un
+        // hecho que ya se sabe para deducir el que falta es de lo que mejor
+        // funciona con las tablas difíciles, y el juego ya sabe qué domina
+        // cada quien. Se busca una vecina sabida (florecida, o si no, «casi»):
+        //   - un factor una vez más o una vez menos: 7 × 7 → 7 × 8, 7 × 9 → 7 × 8;
+        //   - la mitad de un factor par: 4 × 8 es el doble de 4 × 4.
+        // Antes de responder, el puente no da el resultado: el último paso lo
+        // hace quien juega. Después de un fallo, sí, para que lo una a lo que
+        // ya sabe.
+        function puenteDesdeLoSabido(a, b, conResultado = false) {
+            if (estadoHecho(a, b) === "florecida") return null;   // ya se la sabe
+            const valida = (x, y) => x >= 1 && y >= 1 && x <= MULTIPLICADORES && y <= MULTIPLICADORES &&
+                claveValida(claveHecho(x, y));
+            const vecinas = [];
+            const anadir = (x, y, tipo, paso) => {
+                if (valida(x, y) && !(x === a && y === b)) vecinas.push({ x, y, tipo, paso });
+            };
+            anadir(a, b - 1, "mas", a);    // una vez más a
+            anadir(a - 1, b, "mas", b);    // una vez más b
+            anadir(a, b + 1, "menos", a);  // una vez menos a
+            anadir(a + 1, b, "menos", b);
+            if (b % 2 === 0) anadir(a, b / 2, "doble");
+            if (a % 2 === 0) anadir(a / 2, b, "doble");
+            // Lo más seguro primero: florecida antes que «casi»; sumar antes
+            // que restar o doblar. Nunca la de ×1: ese puente es contar.
+            const nivel = { florecida: 0, casi: 1 };
+            const orden = { mas: 0, menos: 1, doble: 2 };
+            const elegida = vecinas
+                .filter((v) => v.x !== 1 && v.y !== 1 && estadoHecho(v.x, v.y) in nivel)
+                .sort((u, v) => nivel[estadoHecho(u.x, u.y)] - nivel[estadoHecho(v.x, v.y)] || orden[u.tipo] - orden[v.tipo])[0];
+            if (!elegida) return null;
+            const { x, y, tipo, paso } = elegida;
+            const p = x * y;
+            const r = conResultado ? ` = ${a * b}` : "";
+            const como = tipo === "mas" ? `${x} × ${y} y una vez más ${paso}: ${p} + ${paso}${r}`
+                : tipo === "menos" ? `${x} × ${y} y una vez menos ${paso}: ${p} − ${paso}${r}`
+                : `el doble de ${x} × ${y}: ${p} + ${p}${r}`;
+            return { x, y, texto: `Desde lo que ya sabes: ${x} × ${y} = ${p}. Entonces ${a} × ${b} es ${como}.` };
+        }
+
         // Los signos se leen mal o no se leen: se dicen con palabras.
         function textoParaVoz(texto) {
             return texto
                 .replace(/×\s*\?/g, " por cuánto ").replace(/÷/g, " entre ").replace(/…/g, "")
-                .replace(/×/g, " por ").replace(/\+/g, " más ").replace(/ → ¿\?/g, ", y otra vez el doble")
+                .replace(/×/g, " por ").replace(/\+/g, " más ").replace(/−/g, " menos ").replace(/ → ¿\?/g, ", y otra vez el doble")
                 .replace(/→/g, ",").replace(/ = /g, " es ").replace(/ +/g, " ").replace(/ ,/g, ",");
         }
 
@@ -3187,7 +3235,11 @@
                     }
                 });
 
-                const explicacion = multiplica ? `${pregunta.explicacion}.` : pregunta.explicacion;
+                // Si hay una vecina que ya se sabe, el puente para recordarla.
+                const puente = multiplica ? puenteDesdeLoSabido(numA, numB, true) : null;
+                const explicacion = multiplica
+                    ? `${pregunta.explicacion}.${puente ? ` Para recordarla: ${puente.texto.replace("Desde lo que ya sabes: ", "")}` : ""}`
+                    : pregunta.explicacion;
                 const mensajeError = modoEscrito
                     ? `Escribiste ${chosenVal}. ${explicacion} Te la vuelvo a preguntar en un ratito 🌱`
                     : `¡Casi! ${explicacion} Te la vuelvo a preguntar en un ratito 🌱`;

@@ -23,6 +23,16 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **La ayuda dibuja la multiplicación como un rectángulo** de filas × columnas,
   con huecos cada 5 para contar de 5 en 5. Al girarlo se ve que 9 × 7 y 7 × 9
   son los mismos puntos.
+- **La ayuda parte de lo que ya sabes.** Si quien juega domina una vecina
+  (florecida o «casi») de la que le preguntan, la ayuda empieza por ahí:
+  «Desde lo que ya sabes: 7 × 7 = 49. Entonces 7 × 8 es 7 × 7 y una vez más
+  7: 49 + 7». Sirven un factor una vez más o una vez menos, o la mitad de un
+  factor par («4 × 8 es el doble de 4 × 4»); nunca el ×1, que sería contar.
+  Va primero lo florecido y sumar antes que restar. No da la respuesta; el
+  truco de la tabla sigue debajo como «otro camino». Al fallar, el mismo
+  puente se dice con el resultado («…: 49 + 7 = 56»), para unirla a lo que ya
+  se sabe. Deducir lo nuevo de lo sabido es de lo que mejor funciona con las
+  tablas difíciles.
 - **Cada tabla tiene su truco** (el del 9 es «por 10 y una vez menos»), con los
   números de la pregunta, y la voz lo lee. El último paso lo da quien juega: la
   ayuda no da la respuesta.
@@ -195,7 +205,7 @@ El CI comprueba que la construcción está al día y falla si no lo está.
 
 Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
-(rectángulo de ayuda, trucos, tablas del 1 al 9, estados del mapa y lo
+(rectángulo de ayuda, trucos, pistas desde lo que ya se sabe, tablas del 1 al 9, estados del mapa y lo
 guardado por la versión anterior), descubrir una tabla (fila a fila, truco,
 plantas nuevas, cuándo sale y cuándo no), los perfiles y la vista para
 adultos (cada quien lo suyo, cambiar sin borrar, borrar solo uno, lo que
