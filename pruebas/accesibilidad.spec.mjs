@@ -138,3 +138,15 @@ test("descubrir una tabla, a medias y entera", async ({ page }) => {
   for (let i = 0; i < 9; i++) await page.click("#descubrir-otra");
   await auditar(page, "descubrir la tabla, entera");
 });
+
+test("«¿Quién juega?» y la vista para las personas adultas", async ({ page }) => {
+  await page.goto("./");
+  await page.fill("#player-name", "Ana");
+  await page.click("#screen-welcome button");
+  await page.evaluate(() => { registrarIntento(7, 8, false); registrarIntento(5, 5, true); });
+  await page.click("#screen-selector >> text=Cambiar de jugador");
+  await auditar(page, "la bienvenida con un jardín");
+  await page.click("#screen-welcome >> text=Para las personas adultas");
+  await page.click(".btn-borrar");
+  await auditar(page, "la vista para adultos, pidiendo confirmar el borrado");
+});

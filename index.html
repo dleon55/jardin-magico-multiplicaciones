@@ -228,9 +228,17 @@
                 <span class="text-green-500 text-3xl md:text-4xl">de las Multiplicaciones</span>
             </h1>
 
-            <p class="text-gray-600 text-lg md:text-xl max-w-md mx-auto">
+            <p id="bienvenida-texto" class="text-gray-600 text-lg md:text-xl max-w-md mx-auto">
                 ¡Hola! Pon tu nombre para empezar a sembrar hermosas flores respondiendo preguntas mágicas.
             </p>
+
+            <!-- Quien ya jugó en este dispositivo toca su jardín y sigue. Cada
+                 quien tiene lo suyo: elegir otro no borra nada. -->
+            <section id="perfiles" class="hidden max-w-md mx-auto space-y-3" aria-labelledby="perfiles-titulo">
+                <h2 id="perfiles-titulo" class="bubble-font text-2xl text-green-700">¿Quién juega?</h2>
+                <ul id="perfiles-lista" class="grid grid-cols-2 gap-3"></ul>
+            </section>
+            <h2 id="nuevo-titulo" class="hidden bubble-font text-xl text-pink-700">¿Juega alguien nuevo?</h2>
 
             <div class="max-w-xs mx-auto space-y-4">
                 <!-- Etiqueta real: el placeholder desaparece al escribir y no lo
@@ -244,6 +252,9 @@
                     ¡Comenzar Aventura! 🚀
                 </button>
             </div>
+            <button type="button" onclick="mostrarAdultos()" class="text-sm font-bold text-gray-700 underline hover:text-green-800">
+                <span aria-hidden="true">👪</span> Para las personas adultas
+            </button>
         </div>
 
 
@@ -254,6 +265,10 @@
                 <div class="text-center md:text-left">
                     <h2 class="text-xl font-bold text-pink-700"><span id="display-name" class="bubble-font">Tu jardín</span> <span aria-hidden="true">🧑‍🌾</span></h2>
                     <p class="text-sm text-gray-600">¡Cultiva flores ganando estrellas doradas!</p>
+                </div>
+                <div class="flex flex-col items-center md:items-end gap-1 text-sm">
+                    <button type="button" onclick="cambiarDeJugador()" class="font-bold text-gray-700 underline hover:text-pink-700"><span aria-hidden="true">👥</span> Cambiar de jugador</button>
+                    <button type="button" onclick="mostrarAdultos()" class="font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">👪</span> Para las personas adultas</button>
                 </div>
                 <div class="flex items-center gap-2 bg-yellow-100 text-yellow-900 px-4 py-2 rounded-full font-bold">
                     <span><span aria-hidden="true">⭐</span> Tus estrellas:</span>
@@ -501,9 +516,9 @@
                         class="bubble-font bg-green-700 hover:bg-green-800 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
                     Sigue Cultivando 🌱
                 </button>
-                <button onclick="resetGame()" 
+                <button onclick="cambiarDeJugador()" 
                         class="bubble-font bg-gray-300 hover:bg-gray-200 text-gray-800 text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
-                    Salir / Otro Nombre
+                    Cambiar de jugador <span aria-hidden="true">👥</span>
                 </button>
             </div>
             <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
@@ -616,6 +631,24 @@
             </div>
         </div>
 
+        <!-- ================= PANTALLA 9: PARA LAS PERSONAS ADULTAS ================= -->
+        <!-- Lo que lleva aprendido cada quien, para saber en qué ayudar: flores,
+             lo que más falla y qué días practicó. Sale de lo que el juego ya
+             guarda; no mide nada nuevo ni lo envía a ningún lado. -->
+        <div id="screen-adultos" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button type="button" onclick="volverDeAdultos()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                    <span aria-hidden="true">⬅</span> Volver <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-2xl text-green-700">Para las personas adultas</h2>
+                <p class="text-gray-700 text-sm max-w-md mx-auto">Lo que lleva aprendido cada quien en este dispositivo. Una flor es una multiplicación escrita bien y rápido (6 segundos o menos) en dos días distintos; 7 × 8 y 8 × 7 cuentan como una sola.</p>
+            </div>
+            <div id="adultos-perfiles" class="space-y-3"></div>
+            <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Dividir y los problemas cortos no cuentan aquí: miden otra cosa.</p>
+        </div>
+
         <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
         <div id="screen-mapa" class="hidden space-y-4">
             <div class="flex justify-between items-center">
@@ -658,23 +691,43 @@
         //
         // Las claves antiguas se migran una vez: quien ya tenía estrellas
         // guardadas no las pierde al actualizar.
+        //
+        // PERFILES: varios niños pueden jugar en el mismo dispositivo. Lo de
+        // cada uno (nombre, intentos, estrellas, compras, misiones, tablas
+        // descubiertas) va bajo "jardin:<perfil>:", p. ej. "jardin:p2:intentos".
+        // Solo los ajustes (voz, sonidos, movimiento) y la lista de perfiles
+        // son del dispositivo. Antes había un solo jugador y «Salir / Otro
+        // nombre» borraba todo: otro niño que tocara ese botón se llevaba
+        // semanas de práctica de su hermano.
         const PREFIJO = "jardin:";
+        const GLOBALES = new Set(["ajustes", "perfiles", "perfil"]);
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas"];
+        let perfilActual = "p1";
+
         const almacen = {
+            clave(clave, perfil = perfilActual) {
+                return GLOBALES.has(clave) ? PREFIJO + clave : `${PREFIJO}${perfil}:${clave}`;
+            },
             leer(clave) {
-                try { return localStorage.getItem(PREFIJO + clave); } catch (e) { return null; }
+                try { return localStorage.getItem(this.clave(clave)); } catch (e) { return null; }
+            },
+            /** Lo guardado de otro perfil, para la vista de las personas adultas. */
+            leerDe(perfil, clave) {
+                try { return localStorage.getItem(this.clave(clave, perfil)); } catch (e) { return null; }
             },
             guardar(clave, valor) {
                 // En modo privado o con almacenamiento bloqueado, setItem lanza:
                 // el juego debe seguir funcionando aunque no recuerde nada.
-                try { localStorage.setItem(PREFIJO + clave, valor); } catch (e) { /* sin memoria */ }
+                try { localStorage.setItem(this.clave(clave), valor); } catch (e) { /* sin memoria */ }
             },
             borrar(clave) {
-                try { localStorage.removeItem(PREFIJO + clave); } catch (e) { /* sin memoria */ }
+                try { localStorage.removeItem(this.clave(clave)); } catch (e) { /* sin memoria */ }
             },
-            borrarTodo() {
+            /** Borra solo lo de un perfil: ni otros perfiles ni otras páginas del sitio. */
+            borrarPerfil(perfil) {
                 try {
                     Object.keys(localStorage)
-                        .filter((k) => k.startsWith(PREFIJO))
+                        .filter((k) => k.startsWith(`${PREFIJO}${perfil}:`))
                         .forEach((k) => localStorage.removeItem(k));
                 } catch (e) { /* nada que borrar */ }
             },
@@ -685,12 +738,65 @@
                 const antiguas = { jardinera_nombre: "nombre", jardinera_estrellas: "estrellas" };
                 for (const [vieja, nueva] of Object.entries(antiguas)) {
                     const valor = localStorage.getItem(vieja);
-                    if (valor !== null && almacen.leer(nueva) === null) {
-                        almacen.guardar(nueva, valor);
+                    if (valor !== null && localStorage.getItem(PREFIJO + nueva) === null) {
+                        localStorage.setItem(PREFIJO + nueva, valor);
                     }
                     localStorage.removeItem(vieja);
                 }
             } catch (e) { /* almacenamiento no disponible */ }
+        })();
+
+        // Cada perfil: { id: "p1", nombre: "Ana" o "", emoji, iniciado }.
+        // `iniciado` es false mientras nadie ha tocado «Comenzar» con él: el
+        // primer perfil existe desde que abre la página, para guardar lo que
+        // pase antes, pero no se ofrece en «¿Quién juega?» hasta empezar.
+        const EMOJIS_PERFIL = ["🌻", "🌷", "🌼", "🌹", "🌺", "🌸", "💐", "🏵️"];
+        let perfiles = [];
+
+        function guardarPerfiles() {
+            try {
+                localStorage.setItem(PREFIJO + "perfiles", JSON.stringify(perfiles));
+                localStorage.setItem(PREFIJO + "perfil", perfilActual);
+            } catch (e) { /* sin memoria */ }
+        }
+
+        function nuevoPerfil(nombre, iniciado) {
+            const usados = new Set(perfiles.map((p) => p.id));
+            let n = 1;
+            while (usados.has(`p${n}`)) n++;
+            const perfil = { id: `p${n}`, nombre, emoji: EMOJIS_PERFIL[(n - 1) % EMOJIS_PERFIL.length], iniciado };
+            perfiles.push(perfil);
+            return perfil;
+        }
+
+        (function cargarPerfiles() {
+            let guardados = null;
+            try { guardados = JSON.parse(localStorage.getItem(PREFIJO + "perfiles") || "null"); } catch (e) { guardados = null; }
+            perfiles = Array.isArray(guardados)
+                ? guardados.filter((p) => p && /^p\d+$/.test(p.id) && typeof p.nombre === "string")
+                    .map((p) => ({ id: p.id, nombre: p.nombre.slice(0, 20), emoji: EMOJIS_PERFIL.includes(p.emoji) ? p.emoji : EMOJIS_PERFIL[0], iniciado: Boolean(p.iniciado) }))
+                : [];
+            if (perfiles.length === 0) {
+                // La primera vez con perfiles: lo guardado hasta ahora (de un
+                // solo jugador) pasa a ser del primer perfil, sin perder nada.
+                let habiaAlgo = false;
+                let nombre = "";
+                try {
+                    nombre = localStorage.getItem(PREFIJO + "nombre") || "";
+                    for (const clave of DEL_PERFIL) {
+                        const valor = localStorage.getItem(PREFIJO + clave);
+                        if (valor === null) continue;
+                        habiaAlgo = true;
+                        localStorage.setItem(`${PREFIJO}p1:${clave}`, valor);
+                        localStorage.removeItem(PREFIJO + clave);
+                    }
+                } catch (e) { /* almacenamiento no disponible */ }
+                nuevoPerfil(nombre.slice(0, 20), habiaAlgo);
+            }
+            let guardado = null;
+            try { guardado = localStorage.getItem(PREFIJO + "perfil"); } catch (e) { guardado = null; }
+            perfilActual = perfiles.some((p) => p.id === guardado) ? guardado : perfiles[0].id;
+            guardarPerfiles();
         })();
 
         // --- VARIABLES DEL SISTEMA ---
@@ -952,23 +1058,9 @@
         }
 
         window.onload = function() {
-            const savedName = almacen.leer("nombre");
-            const savedStars = almacen.leer("estrellas");
-            if (savedName) {
-                document.getElementById("player-name").value = savedName;
-                playerName = savedName;
-            }
-            if (savedStars) {
-                globalStars = parseInt(savedStars, 10) || 0;
-                document.getElementById("global-stars").innerText = globalStars;
-            }
-
             cargarAjustes();
-            cargarHechos();
-            cargarCompras();
-            cargarMisiones();
-            cargarDescubiertas();
-            actualizarEstrellas();
+            cargarPerfilActual();
+            pintarBienvenida();
             aplicarAjustes();
             movimientoReducido.addEventListener("change", aplicarAjustes);
             document.querySelectorAll(".ajuste").forEach((boton) =>
@@ -991,10 +1083,31 @@
             // Sin género en ninguna parte: el sitio habla del jardín o usa el
             // nombre. Antes decía "jardinera", "campeona" e "Invitada" a todo el
             // mundo, de modo que a un niño le hablaba como si no fuera para él.
-            const inputName = document.getElementById("player-name").value.trim().slice(0, 20);
-            playerName = inputName;
-            almacen.guardar("nombre", playerName);
+            const nombre = document.getElementById("player-name").value.trim().slice(0, 20);
+            // Quien escribe un nombre que ya tiene jardín sigue con el suyo:
+            // no se crean dos «Ana». El primer perfil, mientras nadie lo haya
+            // empezado, toma el nombre; si no, es alguien nuevo.
+            const igual = (x, y) => x.toLocaleLowerCase("es") === y.toLocaleLowerCase("es");
+            const mismo = perfiles.find((p) => p.iniciado && igual(p.nombre, nombre));
+            if (mismo) {
+                usarPerfil(mismo.id);
+            } else if (!perfilEnUso().iniciado) {
+                Object.assign(perfilEnUso(), { nombre, iniciado: true });
+                guardarPerfiles();
+                playerName = nombre;
+            } else {
+                usarPerfil(nuevoPerfil(nombre, true).id);
+            }
+            entrarAlJardin();
+        }
 
+        function elegirPerfil(id) {
+            initAudio();
+            usarPerfil(id);
+            entrarAlJardin();
+        }
+
+        function entrarAlJardin() {
             playTone(440, "sine", 0.2);
             setTimeout(() => playTone(554, "sine", 0.2), 150);
             setTimeout(() => playTone(659, "sine", 0.4), 300);
@@ -1080,19 +1193,260 @@
             document.getElementById("global-stars").innerText = globalStars;
         }
 
-        function resetGame() {
+        // --- PERFILES ---
+        function perfilEnUso() {
+            return perfiles.find((p) => p.id === perfilActual);
+        }
+
+        /** Lee del almacén todo lo del perfil en uso. */
+        function cargarPerfilActual() {
+            playerName = perfilEnUso().nombre;
+            globalStars = parseInt(almacen.leer("estrellas") || "0", 10) || 0;
+            cargarHechos();
+            cargarCompras();
+            cargarMisiones();
+            cargarDescubiertas();
+            actualizarEstrellas();
+            document.getElementById("display-name").innerText =
+                playerName ? `El jardín de ${playerName}` : "Tu jardín";
+        }
+
+        function usarPerfil(id) {
+            perfilActual = id;
+            guardarPerfiles();
+            cargarPerfilActual();
+        }
+
+        /** Antes «Salir / Otro nombre», que borraba todo. Ahora no borra nada. */
+        function cambiarDeJugador() {
             cancelarEspera();
             callarVoz();
-            almacen.borrarTodo();   // solo las claves del juego, no todo el origen
-            globalStars = 0;
-            hechos = {};
-            compras = [];
-            misiones = { hoy: null, dias: [] };
-            descubiertas = [];
-            playerName = "";
-            document.getElementById("player-name").value = "";
-            document.getElementById("global-stars").innerText = "0";
             mostrarPantalla("screen-welcome");
+        }
+
+        /** Borra el jardín de un perfil, y solo el suyo. */
+        function borrarPerfil(id) {
+            almacen.borrarPerfil(id);
+            perfiles = perfiles.filter((p) => p.id !== id);
+            if (perfiles.length === 0) nuevoPerfil("", false);
+            if (!perfiles.some((p) => p.id === perfilActual)) perfilActual = perfiles[0].id;
+            guardarPerfiles();
+            cargarPerfilActual();
+        }
+
+        const nombreDe = (p) => p.nombre || "Jardín sin nombre";
+
+        /** Los intentos guardados de un perfil, sin cargarlo. */
+        function intentosDePerfil(id) {
+            if (id === perfilActual) return hechos;
+            const h = {};
+            try {
+                const g = JSON.parse(almacen.leerDe(id, "intentos") || "{}") || {};
+                for (const [clave, lista] of Object.entries(g)) {
+                    if (claveValida(clave) && Array.isArray(lista)) {
+                        const [a, b] = clave.split("x").map(Number);
+                        const k = claveHecho(a, b);
+                        h[k] = juntarIntentos(h[k] || [], lista);
+                    }
+                }
+            } catch (e) { /* dañado: como si no hubiera jugado */ }
+            return h;
+        }
+
+        /** Corre `fn` como si `h` fueran los intentos del jardín en uso. */
+        function conIntentos(h, fn) {
+            const antes = hechos;
+            hechos = h;
+            try { return fn(); } finally { hechos = antes; }
+        }
+
+        function pintarBienvenida() {
+            const iniciados = perfiles.filter((p) => p.iniciado);
+            const lista = document.getElementById("perfiles-lista");
+            lista.replaceChildren(...iniciados.map((p) => {
+                const flores = conIntentos(intentosDePerfil(p.id), () => cuentaPorEstado().florecida);
+                const li = document.createElement("li");
+                const boton = document.createElement("button");
+                boton.type = "button";
+                boton.dataset.perfil = p.id;
+                boton.className = "btn-perfil w-full bg-white hover:bg-green-50 border-2 border-green-300 rounded-2xl px-3 py-3 shadow-sm transition flex flex-col items-center gap-1";
+                const emoji = document.createElement("span");
+                emoji.className = "text-3xl";
+                emoji.setAttribute("aria-hidden", "true");
+                emoji.textContent = p.emoji;
+                const nombre = document.createElement("span");
+                nombre.className = "bubble-font text-lg text-gray-900";
+                nombre.textContent = nombreDe(p);   // texto, nunca HTML: lo escribió quien juega
+                const cuenta = document.createElement("span");
+                cuenta.className = "text-xs font-semibold text-gray-700";
+                cuenta.textContent = `${flores} de ${plantas().length} flores`;
+                boton.append(emoji, nombre, cuenta);
+                boton.onclick = () => elegirPerfil(p.id);
+                li.appendChild(boton);
+                return li;
+            }));
+            const hay = iniciados.length > 0;
+            document.getElementById("bienvenida-texto").textContent = hay
+                ? "¡Hola! Toca tu jardín para seguir cultivándolo."
+                : "¡Hola! Pon tu nombre para empezar a sembrar hermosas flores respondiendo preguntas mágicas.";
+            document.getElementById("perfiles").classList.toggle("hidden", !hay);
+            document.getElementById("nuevo-titulo").classList.toggle("hidden", !hay);
+            document.getElementById("player-name").value = hay ? "" : perfilEnUso().nombre;
+        }
+
+        // --- PARA LAS PERSONAS ADULTAS ---
+        let adultosDesde = "screen-welcome";
+        const DIAS_VISTOS = 14;
+
+        function mostrarAdultos() {
+            cancelarEspera();
+            callarVoz();
+            if (pantallaActual !== "screen-adultos") adultosDesde = pantallaActual;
+            pintarAdultos();
+            mostrarPantalla("screen-adultos");
+        }
+
+        function volverDeAdultos() {
+            mostrarPantalla(adultosDesde);
+        }
+
+        const fechaLarga = (d) => new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", timeZone: "UTC" })
+            .format(new Date(`${d}T00:00:00Z`));
+
+        /**
+         * Lo que más falla: de sus últimos 5 intentos, las que tienen algún
+         * fallo y aún no florecieron, de más fallos a menos.
+         */
+        function loQueCuesta(h) {
+            return conIntentos(h, () => Object.entries(h)
+                .map(([k, lista]) => {
+                    const recientes = lista.slice(-5);
+                    const [a, b] = k.split("x").map(Number);
+                    return { a, b, fallos: recientes.filter((i) => !i.ok).length, de: recientes.length, ultimo: lista.length };
+                })
+                .filter((x) => x.fallos > 0 && estadoHecho(x.a, x.b) !== "florecida")
+                .sort((x, y) => y.fallos - x.fallos || y.fallos / y.de - x.fallos / x.de)
+                .slice(0, 5));
+        }
+
+        function diasDePractica(h) {
+            const dias = new Set();
+            Object.values(h).forEach((lista) => lista.forEach((i) => { if (i.d) dias.add(i.d); }));
+            return dias;
+        }
+
+        function pintarAdultos() {
+            const contenedor = document.getElementById("adultos-perfiles");
+            const iniciados = perfiles.filter((p) => p.iniciado);
+            if (iniciados.length === 0) {
+                const p = document.createElement("p");
+                p.className = "text-center text-gray-700";
+                p.textContent = "Todavía nadie ha jugado en este dispositivo.";
+                contenedor.replaceChildren(p);
+                return;
+            }
+            const hoyMs = Date.parse(`${hoy()}T00:00:00Z`);
+            const ultimos = Array.from({ length: DIAS_VISTOS }, (_, i) =>
+                new Date(hoyMs - (DIAS_VISTOS - 1 - i) * 86400000).toISOString().slice(0, 10));
+
+            contenedor.replaceChildren(...iniciados.map((perfil) => {
+                const h = intentosDePerfil(perfil.id);
+                const cuenta = conIntentos(h, () => cuentaPorEstado());
+                const marchitas = conIntentos(h, () => plantas().filter(({ a, b }) => estaMarchita(a, b)).length);
+                const cuesta = loQueCuesta(h);
+                const dias = diasDePractica(h);
+
+                const tarjeta = document.createElement("section");
+                tarjeta.className = "tarjeta-adulto bg-white border-2 border-green-200 rounded-2xl p-3 space-y-2";
+                tarjeta.dataset.perfil = perfil.id;
+                tarjeta.setAttribute("aria-labelledby", `adulto-${perfil.id}`);
+                const parrafo = (clase, texto) => {
+                    const p = document.createElement("p");
+                    p.className = clase;
+                    p.textContent = texto;
+                    return p;
+                };
+
+                const titulo = document.createElement("h3");
+                titulo.id = `adulto-${perfil.id}`;
+                titulo.className = "bubble-font text-xl text-green-800";
+                titulo.textContent = `${perfil.emoji} ${nombreDe(perfil)}`;
+
+                const resumen = parrafo("adulto-resumen text-gray-900 font-bold",
+                    `Flores: ${cuenta.florecida} de ${plantas().length}. Casi: ${cuenta.casi}. Practicando: ${cuenta.practica}.` +
+                    (marchitas ? ` Marchitas: ${marchitas}.` : ""));
+
+                const veces = (x) => x.fallos < x.de ? `falló ${x.fallos} de las últimas ${x.de}`
+                    : x.de === 1 ? "falló la única vez" : `falló las ${x.de} últimas veces`;
+                const nombreCuesta = cuesta.map((x) => `${x.a} × ${x.b} (${veces(x)})`);
+                const cuestaTexto = dias.size === 0 ? "Aún no ha jugado a multiplicar."
+                    : cuesta.length === 0 ? "Le cuestan más: nada por ahora. No ha fallado en sus últimos intentos."
+                    : `Le cuestan más: ${nombreCuesta.join(", ")}.`;
+                const cuestaP = parrafo("adulto-cuesta text-gray-800", cuestaTexto);
+
+                const practicados = ultimos.filter((d) => dias.has(d)).length;
+                const ultimoDia = [...dias].sort().at(-1);
+                const diasP = parrafo("adulto-dias text-gray-800",
+                    `Practicó ${practicados} de los últimos ${DIAS_VISTOS} días.` +
+                    (ultimoDia ? ` Último día: ${fechaLarga(ultimoDia)}.` : ""));
+                const semana = document.createElement("ol");
+                semana.className = "flex flex-wrap gap-1";
+                semana.setAttribute("aria-label", `Los últimos ${DIAS_VISTOS} días`);
+                ultimos.forEach((d) => {
+                    const li = document.createElement("li");
+                    const si = dias.has(d);
+                    li.className = `w-6 h-6 rounded text-xs flex items-center justify-center ${si ? "bg-green-600 text-white" : "bg-gray-100 text-gray-500 border border-gray-300"}`;
+                    li.innerHTML = `<span aria-hidden="true">${si ? "✓" : ""}</span>`;
+                    const sr = document.createElement("span");
+                    sr.className = "sr-only";
+                    sr.textContent = `${fechaLarga(d)}: ${si ? "practicó" : "no practicó"}`;
+                    li.appendChild(sr);
+                    semana.appendChild(li);
+                });
+
+                const piezas = [titulo, resumen, cuestaP, diasP, semana];
+                if (marchitas > 0 || cuesta.length > 0) {
+                    const porDonde = cuesta.length > 0 && marchitas > 0 ? "por lo que falló y por las flores marchitas"
+                        : cuesta.length > 0 ? "por lo que falló" : "por las flores marchitas";
+                    piezas.push(parrafo("adulto-consejo text-sm text-amber-900",
+                        `Para repasar: «Practicar lo que me falta» empieza justo ${porDonde}.`));
+                }
+
+                // Borrar pide confirmar: no se puede deshacer.
+                const borrar = document.createElement("div");
+                borrar.className = "pt-1";
+                const pedir = document.createElement("button");
+                pedir.type = "button";
+                pedir.className = "btn-borrar text-sm font-bold text-red-800 underline";
+                pedir.textContent = "Borrar este jardín";
+                const confirmar = document.createElement("div");
+                confirmar.className = "confirmar-borrar hidden bg-red-50 border border-red-200 rounded-xl p-2 space-y-2";
+                confirmar.appendChild(parrafo("text-sm text-red-900",
+                    `Se borrarán las flores, estrellas y amigos de ${nombreDe(perfil)}. No se puede deshacer.`));
+                const si = document.createElement("button");
+                si.type = "button";
+                si.className = "btn-borrar-si bg-red-700 hover:bg-red-800 text-white font-bold px-3 py-1 rounded-lg mr-2";
+                si.textContent = "Sí, borrarlo";
+                const no = document.createElement("button");
+                no.type = "button";
+                no.className = "btn-borrar-no bg-white border border-gray-400 text-gray-800 font-bold px-3 py-1 rounded-lg";
+                no.textContent = "No, dejarlo";
+                confirmar.append(si, no);
+                pedir.onclick = () => { confirmar.classList.remove("hidden"); pedir.classList.add("hidden"); no.focus(); };
+                no.onclick = () => { confirmar.classList.add("hidden"); pedir.classList.remove("hidden"); pedir.focus(); };
+                si.onclick = () => {
+                    const eraElDeAhora = perfil.id === perfilActual;
+                    borrarPerfil(perfil.id);
+                    if (eraElDeAhora) adultosDesde = "screen-welcome";
+                    pintarAdultos();
+                    document.querySelector("#screen-adultos [data-foco]").focus();
+                };
+                borrar.append(pedir, confirmar);
+                piezas.push(borrar);
+
+                tarjeta.append(...piezas);
+                return tarjeta;
+            }));
         }
 
         // --- PANTALLAS ---
@@ -1101,11 +1455,12 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir"];
+        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos"];
         let pantallaActual = "screen-welcome";
 
         function mostrarPantalla(id) {
             PANTALLAS.forEach((p) => document.getElementById(p).classList.toggle("hidden", p !== id));
+            if (id === "screen-welcome") pintarBienvenida();
             if (id === "screen-selector") {
                 actualizarBotonesFalta();
                 actualizarCuentaFlores();
@@ -1196,8 +1551,15 @@
             }
             const enCampoDeTexto = evento.target.tagName === "INPUT";
 
+            if (pantallaActual === "screen-adultos" && evento.key === "Escape") {
+                evento.preventDefault();
+                volverDeAdultos();
+                return;
+            }
             if (pantallaActual === "screen-welcome") {
-                if (evento.key === "Enter") {
+                // Enter sobre un botón (un jardín, «Para las personas
+                // adultas») lo activa el navegador; aquí solo el del nombre.
+                if (evento.key === "Enter" && evento.target.tagName !== "BUTTON") {
                     evento.preventDefault();
                     saveNameAndGo();
                 }

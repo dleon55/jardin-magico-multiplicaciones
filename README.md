@@ -111,6 +111,23 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   «termina una partida». Se responde escribiendo solo si la multiplicación de
   debajo ya floreció; si no, eligiendo.
 
+- **Varios niños en el mismo dispositivo.** Cada quien tiene su jardín:
+  intentos, flores, estrellas, amigos del vivero, misiones y tablas
+  descubiertas. Al abrir el juego, «¿Quién juega?» muestra un botón por
+  jardín con su cuenta de flores; quien es nuevo escribe su nombre. Escribir
+  un nombre que ya tiene jardín sigue con ese, sin duplicarlo.
+  «👥 Cambiar de jugador» (en el menú y al ganar) ya no borra nada: antes
+  «Salir / Otro nombre» borraba todo, y otro niño que lo tocara se llevaba
+  semanas de práctica. Los ajustes (voz, sonidos, movimiento) son del
+  dispositivo. Lo que había antes de los perfiles pasa al primero.
+- **«👪 Para las personas adultas»** (en la bienvenida y en el menú): por
+  cada jardín, las flores, los capullos, los brotes y las marchitas; lo que
+  más falla (de sus últimos 5 intentos, lo que aún no florece); y qué días
+  practicó de las últimas dos semanas. Si hay algo que repasar, dice que
+  «Practicar lo que me falta» empieza justo por ahí. Desde ahí se borra un
+  jardín, con confirmación, y solo ese. Todo sale de lo que el juego ya
+  guarda y no se envía a ningún lado.
+
 Con teclado (en una tableta estos atajos no se muestran):
 
 | Tecla | Qué hace |
@@ -121,7 +138,7 @@ Con teclado (en una tableta estos atajos no se muestran):
 | `H` | Abrir o cerrar la ayuda |
 | `Enter` o `Espacio` | Seguir a la siguiente pregunta |
 | `Espacio` | Otra fila, al descubrir una tabla |
-| `Esc` | Volver al menú, desde el juego, el mapa, el jardín, el vivero o al descubrir una tabla |
+| `Esc` | Volver al menú, desde el juego, el mapa, el jardín, el vivero o al descubrir una tabla; desde la vista para adultos, volver a donde se estaba |
 
 En **Ajustes** se pueden apagar por separado la voz y los sonidos, elegir la
 velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento».
@@ -180,7 +197,9 @@ Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, tablas del 1 al 9, estados del mapa y lo
 guardado por la versión anterior), descubrir una tabla (fila a fila, truco,
-plantas nuevas, cuándo sale y cuándo no), el jardín (parejas, bancales y riego), las
+plantas nuevas, cuándo sale y cuándo no), los perfiles y la vista para
+adultos (cada quien lo suyo, cambiar sin borrar, borrar solo uno, lo que
+más falla, días de práctica, lo de antes de los perfiles), el jardín (parejas, bancales y riego), las
 estrellas y la misión del día (vivero, bono por florecer, misión que se elige
 una vez y premia una sola vez, días seguidos), dividir y los problemas
 cortos (de dónde salen, opciones, ayuda, repaso y que no tocan el mapa), el uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
