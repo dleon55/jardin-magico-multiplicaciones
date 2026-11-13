@@ -187,6 +187,7 @@ test.describe("mapa de lo que ya se sabe", () => {
   });
 
   test("cada casilla dice su estado con símbolo y con texto, no solo con color", async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2026-11-03T12:00:00"));   // con el reloj real, sus flores se marchitarían
     await page.goto("./");
     await page.click("#screen-welcome button");
     await ponerIntentos(page, "3x4", [rapida("2026-11-01"), rapida("2026-11-02")]);
@@ -268,6 +269,7 @@ test.describe("practicar lo que falta", () => {
   });
 
   test("cuenta lo que se practica y lo que está casi, no lo florecido; también en el mapa", async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2026-11-03T12:00:00"));   // con el reloj real, sus flores se marchitarían
     await page.goto("./");
     await page.evaluate(() => { registrarIntento(7, 8, false); registrarIntento(6, 9, true); registrarIntento(3, 4, true); registrarIntento(3, 4, true); });
     await ponerIntentos(page, "2x5", [rapida("2026-11-01"), rapida("2026-11-02")]);   // florecida
@@ -279,6 +281,7 @@ test.describe("practicar lo que falta", () => {
   });
 
   test("lo que florece deja de contar como pendiente", async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2026-11-03T12:00:00"));   // con el reloj real, sus flores se marchitarían
     await page.goto("./");
     const antes = await page.evaluate(() => {
       registrarIntento(7, 8, false); registrarIntento(6, 9, false);
