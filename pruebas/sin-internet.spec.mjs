@@ -41,7 +41,9 @@ test("sin hoja de estilos, el juego sigue siendo jugable", async ({ page }) => {
   await page.route("**/estilos.css", (r) => r.abort());
   await page.goto("./");
   const encima = await page.evaluate(() => {
-    const b = document.querySelector("#screen-welcome button").getBoundingClientRect();
+    const boton = document.querySelector("#screen-welcome button");
+    boton.scrollIntoView({ block: "center" });   // con las fichas de mundo, queda más abajo
+    const b = boton.getBoundingClientRect();
     return document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2)?.closest("button")?.id ?? "otro";
   });
   expect(encima, "el botón recibe el clic, no el lienzo").not.toBe("otro");

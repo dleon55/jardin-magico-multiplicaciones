@@ -96,9 +96,9 @@ test.describe("Mi jardín", () => {
     await abrirJardin(page);
     const planta = (k) => page.locator(`[data-planta="${k}"]`);
     await expect(planta("7x8")).toHaveAttribute("data-estado", "florecida");
-    await expect(planta("7x8")).toContainText("7 por 8 y 8 por 7: flor, te la sabes");
+    await expect(planta("7x8")).toContainText("7 por 8 y 8 por 7: cosecha, te la sabes");
     await expect(planta("6x9")).toHaveAttribute("data-estado", "casi");
-    await expect(planta("6x9")).toContainText("🌷");
+    await expect(planta("6x9")).toContainText("🌿");
     await expect(planta("3x4")).toHaveAttribute("data-estado", "practica");
     await expect(planta("3x4")).toContainText("🌱");
     await expect(planta("9x10")).toHaveAttribute("data-estado", "nuevo");

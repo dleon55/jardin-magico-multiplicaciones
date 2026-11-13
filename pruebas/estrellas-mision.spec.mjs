@@ -67,7 +67,7 @@ test.describe("las estrellas se gastan en el vivero", () => {
   });
 
   test("lo guardado dañado o con ids desconocidos no rompe el juego", async ({ page }) => {
-    await preparar(page, { estrellas: 3, compras: ["mariposa", "dragon", "mariposa"], misiones: { hoy: { d: "ayer", tipo: "nada" }, dias: ["x", HOY] } });
+    await preparar(page, { estrellas: 3, compras: ["mariposa", "nave-espacial", "mariposa"], misiones: { hoy: { d: "ayer", tipo: "nada" }, dias: ["x", HOY] } });
     await page.goto("./");
     expect(await page.evaluate(() => [compras, misiones.hoy, misiones.dias])).toEqual([["mariposa"], null, [HOY]]);
   });

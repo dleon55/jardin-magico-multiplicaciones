@@ -92,7 +92,7 @@ test("al florecer, se celebra con su nombre", async ({ page }) => {
     const { a, b } = await preguntaActual(page);
     await responder(page, true);
     if (a * b === 56) {   // 7 × 8 u 8 × 7: es la misma planta
-      await expect(page.locator("#game-feedback")).toContainText(`🌸 ¡${a} × ${b} floreció!`);
+      await expect(page.locator("#game-feedback")).toContainText(`🍅 ¡${a} × ${b} floreció!`)   // el mundo inicial es el huerto;
       return;
     }
     await siguiente(page);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Jardín Mágico de las Multiplicaciones 🌸✨</title>
+    <title>El Jardín Mágico de las Multiplicaciones</title>
     <meta name="description" content="Practica las tablas de multiplicar haciendo crecer un jardín. Funciona sin internet.">
     <meta name="theme-color" content="#db2777">
 
@@ -67,9 +67,26 @@
 
         body {
             font-family: 'Quicksand', system-ui, sans-serif;
-            background: linear-gradient(135deg, #fef6e4 0%, #ffdde1 50%, #e8f5e9 100%);
+            /* Neutro: crema, cielo y verde. Cada mundo trae su propio fondo
+               (ver «MUNDOS»); antes el fondo degradaba a rosa para todos. */
+            background: linear-gradient(135deg, #fef6e4 0%, #e0f2fe 50%, #e8f5e9 100%);
             overflow-x: hidden;
         }
+
+        /* Un fondo por mundo (body[data-mundo]); en la bienvenida, el neutro. */
+        body[data-mundo="huerto"] { background: linear-gradient(135deg, #fef9c3 0%, #ffedd5 50%, #dcfce7 100%); }
+        body[data-mundo="bosque"] { background: linear-gradient(135deg, #ecfccb 0%, #d1fae5 50%, #e0f2fe 100%); }
+        body[data-mundo="dinos"] { background: linear-gradient(135deg, #fef3c7 0%, #d9f99d 50%, #ccfbf1 100%); }
+        body[data-mundo="desierto"] { background: linear-gradient(135deg, #fffbeb 0%, #fde68a 50%, #fed7aa 100%); }
+        body[data-mundo="flores"] { background: linear-gradient(135deg, #fef6e4 0%, #fce7f3 50%, #e8f5e9 100%); }
+
+        /* Fichas para elegir mundo y personaje: radios de verdad (teclado y
+           lector de pantalla), con la marca de elegido en borde Y en ✓. */
+        .ficha input { position: absolute; opacity: 0; pointer-events: none; }
+        .ficha span.cara { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; border: 3px solid #e5e7eb; background: #fff; border-radius: 1rem; padding: 0.4rem 0.3rem; cursor: pointer; position: relative; }
+        .ficha input:checked + span.cara { border-color: #047857; background: #ecfdf5; }
+        .ficha input:checked + span.cara::after { content: "✓"; position: absolute; top: 0.1rem; right: 0.35rem; font-weight: 700; color: #047857; }
+        .ficha input:focus-visible + span.cara { outline: 3px solid #0369a1; outline-offset: 2px; }
 
         .bubble-font {
             font-family: 'Fredoka One', 'Quicksand', system-ui, sans-serif;
@@ -190,26 +207,26 @@
             class="fixed inset-0 pointer-events-none z-50"></canvas>
 
     <!-- Contenedor Principal del Juego -->
-    <main class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl border-4 border-pink-200 shadow-2xl overflow-hidden relative p-6 md:p-8">
+    <main class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl border-4 border-sky-200 shadow-2xl overflow-hidden relative p-6 md:p-8">
 
         <!-- ================= AJUSTES (en todas las pantallas) ================= -->
         <details id="ajustes" class="absolute top-3 right-3 z-40 text-sm">
-            <summary class="cursor-pointer list-none bg-white border-2 border-pink-200 rounded-full px-3 py-1 font-bold text-gray-700 shadow-sm hover:bg-pink-50">
+            <summary class="cursor-pointer list-none bg-white border-2 border-sky-200 rounded-full px-3 py-1 font-bold text-gray-700 shadow-sm hover:bg-sky-50">
                 <span aria-hidden="true">⚙️</span> Ajustes
             </summary>
-            <div class="mt-2 bg-white border-2 border-pink-200 rounded-2xl p-3 shadow-lg w-60 space-y-2">
-                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="voz" aria-pressed="true">
+            <div class="mt-2 bg-white border-2 border-sky-200 rounded-2xl p-3 shadow-lg w-60 space-y-2">
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="voz" aria-pressed="true">
                     <span><span aria-hidden="true">🗣️</span> Voz</span><span class="estado font-bold">Sí</span>
                 </button>
-                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="efectos" aria-pressed="true">
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="efectos" aria-pressed="true">
                     <span><span aria-hidden="true">🎵</span> Sonidos</span><span class="estado font-bold">Sí</span>
                 </button>
                 <!-- Tres posiciones: cada toque pasa a la siguiente. Sin aria-pressed:
                      no es un interruptor, y el nombre accesible ya incluye el valor. -->
-                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="velocidad">
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="velocidad">
                     <span><span aria-hidden="true">⏱️</span> Velocidad<span class="sr-only"> de la voz</span></span><span class="estado font-bold">Normal</span>
                 </button>
-                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-pink-50" data-ajuste="calma" aria-pressed="false">
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="calma" aria-pressed="false">
                     <span><span aria-hidden="true">🍃</span> Menos movimiento</span><span class="estado font-bold">No</span>
                 </button>
                 <p id="aviso-voz" class="hidden text-xs text-gray-700 px-1"></p>
@@ -219,17 +236,17 @@
         <!-- ================= PANTALLA 1: BIENVENIDA ================= -->
         <div id="screen-welcome" class="text-center space-y-6 py-4">
             <div class="relative inline-block">
-                <span class="text-6xl md:text-8xl animate-float inline-block">🌸</span>
-                <span class="text-4xl absolute -top-2 -right-4 animate-sway inline-block">✨</span>
+                <span aria-hidden="true" class="text-6xl md:text-8xl animate-float inline-block">🌱</span>
+                <span aria-hidden="true" class="text-4xl absolute -top-2 -right-6 animate-sway inline-block">☀️</span>
             </div>
             
-            <h1 data-foco class="bubble-font text-4xl md:text-5xl text-pink-700 tracking-wide leading-tight">
+            <h1 data-foco class="bubble-font text-4xl md:text-5xl text-sky-800 tracking-wide leading-tight">
                 El Jardín Mágico <br>
-                <span class="text-green-500 text-3xl md:text-4xl">de las Multiplicaciones</span>
+                <span class="text-green-700 text-3xl md:text-4xl">de las Multiplicaciones</span>
             </h1>
 
             <p id="bienvenida-texto" class="text-gray-600 text-lg md:text-xl max-w-md mx-auto">
-                ¡Hola! Pon tu nombre para empezar a sembrar hermosas flores respondiendo preguntas mágicas.
+                ¡Hola! Elige tu mundo, siembra y haz crecer tu jardín descubriendo los secretos de las multiplicaciones.
             </p>
 
             <!-- Quien ya jugó en este dispositivo toca su jardín y sigue. Cada
@@ -238,17 +255,26 @@
                 <h2 id="perfiles-titulo" class="bubble-font text-2xl text-green-700">¿Quién juega?</h2>
                 <ul id="perfiles-lista" class="grid grid-cols-2 gap-3"></ul>
             </section>
-            <h2 id="nuevo-titulo" class="hidden bubble-font text-xl text-pink-700">¿Juega alguien nuevo?</h2>
+            <h2 id="nuevo-titulo" class="hidden bubble-font text-xl text-sky-800">¿Juega alguien nuevo?</h2>
 
-            <div class="max-w-xs mx-auto space-y-4">
+            <div class="max-w-md mx-auto space-y-4">
                 <!-- Etiqueta real: el placeholder desaparece al escribir y no lo
                      anuncian todos los lectores de pantalla. -->
                 <label for="player-name" class="block text-gray-700 font-bold">Tu nombre <span class="font-normal text-gray-600">(si quieres)</span></label>
                 <input type="text" id="player-name" placeholder="Escríbelo aquí…" maxlength="20" autocomplete="off"
-                       class="w-full px-5 py-3 rounded-2xl border-2 border-pink-400 text-center text-xl font-bold text-pink-700 focus:border-pink-700 focus:ring-4 focus:ring-pink-200 shadow-inner placeholder-gray-500">
+                       class="w-full max-w-xs mx-auto block px-5 py-3 rounded-2xl border-2 border-sky-500 text-center text-xl font-bold text-sky-900 focus:border-sky-700 focus:ring-4 focus:ring-sky-200 shadow-inner placeholder-gray-500">
                 
+                <fieldset class="text-left">
+                    <legend class="block text-gray-700 font-bold text-center w-full mb-1">Elige tu mundo</legend>
+                    <div class="elegir-mundo grid grid-cols-3 sm:grid-cols-5 gap-2" data-nombre="mundo"></div>
+                </fieldset>
+                <fieldset class="text-left">
+                    <legend class="block text-gray-700 font-bold text-center w-full mb-1">Elige tu personaje</legend>
+                    <div class="elegir-personaje grid grid-cols-6 gap-1" data-nombre="personaje"></div>
+                </fieldset>
+
                 <button onclick="saveNameAndGo()" 
-                        class="w-full bubble-font bg-gradient-to-r from-pink-600 to-orange-700 hover:from-pink-700 hover:to-orange-800 text-white text-xl px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 transition-all duration-200 animate-pulse-soft">
+                        class="w-full max-w-xs mx-auto block bubble-font bg-gradient-to-r from-green-700 to-teal-700 hover:from-green-800 hover:to-teal-800 text-white text-xl px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 transition-all duration-200 animate-pulse-soft">
                     ¡Comenzar Aventura! 🚀
                 </button>
             </div>
@@ -261,13 +287,14 @@
         <!-- ================= PANTALLA 2: SELECCIÓN DE TABLA ================= -->
         <div id="screen-selector" class="hidden space-y-6">
             <!-- Encabezado personalizado -->
-            <div class="flex flex-col md:flex-row justify-between items-center bg-pink-50 rounded-2xl p-4 gap-2 border border-pink-100">
+            <div class="flex flex-col md:flex-row justify-between items-center bg-sky-50 rounded-2xl p-4 gap-2 border border-sky-100">
                 <div class="text-center md:text-left">
-                    <h2 class="text-xl font-bold text-pink-700"><span id="display-name" class="bubble-font">Tu jardín</span> <span aria-hidden="true">🧑‍🌾</span></h2>
-                    <p class="text-sm text-gray-600">¡Cultiva flores ganando estrellas doradas!</p>
+                    <h2 class="text-xl font-bold text-sky-900"><span id="display-name" class="bubble-font">Tu jardín</span> <span id="display-personaje" aria-hidden="true">🧑‍🌾</span></h2>
+                    <p class="text-sm text-gray-600">¡Haz crecer tu jardín ganando estrellas doradas!</p>
                 </div>
                 <div class="flex flex-col items-center md:items-end gap-1 text-sm">
-                    <button type="button" onclick="cambiarDeJugador()" class="font-bold text-gray-700 underline hover:text-pink-700"><span aria-hidden="true">👥</span> Cambiar de jugador</button>
+                    <button type="button" onclick="cambiarDeJugador()" class="font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">👥</span> Cambiar de jugador</button>
+                    <button type="button" onclick="mostrarMiMundo()" class="font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">🎨</span> Mi mundo y mi personaje</button>
                     <button type="button" onclick="mostrarAdultos()" class="font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">👪</span> Para las personas adultas</button>
                 </div>
                 <div class="flex items-center gap-2 bg-yellow-100 text-yellow-900 px-4 py-2 rounded-full font-bold">
@@ -345,7 +372,7 @@
                     <span aria-hidden="true">🎯</span> Practicar lo que me falta (<span class="cuenta-falta">0</span>)
                 </button>
                 <button onclick="mostrarJardin()" class="w-full bubble-font bg-gradient-to-r from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 border-2 border-green-400 text-green-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3">
-                    <span aria-hidden="true">🌻</span> Mi jardín (<span class="cuenta-flores">0</span> de 54 flores)
+                    <span class="sim-mundo" aria-hidden="true">🌱</span> Mi jardín (<span class="cuenta-flores">0</span> de 54 flores)
                 </button>
                 <button onclick="mostrarVivero()" class="w-full bubble-font bg-gradient-to-r from-yellow-100 to-amber-100 hover:from-yellow-200 hover:to-amber-200 border-2 border-amber-400 text-amber-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3 flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🛍️</span> Vivero mágico</span>
@@ -363,7 +390,7 @@
             
             <!-- Barra superior: Información y controles de audio -->
             <div class="flex justify-between items-center bg-gray-50 rounded-2xl p-3 border border-gray-100">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
                 <!-- Estrellas de este nivel -->
@@ -418,10 +445,10 @@
 
             <!-- Opciones de Respuesta: para lo nuevo y lo recién fallado -->
             <div id="opciones" role="group" aria-label="Elige la respuesta" class="grid grid-cols-2 gap-4 max-w-md mx-auto">
-                <button onclick="selectOption(0)" id="opt-0" data-tecla="1" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
-                <button onclick="selectOption(1)" id="opt-1" data-tecla="2" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
-                <button onclick="selectOption(2)" id="opt-2" data-tecla="3" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
-                <button onclick="selectOption(3)" id="opt-3" data-tecla="4" class="btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+                <button onclick="selectOption(0)" id="opt-0" data-tecla="1" class="btn-option relative bg-white hover:bg-sky-50 border-4 border-sky-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+                <button onclick="selectOption(1)" id="opt-1" data-tecla="2" class="btn-option relative bg-white hover:bg-sky-50 border-4 border-sky-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+                <button onclick="selectOption(2)" id="opt-2" data-tecla="3" class="btn-option relative bg-white hover:bg-sky-50 border-4 border-sky-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
+                <button onclick="selectOption(3)" id="opt-3" data-tecla="4" class="btn-option relative bg-white hover:bg-sky-50 border-4 border-sky-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
             </div>
 
             <!-- Respuesta escrita: para lo que ya salió bien. Recordarla sin opciones
@@ -492,10 +519,10 @@
         <div id="screen-victory" class="hidden text-center space-y-6 py-6">
             <span class="text-7xl animate-float inline-block" aria-hidden="true">👑🌻👑</span>
 
-            <h2 data-foco class="bubble-font text-4xl text-amber-700 animate-pulse-soft">¡Lo lograste<span id="victory-player-name" class="text-pink-700"></span>!</h2>
+            <h2 data-foco class="bubble-font text-4xl text-amber-700 animate-pulse-soft">¡Lo lograste<span id="victory-player-name" class="text-green-800"></span>!</h2>
             
             <p class="text-gray-600 text-lg md:text-xl max-w-md mx-auto">
-                Has cultivado hermosas flores mágicas respondiendo todas las operaciones con éxito. ¡Tu jardín luce espectacular! 🌺🦋
+                Respondiste todas las operaciones y tu jardín sigue creciendo. ¡Buen trabajo!
             </p>
 
             <div class="bg-yellow-50 border-4 border-dashed border-yellow-300 rounded-3xl p-6 max-w-sm mx-auto shadow-inner space-y-3 relative">
@@ -523,7 +550,7 @@
             </div>
             <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
                 <button type="button" onclick="mostrarJardin()" class="text-green-800 font-bold underline hover:text-green-900">
-                    <span aria-hidden="true">🌻</span> Ver mi jardín
+                    <span class="sim-mundo" aria-hidden="true">🌱</span> Ver mi jardín
                 </button>
                 <button type="button" onclick="mostrarMapa()" class="text-green-800 font-bold underline hover:text-green-900">
                     <span aria-hidden="true">🗺️</span> Ver mi mapa de tablas
@@ -537,7 +564,7 @@
              vacía al terminar. -->
         <div id="screen-jardin" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -546,7 +573,7 @@
                 <p id="jardin-resumen" class="text-gray-800 font-bold text-lg"></p>
                 <div id="jardin-progreso" role="progressbar" aria-label="Flores del jardín" aria-valuemin="0" aria-valuemax="54" aria-valuenow="0"
                      class="w-full max-w-sm mx-auto h-3 bg-gray-100 rounded-full overflow-hidden">
-                    <div id="jardin-barra" class="h-full bg-gradient-to-r from-pink-300 to-green-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    <div id="jardin-barra" class="h-full bg-gradient-to-r from-lime-300 to-green-500 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
                 <p id="jardin-consejo" class="text-gray-600 text-sm max-w-md mx-auto"></p>
                 <button type="button" onclick="startTable('falta')" class="btn-falta hidden bubble-font bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 px-5 py-2 rounded-2xl shadow-sm transition mt-2">
@@ -556,8 +583,8 @@
             <ul class="flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm text-gray-700" aria-label="Cómo crece cada planta">
                 <li><span aria-hidden="true">🟫</span> Por sembrar</li>
                 <li><span aria-hidden="true">🌱</span> Brote: practicando</li>
-                <li><span aria-hidden="true">🌷</span> Capullo: casi</li>
-                <li><span aria-hidden="true">🌸</span> Flor: te la sabes</li>
+                <li><span class="sim-capullo" aria-hidden="true">🌷</span> Casi</li>
+                <li><span class="sim-flor" aria-hidden="true">🌸</span> Te la sabes</li>
                 <li><span aria-hidden="true">🥀</span> Marchita: riégala repasándola</li>
             </ul>
             <section aria-labelledby="amigos-titulo" class="bg-sky-50 border-2 border-sky-200 rounded-2xl px-3 py-2 text-center">
@@ -577,7 +604,7 @@
              solo se contaban y no servían para nada. -->
         <div id="screen-vivero" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -598,7 +625,7 @@
              sueltos; verla crecer es entender qué son. -->
         <div id="screen-descubrir" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -631,13 +658,37 @@
             </div>
         </div>
 
+        <!-- ================= PANTALLA 10: MI MUNDO Y MI PERSONAJE ================= -->
+        <div id="screen-mundo" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-2xl text-green-700">Mi mundo y mi personaje</h2>
+                <p class="text-gray-700 text-sm max-w-md mx-auto">Cambiar de mundo no borra nada: lo que ya te sabes sigue ahí, con otro aspecto.</p>
+            </div>
+            <fieldset class="max-w-md mx-auto">
+                <legend class="block text-gray-700 font-bold text-center w-full mb-1">Mundo</legend>
+                <div class="elegir-mundo grid grid-cols-3 sm:grid-cols-5 gap-2" data-nombre="mundo-cambio"></div>
+            </fieldset>
+            <fieldset class="max-w-md mx-auto">
+                <legend class="block text-gray-700 font-bold text-center w-full mb-1">Personaje</legend>
+                <div class="elegir-personaje grid grid-cols-6 gap-1" data-nombre="personaje-cambio"></div>
+            </fieldset>
+            <div class="text-center">
+                <button type="button" onclick="guardarMiMundo()" class="bubble-font bg-gradient-to-r from-green-700 to-teal-700 hover:from-green-800 hover:to-teal-800 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition">Listo</button>
+            </div>
+        </div>
+
         <!-- ================= PANTALLA 9: PARA LAS PERSONAS ADULTAS ================= -->
         <!-- Lo que lleva aprendido cada quien, para saber en qué ayudar: flores,
              lo que más falla y qué días practicó. Sale de lo que el juego ya
              guarda; no mide nada nuevo ni lo envía a ningún lado. -->
         <div id="screen-adultos" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button type="button" onclick="volverDeAdultos()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                <button type="button" onclick="volverDeAdultos()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Volver <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -652,7 +703,7 @@
         <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
         <div id="screen-mapa" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-pink-700 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -665,9 +716,9 @@
                 </button>
             </div>
             <ul class="flex flex-wrap justify-center gap-3 text-sm text-gray-700" aria-label="Leyenda">
-                <li class="flex items-center gap-1"><span class="celda-mapa celda-florecida" aria-hidden="true">🌸</span> Florecida: te la sabes de memoria</li>
+                <li class="flex items-center gap-1"><span class="celda-mapa celda-florecida sim-flor" aria-hidden="true">🌸</span> Florecida: te la sabes de memoria</li>
                 <li class="flex items-center gap-1"><span class="celda-mapa celda-marchita" aria-hidden="true">🥀</span> Marchita: repásala</li>
-                <li class="flex items-center gap-1"><span class="celda-mapa celda-casi" aria-hidden="true">🌷</span> Casi</li>
+                <li class="flex items-center gap-1"><span class="celda-mapa celda-casi sim-capullo" aria-hidden="true">🌷</span> Casi</li>
                 <li class="flex items-center gap-1"><span class="celda-mapa celda-practica" aria-hidden="true">🌱</span> Practicando</li>
                 <li class="flex items-center gap-1"><span class="celda-mapa celda-nuevo" aria-hidden="true"></span> Sin jugar</li>
             </ul>
@@ -750,7 +801,52 @@
         // `iniciado` es false mientras nadie ha tocado «Comenzar» con él: el
         // primer perfil existe desde que abre la página, para guardar lo que
         // pase antes, pero no se ofrece en «¿Quién juega?» hasta empezar.
+        // --- MUNDOS Y PERSONAJES ---
+        //
+        // El juego empezó como un jardín de flores rosa, y a muchos niños eso
+        // les dice «no es para ti». Ahora cada quien elige su mundo y su
+        // personaje. La mecánica es la misma en todos: lo que se aprende
+        // crece. Solo cambia qué crece y el ambiente. «Florecer» sigue siendo
+        // el nombre de saberla de memoria, en todos los mundos.
+        //   flora: lo que crece al florecer, una por tabla (del 1 al 9)
+        //   capullo: lo «casi»; crecen: lo que brota en cada partida
+        // Solo emojis de Unicode 13 o anteriores: en tabletas viejas, los más
+        // nuevos salen como cuadros vacíos.
+        const MUNDOS = {
+            huerto: {
+                nombre: "Huerto", emoji: "🥕", flor: "🍅", nombreFlor: "cosecha", capullo: "🌿", nombreCapullo: "mata, casi",
+                flora: ["🥕", "🍅", "🌽", "🥦", "🍆", "🥔", "🥬", "🍓", "🎃"],
+                crecen: ["🥕", "🍅", "🌽", "🥦", "🍆", "🥔", "🥬", "🍓", "🎃", "🌱"],
+            },
+            bosque: {
+                nombre: "Bosque", emoji: "🌲", flor: "🌳", nombreFlor: "árbol", capullo: "🌿", nombreCapullo: "arbolito, casi",
+                flora: ["🌲", "🌳", "🍄", "🌰", "🍁", "🍂", "🦔", "🦉", "🦌"],
+                crecen: ["🌲", "🌳", "🍄", "🌰", "🍁", "🍂", "🦔", "🦉", "🦌", "🐿️"],
+            },
+            dinos: {
+                nombre: "Selva de dinosaurios", emoji: "🦖", flor: "🦕", nombreFlor: "dinosaurio", capullo: "🥚", nombreCapullo: "huevo, casi",
+                flora: ["🦕", "🦖", "🐊", "🦎", "🐢", "🌴", "🌋", "🐉", "🦕"],
+                crecen: ["🦕", "🦖", "🌴", "🐊", "🦎", "🐢", "🌋", "🥚", "🌿", "🐉"],
+            },
+            desierto: {
+                nombre: "Desierto", emoji: "🌵", flor: "🌵", nombreFlor: "cactus", capullo: "🌾", nombreCapullo: "brote de cactus, casi",
+                flora: ["🌵", "🌴", "🦎", "🦂", "🐪", "🌞", "🏜️", "🐫", "🦅"],
+                crecen: ["🌵", "🌴", "🦎", "🦂", "🐪", "🌞", "🏜️", "🐫", "🦅", "🌾"],
+            },
+            flores: {
+                nombre: "Jardín de flores", emoji: "🌸", flor: "🌸", nombreFlor: "flor", capullo: "🌷", nombreCapullo: "capullo, casi",
+                flora: ["🌼", "🌸", "🌺", "🌻", "🌹", "💐", "🏵️", "💮", "🌼"],
+                crecen: ["🌸", "🌹", "🌺", "🌻", "🌼", "🌷", "🌱", "🍀", "🏵️", "💮"],
+            },
+        };
+        // Quien no elige empieza en el huerto: un jardín, sin inclinarse por
+        // nadie. Lo guardado antes de los mundos sigue siendo de flores.
+        const MUNDO_INICIAL = "huerto";
+        const PERSONAJES = ["🦊", "🐸", "🦖", "🐢", "🦉", "🐝", "🚀", "🦁", "🐼", "🐙", "🦄", "🐱"];
+        const PERSONAJE_INICIAL = "🧑‍🌾";
+        // Los emojis de flor que se asignaban solos antes de elegir personaje.
         const EMOJIS_PERFIL = ["🌻", "🌷", "🌼", "🌹", "🌺", "🌸", "💐", "🏵️"];
+        const personajeValido = (e) => e === PERSONAJE_INICIAL || PERSONAJES.includes(e) || EMOJIS_PERFIL.includes(e);
         let perfiles = [];
 
         function guardarPerfiles() {
@@ -760,11 +856,11 @@
             } catch (e) { /* sin memoria */ }
         }
 
-        function nuevoPerfil(nombre, iniciado) {
+        function nuevoPerfil(nombre, iniciado, mundo = MUNDO_INICIAL, emoji = PERSONAJE_INICIAL) {
             const usados = new Set(perfiles.map((p) => p.id));
             let n = 1;
             while (usados.has(`p${n}`)) n++;
-            const perfil = { id: `p${n}`, nombre, emoji: EMOJIS_PERFIL[(n - 1) % EMOJIS_PERFIL.length], iniciado };
+            const perfil = { id: `p${n}`, nombre, emoji, mundo, iniciado };
             perfiles.push(perfil);
             return perfil;
         }
@@ -774,7 +870,13 @@
             try { guardados = JSON.parse(localStorage.getItem(PREFIJO + "perfiles") || "null"); } catch (e) { guardados = null; }
             perfiles = Array.isArray(guardados)
                 ? guardados.filter((p) => p && /^p\d+$/.test(p.id) && typeof p.nombre === "string")
-                    .map((p) => ({ id: p.id, nombre: p.nombre.slice(0, 20), emoji: EMOJIS_PERFIL.includes(p.emoji) ? p.emoji : EMOJIS_PERFIL[0], iniciado: Boolean(p.iniciado) }))
+                    .map((p) => ({
+                        id: p.id, nombre: p.nombre.slice(0, 20),
+                        emoji: personajeValido(p.emoji) ? p.emoji : PERSONAJE_INICIAL,
+                        // Los perfiles de antes de los mundos eran de flores.
+                        mundo: MUNDOS[p.mundo] ? p.mundo : "flores",
+                        iniciado: Boolean(p.iniciado),
+                    }))
                 : [];
             if (perfiles.length === 0) {
                 // La primera vez con perfiles: lo guardado hasta ahora (de un
@@ -791,7 +893,9 @@
                         localStorage.removeItem(PREFIJO + clave);
                     }
                 } catch (e) { /* almacenamiento no disponible */ }
-                nuevoPerfil(nombre.slice(0, 20), habiaAlgo);
+                // Quien ya jugaba antes de los mundos tenía un jardín de flores.
+                if (habiaAlgo) nuevoPerfil(nombre.slice(0, 20), true, "flores", EMOJIS_PERFIL[0]);
+                else nuevoPerfil(nombre.slice(0, 20), false);
             }
             let guardado = null;
             try { guardado = localStorage.getItem(PREFIJO + "perfil"); } catch (e) { guardado = null; }
@@ -905,7 +1009,12 @@
             }
         }
 
-        const floresEmojis = ["🌸", "🌹", "🌺", "🌻", "🌼", "🌷", "🌱", "🍀", "🏵️", "💮"];
+        /** El mundo del jardín en uso. */
+        function mundo() {
+            const p = perfiles.find((x) => x.id === perfilActual);
+            return MUNDOS[p?.mundo] || MUNDOS[MUNDO_INICIAL];
+        }
+        const algoQueCrece = () => { const c = mundo().crecen; return c[Math.floor(Math.random() * c.length)]; };
 
         let audioCtx = null;
         function initAudio() {
@@ -1091,12 +1200,20 @@
             const mismo = perfiles.find((p) => p.iniciado && igual(p.nombre, nombre));
             if (mismo) {
                 usarPerfil(mismo.id);
-            } else if (!perfilEnUso().iniciado) {
-                Object.assign(perfilEnUso(), { nombre, iniciado: true });
-                guardarPerfiles();
-                playerName = nombre;
             } else {
-                usarPerfil(nuevoPerfil(nombre, true).id);
+                const raiz = document.getElementById("screen-welcome");
+                const elegido = {
+                    mundo: elegidoEn(raiz, "mundo") || MUNDO_INICIAL,
+                    emoji: elegidoEn(raiz, "personaje") || PERSONAJE_INICIAL,
+                };
+                if (!perfilEnUso().iniciado) {
+                    Object.assign(perfilEnUso(), { nombre, iniciado: true }, elegido);
+                    guardarPerfiles();
+                    playerName = nombre;
+                    aplicarMundo();
+                } else {
+                    usarPerfil(nuevoPerfil(nombre, true, elegido.mundo, elegido.emoji).id);
+                }
             }
             entrarAlJardin();
         }
@@ -1207,8 +1324,75 @@
             cargarMisiones();
             cargarDescubiertas();
             actualizarEstrellas();
+            aplicarMundo();
             document.getElementById("display-name").innerText =
                 playerName ? `El jardín de ${playerName}` : "Tu jardín";
+        }
+
+        /** Fondo, personaje y leyendas del mundo en uso. */
+        function aplicarMundo() {
+            const m = mundo();
+            // En la bienvenida aún no se sabe quién juega: fondo neutro.
+            if (pantallaActual === "screen-welcome") delete document.body.dataset.mundo;
+            else document.body.dataset.mundo = perfilEnUso().mundo;
+            document.getElementById("display-personaje").textContent = perfilEnUso().emoji;
+            document.querySelectorAll(".sim-flor").forEach((e) => { e.textContent = m.flor; });
+            document.querySelectorAll(".sim-capullo").forEach((e) => { e.textContent = m.capullo; });
+            document.querySelectorAll(".sim-mundo").forEach((e) => { e.textContent = m.emoji; });
+        }
+
+        /**
+         * Pinta las fichas de mundo y personaje en un contenedor. `elegido`
+         * marca uno; null no marca ninguno (quien no elige empieza en el
+         * huerto, con el personaje del jardinero).
+         */
+        function pintarFichas(contenedor, opciones, elegido) {
+            const nombre = contenedor.dataset.nombre;
+            contenedor.replaceChildren(...opciones.map(({ valor, emoji, texto }) => {
+                const label = document.createElement("label");
+                label.className = "ficha";
+                const input = document.createElement("input");
+                input.type = "radio";
+                input.name = nombre;
+                input.value = valor;
+                input.checked = valor === elegido;
+                const cara = document.createElement("span");
+                cara.className = "cara";
+                cara.innerHTML = `<span aria-hidden="true" class="text-3xl leading-none">${emoji}</span>`;
+                const t = document.createElement("span");
+                t.className = texto.visible ? "text-xs font-semibold text-gray-800 text-center leading-tight" : "sr-only";
+                t.textContent = texto.valor;
+                cara.appendChild(t);
+                label.append(input, cara);
+                return label;
+            }));
+        }
+
+        const NOMBRES_PERSONAJE = { "🦊": "zorro", "🐸": "rana", "🦖": "dinosaurio", "🐢": "tortuga", "🦉": "búho", "🐝": "abeja", "🚀": "cohete", "🦁": "león", "🐼": "panda", "🐙": "pulpo", "🦄": "unicornio", "🐱": "gato" };
+
+        function pintarElecciones(raiz, mundoElegido, personajeElegido) {
+            raiz.querySelectorAll(".elegir-mundo").forEach((c) => pintarFichas(c,
+                Object.entries(MUNDOS).map(([valor, m]) => ({ valor, emoji: m.emoji, texto: { visible: true, valor: m.nombre } })), mundoElegido));
+            raiz.querySelectorAll(".elegir-personaje").forEach((c) => pintarFichas(c,
+                PERSONAJES.map((e) => ({ valor: e, emoji: e, texto: { visible: false, valor: NOMBRES_PERSONAJE[e] } })), personajeElegido));
+        }
+
+        const elegidoEn = (raiz, nombre) => raiz.querySelector(`input[name="${nombre}"]:checked`)?.value ?? null;
+
+        function mostrarMiMundo() {
+            const p = perfilEnUso();
+            pintarElecciones(document.getElementById("screen-mundo"), p.mundo, p.emoji);
+            mostrarPantalla("screen-mundo");
+        }
+
+        function guardarMiMundo() {
+            const raiz = document.getElementById("screen-mundo");
+            const p = perfilEnUso();
+            p.mundo = elegidoEn(raiz, "mundo-cambio") || p.mundo;
+            p.emoji = elegidoEn(raiz, "personaje-cambio") || p.emoji;
+            guardarPerfiles();
+            aplicarMundo();
+            backToSelector();
         }
 
         function usarPerfil(id) {
@@ -1279,7 +1463,7 @@
                 nombre.textContent = nombreDe(p);   // texto, nunca HTML: lo escribió quien juega
                 const cuenta = document.createElement("span");
                 cuenta.className = "text-xs font-semibold text-gray-700";
-                cuenta.textContent = `${flores} de ${plantas().length} flores`;
+                cuenta.textContent = `${MUNDOS[p.mundo].emoji} ${MUNDOS[p.mundo].nombre} · ${flores} de ${plantas().length} flores`;
                 boton.append(emoji, nombre, cuenta);
                 boton.onclick = () => elegirPerfil(p.id);
                 li.appendChild(boton);
@@ -1288,10 +1472,11 @@
             const hay = iniciados.length > 0;
             document.getElementById("bienvenida-texto").textContent = hay
                 ? "¡Hola! Toca tu jardín para seguir cultivándolo."
-                : "¡Hola! Pon tu nombre para empezar a sembrar hermosas flores respondiendo preguntas mágicas.";
+                : "¡Hola! Elige tu mundo, siembra y haz crecer tu jardín descubriendo los secretos de las multiplicaciones.";
             document.getElementById("perfiles").classList.toggle("hidden", !hay);
             document.getElementById("nuevo-titulo").classList.toggle("hidden", !hay);
             document.getElementById("player-name").value = hay ? "" : perfilEnUso().nombre;
+            pintarElecciones(document.getElementById("screen-welcome"), null, null);
         }
 
         // --- PARA LAS PERSONAS ADULTAS ---
@@ -1455,7 +1640,7 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos"];
+        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo"];
         let pantallaActual = "screen-welcome";
 
         function mostrarPantalla(id) {
@@ -1468,6 +1653,7 @@
                 actualizarMision();
             }
             pantallaActual = id;
+            aplicarMundo();
             const destino = document.querySelector(`#${id} [data-foco]`);
             if (destino) {
                 destino.setAttribute("tabindex", "-1");
@@ -1575,7 +1761,7 @@
                 return;
             }
 
-            if (["screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir"].includes(pantallaActual) && evento.key === "Escape") {
+            if (["screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo"].includes(pantallaActual) && evento.key === "Escape") {
                 evento.preventDefault();
                 backToSelector();
                 return;
@@ -2081,7 +2267,7 @@
         }
 
         const NOMBRES_ESTADO = { florecida: "florecida, ya te la sabes", marchita: "marchita, toca repasarla", casi: "casi", practica: "practicando", nuevo: "sin jugar" };
-        const SIMBOLOS_ESTADO = { florecida: "🌸", marchita: "🥀", casi: "🌷", practica: "🌱", nuevo: "" };
+        const simboloEstado = (estado) => ({ florecida: mundo().flor, marchita: "🥀", casi: mundo().capullo, practica: "🌱", nuevo: "" })[estado];
 
         // --- MI JARDÍN ---
         //
@@ -2089,7 +2275,6 @@
         // quedaba eran las estrellas, que cuentan respuestas, no lo aprendido.
         // Ahora hay un jardín permanente con una planta por multiplicación:
         // verlo es ver lo que se sabe, y repasar es regarlo.
-        const FLORES_TABLA = ["🌼", "🌸", "🌺", "🌻", "🌹", "💐", "🏵️", "💮", "🌼"];
         const PLANTA = {
             nuevo: { emoji: "🟫", nombre: "por sembrar" },
             practica: { emoji: "🌱", nombre: "brote, practicando" },
@@ -2100,7 +2285,8 @@
         function plantaDe(a, b) {
             if (estaMarchita(a, b)) return { estado: "marchita", ...PLANTA.marchita };
             const estado = estadoHecho(a, b);
-            if (estado === "florecida") return { estado, emoji: FLORES_TABLA[a - 1], nombre: "flor, te la sabes" };
+            if (estado === "florecida") return { estado, emoji: mundo().flora[a - 1], nombre: `${mundo().nombreFlor}, te la sabes` };
+            if (estado === "casi") return { estado, emoji: mundo().capullo, nombre: mundo().nombreCapullo };
             return { estado, ...PLANTA[estado] };
         }
 
@@ -2113,7 +2299,7 @@
             if (marchitas > 0) return marchitas === 1
                 ? "Una flor se está marchitando: repásala en «Practicar lo que me falta» y revivirá."
                 : `${marchitas} flores se están marchitando: repásalas en «Practicar lo que me falta» y revivirán.`;
-            if (cuenta.casi > 0) return "Los capullos florecen cuando los escribes rápido otro día.";
+            if (cuenta.casi > 0) return "Lo que está casi florece cuando lo escribes rápido otro día.";
             if (cuenta.practica > 0) return "Los brotes crecen cuando aciertas: sigue practicando.";
             if (cuenta.nuevo === plantas().length) return "Juega una tabla y verás crecer tus primeras plantas.";
             return "¡Qué jardín! Repásalo de vez en cuando para que no se marchite.";
@@ -2195,7 +2381,16 @@
             { id: "casita", emoji: "🏡", nombre: "Casita", precio: 100 },
             { id: "arcoiris", emoji: "🌈", nombre: "Arcoíris", precio: 130 },
             { id: "unicornio", emoji: "🦄", nombre: "Unicornio", precio: 180 },
-        ];
+            // Más variados: antes casi todo eran bichitos tiernos y el premio
+            // mayor era solo el unicornio. Los precios no cambian lo que sigue
+            // a la mariposa (la catarina), para no mover las primeras metas.
+            { id: "tortuga", emoji: "🐢", nombre: "Tortuga", precio: 40 },
+            { id: "buho", emoji: "🦉", nombre: "Búho", precio: 60 },
+            { id: "tractor", emoji: "🚜", nombre: "Tractor", precio: 90 },
+            { id: "dinosaurio", emoji: "🦖", nombre: "Dinosaurio", precio: 120 },
+            { id: "cohete", emoji: "🚀", nombre: "Cohete", precio: 150 },
+            { id: "dragon", emoji: "🐉", nombre: "Dragón", precio: 180 },
+        ].sort((x, y) => x.precio - y.precio);
         const BONO_FLOR = 5;
         const BONO_MISION = 10;
         let compras = [];   // ids del VIVERO, en el orden en que se compraron
@@ -2231,7 +2426,7 @@
         }
 
         function articulo(v) {
-            const femeninos = ["mariposa", "catarina", "abeja", "rana", "fuente", "casita"];
+            const femeninos = ["mariposa", "catarina", "abeja", "rana", "fuente", "casita", "tortuga"];
             if (v.id === "hongos") return "los hongos";
             return `${femeninos.includes(v.id) ? "la" : "el"} ${v.nombre.toLowerCase()}`;
         }
@@ -2471,7 +2666,7 @@
                     td.className = `celda-mapa celda-${estado}`;
                     td.dataset.hecho = `${a}x${b}`;
                     td.dataset.estado = estado;
-                    td.innerHTML = `<span aria-hidden="true">${SIMBOLOS_ESTADO[estado]}</span><span class="sr-only">${a} por ${b}: ${NOMBRES_ESTADO[estado]}</span>`;
+                    td.innerHTML = `<span aria-hidden="true">${simboloEstado(estado)}</span><span class="sr-only">${a} por ${b}: ${NOMBRES_ESTADO[estado]}</span>`;
                 }
             }
             actualizarBotonesFalta();
@@ -2646,7 +2841,7 @@
             const buttons = document.querySelectorAll(".btn-option");
             buttons.forEach(btn => {
                 // `relative` es necesario: el número del atajo se posiciona dentro.
-                btn.className = "btn-option relative bg-white hover:bg-pink-50 border-4 border-pink-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150";
+                btn.className = "btn-option relative bg-white hover:bg-sky-50 border-4 border-sky-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150";
                 btn.disabled = false;
                 btn.removeAttribute("aria-label");
             });
@@ -2786,7 +2981,7 @@
                 for (let c = 0; c < columnas; c++) {
                     const punto = document.createElement("span");
                     // Filas de dos colores alternos, para no perderse al contar.
-                    punto.className = `punto block w-3 h-3 md:w-4 md:h-4 rounded-full ${f % 2 ? "bg-pink-500" : "bg-indigo-500"}`;
+                    punto.className = `punto block w-3 h-3 md:w-4 md:h-4 rounded-full ${f % 2 ? "bg-orange-600" : "bg-indigo-500"}`;
                     // Un hueco cada 5 columnas y cada 5 filas: contar de 5 en 5.
                     if (c > 0 && c % 5 === 0) punto.style.marginLeft = "0.5rem";
                     if (f > 0 && f % 5 === 0) punto.style.marginTop = "0.5rem";
@@ -2887,7 +3082,7 @@
                 for (let c = 0; c < n; c++) {
                     const punto = document.createElement("span");
                     // Como en la ayuda: filas de dos colores y un hueco cada 5.
-                    punto.className = `punto block w-3 h-3 md:w-4 md:h-4 rounded-full ${f % 2 ? "bg-pink-500" : "bg-indigo-500"}`;
+                    punto.className = `punto block w-3 h-3 md:w-4 md:h-4 rounded-full ${f % 2 ? "bg-orange-600" : "bg-indigo-500"}`;
                     if (c > 0 && c % 5 === 0) punto.style.marginLeft = "0.5rem";
                     if (f > 0 && f % 5 === 0) punto.style.marginTop = "0.5rem";
                     puntos.push(punto);
@@ -3058,7 +3253,7 @@
          * que es uno de cada doce niños.
          */
         function marcarOpcion(boton, acierto) {
-            boton.classList.remove("border-pink-200");
+            boton.classList.remove("border-sky-200");
             if (acierto) {
                 boton.classList.add("bg-green-100", "border-green-600", "text-green-800");
             } else {
@@ -3155,9 +3350,9 @@
                 playCorrectSound();
                 triggerBurstEffect(selectedBtn || document.getElementById("escrito"));
 
-                const felicitaciones = ["¡Espectacular! 🎉", "¡Excelente trabajo! 🌸", "¡Correcto! ⭐", "¡Súper bien hecho! 🌟", "¡Tu flor va creciendo! 🌱"];
+                const felicitaciones = ["¡Espectacular! 🎉", "¡Excelente trabajo! 👏", "¡Correcto! ⭐", "¡Súper bien hecho! 🌟", "¡Tu jardín va creciendo! 🌱"];
                 const rFrase = florecio
-                    ? `🌸 ¡${numA} × ${numB} floreció!`
+                    ? `${mundo().flor} ¡${numA} × ${numB} floreció!`
                     : felicitaciones[Math.floor(Math.random() * felicitaciones.length)];
                 // Escrita pero lenta: cuenta como acierto y no reinicia nada,
                 // pero así no florece. Se dice, sin regañar, qué falta.
@@ -3282,7 +3477,7 @@
             
             const sizeScale = 0.8 + (Math.random() * 0.4);
             const swayDelay = Math.random() * 2;
-            const rFlower = floresEmojis[Math.floor(Math.random() * floresEmojis.length)];
+            const rFlower = algoQueCrece();
 
             flower.style.left = `${leftPos}%`;
             flower.style.bottom = "8px";
@@ -3450,7 +3645,7 @@
             const confetti = document.createElement("div");
             confetti.setAttribute("aria-hidden", "true");
             confetti.className = "confetti-particle text-2xl";
-            confetti.innerText = floresEmojis[Math.floor(Math.random() * floresEmojis.length)];
+            confetti.innerText = algoQueCrece();
             
             confetti.style.left = Math.random() * 100 + "vw";
             confetti.style.top = "-5vh";
