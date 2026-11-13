@@ -697,6 +697,33 @@
                 <p class="text-gray-700 text-sm max-w-md mx-auto">Lo que lleva aprendido cada quien en este dispositivo. Una flor es una multiplicación escrita bien y rápido (6 segundos o menos) en dos días distintos; 7 × 8 y 8 × 7 cuentan como una sola.</p>
             </div>
             <div id="adultos-perfiles" class="space-y-3"></div>
+
+            <!-- Todo vive en el navegador de este dispositivo: Safari lo borra
+                 si el sitio no se abre en 7 días y no está instalado, y al
+                 cambiar de tableta no hay cómo llevárselo. Esto lo cuida. -->
+            <section id="cuidar" aria-labelledby="cuidar-titulo" class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-3 space-y-2">
+                <h3 id="cuidar-titulo" class="bubble-font text-xl text-sky-900"><span aria-hidden="true">🛟</span> Cuidar el progreso</h3>
+                <p id="cuidar-ios" class="hidden bg-amber-50 border border-amber-300 rounded-xl p-2 text-sm text-amber-950">
+                    <strong>En iPad o iPhone, instala el juego:</strong> si no, Safari borra lo guardado cuando el sitio pasa 7 días sin abrirse.
+                    Toca <span aria-hidden="true">⬆️</span> Compartir y luego «Añadir a pantalla de inicio», y ábrelo desde ese ícono.
+                </p>
+                <p id="cuidar-estado" class="text-sm text-gray-800"></p>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" id="btn-copia" onclick="guardarCopia()" class="bg-white hover:bg-sky-100 border-2 border-sky-300 text-sky-900 font-bold px-3 py-2 rounded-xl">
+                        <span aria-hidden="true">💾</span> Guardar una copia
+                    </button>
+                    <label class="bg-white hover:bg-sky-100 border-2 border-sky-300 text-sky-900 font-bold px-3 py-2 rounded-xl cursor-pointer focus-within:ring-4 focus-within:ring-sky-300">
+                        <span aria-hidden="true">📂</span> Recuperar una copia
+                        <input type="file" id="archivo-copia" accept=".json,application/json" class="sr-only" onchange="leerCopia(this)">
+                    </label>
+                </div>
+                <div id="confirmar-copia" class="hidden bg-red-50 border border-red-200 rounded-xl p-2 space-y-2">
+                    <p id="confirmar-copia-texto" class="text-sm text-red-900"></p>
+                    <button type="button" id="btn-copia-si" onclick="aplicarCopia()" class="bg-red-700 hover:bg-red-800 text-white font-bold px-3 py-1 rounded-lg mr-2">Sí, recuperarla</button>
+                    <button type="button" id="btn-copia-no" onclick="cancelarCopia()" class="bg-white border border-gray-400 text-gray-800 font-bold px-3 py-1 rounded-lg">No</button>
+                </div>
+                <p id="aviso-copia" role="status" aria-live="polite" class="min-h-5 text-sm font-bold text-green-800"></p>
+            </section>
             <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Dividir y los problemas cortos no cuentan aquí: miden otra cosa.</p>
         </div>
 
@@ -865,19 +892,24 @@
             return perfil;
         }
 
+        /** Deja solo perfiles bien formados, sin ids repetidos. */
+        function limpiarPerfiles(lista) {
+            if (!Array.isArray(lista)) return [];
+            const vistos = new Set();
+            return lista.filter((p) => p && /^p\d{1,4}$/.test(p.id) && typeof p.nombre === "string" && !vistos.has(p.id) && vistos.add(p.id))
+                .map((p) => ({
+                    id: p.id, nombre: p.nombre.slice(0, 20),
+                    emoji: personajeValido(p.emoji) ? p.emoji : PERSONAJE_INICIAL,
+                    // Los perfiles de antes de los mundos eran de flores.
+                    mundo: MUNDOS[p.mundo] ? p.mundo : "flores",
+                    iniciado: Boolean(p.iniciado),
+                }));
+        }
+
         (function cargarPerfiles() {
             let guardados = null;
             try { guardados = JSON.parse(localStorage.getItem(PREFIJO + "perfiles") || "null"); } catch (e) { guardados = null; }
-            perfiles = Array.isArray(guardados)
-                ? guardados.filter((p) => p && /^p\d+$/.test(p.id) && typeof p.nombre === "string")
-                    .map((p) => ({
-                        id: p.id, nombre: p.nombre.slice(0, 20),
-                        emoji: personajeValido(p.emoji) ? p.emoji : PERSONAJE_INICIAL,
-                        // Los perfiles de antes de los mundos eran de flores.
-                        mundo: MUNDOS[p.mundo] ? p.mundo : "flores",
-                        iniciado: Boolean(p.iniciado),
-                    }))
-                : [];
+            perfiles = limpiarPerfiles(guardados);
             if (perfiles.length === 0) {
                 // La primera vez con perfiles: lo guardado hasta ahora (de un
                 // solo jugador) pasa a ser del primer perfil, sin perder nada.
@@ -1197,7 +1229,9 @@
             // no se crean dos «Ana». El primer perfil, mientras nadie lo haya
             // empezado, toma el nombre; si no, es alguien nuevo.
             const igual = (x, y) => x.toLocaleLowerCase("es") === y.toLocaleLowerCase("es");
-            const mismo = perfiles.find((p) => p.iniciado && igual(p.nombre, nombre));
+            // Sin nombre no hay con qué reconocerlo: dos niños sin nombre son
+            // dos jardines, no uno.
+            const mismo = nombre ? perfiles.find((p) => p.iniciado && igual(p.nombre, nombre)) : null;
             if (mismo) {
                 usarPerfil(mismo.id);
             } else {
@@ -1318,7 +1352,7 @@
         /** Lee del almacén todo lo del perfil en uso. */
         function cargarPerfilActual() {
             playerName = perfilEnUso().nombre;
-            globalStars = parseInt(almacen.leer("estrellas") || "0", 10) || 0;
+            globalStars = Math.max(0, parseInt(almacen.leer("estrellas") || "0", 10) || 0);
             cargarHechos();
             cargarCompras();
             cargarMisiones();
@@ -1479,6 +1513,182 @@
             pintarElecciones(document.getElementById("screen-welcome"), null, null);
         }
 
+        // --- CUIDAR EL PROGRESO ---
+        //
+        // Lo guardado vive solo en este navegador. Tres riesgos: Safari (iPad,
+        // iPhone) borra lo de un sitio que pasa 7 días sin abrirse si no está
+        // instalado en la pantalla de inicio; borrar los datos de navegación
+        // lo borra; y al cambiar de tableta no hay cómo llevárselo. Por eso:
+        //   - se pide al navegador que lo conserve (storage.persist);
+        //   - en iPad o iPhone sin instalar, se avisa cómo instalarlo;
+        //   - la copia de seguridad es un archivo que guarda el adulto: sin
+        //     servidor ni cuentas, y se recupera aquí o en otro dispositivo.
+        const APP_COPIA = "jardin-magico-multiplicaciones";
+        const VERSION_COPIA = 1;
+        let conservado = null;   // true, false o null si el navegador no lo dice
+        let copiaPendiente = null;
+
+        async function pedirQueLoConserve() {
+            try {
+                if (!navigator.storage?.persist) return;
+                conservado = (await navigator.storage.persisted()) || (await navigator.storage.persist());
+            } catch (e) { conservado = null; }
+        }
+
+        function esIosSinInstalar() {
+            const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+            const instalado = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+            return ios && !instalado;
+        }
+
+        function pintarCuidar() {
+            document.getElementById("cuidar-ios").classList.toggle("hidden", !esIosSinInstalar());
+            let ultima = null;
+            try { ultima = localStorage.getItem(PREFIJO + "ultima-copia"); } catch (e) { ultima = null; }
+            const textoUltima = ultima && fechaValida(ultima)
+                ? `Última copia descargada: ${fechaLarga(ultima)}.`
+                : "Aún no has guardado ninguna copia.";
+            const textoConserva = conservado === true ? " Este navegador se comprometió a conservar los datos."
+                : conservado === false ? " Este navegador podría borrar los datos si le falta espacio: conviene guardar una copia de vez en cuando."
+                : "";
+            document.getElementById("cuidar-estado").textContent =
+                `Todo se guarda solo en este dispositivo. ${textoUltima}${textoConserva}`;
+        }
+
+        /** Todo lo de los jardines (no los ajustes del dispositivo), como objeto. */
+        function armarCopia() {
+            const datos = {};
+            for (const p of perfiles) {
+                datos[p.id] = {};
+                for (const clave of DEL_PERFIL) {
+                    const valor = almacen.leerDe(p.id, clave);
+                    if (valor !== null) datos[p.id][clave] = valor;
+                }
+            }
+            return { app: APP_COPIA, version: VERSION_COPIA, creada: hoy(), perfiles, datos };
+        }
+
+        function guardarCopia() {
+            if (!perfiles.some((p) => p.iniciado)) {
+                document.getElementById("aviso-copia").textContent = "Aún no hay ningún jardín que guardar.";
+                return;
+            }
+            const texto = JSON.stringify(armarCopia());
+            const url = URL.createObjectURL(new Blob([texto], { type: "application/json" }));
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `jardin-magico-copia-${hoy()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            try { localStorage.setItem(PREFIJO + "ultima-copia", hoy()); } catch (e) { /* sin memoria */ }
+            pintarCuidar();
+            document.getElementById("aviso-copia").textContent =
+                `Se descargó la copia ${a.download}. Comprueba que quedó en tus descargas y guárdala en un lugar seguro.`;
+        }
+
+        /**
+         * Revisa una copia antes de usarla. Devuelve { perfiles, datos } o un
+         * texto con el problema. Solo pasan claves conocidas y textos: lo que
+         * hay dentro lo vuelven a validar los cargadores de siempre.
+         */
+        function revisarCopia(texto) {
+            if (texto.length > 2_000_000) return "El archivo es demasiado grande para ser una copia del jardín.";
+            let c;
+            try { c = JSON.parse(texto); } catch (e) { return "El archivo no es una copia del jardín."; }
+            if (!c || c.app !== APP_COPIA || !Array.isArray(c.perfiles) || typeof c.datos !== "object" || c.datos === null) {
+                return "El archivo no es una copia del jardín.";
+            }
+            if (c.version > VERSION_COPIA) return "La copia es de una versión más nueva del juego: actualízalo y vuelve a intentarlo.";
+            const lista = limpiarPerfiles(c.perfiles).slice(0, 50);
+            // Recuperar una copia sin jardines empezados solo borraría todo.
+            if (!lista.some((p) => p.iniciado)) return "La copia no tiene ningún jardín.";
+            const datos = {};
+            for (const p of lista) {
+                datos[p.id] = {};
+                const suyos = c.datos[p.id] || {};
+                for (const clave of DEL_PERFIL) {
+                    if (typeof suyos[clave] === "string") datos[p.id][clave] = suyos[clave];
+                }
+            }
+            return { perfiles: lista, datos, creada: typeof c.creada === "string" && fechaValida(c.creada) ? c.creada : null };
+        }
+
+        function leerCopia(input) {
+            const archivo = input.files?.[0];
+            input.value = "";   // poder elegir el mismo archivo otra vez
+            if (!archivo) return;
+            archivo.text().then(mostrarCopia, () => mostrarCopia(null));
+        }
+
+        function mostrarCopia(texto) {
+            const aviso = document.getElementById("aviso-copia");
+            const r = texto === null ? "No se pudo leer el archivo." : revisarCopia(texto);
+            if (typeof r === "string") {
+                copiaPendiente = null;
+                document.getElementById("confirmar-copia").classList.add("hidden");
+                aviso.textContent = r;
+                return;
+            }
+            copiaPendiente = r;
+            aviso.textContent = "";
+            const nombres = r.perfiles.filter((p) => p.iniciado).map(nombreDe);
+            const deCuando = r.creada ? ` del ${fechaLarga(r.creada)}` : "";
+            document.getElementById("confirmar-copia-texto").textContent =
+                `La copia${deCuando} tiene ${nombres.length === 1 ? "1 jardín" : `${nombres.length} jardines`}` +
+                (nombres.length ? `: ${nombres.join(", ")}` : "") +
+                ". Reemplaza todos los jardines de este dispositivo. No se puede deshacer.";
+            document.getElementById("confirmar-copia").classList.remove("hidden");
+            document.getElementById("btn-copia-no").focus();
+        }
+
+        function cancelarCopia() {
+            copiaPendiente = null;
+            document.getElementById("confirmar-copia").classList.add("hidden");
+            document.getElementById("btn-copia").focus();
+        }
+
+        function aplicarCopia() {
+            if (!copiaPendiente) return;
+            const { perfiles: lista, datos } = copiaPendiente;
+            // Se guarda lo de ahora para volver a dejarlo si algo falla a
+            // medias (sin espacio, almacenamiento bloqueado): o se recupera
+            // todo, o no se toca nada.
+            const esJardin = (k) => /^jardin:p\d+:/.test(k) || k === PREFIJO + "perfiles" || k === PREFIJO + "perfil";
+            let antes = {};
+            try {
+                antes = Object.fromEntries(Object.keys(localStorage).filter(esJardin).map((k) => [k, localStorage.getItem(k)]));
+                Object.keys(antes).forEach((k) => localStorage.removeItem(k));
+                for (const [id, claves] of Object.entries(datos)) {
+                    for (const [clave, valor] of Object.entries(claves)) localStorage.setItem(`${PREFIJO}${id}:${clave}`, valor);
+                }
+                const primero = (lista.find((p) => p.iniciado) || lista[0]).id;
+                localStorage.setItem(PREFIJO + "perfiles", JSON.stringify(lista));
+                localStorage.setItem(PREFIJO + "perfil", primero);
+            } catch (e) {
+                try {
+                    Object.keys(localStorage).filter(esJardin).forEach((k) => localStorage.removeItem(k));
+                    Object.entries(antes).forEach(([k, v]) => localStorage.setItem(k, v));
+                } catch (e2) { /* nada más que hacer */ }
+                copiaPendiente = null;
+                document.getElementById("confirmar-copia").classList.add("hidden");
+                document.getElementById("aviso-copia").textContent =
+                    "No se pudo recuperar la copia: este dispositivo no dejó guardarla (¿sin espacio?). No se cambió nada.";
+                return;
+            }
+            perfiles = lista;
+            perfilActual = (perfiles.find((p) => p.iniciado) || perfiles[0]).id;
+            cargarPerfilActual();
+            copiaPendiente = null;
+            document.getElementById("confirmar-copia").classList.add("hidden");
+            adultosDesde = "screen-welcome";   // a elegir quién juega con lo recuperado
+            pintarAdultos();
+            document.getElementById("aviso-copia").textContent = "Copia recuperada.";
+            document.querySelector("#screen-adultos [data-foco]").focus();
+        }
+
         // --- PARA LAS PERSONAS ADULTAS ---
         let adultosDesde = "screen-welcome";
         const DIAS_VISTOS = 14;
@@ -1488,6 +1698,11 @@
             callarVoz();
             if (pantallaActual !== "screen-adultos") adultosDesde = pantallaActual;
             pintarAdultos();
+            // Algunos navegadores (Firefox) lo preguntan con un diálogo: que lo
+            // vea un adulto, no el niño al abrir el juego.
+            pedirQueLoConserve().then(pintarCuidar);
+            document.getElementById("aviso-copia").textContent = "";
+            document.getElementById("confirmar-copia").classList.add("hidden");
             mostrarPantalla("screen-adultos");
         }
 
@@ -1495,8 +1710,9 @@
             mostrarPantalla(adultosDesde);
         }
 
-        const fechaLarga = (d) => new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", timeZone: "UTC" })
-            .format(new Date(`${d}T00:00:00Z`));
+        const fechaLarga = (d) => fechaValida(d)
+            ? new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${d}T00:00:00Z`))
+            : "una fecha desconocida";
 
         /**
          * Lo que más falla: de sus últimos 5 intentos, las que tienen algún
@@ -1521,6 +1737,7 @@
         }
 
         function pintarAdultos() {
+            pintarCuidar();
             const contenedor = document.getElementById("adultos-perfiles");
             const iniciados = perfiles.filter((p) => p.iniciado);
             if (iniciados.length === 0) {
@@ -1564,8 +1781,8 @@
                 const veces = (x) => x.fallos < x.de ? `falló ${x.fallos} de las últimas ${x.de}`
                     : x.de === 1 ? "falló la única vez" : `falló las ${x.de} últimas veces`;
                 const nombreCuesta = cuesta.map((x) => `${x.a} × ${x.b} (${veces(x)})`);
-                const cuestaTexto = dias.size === 0 ? "Aún no ha jugado a multiplicar."
-                    : cuesta.length === 0 ? "Le cuestan más: nada por ahora. No ha fallado en sus últimos intentos."
+                const cuestaTexto = Object.keys(h).length === 0 ? "Aún no ha jugado a multiplicar."
+                    : cuesta.length === 0 ? "Le cuestan más: nada por ahora."
                     : `Le cuestan más: ${nombreCuesta.join(", ")}.`;
                 const cuestaP = parrafo("adulto-cuesta text-gray-800", cuestaTexto);
 
@@ -1816,7 +2033,7 @@
                 return;
             }
 
-            if (pantallaActual === "screen-victory" && evento.key === "Enter") {
+            if (pantallaActual === "screen-victory" && evento.key === "Enter" && evento.target.tagName !== "BUTTON") {
                 evento.preventDefault();
                 backToSelector();
             }
@@ -2019,9 +2236,30 @@
          * Los intentos sin instante (`t`, anteriores a la Fase 2) se ordenan por
          * día; dentro del mismo día, conservan el orden que traían.
          */
+        /**
+         * Un intento guardado, con la forma que el juego espera, o null.
+         * Lo guardado puede venir dañado, de una versión vieja o de una
+         * copia editada a mano: una fecha que no existe rompía las fechas
+         * largas, y un «ok» de texto se contaba como acierto.
+         */
+        function limpiarIntento(i) {
+            if (!i || typeof i !== "object") return null;
+            const d = typeof i.d === "string" && fechaValida(i.d) ? i.d : "";
+            const limpio = { d, m: i.m === "e" ? "e" : "o", ok: i.ok === 1 || i.ok === true ? 1 : 0,
+                ms: typeof i.ms === "number" && Number.isFinite(i.ms) && i.ms >= 0 ? i.ms : null };
+            if (typeof i.t === "number" && Number.isFinite(i.t)) limpio.t = i.t;
+            return limpio;
+        }
+
+        function fechaValida(d) {
+            return /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(`${d}T00:00:00Z`)) &&
+                new Date(`${d}T00:00:00Z`).toISOString().slice(0, 10) === d;
+        }
+
         function juntarIntentos(...listas) {
             return listas.flat()
-                .filter((i) => i && typeof i === "object")
+                .map(limpiarIntento)
+                .filter(Boolean)
                 .map((i, n) => ({ i, n }))
                 .sort((x, y) => (x.i.d || "").localeCompare(y.i.d || "") || (x.i.t || 0) - (y.i.t || 0) || x.n - y.n)
                 .map(({ i }) => i)
@@ -2526,7 +2764,9 @@
                 const g = JSON.parse(almacen.leer("misiones") || "{}") || {};
                 const fecha = /^\d{4}-\d{2}-\d{2}$/;
                 misiones = {
-                    hoy: g.hoy && fecha.test(g.hoy.d) && MISIONES[g.hoy.tipo] ? g.hoy : null,
+                    hoy: g.hoy && fecha.test(g.hoy.d) && MISIONES[g.hoy.tipo]
+                        ? { ...g.hoy, cuenta: Number.isFinite(g.hoy.cuenta) && g.hoy.cuenta >= 0 ? g.hoy.cuenta : 0, cumplida: g.hoy.cumplida === true }
+                        : null,
                     dias: Array.isArray(g.dias) ? [...new Set(g.dias.filter((d) => fecha.test(d)))].sort() : [],
                 };
             } catch (e) { misiones = { hoy: null, dias: [] }; }
