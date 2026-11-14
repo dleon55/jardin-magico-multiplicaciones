@@ -183,3 +183,11 @@ test("un reto de lógica, con la ayuda abierta y uno fallado", async ({ page }) 
   await page.click(`#${mala}`);
   await auditar(page, "un reto de lógica fallado");
 });
+
+test("una fracción con la ayuda abierta", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("#screen-selector >> text=Fracciones");
+  await page.click("#btn-help");
+  await auditar(page, "una fracción con el rectángulo repartido");
+});

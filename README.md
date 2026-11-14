@@ -155,7 +155,17 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   «partir» dibuja el rectángulo con su hueco después de 5 columnas. Un reto
   fallado vuelve igual. Mientras se sepan menos de 6 multiplicaciones, los
   retos usan las tablas del 2 al 5.
-- **Dividir, los problemas y los retos de lógica no cuentan para el mapa ni el jardín.** Esos miden
+- **🍕 Fracciones de un número** (para 4.º a 6.º de primaria). «¿Cuánto es
+  3/4 de 24?» es dividir y multiplicar con lo que ya se sabe: un cuarto de 24
+  es 24 ÷ 4 = 6, y tres cuartos, 3 × 6 = 18. Cada partida trae 4 de una parte
+  (1/4 de 24) y 6 de varias (3/4 de 24), que es lo que más cuesta, con partes
+  del 2 al 9 (del 2 al 5 mientras se sepan menos de 6 multiplicaciones). Las
+  opciones falsas son los errores típicos: quedarse con una sola parte (6),
+  calcular lo que sobra y dividir entre el número de arriba (24 ÷ 3 = 8). La
+  ayuda reparte el rectángulo en filas iguales (cada fila, una parte) y pinta
+  de verde las que se toman. La voz dice «tres cuartos». Se escribe solo si
+  la multiplicación de debajo (4 × 6) ya floreció.
+- **Dividir, los problemas, los retos de lógica y las fracciones no cuentan para el mapa ni el jardín.** Esos miden
   si la multiplicación se sabe de memoria, escrita en 6 segundos; una división
   hecha con el truco o un problema que primero hay que leer tardan más y no
   deben marchitar ni florecer nada. Sí dan estrellas y cuentan para la misión
@@ -285,7 +295,8 @@ estrellas y la misión del día (vivero, bono por florecer, misión que se elige
 una vez y premia una sola vez, días seguidos), dividir y los problemas
 cortos (de dónde salen, opciones, ayuda, repaso y que no tocan el mapa), los
 retos de lógica (cada clase, cien retos al azar bien calculados, repaso,
-ayuda, victoria), el uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
+ayuda, victoria), las fracciones (errores típicos como opciones, nombres en
+la voz, rectángulo repartido, repaso, cuándo se escribe), el uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
 internet y la voz. Si Chromium está instalado fuera de la caché de Playwright,
 su ruta se indica con `CHROMIUM_RUTA`.
 

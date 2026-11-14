@@ -359,7 +359,7 @@
 
             <!-- Más allá de las tablas: dividir es multiplicar al revés, y los
                  problemas piden decidir qué operación hace falta. -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-lg mx-auto">
+            <div class="grid grid-cols-2 gap-3 max-w-lg mx-auto">
                 <button type="button" onclick="startTable('div')" class="bubble-font bg-gradient-to-r from-sky-200 to-cyan-200 hover:from-sky-300 hover:to-cyan-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">➗</span> Dividir</span>
                     <span class="text-xs font-sans font-semibold">Repartir en partes iguales</span>
@@ -371,6 +371,10 @@
                 <button type="button" onclick="startTable('logica')" class="bubble-font bg-gradient-to-r from-violet-200 to-indigo-200 hover:from-violet-300 hover:to-indigo-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🧩</span> Retos de lógica</span>
                     <span class="text-xs font-sans font-semibold">Pensar con las tablas</span>
+                </button>
+                <button type="button" onclick="startTable('fracciones')" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                    <span><span aria-hidden="true">🍕</span> Fracciones</span>
+                    <span class="text-xs font-sans font-semibold">¾ de 24: partes iguales</span>
                 </button>
             </div>
 
@@ -731,7 +735,7 @@
                 </div>
                 <p id="aviso-copia" role="status" aria-live="polite" class="min-h-5 text-sm font-bold text-green-800"></p>
             </section>
-            <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Dividir, los problemas cortos y los retos de lógica no cuentan aquí: miden otra cosa.</p>
+            <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Dividir, los problemas cortos, los retos de lógica y las fracciones no cuentan aquí: miden otra cosa.</p>
         </div>
 
         <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
@@ -962,7 +966,7 @@
         const TABLAS = 9;
         const MULTIPLICADORES = 10;
         let playerName = "";   // vacío = sin nombre: se habla del jardín, no de la persona
-        let currentTable = 1; // 1-9, "mix", "falta", "div", "problemas" o "logica"
+        let currentTable = 1; // 1-9, "mix", "falta", "div", "problemas", "logica" o "fracciones"
         let globalStars = 0;
         let score = 0; // Aciertos actuales conseguidos
         let targetScore = 10; // Meta FIJA de aciertos: los fallos ya no la mueven
@@ -991,7 +995,7 @@
         // numA y numB siguen siendo los dos factores de la multiplicación que
         // hay debajo, también al dividir (56 ÷ 8 = 7: numA 8, numB 7).
         let pregunta = null;
-        let aciertosPorOp = { "×": 0, "÷": 0, "L": 0 };
+        let aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0 };
         // --- AJUSTES ---
         //
         // Antes había un solo botón para todo el sonido. En un aula hace falta
@@ -1334,7 +1338,7 @@
             }));
             hechosDeLaPartida = new Set();
             estrellasAlEmpezar = globalStars;
-            aciertosPorOp = { "×": 0, "÷": 0, "L": 0 };
+            aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0 };
 
             // Los amigos comprados en el vivero acompañan la partida: se ven
             // arriba del bancal, donde no tapan las flores que van naciendo.
@@ -2951,6 +2955,8 @@
                 bolsa = bolsaDeProblemas();
             } else if (currentTable === "logica") {
                 bolsa = bolsaDeRetos();
+            } else if (currentTable === "fracciones") {
+                bolsa = bolsaDeFracciones();
             } else {
                 const lista = [];
                 if (currentTable === "mix") {
@@ -3189,6 +3195,64 @@
                 explicacion: `${intruso} no está: ${n} × ${abajo / n} = ${abajo} y ${n} × ${abajo / n + 1} = ${abajo + n}. Los demás sí: ${comas(dentro.map((x) => `${x} = ${n} × ${x / n}`))}.` };
         }
 
+        // --- FRACCIONES DE UN NÚMERO ---
+        //
+        // «¾ de 24» es dividir y multiplicar con lo que ya se sabe: un cuarto
+        // de 24 es 24 ÷ 4 = 6 (la tabla del 4), y tres cuartos, 3 × 6 = 18.
+        // Para 4.º a 6.º de primaria. Se ve con el mismo rectángulo de la
+        // ayuda: 24 puntos en 4 filas iguales (cada fila, un cuarto), con las
+        // filas que se toman en otro color. Las opciones falsas son los errores
+        // de siempre: quedarse con una parte, calcular lo que sobra o dividir
+        // entre el número de arriba. No cuentan para el mapa ni el jardín.
+        const NOMBRE_PARTE = { 2: ["medio", "medios"], 3: ["tercio", "tercios"], 4: ["cuarto", "cuartos"], 5: ["quinto", "quintos"],
+            6: ["sexto", "sextos"], 7: ["séptimo", "séptimos"], 8: ["octavo", "octavos"], 9: ["noveno", "novenos"], 10: ["décimo", "décimos"] };
+        const NUMERO_PALABRA = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+
+        /** «tres cuartos», «un tercio». */
+        function nombreFraccion(m, d) {
+            const [uno, varios] = NOMBRE_PARTE[d] || [`${d}avo`, `${d}avos`];
+            return `${NUMERO_PALABRA[m] || m} ${m === 1 ? uno : varios}`;
+        }
+
+        /**
+         * Diez fracciones { m, d, k }: se pregunta m/d de d·k. Cuatro de una
+         * parte (¼ de 24) y seis de varias (¾ de 24), que es lo que más cuesta.
+         * Con pocas multiplicaciones sabidas, partes del 2 al 5.
+         */
+        function bolsaDeFracciones() {
+            const hi = parejasConocidas().length >= MIN_CONOCIDAS ? 9 : 5;
+            const lista = Array.from({ length: 10 }, (_, i) => {
+                const d = entre(i < 4 ? 2 : 3, hi);
+                const m = i < 4 ? 1 : entre(2, d - 1);
+                const reto = { m, d, k: entre(2, 9) };
+                return { a: d, b: reto.k, reto };
+            });
+            return barajar(lista);
+        }
+
+        function armarFraccion(r) {
+            const { m, d, k } = r;
+            const total = d * k;
+            const respuesta = m * k;
+            const fr = `${m}/${d}`;
+            const unaParte = `${total} ÷ ${d} = ${k}`;
+            const explicacion = m === 1
+                ? `${fr} de ${total} = ${k}: es repartir ${total} en ${d} partes iguales, ${unaParte}.`
+                : `${fr} de ${total} = ${respuesta}: un ${NOMBRE_PARTE[d][0]} es ${unaParte}, y ${nombreFraccion(m, d)} son ${m} × ${k} = ${respuesta}.`;
+            const pista = m === 1
+                ? `Reparte ${total} en ${d} partes iguales: ¿cuánto toca a cada parte? Piensa en la tabla del ${d}.`
+                : `Primero busca un ${NOMBRE_PARTE[d][0]}: reparte ${total} en ${d} partes iguales. Luego toma ${m} de esas partes.`;
+            const falsas = [m > 1 ? k : null, (d - m) * k, total % m === 0 && m > 1 ? total / m : null, respuesta + k, respuesta - k, total]
+                .filter((x) => x !== null && x !== respuesta);
+            return {
+                tipo: "fraccion", reto: r, a: d, b: k, respuesta,
+                texto: `¿Cuánto es ${fr} de ${total}?`,
+                voz: `¿Cuánto es ${nombreFraccion(m, d)} de ${total}?`,
+                opciones: cuatroOpciones(respuesta, falsas),
+                pista, explicacion,
+            };
+        }
+
         /**
          * Arma la pregunta de un hecho según la partida: qué se ve, qué se
          * oye, la respuesta y la explicación que se da al contestar.
@@ -3204,6 +3268,7 @@
                     explicacion: `${producto} ÷ ${a} = ${b}, porque ${a} × ${b} = ${producto}.`,
                 };
             }
+            if (currentTable === "fracciones" && h.reto) return armarFraccion(h.reto);
             if (currentTable === "logica" && h.reto) {
                 return { ...armarReto(h.reto), a, b };
             }
@@ -3278,6 +3343,7 @@
             // Los números de un reto salen del reto mismo (la ayuda de «partir»
             // dibuja su rectángulo con ellos).
             if (pregunta.tipo === "logica") [numA, numB] = numerosDelReto(pregunta.reto);
+            if (pregunta.tipo === "fraccion") [numA, numB] = [pregunta.reto.d, pregunta.reto.k];
             correctAnswer = pregunta.respuesta;
             ayudaGirada = false;
 
@@ -3305,7 +3371,8 @@
             // girasol solo pregunta. El lector de pantalla lo lee desde aquí.
             const textoPregunta = document.getElementById("question-text");
             const problema = document.getElementById("problema-texto");
-            const largo = pregunta.tipo === "problema" || pregunta.tipo === "logica";
+            // «3/4 de 24» tampoco cabe en el girasol.
+            const largo = ["problema", "logica", "fraccion"].includes(pregunta.tipo);
             problema.classList.toggle("hidden", !largo);
             if (largo) {
                 problema.innerText = pregunta.texto;
@@ -3379,7 +3446,11 @@
         function generateHelpVisual() {
             // En los retos, el rectángulo solo ayuda a partir una multiplicación.
             const sinDibujo = pregunta?.tipo === "logica" && pregunta.clase !== "partir";
-            document.getElementById("btn-girar").classList.toggle("hidden", pregunta?.tipo === "logica");
+            document.getElementById("btn-girar").classList.toggle("hidden", pregunta?.tipo === "logica" || pregunta?.tipo === "fraccion");
+            if (pregunta?.tipo === "fraccion") {
+                dibujarFraccion();
+                return;
+            }
             if (sinDibujo) {
                 document.getElementById("help-truco").innerText = pistaPara().texto;
                 document.getElementById("help-explain").innerText = "";
@@ -3419,6 +3490,30 @@
             }
             const contenedor = document.getElementById("help-visual-container");
             contenedor.replaceChildren(rejilla);
+        }
+
+        /** m/d de d·k: d filas de k puntos; las m primeras, en verde. */
+        function dibujarFraccion() {
+            const { m, d, k } = pregunta.reto;
+            document.getElementById("help-truco").innerText = pistaPara().texto;
+            document.getElementById("help-explain").innerText =
+                `${d * k} puntos en ${d} filas iguales: cada fila es un ${NOMBRE_PARTE[d][0]}. ` +
+                (m === 1 ? "Cuenta los puntos de la fila verde." : `Cuenta los puntos de las ${m} filas verdes.`);
+            const rejilla = document.createElement("div");
+            rejilla.className = "inline-grid gap-1 bg-white border-2 border-indigo-100 rounded-xl p-3";
+            rejilla.style.gridTemplateColumns = `repeat(${k}, auto)`;
+            for (let f = 0; f < d; f++) {
+                for (let c = 0; c < k; c++) {
+                    const punto = document.createElement("span");
+                    const tomada = f < m;
+                    punto.className = `punto block w-3 h-3 md:w-4 md:h-4 rounded-full ${tomada ? "bg-green-600 punto-tomado" : "bg-gray-300"}`;
+                    if (c > 0 && c % 5 === 0) punto.style.marginLeft = "0.5rem";
+                    // Entre fila y fila, un poco de aire: cada fila es una parte.
+                    if (f > 0) punto.style.marginTop = "0.35rem";
+                    rejilla.appendChild(punto);
+                }
+            }
+            document.getElementById("help-visual-container").replaceChildren(rejilla);
         }
 
         function girarAyuda() {
@@ -3604,7 +3699,7 @@
          * la respuesta.
          */
         function pistaPara() {
-            if (pregunta?.tipo === "logica") return { texto: pregunta.pista, voz: textoParaVoz(pregunta.pista) };
+            if (pregunta?.tipo === "logica" || pregunta?.tipo === "fraccion") return { texto: pregunta.pista, voz: textoParaVoz(pregunta.pista) };
             if (!pregunta || pregunta.tipo === "mult") {
                 const truco = trucoPara(numA, numB);
                 const puente = puenteDesdeLoSabido(numA, numB);
@@ -3671,6 +3766,7 @@
         // Los signos se leen mal o no se leen: se dicen con palabras.
         function textoParaVoz(texto) {
             return texto
+                .replace(/\b(\d)\/(\d{1,2})\b/g, (_, m, d) => nombreFraccion(Number(m), Number(d)))
                 .replace(/×\s*\?/g, " por cuánto ").replace(/÷/g, " entre ").replace(/…/g, "")
                 .replace(/×/g, " por ").replace(/\+/g, " más ").replace(/−/g, " menos ").replace(/ → ¿\?/g, ", y otra vez el doble")
                 .replace(/→/g, ",").replace(/ = /g, " es ").replace(/ +/g, " ").replace(/ ,/g, ",");
@@ -3821,7 +3917,7 @@
                 }
 
                 score++;
-                aciertosPorOp[pregunta.tipo === "logica" ? "L" : seDivide() ? "÷" : "×"]++;
+                aciertosPorOp[pregunta.tipo === "logica" ? "L" : pregunta.tipo === "fraccion" ? "F" : seDivide() ? "÷" : "×"]++;
                 ganarEstrellas(1 + (florecio ? BONO_FLOR : 0));
                 updateHUD();
 
@@ -3885,7 +3981,7 @@
 
         /** Lo que hace falta guardar en la cola para repetir la misma pregunta. */
         function extraDeRepaso() {
-            if (pregunta.tipo === "logica") return { reto: pregunta.reto };
+            if (pregunta.tipo === "logica" || pregunta.tipo === "fraccion") return { reto: pregunta.reto };
             return pregunta.tipo === "problema" ? { op: pregunta.op, t: pregunta.t } : {};
         }
 
@@ -3944,10 +4040,11 @@
                 : currentTable === "div" ? "La División del Jardín"
                 : currentTable === "problemas" ? "Los Problemas del Jardín"
                 : currentTable === "logica" ? "Los Retos de Lógica"
+                : currentTable === "fracciones" ? "Las Fracciones del Jardín"
                 : `La Tabla del ${currentTable}`;
             document.getElementById("victory-table-name").innerText = tableName;
 
-            const aprendido = ["div", "problemas", "logica"].includes(currentTable)
+            const aprendido = ["div", "problemas", "logica", "fracciones"].includes(currentTable)
                 ? fraseDeLoResuelto()
                 : fraseDeLoAprendido();
             document.getElementById("victoria-aprendido").innerText = aprendido;
@@ -3981,6 +4078,10 @@
          * idea que hay que llevarse.
          */
         function fraseDeLoResuelto() {
+            if (currentTable === "fracciones") {
+                const n = aciertosPorOp["F"];
+                return `Resolviste ${n} ${n === 1 ? "fracción" : "fracciones"}. Para sacar 3/4 de un número, se divide entre 4 y se multiplica por 3.`;
+            }
             if (currentTable === "logica") {
                 const n = aciertosPorOp["L"];
                 return `Resolviste ${n} ${n === 1 ? "reto" : "retos"} de lógica. Pensar con las tablas, y no solo recordarlas, es saberlas de verdad.`;
