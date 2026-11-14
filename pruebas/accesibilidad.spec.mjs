@@ -245,6 +245,8 @@ test("la aventura: el mapa y un nivel", async ({ page }) => {
   await page.evaluate(() => { aventura.manual = true; });
   await page.click('.btn-nivel[data-nivel="0-0"]');
   await auditar(page, "un nivel de la aventura");
-  await page.click("#btn-modo-aventura");
+  await page.click('#modos-aventura [data-modo="elegir"]');
   await auditar(page, "un nivel de la aventura, eligiendo");
+  await page.click('#modos-aventura [data-modo="dedo"]');
+  await auditar(page, "un nivel de la aventura, con el dedo");
 });

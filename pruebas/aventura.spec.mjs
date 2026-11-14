@@ -150,7 +150,7 @@ test("el jefe necesita varias respuestas, y vencerlo abre el siguiente mundo", a
 test("en «elegir», cuatro respuestas para el enemigo más cercano", async ({ page }) => {
   await alMapa(page);
   await page.click('.btn-nivel[data-nivel="0-0"]');
-  await page.click("#btn-modo-aventura");
+  await page.click('#modos-aventura [data-modo="elegir"]');
   await expect(page.locator("#aventura-opciones .opcion-aventura")).toHaveCount(4);
   await expect(page.locator("#aventura-teclado")).toBeHidden();
   const r = await page.evaluate(() => enemigoObjetivo().op.respuesta);

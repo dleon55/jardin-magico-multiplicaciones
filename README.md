@@ -12,11 +12,21 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **🐾 La Aventura.** Un animalito con su varita (gatito, perrito, conejito,
   zorrito, panda, ranita, tigrito o koala) contra enemigos que entran por los
   bordes de la pantalla y avanzan hacia él, cada uno con una operación. Al
-  dar la respuesta —tecleándola (también con el teclado físico) o eligiendo
-  entre cuatro para el enemigo más cercano—, la varita lo vence. Si uno llega,
+  dar la respuesta —tecleándola (también con el teclado físico), eligiendo
+  entre cuatro para el enemigo más cercano o escribiéndola con el dedo—, la
+  varita lo vence. Si uno llega,
   se pierde un corazón (hay 3), se ve la respuesta y esa operación vuelve tras
   dos enemigos más. Nunca hay dos enemigos en pantalla con la misma
   respuesta.
+
+  **✍️ Con el dedo:** se escribe la respuesta en un recuadro y, al levantar
+  el dedo un momento, el juego reconoce las cifras y las muestra en grande.
+  Solo se lanza al tocar «✨ ¡Lanzar!», así que una mala lectura nunca cuesta
+  un corazón: se borra y se escribe otra vez. El reconocedor es propio y
+  funciona sin internet: compara cada cifra, como nube de puntos, con varios
+  modelos de cómo se suele escribir (el 1 con y sin gancho, el 4 abierto y
+  cerrado, el 7 con y sin raya), así que no importa por dónde se empiece ni
+  en cuántos trazos.
 
   | Mundo | Enemigos | Retos |
   | --- | --- | --- |
@@ -359,7 +369,7 @@ Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, pistas desde lo que ya se sabe, tablas del 1 al 9, estados del mapa y lo
 guardado por la versión anterior), la aventura (retos por mundo, vencer, corazones, operación que vuelve, jefe,
-niveles que se abren, elegir, compartir la imagen, lo guardado), descubrir una tabla (fila a fila, truco,
+niveles que se abren, elegir, escribir con el dedo y cuánto acierta el reconocedor, compartir la imagen, lo guardado), descubrir una tabla (fila a fila, truco,
 plantas nuevas, cuándo sale y cuándo no), la copia de seguridad (guardar y
 recuperar en otro dispositivo, confirmar, archivos dañados o de otra versión,
 aviso en iPad), los mundos (elegir, cambiar sin
