@@ -172,3 +172,14 @@ for (const mundo of ["huerto", "bosque", "dinos", "espacio", "mar", "granja", "d
     await auditar(page, `el jardín en ${mundo}`);
   });
 }
+
+test("un reto de lógica, con la ayuda abierta y uno fallado", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("text=Retos de lógica");
+  await page.click("#btn-help");
+  await auditar(page, "un reto de lógica con la ayuda");
+  const mala = await page.evaluate(() => [...document.querySelectorAll(".btn-option")].find((b) => Number(b.dataset.valor) !== correctAnswer).id);
+  await page.click(`#${mala}`);
+  await auditar(page, "un reto de lógica fallado");
+});
