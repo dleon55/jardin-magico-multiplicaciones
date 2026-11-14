@@ -9,6 +9,11 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-14
 
+- **Sumar fracciones con distinto denominador** (#27), dentro de
+  «🍕 Fracciones»: 1/2 + 1/4 y 1/2 + 1/3, pasándolas al común (hasta 12), con
+  la opción falsa de sumar arriba y abajo y una tira vacía en el común para
+  contar. La partida queda en 3 de un número, 2 equivalentes, 1 comparar, 2
+  con el mismo denominador y 2 con distinto.
 - **Sumar y restar fracciones con el mismo denominador** (#26), dentro de
   «🍕 Fracciones»: 2/7 + 3/7 y 5/8 − 2/8, con la opción falsa de sumar
   también los de abajo y tiras en la ayuda. La partida queda en 3 de un

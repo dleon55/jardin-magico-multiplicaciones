@@ -156,7 +156,7 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   fallado vuelve igual. Mientras se sepan menos de 6 multiplicaciones, los
   retos usan las tablas del 2 al 5.
 - **🍕 Fracciones** (para 4.º a 6.º de primaria). Cada partida trae 10
-  preguntas de cuatro clases:
+  preguntas de cinco clases:
   - **De un número** (3): «¿Cuánto es 3/4 de 24?» es dividir y multiplicar con
     lo que ya se sabe: un cuarto de 24 es 24 ÷ 4 = 6, y tres cuartos,
     3 × 6 = 18. Una de una parte (1/4 de 24) y dos de varias (3/4 de 24),
@@ -166,24 +166,32 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
     multiplica arriba y abajo por lo mismo (2/4); las falsas son los errores
     de siempre: sumar lo mismo arriba y abajo (3/4) o multiplicar solo uno
     (1/4).
-  - **Comparar** (2): «¿Cuál es la más grande?» entre cuatro, dos de estas
+  - **Comparar** (1): «¿Cuál es la más grande?» entre cuatro, en una de estas
     variantes: con el mismo
     número de abajo, con el mismo de arriba (1/3 > 1/5: el error clásico es
     creer que gana el 5) y con distintos, pasándolas a uno común («Con 12
     abajo: 3/4 = 9/12…»).
 
-  - **Sumar y restar con el mismo número de abajo** (3, al menos una suma y
-    una resta): «¿Cuánto es 2/7 + 3/7?» y «¿Cuánto es 5/8 − 2/8?». Se suman o
+  - **Sumar y restar con el mismo número de abajo** (2, una suma y una
+    resta): «¿Cuánto es 2/7 + 3/7?» y «¿Cuánto es 5/8 − 2/8?». Se suman o
     restan solo las partes: el número de abajo dice su tamaño y no cambia.
     Las opciones falsas son sumar también los de abajo (5/14, el error más
     común), hacer la otra operación y una parte de más o de menos. La ayuda:
     al sumar, dos tiras para juntar lo verde; al restar, una para quitar
     partes.
 
+  - **Sumar con distinto número de abajo** (2): «¿Cuánto es 1/2 + 1/4?» (un
+    número de abajo es múltiplo del otro) y «1/2 + 1/3» (no lo es), con el
+    común hasta 12. Primero se pasan al mismo número de abajo: «Con 6 abajo,
+    1/2 = 3/6 y 1/3 = 2/6; 3 + 2 = 5». Las opciones falsas son sumar arriba y
+    abajo (2/5, el error clásico), sumar arriba y dejar el número de abajo
+    más grande y una parte de más o de menos. La ayuda dibuja las dos tiras y
+    una vacía partida en el común («?/6») para contar.
+
   Al ganar se dice la idea de la última pregunta (por ejemplo: «Con el mismo
   número de abajo, se suman o se restan solo los de arriba»).
 
-  En equivalentes, comparar y sumar, la ayuda dibuja tiras del mismo largo, partidas
+  En equivalentes, comparar y las sumas, la ayuda dibuja tiras del mismo largo, partidas
   en partes iguales y con lo tomado en verde: la de la pregunta y una por
   opción, en el orden de los botones (se compara, no se regala). Esas se
   eligen siempre.
