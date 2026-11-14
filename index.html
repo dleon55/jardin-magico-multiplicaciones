@@ -372,7 +372,7 @@
                     <span><span aria-hidden="true">🧩</span> Retos de lógica</span>
                     <span class="text-xs font-sans font-semibold">Pensar con las tablas</span>
                 </button>
-                <button type="button" onclick="startTable('fracciones')" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                <button type="button" onclick="mostrarFracciones()" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🍕</span> Fracciones</span>
                     <span class="text-xs font-sans font-semibold">De un número, iguales, comparar y sumar</span>
                 </button>
@@ -665,6 +665,48 @@
             <div class="text-center">
                 <button id="descubrir-practicar" type="button" onclick="practicarDescubierta()" class="bubble-font bg-gradient-to-r from-green-300 to-emerald-300 hover:from-green-400 hover:to-emerald-400 text-gray-900 px-6 py-3 rounded-2xl shadow-md transition text-lg">
                     <span aria-hidden="true">🌱</span> ¡A practicar la tabla del <span class="descubrir-n">2</span>!
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= PANTALLA 11: ELEGIR QUÉ FRACCIONES PRACTICAR ================= -->
+        <!-- Con todo mezclado, cada clase sale una o dos veces por partida: para
+             practicar de verdad una (sumar con distinto denominador, por
+             ejemplo) se elige sola. -->
+        <div id="screen-fracciones" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-2xl text-green-700"><span aria-hidden="true">🍕</span> ¿Qué fracciones practicas?</h2>
+                <p class="text-gray-700 text-sm max-w-md mx-auto">Cada partida trae 10 preguntas. Elige una clase para practicarla sola, o todo mezclado.</p>
+            </div>
+            <div id="clases-fracciones" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+                <button type="button" data-clase="mezcla" onclick="practicarFracciones('mezcla')" class="sm:col-span-2 bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-3 rounded-2xl shadow-md transition text-lg flex flex-col items-center gap-1">
+                    <span><span aria-hidden="true">🎲</span> Todo mezclado</span>
+                    <span class="text-xs font-sans font-semibold">Un poco de cada clase</span>
+                </button>
+                <button type="button" data-clase="de" onclick="practicarFracciones('de')" class="bubble-font bg-white hover:bg-amber-50 border-2 border-amber-300 text-gray-900 py-3 px-3 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1">
+                    <span>De un número</span>
+                    <span class="text-xs font-sans font-semibold text-gray-700">¿Cuánto es 3/4 de 24?</span>
+                </button>
+                <button type="button" data-clase="equivalente" onclick="practicarFracciones('equivalente')" class="bubble-font bg-white hover:bg-amber-50 border-2 border-amber-300 text-gray-900 py-3 px-3 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1">
+                    <span>Equivalentes</span>
+                    <span class="text-xs font-sans font-semibold text-gray-700">¿Cuál es igual a 1/2?</span>
+                </button>
+                <button type="button" data-clase="comparar" onclick="practicarFracciones('comparar')" class="bubble-font bg-white hover:bg-amber-50 border-2 border-amber-300 text-gray-900 py-3 px-3 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1">
+                    <span>Comparar</span>
+                    <span class="text-xs font-sans font-semibold text-gray-700">¿Cuál es la más grande?</span>
+                </button>
+                <button type="button" data-clase="sumar" onclick="practicarFracciones('sumar')" class="bubble-font bg-white hover:bg-amber-50 border-2 border-amber-300 text-gray-900 py-3 px-3 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1">
+                    <span>Sumar y restar</span>
+                    <span class="text-xs font-sans font-semibold text-gray-700">Mismo número de abajo: 2/7 + 3/7</span>
+                </button>
+                <button type="button" data-clase="sumarDistinto" onclick="practicarFracciones('sumarDistinto')" class="sm:col-span-2 bubble-font bg-white hover:bg-amber-50 border-2 border-amber-300 text-gray-900 py-3 px-3 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1">
+                    <span>Sumar con distinto número de abajo</span>
+                    <span class="text-xs font-sans font-semibold text-gray-700">1/2 + 1/4 y 1/2 + 1/3</span>
                 </button>
             </div>
         </div>
@@ -1883,7 +1925,7 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo"];
+        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones"];
         let pantallaActual = "screen-welcome";
 
         function mostrarPantalla(id) {
@@ -2004,7 +2046,7 @@
                 return;
             }
 
-            if (["screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo"].includes(pantallaActual) && evento.key === "Escape") {
+            if (["screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones"].includes(pantallaActual) && evento.key === "Escape") {
                 evento.preventDefault();
                 backToSelector();
                 return;
@@ -3231,8 +3273,46 @@
          * con el mismo denominador y 2 sumas con distinto.
          * Con pocas multiplicaciones sabidas, partes del 2 al 5 al sacar «de».
          */
+        // Qué fracciones se practican: "mezcla" o una sola clase.
+        let claseFracciones = "mezcla";
+        const NOMBRE_CLASE_FRACCION = {
+            de: "De un número", equivalente: "Equivalentes", comparar: "Comparar",
+            sumar: "Sumar y restar", sumarDistinto: "Sumar con distinto número de abajo",
+        };
+
+        function mostrarFracciones() {
+            mostrarPantalla("screen-fracciones");
+        }
+
+        function practicarFracciones(clase) {
+            claseFracciones = NOMBRE_CLASE_FRACCION[clase] ? clase : "mezcla";
+            startTable("fracciones");
+        }
+
+        /** Diez de una sola clase. */
+        function bolsaDeUnaClase(clase, hi) {
+            const diez = Array.from({ length: 10 }, (_, i) => i);
+            if (clase === "de") {
+                // Cuatro de una parte y seis de varias, que es lo que más cuesta.
+                return diez.map((i) => {
+                    const d = entre(i < 4 ? 2 : 3, hi);
+                    return { clase: "de", m: i < 4 ? 1 : entre(2, d - 1), d, k: entre(2, 9) };
+                });
+            }
+            if (clase === "equivalente") return diez.map(() => crearEquivalente());
+            if (clase === "comparar") return diez.map((i) => crearComparacion(["mismoDen", "mismoNum", "distintos"][i % 3]));
+            if (clase === "sumar") return diez.map((i) => crearSuma(i % 2 ? "−" : "+"));
+            return diez.map((i) => crearSumaDistinta(i % 2 === 0));
+        }
+
         function bolsaDeFracciones() {
             const hi = parejasConocidas().length >= MIN_CONOCIDAS ? 9 : 5;
+            if (claseFracciones !== "mezcla") {
+                return barajar(bolsaDeUnaClase(claseFracciones, hi).map((reto) => {
+                    const [a, b] = numerosDeFraccion(reto);
+                    return { a, b, reto };
+                }));
+            }
             const de = Array.from({ length: 3 }, (_, i) => {
                 const d = entre(i < 1 ? 2 : 3, hi);
                 return { clase: "de", m: i < 1 ? 1 : entre(2, d - 1), d, k: entre(2, 9) };
@@ -4286,7 +4366,7 @@
                 : currentTable === "div" ? "La División del Jardín"
                 : currentTable === "problemas" ? "Los Problemas del Jardín"
                 : currentTable === "logica" ? "Los Retos de Lógica"
-                : currentTable === "fracciones" ? "Las Fracciones del Jardín"
+                : currentTable === "fracciones" ? (claseFracciones === "mezcla" ? "Las Fracciones del Jardín" : `Fracciones: ${NOMBRE_CLASE_FRACCION[claseFracciones]}`)
                 : `La Tabla del ${currentTable}`;
             document.getElementById("victory-table-name").innerText = tableName;
 

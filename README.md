@@ -155,8 +155,12 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   «partir» dibuja el rectángulo con su hueco después de 5 columnas. Un reto
   fallado vuelve igual. Mientras se sepan menos de 6 multiplicaciones, los
   retos usan las tablas del 2 al 5.
-- **🍕 Fracciones** (para 4.º a 6.º de primaria). Cada partida trae 10
-  preguntas de cinco clases:
+- **🍕 Fracciones** (para 4.º a 6.º de primaria). Al tocarlo se elige qué
+  practicar: **🎲 todo mezclado** o **una sola clase**, con 10 preguntas de
+  esa clase (de un número: 4 de una parte y 6 de varias; comparar: las tres
+  variantes; sumar y restar: 5 y 5; distinto denominador: 5 con múltiplo y
+  5 sin). La victoria dice qué clase fue. Con todo mezclado, la partida trae
+  10 preguntas de cinco clases:
   - **De un número** (3): «¿Cuánto es 3/4 de 24?» es dividir y multiplicar con
     lo que ya se sabe: un cuarto de 24 es 24 ÷ 4 = 6, y tres cuartos,
     3 × 6 = 18. Una de una parte (1/4 de 24) y dos de varias (3/4 de 24),

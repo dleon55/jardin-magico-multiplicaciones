@@ -9,6 +9,9 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-14
 
+- **Fracciones por clase** (#28): al tocar «🍕 Fracciones» se elige todo
+  mezclado o una sola clase (de un número, equivalentes, comparar, sumar y
+  restar, distinto denominador), con 10 preguntas de esa clase.
 - **Sumar fracciones con distinto denominador** (#27), dentro de
   «🍕 Fracciones»: 1/2 + 1/4 y 1/2 + 1/3, pasándolas al común (hasta 12), con
   la opción falsa de sumar arriba y abajo y una tira vacía en el común para
