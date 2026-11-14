@@ -374,7 +374,7 @@
                 </button>
                 <button type="button" onclick="startTable('fracciones')" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🍕</span> Fracciones</span>
-                    <span class="text-xs font-sans font-semibold">¾ de 24, iguales y ¿cuál es mayor?</span>
+                    <span class="text-xs font-sans font-semibold">De un número, iguales, comparar y sumar</span>
                 </button>
             </div>
 
@@ -3217,23 +3217,28 @@
         }
 
         /**
-         * Diez preguntas de fracciones, de tres clases:
-         *   - «de»: m/d de d·k ({ m, d, k }). Dos de una parte (1/4 de 24) y
+         * Diez preguntas de fracciones, de cuatro clases:
+         *   - «de»: m/d de d·k ({ m, d, k }). Una de una parte (1/4 de 24) y
          *     dos de varias (3/4 de 24), que es lo que más cuesta;
-         *   - «equivalente»: ¿cuál es igual a a/b? ({ a, b, k }: a·k/b·k), tres;
-         *   - «comparar»: ¿cuál es la más grande?, tres: mismo denominador,
-         *     mismo numerador (1/3 > 1/5, el error clásico) y distintos.
+         *   - «equivalente»: ¿cuál es igual a a/b? ({ a, b, k }: a·k/b·k), dos;
+         *   - «comparar»: ¿cuál es la más grande?, dos de estas: mismo
+         *     denominador, mismo numerador (1/3 > 1/5, el error clásico) y
+         *     distintos;
+         *   - «sumar»: 2/7 + 3/7 o 5/8 − 2/8, con el mismo denominador, tres
+         *     (al menos una suma y una resta).
+         * Por partida: 3 «de», 2 equivalentes, 2 comparar y 3 sumar o restar.
          * Con pocas multiplicaciones sabidas, partes del 2 al 5 al sacar «de».
          */
         function bolsaDeFracciones() {
             const hi = parejasConocidas().length >= MIN_CONOCIDAS ? 9 : 5;
-            const de = Array.from({ length: 4 }, (_, i) => {
-                const d = entre(i < 2 ? 2 : 3, hi);
-                return { clase: "de", m: i < 2 ? 1 : entre(2, d - 1), d, k: entre(2, 9) };
+            const de = Array.from({ length: 3 }, (_, i) => {
+                const d = entre(i < 1 ? 2 : 3, hi);
+                return { clase: "de", m: i < 1 ? 1 : entre(2, d - 1), d, k: entre(2, 9) };
             });
-            const equivalentes = Array.from({ length: 3 }, () => crearEquivalente());
-            const comparar = ["mismoDen", "mismoNum", "distintos"].map(crearComparacion);
-            return barajar([...de, ...equivalentes, ...comparar].map((reto) => {
+            const equivalentes = Array.from({ length: 2 }, () => crearEquivalente());
+            const comparar = barajar(["mismoDen", "mismoNum", "distintos"]).slice(0, 2).map(crearComparacion);
+            const sumas = ["+", "−", azar(["+", "−"])].map(crearSuma);
+            return barajar([...de, ...equivalentes, ...comparar, ...sumas].map((reto) => {
                 const [a, b] = numerosDeFraccion(reto);
                 return { a, b, reto };
             }));
@@ -3241,6 +3246,7 @@
 
         /** Dos números que representan la pregunta (para el repaso). */
         function numerosDeFraccion(r) {
+            if (r.clase === "sumar") return [r.d, r.a];
             if (r.clase === "equivalente") return [r.b, r.k];
             if (r.clase === "comparar") return [r.fracs[0][1], r.fracs.length];
             return [r.d, r.k];
@@ -3278,6 +3284,17 @@
                 }
                 if (fracs.length === 4 && distintas(fracs)) return { clase: "comparar", variante, fracs };
             }
+        }
+
+        /** a/d op b/d con resultado propio y distinto de cero. */
+        function crearSuma(op) {
+            const d = entre(4, 10);
+            if (op === "+") {
+                const a = entre(1, d - 2);
+                return { clase: "sumar", op, a, b: entre(1, d - 1 - a), d };
+            }
+            const a = entre(2, d - 1);
+            return { clase: "sumar", op, a, b: entre(1, a - 1), d };
         }
 
         const codigoFraccion = (m, d) => m * 100 + d;   // el valor de un botón que muestra «m/d»
@@ -3332,7 +3349,40 @@
             };
         }
 
+        function armarSuma(r) {
+            const { op, a, b, d } = r;
+            const suma = op === "+";
+            const m = suma ? a + b : a - b;
+            const fr = (x) => textoFraccion(x, d);
+            const plural = NOMBRE_PARTE[d]?.[1] || `partes de ${d}`;
+            // Los errores de siempre: operar también los de abajo, hacer la
+            // otra operación, y quedarse una parte arriba o abajo.
+            const falsas = suma
+                ? [[m, 2 * d], [m + 1, d], [m - 1, d], [a * b, d], [m, d + 1]]
+                : [[a + b, d], [m + 1, d], [m - 1, d], [m, d - 1], [m, 2 * d]];
+            const lista = [[m, d]];
+            for (const [x, y] of falsas) {
+                if (lista.length < 4 && x > 0 && x < y && !lista.some(([u, v]) => u === x && v === y) && x * d !== m * y) lista.push([x, y]);
+            }
+            const enOrden = barajar(lista);
+            const signo = suma ? "+" : "−";
+            const texto = `¿Cuánto es ${fr(a)} ${signo} ${fr(b)}?`;
+            return {
+                tipo: "fraccion", clase: "sumar", reto: r, a: d, b: a,
+                respuesta: codigoFraccion(m, d), texto, voz: textoParaVoz(texto),
+                opciones: enOrden.map(([x, y]) => ({ valor: codigoFraccion(x, y), etiqueta: textoFraccion(x, y) })),
+                tiras: suma ? [[a, d], [b, d]] : [[a, d]],
+                pista: suma
+                    ? `Las dos fracciones son ${plural}: suma cuántas partes hay. El número de abajo dice el tamaño de las partes y no cambia.`
+                    : `Las dos fracciones son ${plural}: a ${a} partes quítale ${b}. El número de abajo dice el tamaño de las partes y no cambia.`,
+                explicacion: suma
+                    ? `${fr(a)} + ${fr(b)} = ${fr(m)}: son ${plural} las dos, así que se suman las partes (${a} + ${b} = ${m}) y siguen siendo ${plural}. Los de abajo no se suman.`
+                    : `${fr(a)} − ${fr(b)} = ${fr(m)}: se quitan partes (${a} − ${b} = ${m}) y siguen siendo ${plural}. Los de abajo no se restan.`,
+            };
+        }
+
         function armarFraccion(r) {
+            if (r.clase === "sumar") return armarSuma(r);
             if (r.clase === "equivalente") return armarEquivalente(r);
             if (r.clase === "comparar") return armarComparacion(r);
             const { m, d, k } = r;
@@ -3605,9 +3655,14 @@
          */
         function dibujarTiras(tiras) {
             document.getElementById("help-truco").innerText = pistaPara().texto;
+            const { reto } = pregunta;
             document.getElementById("help-explain").innerText = pregunta.clase === "equivalente"
                 ? `Todas las tiras miden lo mismo. ¿Cuál tiene tanto verde como ${textoFraccion(...tiras[0])}?`
-                : "Todas las tiras miden lo mismo. ¿Cuál tiene más verde?";
+                : pregunta.clase === "sumar"
+                    ? (reto.op === "+"
+                        ? "Las dos tiras están partidas igual. Junta lo verde de las dos: ¿cuántas partes son?"
+                        : `Quita ${reto.b} de las partes verdes: ¿cuántas quedan?`)
+                    : "Todas las tiras miden lo mismo. ¿Cuál tiene más verde?";
             const caja = document.createElement("div");
             caja.className = "bg-white border-2 border-indigo-100 rounded-xl p-3 space-y-2 w-full max-w-sm";
             tiras.forEach(([m, d], i) => {
@@ -4217,7 +4272,13 @@
         function fraseDeLoResuelto() {
             if (currentTable === "fracciones") {
                 const n = aciertosPorOp["F"];
-                return `Resolviste ${n} ${n === 1 ? "fracción" : "fracciones"}. Para sacar 3/4 de un número, se divide entre 4 y se multiplica por 3; y una fracción no cambia si multiplicas arriba y abajo por lo mismo.`;
+                // La idea que hay que llevarse, según la última pregunta.
+                const idea = {
+                    sumar: "Con el mismo número de abajo, se suman o se restan solo los de arriba.",
+                    equivalente: "Una fracción no cambia si multiplicas arriba y abajo por lo mismo.",
+                    comparar: "Para comparar, pásalas al mismo número de abajo.",
+                }[pregunta?.clase] || "Para sacar 3/4 de un número, se divide entre 4 y se multiplica por 3.";
+                return `Resolviste ${n} ${n === 1 ? "fracción" : "fracciones"}. ${idea}`;
             }
             if (currentTable === "logica") {
                 const n = aciertosPorOp["L"];

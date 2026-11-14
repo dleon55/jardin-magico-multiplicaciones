@@ -9,6 +9,10 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-14
 
+- **Sumar y restar fracciones con el mismo denominador** (#26), dentro de
+  «🍕 Fracciones»: 2/7 + 3/7 y 5/8 − 2/8, con la opción falsa de sumar
+  también los de abajo y tiras en la ayuda. La partida queda en 3 de un
+  número, 2 equivalentes, 2 comparar y 3 de sumar o restar.
 - **Fracciones equivalentes y comparar fracciones** (#25), dentro de
   «🍕 Fracciones»: «¿Cuál es igual a 1/2?» y «¿Cuál es la más grande?», con
   tiras del mismo largo en la ayuda y las opciones falsas de los errores
