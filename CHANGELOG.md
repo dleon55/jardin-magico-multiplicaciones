@@ -9,6 +9,10 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-14
 
+- **✍️ Escribir con el dedo en La Aventura** (#31): un tercer modo para
+  responder, además de teclear y elegir. El juego reconoce las cifras sin
+  internet y las muestra; solo se lanza al tocar «¡Lanzar!», así que una
+  mala lectura no cuesta un corazón. El modo elegido se recuerda.
 - **🐾 La Aventura** (#30): un animalito con su varita contra enemigos con
   operaciones, en 6 mundos (brócolis, monstruos, fantasmas, zombis, aliens y
   criaturas del mar) de menor a mayor dificultad, con 3 niveles y un jefe
