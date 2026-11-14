@@ -9,6 +9,11 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-14
 
+- **🐾 La Aventura** (#30): un animalito con su varita contra enemigos con
+  operaciones, en 6 mundos (brócolis, monstruos, fantasmas, zombis, aliens y
+  criaturas del mar) de menor a mayor dificultad, con 3 niveles y un jefe
+  cada uno. Puntos, estrellas y avance guardados por jugador, e imagen para
+  compartir el puntaje.
 - **Fracciones y retos en la vista para adultos** (#29): aciertos por clase,
   cuál cuesta más y dónde practicarla sola; cuentan como días de práctica.
 - **Fracciones por clase** (#28): al tocar «🍕 Fracciones» se elige todo

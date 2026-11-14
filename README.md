@@ -9,6 +9,36 @@ Sitio publicado en GitHub Pages: https://dleon55.github.io/jardin-magico-multipl
 
 Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 
+- **🐾 La Aventura.** Un animalito con su varita (gatito, perrito, conejito,
+  zorrito, panda, ranita, tigrito o koala) contra enemigos que entran por los
+  bordes de la pantalla y avanzan hacia él, cada uno con una operación. Al
+  dar la respuesta —tecleándola (también con el teclado físico) o eligiendo
+  entre cuatro para el enemigo más cercano—, la varita lo vence. Si uno llega,
+  se pierde un corazón (hay 3), se ve la respuesta y esa operación vuelve tras
+  dos enemigos más. Nunca hay dos enemigos en pantalla con la misma
+  respuesta.
+
+  | Mundo | Enemigos | Retos |
+  | --- | --- | --- |
+  | 1. El huerto | 🥦 brócolis | tablas del 2, 5 y 10 |
+  | 2. El bosque | 👾 monstruos | tablas del 3, 4 y 6 |
+  | 3. El castillo | 👻 fantasmas | tablas del 7, 8 y 9 |
+  | 4. La noche | 🧟 zombis | todas, más rápido |
+  | 5. El espacio | 👽 aliens | dividir |
+  | 6. El mar | 🐙 criaturas | fracciones de un número |
+
+  Cada mundo tiene 3 niveles (más enemigos, más a la vez y más rápidos) y un
+  **jefe** con 6 de vida: cada respuesta le cambia la operación y lo hace
+  retroceder. Vencerlo abre el mundo siguiente. **Puntos:** 10 por enemigo
+  (20 por golpe al jefe), hasta 10 más si estaba lejos y 5 más con racha de
+  3. **Estrellas** por nivel según los corazones que quedan, que también
+  suman al vivero. Se guarda por jugador el héroe, hasta dónde llegó, las
+  estrellas y el mejor puntaje de cada nivel (el puntaje total es la suma), y
+  la vista para adultos lo muestra. **«📤 Compartir mi puntaje»** crea una
+  imagen con el héroe, el nombre, el puntaje y el mundo: en la tableta abre
+  el menú de compartir del sistema; si no lo hay, se descarga. No cuenta para
+  el mapa ni el jardín: se responde con prisa, y eso no mide la memoria.
+
 - **Cada quien elige su mundo y su personaje.** El juego empezó como un
   jardín de flores rosa y a muchos niños eso les decía «no es para ti».
   Ahora la portada es neutra (verde, cielo y tierra) y, al entrar, se elige
@@ -328,7 +358,8 @@ mano.
 Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, pistas desde lo que ya se sabe, tablas del 1 al 9, estados del mapa y lo
-guardado por la versión anterior), descubrir una tabla (fila a fila, truco,
+guardado por la versión anterior), la aventura (retos por mundo, vencer, corazones, operación que vuelve, jefe,
+niveles que se abren, elegir, compartir la imagen, lo guardado), descubrir una tabla (fila a fila, truco,
 plantas nuevas, cuándo sale y cuándo no), la copia de seguridad (guardar y
 recuperar en otro dispositivo, confirmar, archivos dañados o de otra versión,
 aviso en iPad), los mundos (elegir, cambiar sin
