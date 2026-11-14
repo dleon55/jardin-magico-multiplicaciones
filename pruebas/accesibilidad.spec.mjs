@@ -223,3 +223,16 @@ test("elegir qué fracciones practicar", async ({ page }) => {
   await page.click("#screen-selector >> text=Fracciones");
   await auditar(page, "la elección de fracciones");
 });
+
+test("la vista para adultos con fracciones y retos", async ({ page }) => {
+  await page.goto("./");
+  await page.fill("#player-name", "Ana");
+  await page.click("#screen-welcome button");
+  await page.evaluate(() => {
+    for (const ok of [0, 1, 0, 0, 1]) registrarOtro("fraccion:equivalente", ok);
+    registrarOtro("logica:intruso", 1);
+    registrarIntento(7, 8, false);
+  });
+  await page.click("#screen-selector >> text=Para las personas adultas");
+  await auditar(page, "la vista para adultos con fracciones y retos");
+});

@@ -182,7 +182,7 @@
 
         /* MENOS MOVIMIENTO. Se activa si el sistema lo pide o si se elige en
            Ajustes. Para un niño con sensibilidad sensorial, el balanceo, el
-           flotado, el latido y el confeti permanentes hacen el sitio difícil de
+           flotado, el latido y el confeti permanentes hacen el sitio dificil de
            usar; el juego tiene que ser igual de jugable sin ellos. */
         html.calma *, html.calma *::before, html.calma *::after {
             animation-duration: 0.001ms !important;
@@ -777,7 +777,7 @@
                 </div>
                 <p id="aviso-copia" role="status" aria-live="polite" class="min-h-5 text-sm font-bold text-green-800"></p>
             </section>
-            <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Dividir, los problemas cortos, los retos de lógica y las fracciones no cuentan aquí: miden otra cosa.</p>
+            <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Las flores miden la memoria de las tablas; las fracciones y los retos de lógica se muestran aparte. Dividir y los problemas cortos no se registran.</p>
         </div>
 
         <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
@@ -832,7 +832,7 @@
         // semanas de práctica de su hermano.
         const PREFIJO = "jardin:";
         const GLOBALES = new Set(["ajustes", "perfiles", "perfil"]);
-        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas"];
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros"];
         let perfilActual = "p1";
 
         const almacen = {
@@ -1425,6 +1425,7 @@
             cargarCompras();
             cargarMisiones();
             cargarDescubiertas();
+            otros = limpiarOtros(almacen.leer("otros"));
             actualizarEstrellas();
             aplicarMundo();
             document.getElementById("display-name").innerText =
@@ -1798,9 +1799,78 @@
                 .slice(0, 5));
         }
 
-        function diasDePractica(h) {
+        // --- FRACCIONES Y RETOS EN LA VISTA PARA ADULTOS ---
+        //
+        // No cuentan para el mapa ni el jardín (miden otra cosa), pero a quien
+        // acompaña le sirve saber cuál le cuesta. Se guarda solo el día y si
+        // estuvo bien, por clase, las últimas 30 de cada una: "otros" del
+        // perfil, que la copia de seguridad incluye y borrar el jardín borra.
+        const CLASES_OTROS = {
+            "fraccion:de": "de un número", "fraccion:equivalente": "equivalentes", "fraccion:comparar": "comparar",
+            "fraccion:sumar": "sumar y restar", "fraccion:sumarDistinto": "sumar con distinto número de abajo",
+            "logica:mayor": "¿cuál da más?", "logica:misterio": "el número misterioso", "logica:sigue": "¿qué número falta?",
+            "logica:partir": "partir una multiplicación", "logica:intruso": "el intruso",
+        };
+        // El botón de «🍕 Fracciones» que practica esa clase sola.
+        const BOTON_CLASE_FRACCION = { "fraccion:de": "De un número", "fraccion:equivalente": "Equivalentes",
+            "fraccion:comparar": "Comparar", "fraccion:sumar": "Sumar y restar", "fraccion:sumarDistinto": "Sumar con distinto número de abajo" };
+        const MAX_OTROS = 30;
+        let otros = {};
+
+        /** Lo guardado de fracciones y retos, validado: claves conocidas y { d, ok }. */
+        function limpiarOtros(texto) {
+            let g;
+            try { g = JSON.parse(texto || "{}"); } catch (e) { return {}; }
+            const limpio = {};
+            if (!g || typeof g !== "object") return limpio;
+            for (const clave of Object.keys(CLASES_OTROS)) {
+                if (!Array.isArray(g[clave])) continue;
+                limpio[clave] = g[clave]
+                    .filter((i) => i && typeof i === "object")
+                    .map((i) => ({ d: typeof i.d === "string" && fechaValida(i.d) ? i.d : "", ok: i.ok === 1 || i.ok === true ? 1 : 0 }))
+                    .slice(-MAX_OTROS);
+            }
+            return limpio;
+        }
+
+        function registrarOtro(clave, acierto) {
+            if (!CLASES_OTROS[clave]) return;
+            otros[clave] = [...(otros[clave] || []), { d: hoy(), ok: acierto ? 1 : 0 }].slice(-MAX_OTROS);
+            almacen.guardar("otros", JSON.stringify(otros));
+        }
+
+        /** La clase de la pregunta en curso, si es de fracciones o un reto. */
+        function claseOtro(p) {
+            if (p?.tipo === "fraccion") return `fraccion:${p.clase || p.reto?.clase || "de"}`;
+            if (p?.tipo === "logica") return `logica:${p.clase}`;
+            return null;
+        }
+
+        function otrosDePerfil(id) {
+            return id === perfilActual ? otros : limpiarOtros(almacen.leerDe(id, "otros"));
+        }
+
+        /**
+         * «de un número 9 de 10, equivalentes 4 de 8», de sus últimas 10
+         * respuestas por clase, y cuál le cuesta más (con al menos 4
+         * respuestas y menos de 6 de cada 10 bien).
+         */
+        function resumenOtros(o, prefijo) {
+            const filas = Object.keys(CLASES_OTROS)
+                .filter((k) => k.startsWith(prefijo) && o[k]?.length)
+                .map((k) => {
+                    const ultimas = o[k].slice(-10);
+                    return { k, nombre: CLASES_OTROS[k], bien: ultimas.filter((i) => i.ok).length, de: ultimas.length };
+                });
+            const cuesta = filas.filter((f) => f.de >= 4 && f.bien / f.de < 0.6)
+                .sort((x, y) => x.bien / x.de - y.bien / y.de)[0] || null;
+            return { filas, cuesta };
+        }
+
+        function diasDePractica(h, o = {}) {
             const dias = new Set();
             Object.values(h).forEach((lista) => lista.forEach((i) => { if (i.d) dias.add(i.d); }));
+            Object.values(o).forEach((lista) => lista.forEach((i) => { if (i.d) dias.add(i.d); }));
             return dias;
         }
 
@@ -1824,7 +1894,8 @@
                 const cuenta = conIntentos(h, () => cuentaPorEstado());
                 const marchitas = conIntentos(h, () => plantas().filter(({ a, b }) => estaMarchita(a, b)).length);
                 const cuesta = loQueCuesta(h);
-                const dias = diasDePractica(h);
+                const o = otrosDePerfil(perfil.id);
+                const dias = diasDePractica(h, o);
 
                 const tarjeta = document.createElement("section");
                 tarjeta.className = "tarjeta-adulto bg-white border-2 border-green-200 rounded-2xl p-3 space-y-2";
@@ -1875,6 +1946,16 @@
                 });
 
                 const piezas = [titulo, resumen, cuestaP, diasP, semana];
+                for (const [prefijo, nombre, clase] of [["fraccion:", "Fracciones", "adulto-fracciones"], ["logica:", "Retos de lógica", "adulto-retos"]]) {
+                    const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
+                    if (filas.length === 0) continue;
+                    let texto = `${nombre} (sus últimas respuestas): ${filas.map((f) => `${f.nombre} ${f.bien} de ${f.de}`).join(", ")}.`;
+                    if (dificil) {
+                        texto += ` Le cuesta más: ${dificil.nombre}.`;
+                        if (BOTON_CLASE_FRACCION[dificil.k]) texto += ` Para practicar solo eso: «🍕 Fracciones» → «${BOTON_CLASE_FRACCION[dificil.k]}».`;
+                    }
+                    piezas.push(parrafo(`${clase} text-gray-800`, texto));
+                }
                 if (marchitas > 0 || cuesta.length > 0) {
                     const porDonde = cuesta.length > 0 && marchitas > 0 ? "por lo que falló y por las flores marchitas"
                         : cuesta.length > 0 ? "por lo que falló" : "por las flores marchitas";
@@ -3099,7 +3180,7 @@
         //
         // Las mismas tablas, pero pidiendo pensar y no solo recordar: comparar,
         // buscar un número con pistas, seguir una serie, partir una
-        // multiplicación difícil en dos fáciles y encontrar al que no
+        // multiplicación dificil en dos fáciles y encontrar al que no
         // pertenece. Pensar con un hecho lo afianza. Como dividir y los
         // problemas, no cuentan para el mapa ni el jardín (esos miden la
         // memoria), sí dan estrellas y cuentan para la misión.
@@ -3990,7 +4071,7 @@
         // --- TRUCOS POR TABLA ---
         //
         // El botón prometía "ver truco" y solo mostraba el conteo. Estos sí
-        // ahorran trabajo: convierten la tabla difícil en una fácil que ya se
+        // ahorran trabajo: convierten la tabla dificil en una fácil que ya se
         // sabe. Dan los pasos con los números de la pregunta, pero el último lo
         // hace quien juega: la ayuda no debe ser la respuesta.
         //
@@ -4051,7 +4132,7 @@
         // El truco de la tabla es el mismo para todos. Pero quien ya se sabe
         // 7 × 7 llega a 7 × 8 con un paso: «una vez más 7». Partir de un
         // hecho que ya se sabe para deducir el que falta es de lo que mejor
-        // funciona con las tablas difíciles, y el juego ya sabe qué domina
+        // funciona con las tablas dificiles, y el juego ya sabe qué domina
         // cada quien. Se busca una vecina sabida (florecida, o si no, «casi»):
         //   - un factor una vez más o una vez menos: 7 × 7 → 7 × 8, 7 × 9 → 7 × 8;
         //   - la mitad de un factor par: 4 × 8 es el doble de 4 × 4.
@@ -4188,6 +4269,7 @@
             const multiplica = pregunta.tipo === "mult";
             const estadoAntes = estadoHecho(numA, numB);
             if (multiplica) registrarIntento(numA, numB, acierto, { modo: modoEscrito ? "e" : "o", ms });
+            else if (claseOtro(pregunta)) registrarOtro(claseOtro(pregunta), acierto);
             const florecio = multiplica && estadoAntes !== "florecida" && estadoHecho(numA, numB) === "florecida";
 
             if (modoEscrito) mostrarEscrito(acierto ? "bien" : "mal");
@@ -4426,7 +4508,7 @@
             const m = aciertosPorOp["×"];
             const d = aciertosPorOp["÷"];
             const de = (n, que) => `${n} ${n === 1 ? "problema" : "problemas"} de ${que}`;
-            return `Resolviste ${de(m, "multiplicar")} y ${de(d, "dividir")}. Lo difícil era saber cuál tocaba, ¡y lo supiste!`;
+            return `Resolviste ${de(m, "multiplicar")} y ${de(d, "dividir")}. Lo dificil era saber cuál tocaba, ¡y lo supiste!`;
         }
 
         // --- EFECTOS VISUALES: PARTÍCULAS / MAGIA DE CANVAS ---
