@@ -12,13 +12,16 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **Cada quien elige su mundo y su personaje.** El juego empezó como un
   jardín de flores rosa y a muchos niños eso les decía «no es para ti».
   Ahora la portada es neutra (verde, cielo y tierra) y, al entrar, se elige
-  entre cinco mundos y doce personajes (🦊 🐸 🦖 🐢 🦉 🐝 🚀 🦁 🐼 🐙 🦄 🐱):
+  entre ocho mundos y doce personajes (🦊 🐸 🦖 🐢 🦉 🐝 🚀 🦁 🐼 🐙 🦄 🐱):
 
   | Mundo | Lo que crece al saberla (una cosa por tabla) | «Casi» |
   | --- | --- | --- |
   | 🥕 Huerto | 🥕 🍅 🌽 🥦 🍆 🥔 🥬 🍓 🎃 | 🌿 |
   | 🌲 Bosque | 🌲 🌳 🍄 🌰 🍁 🍂 🦔 🦉 🦌 | 🌿 |
   | 🦖 Selva de dinosaurios | 🦕 🦖 🐊 🦎 🐢 🌴 🌋 🐉 🦕 | 🥚 |
+  | 🚀 Espacio | 🌍 🌙 ⭐ ☄️ 🛸 🌌 🛰️ 🌠 🚀 | 🌙 |
+  | 🐠 Fondo del mar | 🐟 🐠 🐡 🐙 🦀 🐢 🐬 🐳 🦈 | 🐚 |
+  | 🐄 Granja | 🐔 🐄 🐖 🐑 🐐 🐴 🦆 🐇 🐓 | 🐣 |
   | 🌵 Desierto | 🌵 🌴 🦎 🦂 🐪 🌞 🏜️ 🐫 🦅 | 🌾 |
   | 🌸 Jardín de flores | 🌼 🌸 🌺 🌻 🌹 💐 🏵️ 💮 🌼 | 🌷 |
 

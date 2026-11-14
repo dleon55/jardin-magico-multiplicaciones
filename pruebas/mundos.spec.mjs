@@ -17,9 +17,9 @@ async function crear(page, nombre, { mundo = null, personaje = null } = {}) {
   await expect(page.locator("#screen-selector")).toBeVisible();
 }
 
-test("la bienvenida ofrece 5 mundos y 12 personajes, sin elegir ninguno por adelantado, y es neutra", async ({ page }) => {
+test("la bienvenida ofrece 8 mundos y 12 personajes, sin elegir ninguno por adelantado, y es neutra", async ({ page }) => {
   await page.goto("./");
-  await expect(page.locator("#screen-welcome .elegir-mundo input")).toHaveCount(5);
+  await expect(page.locator("#screen-welcome .elegir-mundo input")).toHaveCount(8);
   await expect(page.locator("#screen-welcome .elegir-personaje input")).toHaveCount(12);
   await expect(page.locator("#screen-welcome input[type=radio]:checked")).toHaveCount(0);
   await expect(page.locator("#screen-welcome .elegir-mundo")).toContainText("Selva de dinosaurios");
@@ -109,3 +109,19 @@ test("cada mundo tiene una cosa por tabla y emojis que existen en tabletas vieja
     }
   }
 });
+
+for (const [mundo, nombre, flor3, casi] of [["espacio", "Espacio", "⭐", "🌙"], ["mar", "Fondo del mar", "🐡", "🐚"], ["granja", "Granja", "🐖", "🐣"]]) {
+  test(`el mundo «${nombre}» tiene su fondo, lo que crece y lo «casi»`, async ({ page }) => {
+    await page.goto("./");
+    await crear(page, "Eli", { mundo });
+    expect(await page.evaluate(() => document.body.dataset.mundo)).toBe(mundo);
+    await ponerIntentos(page, "3x4", flor);
+    await ponerIntentos(page, "5x6", [rapida("2026-11-02")]);
+    await page.click("#screen-selector >> text=Mi jardín");
+    await expect(page.locator('[data-planta="3x4"]')).toContainText(flor3);
+    await expect(page.locator('[data-planta="5x6"]')).toContainText(casi);
+    await page.click("#screen-jardin button:has-text('Menú')");
+    await page.click("#screen-selector >> text=Cambiar de jugador");
+    await expect(page.locator(".btn-perfil")).toContainText(nombre);
+  });
+}

@@ -7,6 +7,11 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-14
+
+- **Tres mundos más** (#22): espacio 🚀, fondo del mar 🐠 y granja 🐄. Ya
+  son ocho mundos para elegir.
+
 ## 2026-11-13
 
 - **Cuidar el progreso** (#21). En «Para las personas adultas»:
