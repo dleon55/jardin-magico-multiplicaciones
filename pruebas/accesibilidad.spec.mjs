@@ -236,3 +236,15 @@ test("la vista para adultos con fracciones y retos", async ({ page }) => {
   await page.click("#screen-selector >> text=Para las personas adultas");
   await auditar(page, "la vista para adultos con fracciones y retos");
 });
+
+test("la aventura: el mapa y un nivel", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("#screen-selector >> text=La Aventura");
+  await auditar(page, "el mapa de la aventura");
+  await page.evaluate(() => { aventura.manual = true; });
+  await page.click('.btn-nivel[data-nivel="0-0"]');
+  await auditar(page, "un nivel de la aventura");
+  await page.click("#btn-modo-aventura");
+  await auditar(page, "un nivel de la aventura, eligiendo");
+});

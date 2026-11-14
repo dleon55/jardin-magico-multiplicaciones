@@ -91,6 +91,34 @@
         .ficha input:checked + span.cara::after { content: "✓"; position: absolute; top: 0.1rem; right: 0.35rem; font-weight: 700; color: #047857; }
         .ficha input:focus-visible + span.cara { outline: 3px solid #0369a1; outline-offset: 2px; }
 
+        /* --- LA AVENTURA --- */
+        .arena { position: relative; overflow: hidden; height: 20rem; border-radius: 1.5rem; touch-action: manipulation; user-select: none; }
+        @media (min-width: 768px) { .arena { height: 24rem; } }
+        .arena[data-mundo="0"] { background: linear-gradient(#bae6fd 0%, #e0f2fe 55%, #86efac 55%, #4ade80 100%); }
+        .arena[data-mundo="1"] { background: linear-gradient(#a7f3d0 0%, #d1fae5 50%, #166534 50%, #14532d 100%); }
+        .arena[data-mundo="2"] { background: linear-gradient(#c4b5fd 0%, #ede9fe 55%, #6d28d9 55%, #4c1d95 100%); }
+        .arena[data-mundo="3"] { background: linear-gradient(#1e293b 0%, #334155 55%, #3f6212 55%, #1a2e05 100%); }
+        .arena[data-mundo="4"] { background: radial-gradient(circle at 20% 20%, #312e81, #0f172a 70%); }
+        .arena[data-mundo="5"] { background: linear-gradient(#67e8f9 0%, #0891b2 60%, #164e63 100%); }
+        .decor { position: absolute; font-size: 2rem; opacity: 0.9; pointer-events: none; }
+        .heroe { position: absolute; left: 50%; bottom: 0.75rem; transform: translateX(-50%); font-size: 3.5rem; line-height: 1; filter: drop-shadow(0 4px 4px rgba(0,0,0,.25)); }
+        .heroe .varita { position: absolute; right: -0.6rem; top: 0.2rem; font-size: 1.6rem; }
+        .heroe.golpeado { animation: golpe 0.4s ease; }
+        @keyframes golpe { 0%,100% { transform: translateX(-50%); } 25% { transform: translateX(-62%); } 75% { transform: translateX(-38%); } }
+        .enemigo { position: absolute; transform: translate(-50%, 0); display: flex; flex-direction: column; align-items: center; gap: 0.15rem; transition: opacity .25s, transform .25s; }
+        .enemigo .cara { font-size: 2.6rem; line-height: 1; filter: drop-shadow(0 3px 3px rgba(0,0,0,.3)); }
+        .enemigo.jefe .cara { font-size: 4.5rem; }
+        .enemigo .corona { font-size: 1.6rem; line-height: 1; margin-bottom: -0.6rem; position: relative; z-index: 1; }
+        .enemigo .op { background: #fff; color: #111827; font-weight: 800; font-size: 1.1rem; padding: 0.1rem 0.5rem; border-radius: 0.75rem; border: 3px solid #4338ca; white-space: nowrap; box-shadow: 0 2px 0 rgba(0,0,0,.2); }
+        .enemigo.objetivo .op { border-color: #dc2626; background: #fef9c3; }
+        .enemigo .vida { height: 0.4rem; width: 4rem; background: #fecaca; border-radius: 1rem; overflow: hidden; }
+        .enemigo .vida > span { display: block; height: 100%; background: #dc2626; }
+        .enemigo.vencido { opacity: 0; transform: translate(-50%, -1rem) scale(1.4); }
+        .rayo { position: absolute; height: 0.35rem; background: linear-gradient(90deg, #fde047, #f0abfc); border-radius: 1rem; transform-origin: 0 50%; box-shadow: 0 0 12px #fde047; pointer-events: none; }
+        .puntos-flotan { position: absolute; font-weight: 800; color: #facc15; text-shadow: 0 2px 2px rgba(0,0,0,.5); pointer-events: none; animation: flotar 0.9s ease forwards; }
+        @keyframes flotar { to { transform: translateY(-2.5rem); opacity: 0; } }
+        .reduce-motion .heroe.golpeado, .reduce-motion .puntos-flotan { animation: none; }
+
         .bubble-font {
             font-family: 'Fredoka One', 'Quicksand', system-ui, sans-serif;
         }
@@ -346,6 +374,15 @@
             
             <div id="grid-tablas-container" class="grid grid-cols-3 gap-3 md:gap-4 max-w-lg mx-auto">
                 <!-- Los botones se insertarán dinámicamente aquí -->
+            </div>
+
+            <!-- La Aventura: un animalito con su varita contra enemigos que traen
+                 operaciones, mundo tras mundo. -->
+            <div class="max-w-lg mx-auto">
+                <button type="button" onclick="mostrarAventura()" class="w-full bubble-font bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 hover:from-indigo-700 hover:via-violet-700 hover:to-fuchsia-700 text-white py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 text-xl flex flex-col items-center gap-1">
+                    <span><span aria-hidden="true">🐾</span> La Aventura</span>
+                    <span id="aventura-menu-resumen" class="text-xs font-sans font-semibold">Vence a los enemigos con tu varita mágica</span>
+                </button>
             </div>
 
             <!-- Botón Desafío Mezclado -->
@@ -669,6 +706,69 @@
             </div>
         </div>
 
+        <!-- ================= PANTALLA 12: LA AVENTURA (MAPA) ================= -->
+        <div id="screen-aventura" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-3xl text-indigo-800"><span aria-hidden="true">🐾</span> La Aventura</h2>
+                <p class="text-gray-700 text-sm max-w-md mx-auto">Los enemigos traen operaciones. Escribe o elige la respuesta y tu varita los vence. Supera cada nivel y al jefe para pasar al siguiente mundo.</p>
+                <p id="aventura-resumen" class="font-bold text-indigo-900"></p>
+            </div>
+            <fieldset class="max-w-md mx-auto">
+                <legend class="block text-gray-700 font-bold text-center w-full mb-1">Tu héroe</legend>
+                <div class="elegir-heroe grid grid-cols-4 sm:grid-cols-8 gap-1" data-nombre="heroe"></div>
+            </fieldset>
+            <ol id="aventura-mundos" class="space-y-3" aria-label="Mundos de la aventura"></ol>
+            <div class="text-center">
+                <button type="button" id="btn-compartir" onclick="compartirPuntaje()" class="bubble-font bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-700 hover:to-fuchsia-700 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition">
+                    <span aria-hidden="true">📤</span> Compartir mi puntaje
+                </button>
+                <p id="aviso-compartir" role="status" aria-live="polite" class="min-h-5 text-sm font-bold text-green-800 mt-2"></p>
+            </div>
+        </div>
+
+        <!-- ================= PANTALLA 13: LA AVENTURA (NIVEL) ================= -->
+        <div id="screen-aventura-juego" class="hidden space-y-3">
+            <div class="flex flex-wrap justify-between items-center gap-2 bg-gray-50 rounded-2xl p-2 border border-gray-100">
+                <button type="button" onclick="salirDeNivel()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                    <span aria-hidden="true">⬅</span> Mapa <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+                <h2 data-foco id="nivel-titulo" class="bubble-font text-lg text-indigo-900"></h2>
+                <div class="flex items-center gap-3 font-bold">
+                    <span id="nivel-corazones" class="text-xl" role="img"></span>
+                    <span class="bg-yellow-100 text-yellow-900 px-3 py-1 rounded-full"><span aria-hidden="true">⭐</span> <span class="sr-only">Puntos:</span> <span id="nivel-puntos">0</span></span>
+                </div>
+            </div>
+            <div id="arena" class="arena" data-mundo="0">
+                <div id="arena-decor" aria-hidden="true"></div>
+                <div id="heroe" class="heroe" aria-hidden="true"><span id="heroe-cara">🐱</span><span class="varita">✨</span></div>
+                <div id="arena-fin" class="hidden absolute inset-0 bg-white/90 flex flex-col items-center justify-center gap-3 text-center p-4 z-10">
+                    <p id="fin-titulo" class="bubble-font text-3xl text-indigo-900"></p>
+                    <p id="fin-estrellas" class="text-3xl"></p>
+                    <p id="fin-texto" class="font-bold text-gray-800"></p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button type="button" id="btn-fin-siguiente" onclick="siguienteNivel()" class="bubble-font bg-green-700 hover:bg-green-800 text-white text-lg px-5 py-2 rounded-2xl shadow-md">Siguiente nivel <span aria-hidden="true">→</span></button>
+                        <button type="button" id="btn-fin-otra" onclick="reintentarNivel()" class="bubble-font bg-indigo-600 hover:bg-indigo-700 text-white text-lg px-5 py-2 rounded-2xl shadow-md">¡Otra vez!</button>
+                        <button type="button" onclick="salirDeNivel()" class="bubble-font bg-white border-2 border-gray-300 text-gray-800 text-lg px-5 py-2 rounded-2xl shadow-sm">Mapa</button>
+                    </div>
+                </div>
+            </div>
+            <p id="aventura-objetivo" class="text-center font-bold text-indigo-900 min-h-6" aria-live="polite"></p>
+            <p id="aventura-mensaje" role="status" class="text-center text-sm font-bold text-amber-900 min-h-5"></p>
+            <div class="max-w-sm mx-auto space-y-2">
+                <div class="flex items-center gap-2">
+                    <output id="aventura-escrito" aria-label="Tu respuesta" class="flex-1 block min-h-14 bg-white border-4 border-indigo-300 rounded-2xl text-center text-3xl font-bold text-gray-800 py-1 tabular-nums"></output>
+                    <button type="button" id="btn-modo-aventura" onclick="cambiarModoAventura()" class="text-sm font-bold text-indigo-800 underline whitespace-nowrap"></button>
+                </div>
+                <div id="aventura-teclado" role="group" aria-label="Teclado de números" class="grid grid-cols-4 gap-2"></div>
+                <div id="aventura-opciones" class="hidden grid grid-cols-2 gap-2"></div>
+            </div>
+        </div>
+
         <!-- ================= PANTALLA 11: ELEGIR QUÉ FRACCIONES PRACTICAR ================= -->
         <!-- Con todo mezclado, cada clase sale una o dos veces por partida: para
              practicar de verdad una (sumar con distinto denominador, por
@@ -832,7 +932,7 @@
         // semanas de práctica de su hermano.
         const PREFIJO = "jardin:";
         const GLOBALES = new Set(["ajustes", "perfiles", "perfil"]);
-        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros"];
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura"];
         let perfilActual = "p1";
 
         const almacen = {
@@ -1426,6 +1526,7 @@
             cargarMisiones();
             cargarDescubiertas();
             otros = limpiarOtros(almacen.leer("otros"));
+            cargarAventura();
             actualizarEstrellas();
             aplicarMundo();
             document.getElementById("display-name").innerText =
@@ -1946,6 +2047,12 @@
                 });
 
                 const piezas = [titulo, resumen, cuestaP, diasP, semana];
+                const av = aventuraDePerfil(perfil.id);
+                if (puntajeAventura(av) > 0) {
+                    const m = Math.floor(av.alcanzado / NIVELES_POR_MUNDO);
+                    piezas.push(parrafo("adulto-aventura text-gray-800",
+                        `La Aventura: ${puntajeAventura(av)} puntos, ${estrellasAventura(av)} estrellas; va en el mundo ${m + 1} (${AVENTURA_MUNDOS[m].retos.toLowerCase()}).`));
+                }
                 for (const [prefijo, nombre, clase] of [["fraccion:", "Fracciones", "adulto-fracciones"], ["logica:", "Retos de lógica", "adulto-retos"]]) {
                     const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
                     if (filas.length === 0) continue;
@@ -2006,18 +2113,20 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones"];
+        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
         let pantallaActual = "screen-welcome";
 
         function mostrarPantalla(id) {
             PANTALLAS.forEach((p) => document.getElementById(p).classList.toggle("hidden", p !== id));
             if (id === "screen-welcome") pintarBienvenida();
             if (id === "screen-selector") {
+                actualizarResumenMenuAventura();
                 actualizarBotonesFalta();
                 actualizarCuentaFlores();
                 actualizarEstrellas();
                 actualizarMision();
             }
+            if (id !== "screen-aventura-juego") detenerAventura();   // el nivel no sigue de fondo
             pantallaActual = id;
             aplicarMundo();
             const destino = document.querySelector(`#${id} [data-foco]`);
@@ -2127,7 +2236,7 @@
                 return;
             }
 
-            if (["screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones"].includes(pantallaActual) && evento.key === "Escape") {
+            if (["screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura"].includes(pantallaActual) && evento.key === "Escape") {
                 evento.preventDefault();
                 backToSelector();
                 return;
@@ -2138,6 +2247,16 @@
             if (pantallaActual === "screen-descubrir" && evento.key === " " && evento.target.tagName !== "BUTTON") {
                 evento.preventDefault();
                 otraFila();
+                return;
+            }
+
+            if (pantallaActual === "screen-aventura-juego") {
+                if (evento.key === "Escape") { evento.preventDefault(); salirDeNivel(); return; }
+                if (!aventura.terminado && aventura.modo === "teclear") {
+                    if (/^[0-9]$/.test(evento.key)) { evento.preventDefault(); teclearAventura(Number(evento.key)); return; }
+                    if (evento.key === "Backspace") { evento.preventDefault(); borrarAventura(); return; }
+                    if (evento.key === "Enter" && evento.target.tagName !== "BUTTON") { evento.preventDefault(); lanzarAventura(); return; }
+                }
                 return;
             }
 
@@ -4509,6 +4628,625 @@
             const d = aciertosPorOp["÷"];
             const de = (n, que) => `${n} ${n === 1 ? "problema" : "problemas"} de ${que}`;
             return `Resolviste ${de(m, "multiplicar")} y ${de(d, "dividir")}. Lo dificil era saber cuál tocaba, ¡y lo supiste!`;
+        }
+
+        // --- LA AVENTURA ---
+        //
+        // Un animalito con su varita, y enemigos que entran por los bordes
+        // trayendo una operación. Al dar la respuesta (escrita o elegida), la
+        // varita los vence; si uno llega hasta el héroe, se pierde un corazón
+        // y se ve la respuesta, y esa operación vuelve más tarde. Seis mundos,
+        // de menos a más difícil, con tres niveles y un jefe cada uno.
+        //
+        // No cuenta para el mapa ni el jardín: se responde con prisa, y eso
+        // no mide la memoria como «escrita en 6 segundos». Sí se guarda el
+        // avance de cada jugador: estrellas, mejor puntaje por nivel y hasta
+        // dónde llegó. Y se puede compartir una imagen con el puntaje.
+        const HEROES = [
+            { emoji: "🐱", nombre: "gatito" }, { emoji: "🐶", nombre: "perrito" }, { emoji: "🐰", nombre: "conejito" },
+            { emoji: "🦊", nombre: "zorrito" }, { emoji: "🐼", nombre: "panda" }, { emoji: "🐸", nombre: "ranita" },
+            { emoji: "🐯", nombre: "tigrito" }, { emoji: "🐨", nombre: "koala" },
+        ];
+        const AVENTURA_MUNDOS = [
+            { nombre: "El huerto de los brócolis", enemigo: "🥦", plural: "brócolis", retos: "Tablas del 2, del 5 y del 10", decor: ["🌻", "🌽", "🌳"], cruce: 16, tablas: [2, 5, 10] },
+            { nombre: "El bosque de los monstruos", enemigo: "👾", plural: "monstruos", retos: "Tablas del 3, del 4 y del 6", decor: ["🌲", "🍄", "🌲"], cruce: 15, tablas: [3, 4, 6] },
+            { nombre: "El castillo de los fantasmas", enemigo: "👻", plural: "fantasmas", retos: "Tablas del 7, del 8 y del 9", decor: ["🏰", "🦇", "🌙"], cruce: 15, tablas: [7, 8, 9] },
+            { nombre: "La noche de los zombis", enemigo: "🧟", plural: "zombis", retos: "Todas las tablas, más rápido", decor: ["🌕", "🦉", "🌑"], cruce: 12, tablas: [2, 3, 4, 5, 6, 7, 8, 9] },
+            { nombre: "El espacio de los aliens", enemigo: "👽", plural: "aliens", retos: "Dividir", decor: ["🌍", "⭐", "🚀"], cruce: 15, tipo: "div" },
+            { nombre: "El mar de las criaturas", enemigo: "🐙", plural: "criaturas", retos: "Fracciones de un número", decor: ["🐚", "🐠", "🌊"], cruce: 17, tipo: "fraccion" },
+        ];
+        const NIVELES_POR_MUNDO = 4;   // tres niveles y el jefe
+        const CORAZONES = 3;
+        const JEFE_VIDA = 6;
+
+        let aventuraGuardada = { heroe: "🐱", alcanzado: 0, estrellas: {}, mejores: {} };
+        // Estado del nivel en curso. `manual`: sin bucle de animación (pruebas).
+        const aventura = { activo: false, manual: false, mundo: 0, nivel: 0, enemigos: [], pendientes: [], porSalir: 0,
+            corazones: CORAZONES, puntos: 0, racha: 0, escrito: "", siguienteId: 1, hastaAparecer: 0, raf: null, ultimo: 0,
+            terminado: false, modo: "teclear" };
+
+        const claveNivel = (m, n) => `${m}-${n}`;
+        const indiceNivel = (m, n) => m * NIVELES_POR_MUNDO + n;
+
+        function cargarAventura() {
+            let g = null;
+            try { g = JSON.parse(almacen.leer("aventura") || "null"); } catch (e) { g = null; }
+            const total = AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO;
+            const limpio = { heroe: "🐱", alcanzado: 0, estrellas: {}, mejores: {}, modo: "teclear" };
+            if (g && typeof g === "object") {
+                if (HEROES.some((h) => h.emoji === g.heroe)) limpio.heroe = g.heroe;
+                if (Number.isInteger(g.alcanzado)) limpio.alcanzado = Math.max(0, Math.min(total - 1, g.alcanzado));
+                if (g.modo === "elegir") limpio.modo = "elegir";
+                for (const campo of ["estrellas", "mejores"]) {
+                    if (!g[campo] || typeof g[campo] !== "object") continue;
+                    for (const [k, v] of Object.entries(g[campo])) {
+                        const [m, n] = k.split("-").map(Number);
+                        const tope = campo === "estrellas" ? 3 : 1e6;
+                        if (Number.isInteger(m) && Number.isInteger(n) && m >= 0 && m < AVENTURA_MUNDOS.length && n >= 0 && n < NIVELES_POR_MUNDO &&
+                            Number.isInteger(v) && v >= 0 && v <= tope) limpio[campo][k] = v;
+                    }
+                }
+            }
+            aventuraGuardada = limpio;
+            aventura.modo = limpio.modo;
+        }
+
+        /** La aventura de otro jardín, sin cargarlo (vista para adultos). */
+        function aventuraDePerfil(id) {
+            if (id === perfilActual) return aventuraGuardada;
+            const antes = aventuraGuardada;
+            const leer = almacen.leer;
+            try {
+                almacen.leer = (clave) => almacen.leerDe(id, clave);
+                cargarAventura();
+                return aventuraGuardada;
+            } finally {
+                almacen.leer = leer;
+                aventuraGuardada = antes;
+                aventura.modo = antes.modo || "teclear";
+            }
+        }
+
+        function guardarAventura() {
+            aventuraGuardada.modo = aventura.modo;
+            almacen.guardar("aventura", JSON.stringify(aventuraGuardada));
+        }
+
+        /** Puntaje total: la suma de los mejores de cada nivel. */
+        function puntajeAventura(g = aventuraGuardada) {
+            return Object.values(g.mejores).reduce((a, b) => a + b, 0);
+        }
+
+        const estrellasAventura = (g = aventuraGuardada) => Object.values(g.estrellas).reduce((a, b) => a + b, 0);
+        const nombreNivel = (n) => (n === NIVELES_POR_MUNDO - 1 ? "Jefe" : `Nivel ${n + 1}`);
+
+        function mostrarAventura() {
+            cancelarEspera();
+            callarVoz();
+            detenerAventura();
+            pintarAventura();
+            mostrarPantalla("screen-aventura");
+        }
+
+        function pintarAventura() {
+            const g = aventuraGuardada;
+            const m = Math.floor(g.alcanzado / NIVELES_POR_MUNDO);
+            document.getElementById("aventura-resumen").textContent =
+                `Puntaje: ${puntajeAventura()} · Estrellas: ${estrellasAventura()} de ${AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO * 3} · Vas en el mundo ${m + 1}`;
+            pintarFichas(document.querySelector("#screen-aventura .elegir-heroe"),
+                HEROES.map((h) => ({ valor: h.emoji, emoji: h.emoji, texto: { visible: false, valor: h.nombre } })), g.heroe);
+            document.querySelectorAll('#screen-aventura input[name="heroe"]').forEach((i) => {
+                i.addEventListener("change", () => { aventuraGuardada.heroe = i.value; guardarAventura(); });
+            });
+            const lista = document.getElementById("aventura-mundos");
+            lista.replaceChildren(...AVENTURA_MUNDOS.map((mundo, mi) => {
+                const li = document.createElement("li");
+                const abierto = indiceNivel(mi, 0) <= g.alcanzado;
+                li.className = `mundo-aventura rounded-2xl border-2 p-3 ${abierto ? "bg-white border-indigo-200" : "bg-gray-100 border-gray-200"}`;
+                li.dataset.mundo = String(mi);
+                const titulo = document.createElement("h3");
+                titulo.className = "font-bold text-indigo-900 flex items-center gap-2";
+                titulo.innerHTML = `<span aria-hidden="true" class="text-2xl">${abierto ? mundo.enemigo : "🔒"}</span>`;
+                const t = document.createElement("span");
+                t.textContent = `${mi + 1}. ${mundo.nombre}`;
+                titulo.appendChild(t);
+                const retos = document.createElement("p");
+                retos.className = "text-sm text-gray-700";
+                retos.textContent = abierto ? mundo.retos : `${mundo.retos} · Se abre al vencer al jefe del mundo ${mi}`;
+                const niveles = document.createElement("div");
+                niveles.className = "grid grid-cols-4 gap-2 mt-2";
+                for (let n = 0; n < NIVELES_POR_MUNDO; n++) {
+                    const b = document.createElement("button");
+                    b.type = "button";
+                    const disponible = indiceNivel(mi, n) <= g.alcanzado;
+                    const est = g.estrellas[claveNivel(mi, n)] || 0;
+                    b.disabled = !disponible;
+                    b.dataset.nivel = claveNivel(mi, n);
+                    b.className = "btn-nivel rounded-xl border-2 py-2 text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed " +
+                        (disponible ? "bg-indigo-50 hover:bg-indigo-100 border-indigo-300 text-indigo-900" : "bg-gray-50 border-gray-200 text-gray-700");
+                    b.innerHTML = `<span>${n === NIVELES_POR_MUNDO - 1 ? "👑 Jefe" : n + 1}</span><span class="block text-xs" aria-hidden="true">${disponible ? "★".repeat(est) + "☆".repeat(3 - est) : "🔒"}</span>`;
+                    b.setAttribute("aria-label", `${mundo.nombre}, ${nombreNivel(n)}: ${disponible ? `${est} de 3 estrellas` : "cerrado"}`);
+                    b.onclick = () => empezarNivel(mi, n);
+                    niveles.appendChild(b);
+                }
+                li.append(titulo, retos, niveles);
+                return li;
+            }));
+            actualizarResumenMenuAventura();
+        }
+
+        function actualizarResumenMenuAventura() {
+            const el = document.getElementById("aventura-menu-resumen");
+            if (!el) return;
+            const pts = puntajeAventura();
+            el.textContent = pts > 0
+                ? `Puntaje: ${pts} · Mundo ${Math.floor(aventuraGuardada.alcanzado / NIVELES_POR_MUNDO) + 1} de ${AVENTURA_MUNDOS.length}`
+                : "Vence a los enemigos con tu varita mágica";
+        }
+
+        // --- Las operaciones de cada mundo ---
+        function operacionAventura(mi) {
+            const mundo = AVENTURA_MUNDOS[mi];
+            if (mundo.tipo === "div") {
+                const d = entre(2, 9), q = entre(1, 10);
+                return { texto: `${d * q} ÷ ${d}`, voz: `${d * q} entre ${d}`, respuesta: q, a: d, b: q };
+            }
+            if (mundo.tipo === "fraccion") {
+                const d = entre(2, 6), k = entre(2, 9), m = entre(1, d - 1);
+                return { texto: `${m}/${d} de ${d * k}`, voz: `${nombreFraccion(m, d)} de ${d * k}`, respuesta: m * k, a: d, b: k, m };
+            }
+            const a = azar(mundo.tablas), b = entre(1, 10);
+            const [x, y] = Math.random() < 0.5 ? [a, b] : [b, a];
+            return { texto: `${x} × ${y}`, voz: `${x} por ${y}`, respuesta: x * y, a: x, b: y };
+        }
+
+        /** Qué tan difícil es el nivel: cuántos enemigos, cuántos a la vez y qué tan rápido. */
+        function configNivel(mi, n) {
+            const base = AVENTURA_MUNDOS[mi].cruce;
+            if (n === NIVELES_POR_MUNDO - 1) return { enemigos: 4, simultaneos: 2, cruce: base * 0.9, jefe: true };
+            return { enemigos: 6 + 2 * n, simultaneos: n === 0 ? 2 : 3, cruce: base * (1 - 0.12 * n), jefe: false };
+        }
+
+        function empezarNivel(mi, n) {
+            if (indiceNivel(mi, n) > aventuraGuardada.alcanzado) return;
+            initAudio();
+            detenerAventura();
+            const c = configNivel(mi, n);
+            mensajeAventura("");
+            aventura.objetivoId = null;
+            Object.assign(aventura, {
+                activo: true, mundo: mi, nivel: n, enemigos: [], pendientes: [], porSalir: c.enemigos + (c.jefe ? 1 : 0),
+                corazones: CORAZONES, puntos: 0, racha: 0, escrito: "", hastaAparecer: 0, terminado: false, jefeSalio: false, config: c,
+            });
+            const arena = document.getElementById("arena");
+            arena.dataset.mundo = String(mi);
+            arena.querySelectorAll(".enemigo, .rayo, .puntos-flotan").forEach((e) => e.remove());
+            document.getElementById("arena-fin").classList.add("hidden");
+            pintarDecor(mi);
+            document.getElementById("heroe-cara").textContent = aventuraGuardada.heroe;
+            document.getElementById("nivel-titulo").textContent = `${AVENTURA_MUNDOS[mi].nombre} · ${nombreNivel(n)}`;
+            construirTecladoAventura();
+            pintarModoAventura();
+            pintarMarcador();
+            mostrarPantalla("screen-aventura-juego");
+            aparecerEnemigo();
+            if (!aventura.manual) {
+                aventura.ultimo = performance.now();
+                aventura.raf = requestAnimationFrame(bucleAventura);
+            }
+        }
+
+        function pintarDecor(mi) {
+            const decor = document.getElementById("arena-decor");
+            const lugares = [[8, 62], [26, 70], [72, 66], [90, 60], [50, 8], [15, 10], [85, 12]];
+            decor.replaceChildren(...lugares.map(([x, y], i) => {
+                const s = document.createElement("span");
+                s.className = "decor";
+                s.style.left = `${x}%`;
+                s.style.top = `${y}%`;
+                s.textContent = AVENTURA_MUNDOS[mi].decor[i % 3];
+                return s;
+            }));
+        }
+
+        function detenerAventura() {
+            aventura.activo = false;
+            if (aventura.raf) cancelAnimationFrame(aventura.raf);
+            aventura.raf = null;
+        }
+
+        function bucleAventura(t) {
+            if (!aventura.activo) return;
+            const dt = Math.min(100, t - aventura.ultimo);   // al volver de otra pestaña, sin saltos
+            aventura.ultimo = t;
+            if (!document.hidden) aventuraPaso(dt);
+            if (aventura.activo) aventura.raf = requestAnimationFrame(bucleAventura);
+        }
+
+        /** Avanza el nivel `dt` milisegundos: mueve enemigos, los hace aparecer y revisa choques. */
+        function aventuraPaso(dt) {
+            if (!aventura.activo || aventura.terminado) return;
+            const c = aventura.config;
+            for (const e of [...aventura.enemigos]) {
+                const velocidad = 0.5 / ((e.jefe ? c.cruce * 1.6 : c.cruce) * 1000);   // de la orilla al centro en `cruce` s
+                e.x += (e.lado === "izq" ? 1 : -1) * velocidad * dt;
+                if (Math.abs(e.x - 0.5) < 0.07) enemigoLlega(e);
+                else colocarEnemigo(e);
+            }
+            aventura.hastaAparecer -= dt;
+            const vivos = aventura.enemigos.length;
+            if (aventura.hastaAparecer <= 0 && vivos < c.simultaneos && (aventura.porSalir > 0 || aventura.pendientes.length)) {
+                aparecerEnemigo();
+            }
+            marcarObjetivo();
+        }
+
+        function aparecerEnemigo() {
+            const c = aventura.config;
+            const quedanNormales = aventura.porSalir - (c.jefe && !aventura.jefeSalio ? 1 : 0);
+            // El jefe sale cuando ya no quedan enemigos normales por salir.
+            const esJefe = c.jefe && !aventura.jefeSalio && quedanNormales <= 0 && aventura.enemigos.length === 0;
+            if (!esJefe && quedanNormales <= 0 && aventura.pendientes.length === 0) return;
+            // Lo que llegó al héroe vuelve tras dos enemigos más (o ya, si no
+            // queda ningún otro por salir).
+            aventura.pendientes.forEach((p) => { p.turnos--; });
+            let i = esJefe ? -1 : aventura.pendientes.findIndex((p) => p.turnos <= 0);
+            if (!esJefe && i === -1 && quedanNormales <= 0 && aventura.pendientes.length) i = 0;
+            let op = i >= 0 ? aventura.pendientes.splice(i, 1)[0].op : null;
+            const dePendientes = Boolean(op);
+            if (!dePendientes && !esJefe && quedanNormales <= 0) return;
+            // Respuestas distintas a las de los enemigos en pantalla: así una
+            // respuesta escrita vence a uno solo y no hay que adivinar a cuál.
+            for (let intento = 0; !op || aventura.enemigos.some((e) => e.op.respuesta === op.respuesta); intento++) {
+                op = operacionAventura(aventura.mundo);
+                if (intento > 30) break;
+            }
+            const e = {
+                id: aventura.siguienteId++, op, lado: Math.random() < 0.5 ? "izq" : "der",
+                y: esJefe ? 18 : entre(8, 48), jefe: esJefe, vida: esJefe ? JEFE_VIDA : 1,
+            };
+            // Entran ya dentro de la arena: medio cortados, no se leería la operación.
+            const orilla = esJefe ? 0.15 : 0.09;
+            e.x = e.lado === "izq" ? orilla : 1 - orilla;
+            if (esJefe) aventura.jefeSalio = true;
+            if (!dePendientes) aventura.porSalir--;
+            const el = document.createElement("div");
+            el.className = `enemigo${esJefe ? " jefe" : ""}`;
+            el.dataset.id = String(e.id);
+            el.setAttribute("aria-hidden", "true");
+            el.innerHTML = `${esJefe ? '<span class="vida"><span style="width:100%"></span></span>' : ""}<span class="op"></span>${esJefe ? '<span class="corona">👑</span>' : ""}<span class="cara"></span>`;
+            el.querySelector(".cara").textContent = AVENTURA_MUNDOS[aventura.mundo].enemigo;
+            el.querySelector(".op").textContent = op.texto;
+            e.el = el;
+            document.getElementById("arena").appendChild(el);
+            aventura.enemigos.push(e);
+            colocarEnemigo(e);
+            aventura.hastaAparecer = (aventura.config.cruce / 2.6) * 1000;
+            marcarObjetivo();
+        }
+
+        function colocarEnemigo(e) {
+            e.el.style.left = `${e.x * 100}%`;
+            e.el.style.top = `${e.y}%`;
+        }
+
+        /** El más cercano al héroe: al que apuntan las opciones y el lector de pantalla. */
+        function enemigoObjetivo() {
+            return aventura.enemigos.reduce((m, e) => (!m || Math.abs(e.x - 0.5) < Math.abs(m.x - 0.5) ? e : m), null);
+        }
+
+        function marcarObjetivo() {
+            const obj = enemigoObjetivo();
+            aventura.enemigos.forEach((e) => e.el.classList.toggle("objetivo", e === obj));
+            const clave = obj ? `${obj.id}-${obj.op.texto}` : "";
+            if (aventura.objetivoId === clave) return;
+            // Cambió el enemigo más cercano (o la pregunta del jefe): se dice
+            // y se cambian las opciones. No antes: no se mueven bajo el dedo.
+            aventura.objetivoId = clave;
+            document.getElementById("aventura-objetivo").textContent = obj ? `${obj.jefe ? "El jefe" : "Más cerca"}: ${obj.op.texto}` : "";
+            pintarOpcionesAventura();
+        }
+
+        function enemigoLlega(e) {
+            aventura.corazones--;
+            aventura.racha = 0;
+            mensajeAventura(`¡Uy! ${e.op.texto} = ${e.op.respuesta}`);
+            if (e.jefe) {
+                // El jefe no se va: retrocede y sigue.
+                e.x = e.lado === "izq" ? 0.15 : 0.85;
+                colocarEnemigo(e);
+            } else {
+                // La respuesta se ve, y la operación vuelve más tarde en el nivel.
+                quitarEnemigo(e, false);
+                aventura.pendientes.push({ op: e.op, turnos: 3 });   // sale en la tercera aparición: tras dos enemigos
+            }
+            const heroe = document.getElementById("heroe");
+            heroe.classList.remove("golpeado");
+            void heroe.offsetWidth;
+            heroe.classList.add("golpeado");
+            playIncorrectSound();
+            pintarMarcador();
+            if (aventura.corazones <= 0) terminarNivel(false);
+        }
+
+        function quitarEnemigo(e, vencido) {
+            aventura.enemigos = aventura.enemigos.filter((x) => x !== e);
+            if (vencido) {
+                e.el.classList.add("vencido");
+                setTimeout(() => e.el.remove(), 260);
+            } else {
+                e.el.remove();
+            }
+        }
+
+        /** Una respuesta: vence al enemigo que la lleva, si hay uno. */
+        function responderAventura(valor, soloA = null) {
+            if (!aventura.activo || aventura.terminado) return false;
+            const candidatos = aventura.enemigos.filter((e) => e.op.respuesta === valor && (!soloA || e === soloA));
+            aventura.escrito = "";
+            pintarEscritoAventura();
+            if (candidatos.length === 0) {
+                aventura.racha = 0;
+                const out = document.getElementById("aventura-escrito");
+                out.classList.add("border-red-600");
+                setTimeout(() => out.classList.remove("border-red-600"), 400);
+                playIncorrectSound();
+                const obj = soloA || enemigoObjetivo();
+                mensajeAventura(obj ? `${valor} no vence a ningún enemigo. Mira: ${obj.op.texto}` : `${valor} no vence a ningún enemigo.`);
+                return false;
+            }
+            const e = candidatos.reduce((m, x) => (Math.abs(x.x - 0.5) < Math.abs(m.x - 0.5) ? x : m));
+            lanzarRayo(e);
+            aventura.racha++;
+            // Más puntos si estaba lejos (se respondió rápido) y por racha.
+            const lejos = Math.min(1, Math.abs(e.x - 0.5) / 0.48);
+            const pts = (e.jefe ? 20 : 10) + Math.round(10 * lejos) + (aventura.racha >= 3 ? 5 : 0);
+            aventura.puntos += pts;
+            flotarPuntos(e, pts);
+            playCorrectSound();
+            if (e.jefe && e.vida > 1) {
+                e.vida--;
+                e.op = operacionAventura(aventura.mundo);
+                e.el.querySelector(".op").textContent = e.op.texto;
+                e.el.querySelector(".vida > span").style.width = `${(e.vida / JEFE_VIDA) * 100}%`;
+                e.x += (e.lado === "izq" ? -1 : 1) * 0.08;   // retrocede con el golpe
+                e.x = Math.max(0.15, Math.min(0.85, e.x));
+                colocarEnemigo(e);
+            } else {
+                quitarEnemigo(e, true);
+            }
+            mensajeAventura(e.jefe && aventura.enemigos.includes(e) ? `¡Golpe al jefe! Le quedan ${e.vida}.` : "¡Bien!");
+            pintarMarcador();
+            marcarObjetivo();
+            if (aventura.enemigos.length === 0 && aventura.porSalir <= 0 && aventura.pendientes.length === 0) terminarNivel(true);
+            else if (aventura.enemigos.length === 0) aventura.hastaAparecer = Math.min(aventura.hastaAparecer, 600);
+            return true;
+        }
+
+        function mensajeAventura(texto) {
+            document.getElementById("aventura-mensaje").textContent = texto;
+        }
+
+        function lanzarRayo(e) {
+            if (calmaEfectiva()) return;
+            const arena = document.getElementById("arena");
+            const caja = arena.getBoundingClientRect();
+            const heroe = document.getElementById("heroe").getBoundingClientRect();
+            const destino = e.el.getBoundingClientRect();
+            const x1 = heroe.left + heroe.width / 2 - caja.left, y1 = heroe.top - caja.top + 10;
+            const x2 = destino.left + destino.width / 2 - caja.left, y2 = destino.top + destino.height / 2 - caja.top;
+            const rayo = document.createElement("div");
+            rayo.className = "rayo";
+            rayo.style.left = `${x1}px`;
+            rayo.style.top = `${y1}px`;
+            rayo.style.width = `${Math.hypot(x2 - x1, y2 - y1)}px`;
+            rayo.style.transform = `rotate(${Math.atan2(y2 - y1, x2 - x1)}rad)`;
+            arena.appendChild(rayo);
+            setTimeout(() => rayo.remove(), 250);
+        }
+
+        function flotarPuntos(e, pts) {
+            const s = document.createElement("span");
+            s.className = "puntos-flotan";
+            s.style.left = e.el.style.left;
+            s.style.top = e.el.style.top;
+            s.textContent = `+${pts}`;
+            document.getElementById("arena").appendChild(s);
+            setTimeout(() => s.remove(), 900);
+        }
+
+        function pintarMarcador() {
+            const c = document.getElementById("nivel-corazones");
+            c.textContent = "❤️".repeat(Math.max(0, aventura.corazones)) + "🤍".repeat(CORAZONES - Math.max(0, aventura.corazones));
+            c.setAttribute("aria-label", `${Math.max(0, aventura.corazones)} de ${CORAZONES} corazones`);
+            document.getElementById("nivel-puntos").textContent = String(aventura.puntos);
+        }
+
+        // --- Responder: teclear o elegir ---
+        function construirTecladoAventura() {
+            const t = document.getElementById("aventura-teclado");
+            if (t.childElementCount) return;
+            const clase = "bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 py-2 text-2xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150";
+            const teclas = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "✨"];
+            teclas.forEach((k) => {
+                const b = document.createElement("button");
+                b.type = "button";
+                b.className = k === "✨" ? "bg-indigo-600 hover:bg-indigo-700 active:scale-95 py-2 text-lg font-bold rounded-2xl shadow-md text-white transition" : clase;
+                if (/\d/.test(k)) { b.dataset.digito = k; b.textContent = k; b.onclick = () => teclearAventura(Number(k)); }
+                if (k === "⌫") { b.id = "aventura-borrar"; b.setAttribute("aria-label", "Borrar"); b.innerHTML = '<span aria-hidden="true">⌫</span>'; b.onclick = borrarAventura; }
+                if (k === "✨") { b.id = "aventura-lanzar"; b.innerHTML = '<span aria-hidden="true">✨</span> ¡Lanzar!'; b.onclick = lanzarAventura; }
+                t.appendChild(b);
+            });
+        }
+
+        function teclearAventura(d) {
+            if (!aventura.activo || aventura.terminado || aventura.escrito.length >= 3) return;
+            aventura.escrito = aventura.escrito === "0" ? String(d) : aventura.escrito + d;
+            pintarEscritoAventura();
+        }
+
+        function borrarAventura() {
+            aventura.escrito = aventura.escrito.slice(0, -1);
+            pintarEscritoAventura();
+        }
+
+        function lanzarAventura() {
+            if (aventura.escrito === "") return;
+            responderAventura(Number(aventura.escrito));
+        }
+
+        function pintarEscritoAventura() {
+            document.getElementById("aventura-escrito").textContent = aventura.escrito;
+        }
+
+        function cambiarModoAventura() {
+            aventura.modo = aventura.modo === "teclear" ? "elegir" : "teclear";
+            guardarAventura();
+            pintarModoAventura();
+        }
+
+        function pintarModoAventura() {
+            const elegir = aventura.modo === "elegir";
+            document.getElementById("aventura-teclado").classList.toggle("hidden", elegir);
+            document.getElementById("aventura-escrito").classList.toggle("hidden", elegir);
+            document.getElementById("aventura-opciones").classList.toggle("hidden", !elegir);
+            document.getElementById("btn-modo-aventura").textContent = elegir ? "🔢 Mejor teclear" : "🔘 Mejor elegir";
+            pintarOpcionesAventura();
+        }
+
+        /** En «elegir», cuatro respuestas para el enemigo más cercano. */
+        function pintarOpcionesAventura() {
+            const caja = document.getElementById("aventura-opciones");
+            if (aventura.modo !== "elegir") return;
+            const obj = enemigoObjetivo();
+            if (!obj) { caja.replaceChildren(); return; }
+            const { a, b, respuesta } = obj.op;
+            const valores = AVENTURA_MUNDOS[aventura.mundo].tipo
+                ? cuatroOpciones(respuesta, [respuesta + 1, respuesta - 1, respuesta + 2, a]).map((o) => o.valor)
+                : generarOpciones(a, b, respuesta);
+            caja.replaceChildren(...valores.map((v) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "opcion-aventura bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 py-3 text-2xl font-bold rounded-2xl shadow-md text-gray-800";
+                btn.dataset.valor = String(v);
+                btn.textContent = String(v);
+                btn.onclick = () => responderAventura(v, obj);
+                return btn;
+            }));
+        }
+
+        // --- Fin del nivel ---
+        function terminarNivel(gano) {
+            aventura.terminado = true;
+            detenerAventura();
+            const { mundo: mi, nivel: n } = aventura;
+            const clave = claveNivel(mi, n);
+            const est = gano ? Math.max(1, aventura.corazones) : 0;
+            const g = aventuraGuardada;
+            let record = false;
+            if (gano) {
+                g.estrellas[clave] = Math.max(g.estrellas[clave] || 0, est);
+                if (aventura.puntos > (g.mejores[clave] || 0)) { g.mejores[clave] = aventura.puntos; record = true; }
+                const total = AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO;
+                g.alcanzado = Math.max(g.alcanzado, Math.min(total - 1, indiceNivel(mi, n) + 1));
+                guardarAventura();
+                ganarEstrellas(est);
+                avanzarMision("partida", "aventura");
+            }
+            const ultimo = indiceNivel(mi, n) === AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO - 1;
+            document.getElementById("fin-titulo").textContent = !gano ? "¡Casi!"
+                : n === NIVELES_POR_MUNDO - 1 ? (ultimo ? "¡Terminaste la aventura!" : `¡Venciste al jefe! Se abre el mundo ${mi + 2}`) : "¡Nivel superado!";
+            document.getElementById("fin-estrellas").textContent = gano ? "★".repeat(est) + "☆".repeat(3 - est) : "";
+            document.getElementById("fin-estrellas").setAttribute("aria-label", gano ? `${est} de 3 estrellas` : "");
+            document.getElementById("fin-texto").textContent = gano
+                ? `${aventura.puntos} puntos.${record ? " ¡Nuevo récord en este nivel!" : ""} Ganaste ${est} ${est === 1 ? "estrella" : "estrellas"} para el vivero.`
+                : `Los ${AVENTURA_MUNDOS[mi].plural} llegaron hasta tu héroe. Hiciste ${aventura.puntos} puntos. ¡Inténtalo otra vez!`;
+            document.getElementById("btn-fin-siguiente").classList.toggle("hidden", !gano || ultimo);
+            document.getElementById("arena-fin").classList.remove("hidden");
+            (gano && !ultimo ? document.getElementById("btn-fin-siguiente") : document.getElementById("btn-fin-otra")).focus();
+            speak(gano ? `¡Muy bien! ${aventura.puntos} puntos.` : "¡Casi! Inténtalo otra vez.");
+            actualizarResumenMenuAventura();
+        }
+
+        function siguienteNivel() {
+            const i = indiceNivel(aventura.mundo, aventura.nivel) + 1;
+            empezarNivel(Math.floor(i / NIVELES_POR_MUNDO), i % NIVELES_POR_MUNDO);
+        }
+
+        function reintentarNivel() {
+            empezarNivel(aventura.mundo, aventura.nivel);
+        }
+
+        function salirDeNivel() {
+            mostrarAventura();
+        }
+
+        // --- Compartir el puntaje como imagen ---
+        /** Dibuja la tarjeta del jugador en un lienzo de 1080 × 1080. */
+        function dibujarTarjetaPuntaje() {
+            const lienzo = document.createElement("canvas");
+            lienzo.width = 1080;
+            lienzo.height = 1080;
+            const c = lienzo.getContext("2d");
+            const fondo = c.createLinearGradient(0, 0, 1080, 1080);
+            fondo.addColorStop(0, "#4338ca");
+            fondo.addColorStop(1, "#c026d3");
+            c.fillStyle = fondo;
+            c.fillRect(0, 0, 1080, 1080);
+            c.fillStyle = "rgba(255,255,255,0.92)";
+            c.beginPath();
+            c.roundRect ? c.roundRect(70, 70, 940, 940, 60) : c.rect(70, 70, 940, 940);
+            c.fill();
+            c.textAlign = "center";
+            c.fillStyle = "#312e81";
+            c.font = "bold 58px 'Fredoka One', sans-serif";
+            c.fillText("La Aventura del Jardín Mágico", 540, 190);
+            c.font = "260px sans-serif";
+            c.fillText(aventuraGuardada.heroe, 540, 480);
+            const g = aventuraGuardada;
+            const m = Math.floor(g.alcanzado / NIVELES_POR_MUNDO);
+            c.font = "bold 70px 'Fredoka One', sans-serif";
+            c.fillStyle = "#86198f";
+            c.fillText(playerName || "Jugador del Jardín", 540, 600);
+            c.fillStyle = "#111827";
+            c.font = "bold 96px 'Fredoka One', sans-serif";
+            c.fillText(`${puntajeAventura()} puntos`, 540, 730);
+            c.font = "48px 'Quicksand', sans-serif";
+            c.fillText(`★ ${estrellasAventura()} estrellas · Mundo ${m + 1}: ${AVENTURA_MUNDOS[m].enemigo}`, 540, 820);
+            c.fillStyle = "#4b5563";
+            c.font = "36px 'Quicksand', sans-serif";
+            c.fillText(fechaLarga(hoy()), 540, 900);
+            c.fillText("dleon55.github.io/jardin-magico-multiplicaciones", 540, 960);
+            return lienzo;
+        }
+
+        async function compartirPuntaje() {
+            const aviso = document.getElementById("aviso-compartir");
+            const lienzo = dibujarTarjetaPuntaje();
+            const blob = await new Promise((ok) => lienzo.toBlob(ok, "image/png"));
+            if (!blob) { aviso.textContent = "No se pudo crear la imagen en este dispositivo."; return; }
+            const nombre = `aventura-${(playerName || "jugador").normalize("NFD").replace(/[^\w]+/g, "-").toLowerCase()}-${hoy()}.png`;
+            const archivo = typeof File === "function" ? new File([blob], nombre, { type: "image/png" }) : null;
+            // En la tableta, el menú de compartir del sistema (WhatsApp, etc.);
+            // si no lo hay, se descarga la imagen.
+            if (archivo && navigator.canShare?.({ files: [archivo] })) {
+                try {
+                    await navigator.share({ files: [archivo], title: "Mi puntaje en La Aventura", text: `¡Llevo ${puntajeAventura()} puntos en La Aventura del Jardín Mágico!` });
+                    aviso.textContent = "¡Listo para compartir!";
+                    return;
+                } catch (e) {
+                    if (e?.name === "AbortError") { aviso.textContent = ""; return; }
+                }
+            }
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = nombre;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            aviso.textContent = `Se descargó la imagen ${nombre}. Compártela con tus amigos.`;
         }
 
         // --- EFECTOS VISUALES: PARTÍCULAS / MAGIA DE CANVAS ---
