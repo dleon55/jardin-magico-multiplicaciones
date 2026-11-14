@@ -155,12 +155,28 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   «partir» dibuja el rectángulo con su hueco después de 5 columnas. Un reto
   fallado vuelve igual. Mientras se sepan menos de 6 multiplicaciones, los
   retos usan las tablas del 2 al 5.
-- **🍕 Fracciones de un número** (para 4.º a 6.º de primaria). «¿Cuánto es
-  3/4 de 24?» es dividir y multiplicar con lo que ya se sabe: un cuarto de 24
-  es 24 ÷ 4 = 6, y tres cuartos, 3 × 6 = 18. Cada partida trae 4 de una parte
-  (1/4 de 24) y 6 de varias (3/4 de 24), que es lo que más cuesta, con partes
-  del 2 al 9 (del 2 al 5 mientras se sepan menos de 6 multiplicaciones). Las
-  opciones falsas son los errores típicos: quedarse con una sola parte (6),
+- **🍕 Fracciones** (para 4.º a 6.º de primaria). Cada partida trae 10
+  preguntas de tres clases:
+  - **De un número** (4): «¿Cuánto es 3/4 de 24?» es dividir y multiplicar con
+    lo que ya se sabe: un cuarto de 24 es 24 ÷ 4 = 6, y tres cuartos,
+    3 × 6 = 18. Dos de una parte (1/4 de 24) y dos de varias (3/4 de 24),
+    con partes del 2 al 9 (del 2 al 5 mientras se sepan menos de 6
+    multiplicaciones).
+  - **Equivalentes** (3): «¿Cuál fracción es igual a 1/2?». La buena
+    multiplica arriba y abajo por lo mismo (2/4); las falsas son los errores
+    de siempre: sumar lo mismo arriba y abajo (3/4) o multiplicar solo uno
+    (1/4).
+  - **Comparar** (3): «¿Cuál es la más grande?» entre cuatro: con el mismo
+    número de abajo, con el mismo de arriba (1/3 > 1/5: el error clásico es
+    creer que gana el 5) y con distintos, pasándolas a uno común («Con 12
+    abajo: 3/4 = 9/12…»).
+
+  En equivalentes y comparar, la ayuda dibuja tiras del mismo largo, partidas
+  en partes iguales y con lo tomado en verde: la de la pregunta y una por
+  opción, en el orden de los botones (se compara, no se regala). Esas se
+  eligen siempre.
+
+  En «de un número», las opciones falsas son los errores típicos: quedarse con una sola parte (6),
   calcular lo que sobra y dividir entre el número de arriba (24 ÷ 3 = 8). La
   ayuda reparte el rectángulo en filas iguales (cada fila, una parte) y pinta
   de verde las que se toman. La voz dice «tres cuartos». Se escribe solo si

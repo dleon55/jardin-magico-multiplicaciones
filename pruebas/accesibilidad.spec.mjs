@@ -191,3 +191,11 @@ test("una fracción con la ayuda abierta", async ({ page }) => {
   await page.click("#btn-help");
   await auditar(page, "una fracción con el rectángulo repartido");
 });
+
+test("comparar fracciones con las tiras de la ayuda", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.evaluate(() => { startTable("fracciones"); colaRepaso = []; bolsa = [{ a: 4, b: 4, reto: { clase: "comparar", variante: "mismoNum", fracs: [[1, 5], [1, 3], [1, 8], [1, 4]] } }]; nextQuestion(); });
+  await page.click("#btn-help");
+  await auditar(page, "comparar fracciones con tiras");
+});
