@@ -46,7 +46,7 @@ test("los nombres de las partes, en la voz", async ({ page }) => {
   expect(r).toEqual(["un medio", "dos tercios", "cinco octavos", "siete novenos", "tres cuartos de 24 es 18: un cuarto es 24 entre 4 es 6."]);
 });
 
-test("una partida: 3 «de» (1 de una parte, 2 de varias), 2 equivalentes, 2 para comparar y 3 de sumar o restar", async ({ page }) => {
+test("una partida: 3 «de», 2 equivalentes, 1 para comparar, 2 de sumar o restar con el mismo denominador y 2 con distinto", async ({ page }) => {
   await page.goto("./");
   const r = await page.evaluate(() => {
     const b = bolsaDeFracciones();
@@ -55,13 +55,11 @@ test("una partida: 3 «de» (1 de una parte, 2 de varias), 2 equivalentes, 2 par
       propias: de.every((h) => h.reto.m < h.reto.d), maxD: Math.max(...de.map((h) => h.reto.d)),
       equivalentes: b.filter((h) => h.reto.clase === "equivalente").length,
       comparar: b.filter((h) => h.reto.clase === "comparar").map((h) => h.reto.variante),
-      ops: b.filter((h) => h.reto.clase === "sumar").map((h) => h.reto.op) };
+      ops: b.filter((h) => h.reto.clase === "sumar").map((h) => h.reto.op).sort(),
+      distintas: b.filter((h) => h.reto.clase === "sumarDistinto").map((h) => (h.reto.b % h.reto.d === 0 || h.reto.d % h.reto.b === 0)).sort() };
   });
   expect(r).toEqual({ n: 10, de: 3, unitarias: 1, propias: true, maxD: expect.any(Number), equivalentes: 2,
-    comparar: expect.any(Array), ops: expect.any(Array) });
-  expect(new Set(r.comparar).size).toBe(2);
-  expect(r.ops).toHaveLength(3);
-  expect(r.ops).toEqual(expect.arrayContaining(["+", "−"]));
+    comparar: [expect.any(String)], ops: ["+", "−"], distintas: [false, true] });
   expect(r.maxD).toBeLessThanOrEqual(5);
 });
 
@@ -85,7 +83,7 @@ test("se juega desde el menú y no toca el jardín; un fallo vuelve igual", asyn
   await page.goto("./");
   await page.click("#screen-welcome button");
   await page.click("#screen-selector >> text=Fracciones");
-  await expect(page.locator("#problema-texto")).toHaveText(/fracción|¿Cuánto es \d+\/\d+ (de \d+|[+−] \d+\/\d+)\?/);
+  await expect(page.locator("#problema-texto")).toHaveText(/fracción|¿Cuánto es \d+\/\d+ (de \d+|[+−] \d+\/\d+)\?/);   // cualquiera de las clases
   const antes = await page.evaluate(() => JSON.stringify(pregunta.reto));
   const mala = await page.evaluate(() => [...document.querySelectorAll(".btn-option")].find((b) => Number(b.dataset.valor) !== correctAnswer).id);
   await page.click(`#${mala}`);
@@ -136,7 +134,7 @@ test("diez aciertos: la victoria dice cuántas se resolvieron y cómo se saca", 
   }
   await expect(page.locator("#victory-table-name")).toHaveText("Las Fracciones del Jardín");
   // La idea que se lleva depende de la última pregunta.
-  await expect(page.locator("#victoria-aprendido")).toHaveText(/^Resolviste 10 fracciones\. (Con el mismo número de abajo|Una fracción no cambia|Para comparar|Para sacar 3\/4)/);
+  await expect(page.locator("#victoria-aprendido")).toHaveText(/^Resolviste 10 fracciones\. (Con el mismo número de abajo|Con distinto número de abajo|Una fracción no cambia|Para comparar|Para sacar 3\/4)/);
 });
 
 test.describe("equivalentes y comparar", () => {
@@ -289,5 +287,57 @@ test.describe("sumar y restar con el mismo denominador", () => {
       endGameSuccess();
     });
     await expect(page.locator("#victoria-aprendido")).toHaveText("Resolviste 10 fracciones. Con el mismo número de abajo, se suman o se restan solo los de arriba.");
+  });
+});
+
+test.describe("sumar con distinto denominador", () => {
+  test("1/2 + 1/4: se pasa a cuartos; las falsas suman arriba y abajo (2/6) o dejan el de abajo mayor (2/4)", async ({ page }) => {
+    await page.goto("./");
+    const p = await page.evaluate(() => armarFraccion({ clase: "sumarDistinto", a: 1, b: 2, c: 1, d: 4 }));
+    expect(p.texto).toBe("¿Cuánto es 1/2 + 1/4?");
+    expect(p.voz).toBe("¿Cuánto es un medio más un cuarto?");
+    expect(p.opciones.map((o) => o.etiqueta)).toEqual(expect.arrayContaining(["3/4", "2/6", "2/4"]));
+    expect(p.opciones.find((o) => o.etiqueta === "3/4").valor).toBe(p.respuesta);
+    expect(p.explicacion).toBe("1/2 + 1/4 = 3/4: con 4 abajo, 1/2 = 2/4 y 1/4 ya está en 4; 2 + 1 = 3. Sumar arriba y abajo (2/6) no sirve: las partes no son del mismo tamaño.");
+  });
+
+  test("1/2 + 1/3: ninguno es múltiplo del otro, el común es 6", async ({ page }) => {
+    await page.goto("./");
+    const p = await page.evaluate(() => armarFraccion({ clase: "sumarDistinto", a: 1, b: 2, c: 1, d: 3 }));
+    expect(p.opciones.find((o) => o.valor === p.respuesta).etiqueta).toBe("5/6");
+    expect(p.explicacion).toBe("1/2 + 1/3 = 5/6: con 6 abajo, 1/2 = 3/6 y 1/3 = 2/6; 3 + 2 = 5. Sumar arriba y abajo (2/5) no sirve: las partes no son del mismo tamaño.");
+  });
+
+  test("trescientas al azar: denominadores distintos, común hasta 12, suma propia y una sola opción con su valor", async ({ page }) => {
+    await page.goto("./");
+    const malos = await page.evaluate(() => {
+      const f = [];
+      const val = (c) => Math.floor(c / 100) / (c % 100);
+      for (let i = 0; i < 150; i++) for (const multiplo of [true, false]) {
+        const r = crearSumaDistinta(multiplo);
+        const p = armarFraccion(r);
+        const v = p.opciones.map((o) => o.valor);
+        const bien = r.a / r.b + r.c / r.d;
+        const L = (r.b * r.d) / mcd(r.b, r.d);
+        const esMultiplo = r.b % r.d === 0 || r.d % r.b === 0;
+        const iguales = v.filter((c) => Math.abs(val(c) - bien) < 1e-9);
+        if (r.b === r.d || L > 12 || esMultiplo !== multiplo || bien >= 1 || v.length !== 4 || new Set(v.map(val)).size !== 4 ||
+          iguales.length !== 1 || iguales[0] !== p.respuesta || p.respuesta % 100 !== L) f.push(JSON.stringify(r));
+      }
+      return f;
+    });
+    expect(malos).toEqual([]);
+  });
+
+  test("la ayuda: las dos tiras y una vacía partida en el común, para contar", async ({ page }) => {
+    await page.goto("./");
+    await page.click("#screen-welcome button");
+    await page.evaluate(() => { startTable("fracciones"); colaRepaso = []; bolsa = [{ a: 2, b: 4, reto: { clase: "sumarDistinto", a: 1, b: 2, c: 1, d: 4 } }]; nextQuestion(); });
+    await page.click("#btn-help");
+    await expect(page.locator("#help-visual-container .tira")).toHaveCount(3);
+    await expect(page.locator("#help-visual-container .tira").nth(2)).toContainText("?/4");
+    await expect(page.locator("#help-visual-container .tira").nth(2).locator(".parte-tomada")).toHaveCount(0);
+    await expect(page.locator("#help-explain")).toHaveText("Las partes de las dos primeras tiras son de distinto tamaño. La de abajo está partida en 4: ¿cuántas de esas partes cubre lo verde de las dos juntas?");
+    await expect(page.locator("#help-truco")).toHaveText("Las partes son de distinto tamaño: primero pásalas al mismo número de abajo, 4, multiplicando arriba y abajo. Después suma las de arriba.");
   });
 });

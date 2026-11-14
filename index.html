@@ -3221,12 +3221,14 @@
          *   - «de»: m/d de d·k ({ m, d, k }). Una de una parte (1/4 de 24) y
          *     dos de varias (3/4 de 24), que es lo que más cuesta;
          *   - «equivalente»: ¿cuál es igual a a/b? ({ a, b, k }: a·k/b·k), dos;
-         *   - «comparar»: ¿cuál es la más grande?, dos de estas: mismo
+         *   - «comparar»: ¿cuál es la más grande?, una de estas: mismo
          *     denominador, mismo numerador (1/3 > 1/5, el error clásico) y
          *     distintos;
-         *   - «sumar»: 2/7 + 3/7 o 5/8 − 2/8, con el mismo denominador, tres
-         *     (al menos una suma y una resta).
-         * Por partida: 3 «de», 2 equivalentes, 2 comparar y 3 sumar o restar.
+         *   - «sumar»: 2/7 + 3/7 y 5/8 − 2/8, con el mismo denominador;
+         *   - «sumarDistinto»: 1/2 + 1/4 (un denominador múltiplo del otro) y
+         *     1/2 + 1/3 (no), con el común hasta 12.
+         * Por partida: 3 «de», 2 equivalentes, 1 comparar, 2 sumar o restar
+         * con el mismo denominador y 2 sumas con distinto.
          * Con pocas multiplicaciones sabidas, partes del 2 al 5 al sacar «de».
          */
         function bolsaDeFracciones() {
@@ -3236,9 +3238,10 @@
                 return { clase: "de", m: i < 1 ? 1 : entre(2, d - 1), d, k: entre(2, 9) };
             });
             const equivalentes = Array.from({ length: 2 }, () => crearEquivalente());
-            const comparar = barajar(["mismoDen", "mismoNum", "distintos"]).slice(0, 2).map(crearComparacion);
-            const sumas = ["+", "−", azar(["+", "−"])].map(crearSuma);
-            return barajar([...de, ...equivalentes, ...comparar, ...sumas].map((reto) => {
+            const comparar = [crearComparacion(azar(["mismoDen", "mismoNum", "distintos"]))];
+            const sumas = ["+", "−"].map(crearSuma);
+            const distintas = [crearSumaDistinta(true), crearSumaDistinta(false)];
+            return barajar([...de, ...equivalentes, ...comparar, ...sumas, ...distintas].map((reto) => {
                 const [a, b] = numerosDeFraccion(reto);
                 return { a, b, reto };
             }));
@@ -3247,6 +3250,7 @@
         /** Dos números que representan la pregunta (para el repaso). */
         function numerosDeFraccion(r) {
             if (r.clase === "sumar") return [r.d, r.a];
+            if (r.clase === "sumarDistinto") return [r.b, r.d];
             if (r.clase === "equivalente") return [r.b, r.k];
             if (r.clase === "comparar") return [r.fracs[0][1], r.fracs.length];
             return [r.d, r.k];
@@ -3295,6 +3299,24 @@
             }
             const a = entre(2, d - 1);
             return { clase: "sumar", op, a, b: entre(1, a - 1), d };
+        }
+
+        /**
+         * a/b + c/d con b ≠ d, en mínima expresión, el común (mcm) hasta 12 y
+         * la suma menor que uno. `multiplo`: un denominador divide al otro
+         * (1/2 + 1/4), que es el caso más fácil.
+         */
+        function crearSumaDistinta(multiplo) {
+            const dens = [2, 3, 4, 5, 6, 8, 10, 12];
+            const opciones = [];
+            for (const b of dens) for (const d of dens) {
+                if (b >= d || (d % b === 0) !== multiplo || (b * d) / mcd(b, d) > 12) continue;
+                for (let a = 1; a < b; a++) for (let c = 1; c < d; c++) {
+                    if (mcd(a, b) === 1 && mcd(c, d) === 1 && a * d + c * b < b * d) opciones.push({ a, b, c, d });
+                }
+            }
+            const elegida = azar(opciones);
+            return { clase: "sumarDistinto", ...(Math.random() < 0.5 ? elegida : { a: elegida.c, b: elegida.d, c: elegida.a, d: elegida.b }) };
         }
 
         const codigoFraccion = (m, d) => m * 100 + d;   // el valor de un botón que muestra «m/d»
@@ -3381,7 +3403,33 @@
             };
         }
 
+        function armarSumaDistinta(r) {
+            const { a, b, c, d } = r;
+            const L = (b * d) / mcd(b, d);
+            const [x, y] = [a * (L / b), c * (L / d)];
+            const m = x + y;
+            // Los errores de siempre: sumar arriba y abajo, sumar arriba y
+            // dejar el de abajo más grande, y una parte de más o de menos.
+            const falsas = [[a + c, b + d], [a + c, Math.max(b, d)], [m + 1, L], [m - 1, L], [a + c, L], [a * c, b * d]];
+            const lista = [[m, L]];
+            for (const [u, v] of falsas) {
+                if (lista.length < 4 && u > 0 && u < v && !lista.some(([p, q]) => p * v === u * q)) lista.push([u, v]);
+            }
+            const enOrden = barajar(lista);
+            const texto = `¿Cuánto es ${textoFraccion(a, b)} + ${textoFraccion(c, d)}?`;
+            const pasa = (n, den, nuevo) => (den === L ? `${textoFraccion(n, den)} ya está en ${L}` : `${textoFraccion(n, den)} = ${textoFraccion(nuevo, L)}`);
+            return {
+                tipo: "fraccion", clase: "sumarDistinto", reto: r, a: b, b: d,
+                respuesta: codigoFraccion(m, L), texto, voz: textoParaVoz(texto),
+                opciones: enOrden.map(([u, v]) => ({ valor: codigoFraccion(u, v), etiqueta: textoFraccion(u, v) })),
+                tiras: [[a, b], [c, d], [0, L]],
+                pista: `Las partes son de distinto tamaño: primero pásalas al mismo número de abajo, ${L}, multiplicando arriba y abajo. Después suma las de arriba.`,
+                explicacion: `${texto.replace("¿Cuánto es ", "").replace("?", "")} = ${textoFraccion(m, L)}: con ${L} abajo, ${pasa(a, b, x)} y ${pasa(c, d, y)}; ${x} + ${y} = ${m}. Sumar arriba y abajo (${textoFraccion(a + c, b + d)}) no sirve: las partes no son del mismo tamaño.`,
+            };
+        }
+
         function armarFraccion(r) {
+            if (r.clase === "sumarDistinto") return armarSumaDistinta(r);
             if (r.clase === "sumar") return armarSuma(r);
             if (r.clase === "equivalente") return armarEquivalente(r);
             if (r.clase === "comparar") return armarComparacion(r);
@@ -3658,6 +3706,8 @@
             const { reto } = pregunta;
             document.getElementById("help-explain").innerText = pregunta.clase === "equivalente"
                 ? `Todas las tiras miden lo mismo. ¿Cuál tiene tanto verde como ${textoFraccion(...tiras[0])}?`
+                : pregunta.clase === "sumarDistinto"
+                    ? `Las partes de las dos primeras tiras son de distinto tamaño. La de abajo está partida en ${tiras[2][1]}: ¿cuántas de esas partes cubre lo verde de las dos juntas?`
                 : pregunta.clase === "sumar"
                     ? (reto.op === "+"
                         ? "Las dos tiras están partidas igual. Junta lo verde de las dos: ¿cuántas partes son?"
@@ -3668,10 +3718,14 @@
             tiras.forEach(([m, d], i) => {
                 const fila = document.createElement("div");
                 // En equivalentes, la primera es la de la pregunta: separada.
-                fila.className = `tira flex items-center gap-2 ${pregunta.clase === "equivalente" && i === 0 ? "pb-2 border-b-2 border-dashed border-indigo-200" : ""}`;
+                // En equivalentes, la primera es la de la pregunta; al sumar con
+                // distinto denominador, la última es la vacía, para contar.
+                const aparte = pregunta.clase === "equivalente" && i === 0 ? "pb-2 border-b-2 border-dashed border-indigo-200"
+                    : pregunta.clase === "sumarDistinto" && i === 2 ? "pt-2 border-t-2 border-dashed border-indigo-200" : "";
+                fila.className = `tira flex items-center gap-2 ${aparte}`;
                 const nombre = document.createElement("span");
                 nombre.className = "w-12 text-right font-bold text-indigo-900";
-                nombre.textContent = textoFraccion(m, d);
+                nombre.textContent = m === 0 ? `?/${d}` : textoFraccion(m, d);
                 const barra = document.createElement("div");
                 barra.className = "flex flex-1 h-6 border-2 border-indigo-300 rounded";
                 for (let i = 0; i < d; i++) {
@@ -4275,6 +4329,7 @@
                 // La idea que hay que llevarse, según la última pregunta.
                 const idea = {
                     sumar: "Con el mismo número de abajo, se suman o se restan solo los de arriba.",
+                    sumarDistinto: "Con distinto número de abajo, primero se pasan al mismo y luego se suman los de arriba.",
                     equivalente: "Una fracción no cambia si multiplicas arriba y abajo por lo mismo.",
                     comparar: "Para comparar, pásalas al mismo número de abajo.",
                 }[pregunta?.clase] || "Para sacar 3/4 de un número, se divide entre 4 y se multiplica por 3.";

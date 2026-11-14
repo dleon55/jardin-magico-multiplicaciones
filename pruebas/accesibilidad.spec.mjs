@@ -207,3 +207,11 @@ test("sumar fracciones con las tiras de la ayuda", async ({ page }) => {
   await page.click("#btn-help");
   await auditar(page, "sumar fracciones con tiras");
 });
+
+test("sumar fracciones con distinto denominador, con las tiras", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.evaluate(() => { startTable("fracciones"); colaRepaso = []; bolsa = [{ a: 2, b: 3, reto: { clase: "sumarDistinto", a: 1, b: 2, c: 1, d: 3 } }]; nextQuestion(); });
+  await page.click("#btn-help");
+  await auditar(page, "sumar con distinto denominador");
+});
