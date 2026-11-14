@@ -188,6 +188,7 @@ test("una fracción con la ayuda abierta", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
   await page.click("#screen-selector >> text=Fracciones");
+  await page.click('#clases-fracciones button[data-clase="mezcla"]');
   await page.click("#btn-help");
   await auditar(page, "una fracción con el rectángulo repartido");
 });
@@ -214,4 +215,11 @@ test("sumar fracciones con distinto denominador, con las tiras", async ({ page }
   await page.evaluate(() => { startTable("fracciones"); colaRepaso = []; bolsa = [{ a: 2, b: 3, reto: { clase: "sumarDistinto", a: 1, b: 2, c: 1, d: 3 } }]; nextQuestion(); });
   await page.click("#btn-help");
   await auditar(page, "sumar con distinto denominador");
+});
+
+test("elegir qué fracciones practicar", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("#screen-selector >> text=Fracciones");
+  await auditar(page, "la elección de fracciones");
 });

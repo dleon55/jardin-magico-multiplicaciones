@@ -83,6 +83,7 @@ test("se juega desde el menú y no toca el jardín; un fallo vuelve igual", asyn
   await page.goto("./");
   await page.click("#screen-welcome button");
   await page.click("#screen-selector >> text=Fracciones");
+  await page.click('#clases-fracciones button[data-clase="mezcla"]');
   await expect(page.locator("#problema-texto")).toHaveText(/fracción|¿Cuánto es \d+\/\d+ (de \d+|[+−] \d+\/\d+)\?/);   // cualquiera de las clases
   const antes = await page.evaluate(() => JSON.stringify(pregunta.reto));
   const mala = await page.evaluate(() => [...document.querySelectorAll(".btn-option")].find((b) => Number(b.dataset.valor) !== correctAnswer).id);
@@ -124,6 +125,7 @@ test("diez aciertos: la victoria dice cuántas se resolvieron y cómo se saca", 
   await page.goto("./");
   await page.click("#screen-welcome button");
   await page.click("#screen-selector >> text=Fracciones");
+  await page.click('#clases-fracciones button[data-clase="mezcla"]');
   for (let i = 0; i < 10; i++) {
     const c = await page.evaluate(() => correctAnswer);
     if (await page.locator("#escritura:not(.hidden)").count()) {
@@ -339,5 +341,63 @@ test.describe("sumar con distinto denominador", () => {
     await expect(page.locator("#help-visual-container .tira").nth(2).locator(".parte-tomada")).toHaveCount(0);
     await expect(page.locator("#help-explain")).toHaveText("Las partes de las dos primeras tiras son de distinto tamaño. La de abajo está partida en 4: ¿cuántas de esas partes cubre lo verde de las dos juntas?");
     await expect(page.locator("#help-truco")).toHaveText("Las partes son de distinto tamaño: primero pásalas al mismo número de abajo, 4, multiplicando arriba y abajo. Después suma las de arriba.");
+  });
+});
+
+test.describe("partidas por clase", () => {
+  test("«Fracciones» abre la elección: todo mezclado y cinco clases; Esc vuelve al menú", async ({ page }, testInfo) => {
+    await page.goto("./");
+    await page.click("#screen-welcome button");
+    await page.click("#screen-selector >> text=Fracciones");
+    await expect(page.locator("#screen-fracciones")).toBeVisible();
+    await expect(page.locator("#screen-fracciones [data-foco]")).toBeFocused();
+    await expect(page.locator("#clases-fracciones button")).toHaveCount(6);
+    if (testInfo.project.name === "escritorio") {
+      await page.keyboard.press("Escape");
+      await expect(page.locator("#screen-selector")).toBeVisible();
+    }
+  });
+
+  for (const [clase, boton] of [["de", "De un número"], ["equivalente", "Equivalentes"], ["comparar", "Comparar"],
+    ["sumar", "Sumar y restar"], ["sumarDistinto", "Sumar con distinto número de abajo"]]) {
+    test(`«${boton}»: las diez preguntas son de esa clase`, async ({ page }) => {
+      await page.goto("./");
+      await page.click("#screen-welcome button");
+      await page.click("#screen-selector >> text=Fracciones");
+      await page.click(`#clases-fracciones button[data-clase="${clase}"]`);
+      await expect(page.locator("#screen-game")).toBeVisible();
+      const r = await page.evaluate(() => {
+        const todas = [pregunta.reto, ...bolsa.map((h) => h.reto)];
+        return { clases: [...new Set(todas.map((x) => x.clase || "de"))], n: todas.length };
+      });
+      expect(r).toEqual({ clases: [clase], n: 10 });
+    });
+  }
+
+  test("cada clase sola trae su mezcla interna: unitarias y no, las tres comparaciones, sumas y restas, múltiplos y no", async ({ page }) => {
+    await page.goto("./");
+    const r = await page.evaluate(() => {
+      const de = bolsaDeUnaClase("de", 9);
+      const comp = bolsaDeUnaClase("comparar", 9);
+      const sum = bolsaDeUnaClase("sumar", 9);
+      const dist = bolsaDeUnaClase("sumarDistinto", 9);
+      return {
+        unitarias: de.filter((x) => x.m === 1).length,
+        variantes: [...new Set(comp.map((x) => x.variante))].sort(),
+        ops: sum.map((x) => x.op).filter((o) => o === "+").length,
+        multiplos: dist.filter((x) => x.b % x.d === 0 || x.d % x.b === 0).length,
+      };
+    });
+    expect(r).toEqual({ unitarias: 4, variantes: ["distintos", "mismoDen", "mismoNum"], ops: 5, multiplos: 5 });
+  });
+
+  test("al ganar una clase sola, la victoria dice cuál fue", async ({ page }) => {
+    await page.goto("./");
+    await page.click("#screen-welcome button");
+    await page.click("#screen-selector >> text=Fracciones");
+    await page.click('#clases-fracciones button[data-clase="equivalente"]');
+    await page.evaluate(() => { aciertosPorOp.F = 10; endGameSuccess(); });
+    await expect(page.locator("#victory-table-name")).toHaveText("Fracciones: Equivalentes");
+    await expect(page.locator("#victoria-aprendido")).toHaveText("Resolviste 10 fracciones. Una fracción no cambia si multiplicas arriba y abajo por lo mismo.");
   });
 });
