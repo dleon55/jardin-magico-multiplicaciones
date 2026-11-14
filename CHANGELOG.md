@@ -9,6 +9,8 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-14
 
+- **Fracciones y retos en la vista para adultos** (#29): aciertos por clase,
+  cuál cuesta más y dónde practicarla sola; cuentan como días de práctica.
 - **Fracciones por clase** (#28): al tocar «🍕 Fracciones» se elige todo
   mezclado o una sola clase (de un número, equivalentes, comparar, sumar y
   restar, distinto denominador), con 10 preguntas de esa clase.

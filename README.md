@@ -225,7 +225,12 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **«👪 Para las personas adultas»** (en la bienvenida y en el menú): por
   cada jardín, las flores, los capullos, los brotes y las marchitas; lo que
   más falla (de sus últimos 5 intentos, lo que aún no florece); y qué días
-  practicó de las últimas dos semanas. Si hay algo que repasar, dice que
+  practicó de las últimas dos semanas (también los días de solo fracciones o
+  retos). De **fracciones y retos de lógica**, cuántas de sus últimas
+  respuestas acertó en cada clase, cuál le cuesta más (con al menos 4
+  respuestas y menos de 6 de cada 10 bien) y, si es de fracciones, qué botón
+  la practica sola. Se guarda solo el día y si estuvo bien, las últimas 30
+  por clase; va en la copia de seguridad y se borra con el jardín. Si hay algo que repasar, dice que
   «Practicar lo que me falta» empieza justo por ahí. Desde ahí se borra un
   jardín, con confirmación, y solo ese. Todo sale de lo que el juego ya
   guarda y no se envía a ningún lado.
