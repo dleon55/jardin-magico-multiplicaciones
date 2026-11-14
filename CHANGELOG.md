@@ -9,6 +9,9 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-14
 
+- **🍕 Fracciones de un número** (#24), para 4.º a 6.º: 1/4 de 24 y 3/4 de
+  24, con el rectángulo repartido en partes iguales y las opciones falsas
+  de los errores típicos. No cuenta para el mapa ni el jardín.
 - **🧩 Retos de lógica** (#23). Una partida nueva que pide pensar con las
   tablas: ¿cuál da más?, el número misterioso, ¿qué número falta?, partir una
   multiplicación y el intruso. No cuenta para el mapa ni el jardín.
