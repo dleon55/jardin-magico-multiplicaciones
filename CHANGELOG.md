@@ -9,6 +9,9 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-14
 
+- **🧩 Retos de lógica** (#23). Una partida nueva que pide pensar con las
+  tablas: ¿cuál da más?, el número misterioso, ¿qué número falta?, partir una
+  multiplicación y el intruso. No cuenta para el mapa ni el jardín.
 - **Tres mundos más** (#22): espacio 🚀, fondo del mar 🐠 y granja 🐄. Ya
   son ocho mundos para elegir.
 

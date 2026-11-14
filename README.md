@@ -138,7 +138,24 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   decidir qué operación hace falta: la pista y la explicación la nombran
   («Es una división: 24 ÷ 4 = 6»). El problema se escribe encima del girasol y
   la voz lo lee. Uno fallado vuelve con la misma historia.
-- **Dividir y los problemas no cuentan para el mapa ni el jardín.** Esos miden
+- **🧩 Retos de lógica.** Las mismas tablas, pidiendo pensar y no solo
+  recordar. Cada partida trae 10 retos, dos de cada clase:
+
+  | Reto | Ejemplo |
+  | --- | --- |
+  | ¿Cuál da más? | 6 × 7, 5 × 8, 4 × 9 o 7 × 5 |
+  | El número misterioso | «Soy el más pequeño que está en la tabla del 4 y en la del 6» (12) |
+  | ¿Qué número falta? | 7, 14, 21, __ (también con el hueco en medio) |
+  | Partir una multiplicación | 7 × 8 = 7 × 5 + 7 × __ |
+  | El intruso | ¿Cuál no está en la tabla del 4? 12, 20, 26, 32 |
+
+  Se responden eligiendo. Las opciones falsas son errores de verdad (un
+  número común que no es el más pequeño, uno de la serie más, el factor
+  entero en vez del resto…). La ayuda da el camino, no la respuesta; en
+  «partir» dibuja el rectángulo con su hueco después de 5 columnas. Un reto
+  fallado vuelve igual. Mientras se sepan menos de 6 multiplicaciones, los
+  retos usan las tablas del 2 al 5.
+- **Dividir, los problemas y los retos de lógica no cuentan para el mapa ni el jardín.** Esos miden
   si la multiplicación se sabe de memoria, escrita en 6 segundos; una división
   hecha con el truco o un problema que primero hay que leer tardan más y no
   deben marchitar ni florecer nada. Sí dan estrellas y cuentan para la misión
@@ -266,7 +283,9 @@ adultos (cada quien lo suyo, cambiar sin borrar, borrar solo uno, lo que
 más falla, días de práctica, lo de antes de los perfiles), el jardín (parejas, bancales y riego), las
 estrellas y la misión del día (vivero, bono por florecer, misión que se elige
 una vez y premia una sola vez, días seguidos), dividir y los problemas
-cortos (de dónde salen, opciones, ayuda, repaso y que no tocan el mapa), el uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
+cortos (de dónde salen, opciones, ayuda, repaso y que no tocan el mapa), los
+retos de lógica (cada clase, cien retos al azar bien calculados, repaso,
+ayuda, victoria), el uso con teclado y en tableta, la accesibilidad (axe, WCAG 2.1 AA), el modo sin
 internet y la voz. Si Chromium está instalado fuera de la caché de Playwright,
 su ruta se indica con `CHROMIUM_RUTA`.
 

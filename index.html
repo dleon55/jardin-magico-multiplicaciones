@@ -359,7 +359,7 @@
 
             <!-- Más allá de las tablas: dividir es multiplicar al revés, y los
                  problemas piden decidir qué operación hace falta. -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-lg mx-auto">
                 <button type="button" onclick="startTable('div')" class="bubble-font bg-gradient-to-r from-sky-200 to-cyan-200 hover:from-sky-300 hover:to-cyan-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">➗</span> Dividir</span>
                     <span class="text-xs font-sans font-semibold">Repartir en partes iguales</span>
@@ -367,6 +367,10 @@
                 <button type="button" onclick="startTable('problemas')" class="bubble-font bg-gradient-to-r from-lime-200 to-emerald-200 hover:from-lime-300 hover:to-emerald-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">📖</span> Problemas cortos</span>
                     <span class="text-xs font-sans font-semibold">¿Se multiplica o se divide?</span>
+                </button>
+                <button type="button" onclick="startTable('logica')" class="bubble-font bg-gradient-to-r from-violet-200 to-indigo-200 hover:from-violet-300 hover:to-indigo-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                    <span><span aria-hidden="true">🧩</span> Retos de lógica</span>
+                    <span class="text-xs font-sans font-semibold">Pensar con las tablas</span>
                 </button>
             </div>
 
@@ -727,7 +731,7 @@
                 </div>
                 <p id="aviso-copia" role="status" aria-live="polite" class="min-h-5 text-sm font-bold text-green-800"></p>
             </section>
-            <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Dividir y los problemas cortos no cuentan aquí: miden otra cosa.</p>
+            <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Dividir, los problemas cortos y los retos de lógica no cuentan aquí: miden otra cosa.</p>
         </div>
 
         <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
@@ -958,7 +962,7 @@
         const TABLAS = 9;
         const MULTIPLICADORES = 10;
         let playerName = "";   // vacío = sin nombre: se habla del jardín, no de la persona
-        let currentTable = 1; // 1-9, "mix", "falta", "div" o "problemas"
+        let currentTable = 1; // 1-9, "mix", "falta", "div", "problemas" o "logica"
         let globalStars = 0;
         let score = 0; // Aciertos actuales conseguidos
         let targetScore = 10; // Meta FIJA de aciertos: los fallos ya no la mueven
@@ -987,7 +991,7 @@
         // numA y numB siguen siendo los dos factores de la multiplicación que
         // hay debajo, también al dividir (56 ÷ 8 = 7: numA 8, numB 7).
         let pregunta = null;
-        let aciertosPorOp = { "×": 0, "÷": 0 };
+        let aciertosPorOp = { "×": 0, "÷": 0, "L": 0 };
         // --- AJUSTES ---
         //
         // Antes había un solo botón para todo el sonido. En un aula hace falta
@@ -1330,7 +1334,7 @@
             }));
             hechosDeLaPartida = new Set();
             estrellasAlEmpezar = globalStars;
-            aciertosPorOp = { "×": 0, "÷": 0 };
+            aciertosPorOp = { "×": 0, "÷": 0, "L": 0 };
 
             // Los amigos comprados en el vivero acompañan la partida: se ven
             // arriba del bancal, donde no tapan las flores que van naciendo.
@@ -2162,7 +2166,7 @@
          * cortos: vuelve la MISMA historia, no otra con los mismos números.
          */
         function programarRepaso(a, b, enTurnos, repasosHechos, extra = {}) {
-            const claveDe = (r) => `${r.a}x${r.b}${r.op ?? ""}${r.t ?? ""}`;
+            const claveDe = (r) => `${r.a}x${r.b}${r.op ?? ""}${r.t ?? ""}${r.reto ? JSON.stringify(r.reto) : ""}`;
             const clave = claveDe({ a, b, ...extra });
             const existente = colaRepaso.find((r) => claveDe(r) === clave);
             if (existente) {
@@ -2945,6 +2949,8 @@
                 bolsa = bolsaDeDivisiones();
             } else if (currentTable === "problemas") {
                 bolsa = bolsaDeProblemas();
+            } else if (currentTable === "logica") {
+                bolsa = bolsaDeRetos();
             } else {
                 const lista = [];
                 if (currentTable === "mix") {
@@ -3041,6 +3047,148 @@
             });
         }
 
+        // --- RETOS DE LÓGICA ---
+        //
+        // Las mismas tablas, pero pidiendo pensar y no solo recordar: comparar,
+        // buscar un número con pistas, seguir una serie, partir una
+        // multiplicación difícil en dos fáciles y encontrar al que no
+        // pertenece. Pensar con un hecho lo afianza. Como dividir y los
+        // problemas, no cuentan para el mapa ni el jardín (esos miden la
+        // memoria), sí dan estrellas y cuentan para la misión.
+        //
+        // Cada reto guarda sus números ({ clase, ... }): si se falla, vuelve
+        // el mismo reto, como vuelve la misma historia en los problemas.
+        // Las opciones se calculan siempre igual a partir de esos números; solo
+        // cambia su orden.
+        const CLASES_RETO = ["mayor", "misterio", "sigue", "partir", "intruso"];
+        const azar = (lista) => lista[Math.floor(Math.random() * lista.length)];
+        const entre = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+        const mcd = (x, y) => (y ? mcd(y, x % y) : x);
+        const comas = (l) => (l.length === 1 ? l[0] : `${l.slice(0, -1).join(", ")} y ${l.at(-1)}`);
+
+        /** Un reto nuevo de la clase pedida, con tablas entre `lo` y `hi`. */
+        function crearReto(clase, lo, hi) {
+            if (clase === "mayor") {
+                // Cuatro multiplicaciones de resultados cercanos y distintos.
+                const pares = [];
+                for (let x = lo; x <= hi; x++) for (let y = 2; y <= 9; y++) pares.push([x, y]);
+                const base = azar(pares);
+                for (let ancho = 8; ; ancho += 6) {
+                    const usados = new Set();
+                    const cerca = barajar(pares.filter(([x, y]) => Math.abs(x * y - base[0] * base[1]) <= ancho))
+                        .filter(([x, y]) => !usados.has(x * y) && usados.add(x * y));
+                    if (cerca.length >= 4) return { clase, pares: cerca.slice(0, 4) };
+                }
+            }
+            if (clase === "misterio") {
+                // Dos tablas que no se contienen (el 3 y el 6 sí: saldría el 6).
+                const opciones = [];
+                for (let m = lo; m <= hi; m++) for (let n = 2; n <= 9; n++) if (m < n && n % m !== 0) opciones.push([m, n]);
+                const [m, n] = azar(opciones.length ? opciones : [[2, 3]]);
+                return { clase, m, n };
+            }
+            if (clase === "sigue") {
+                const n = entre(Math.max(2, lo), hi);
+                return { clase, n, k: entre(1, 6), hueco: entre(1, 3) };
+            }
+            if (clase === "partir") return { clase, a: entre(Math.max(3, lo), hi), b: entre(6, 9) };
+            // intruso: tres de la tabla y uno que se le parece.
+            const n = entre(Math.max(3, lo), hi);
+            const ks = barajar([2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 3);
+            const dentro = ks.map((k) => n * k);
+            const casi = barajar([2, 3, 4, 5, 6, 7, 8, 9].flatMap((k) => [n * k + 1, n * k - 1, n * k + 2, n * k - 2]))
+                .find((x) => x > 1 && x % n !== 0 && !dentro.includes(x));
+            return { clase, n, dentro, intruso: casi };
+        }
+
+        /** Diez retos: dos de cada clase. Con pocas tablas sabidas, del 2 al 5. */
+        function bolsaDeRetos() {
+            const [lo, hi] = parejasConocidas().length >= MIN_CONOCIDAS ? [2, 9] : [2, 5];
+            return barajar(CLASES_RETO.flatMap((c) => [c, c]).map((c) => {
+                const reto = crearReto(c, lo, hi);
+                const [a, b] = numerosDelReto(reto);
+                return { a, b, reto };
+            }));
+        }
+
+        /** Dos números que representan el reto (para el repaso y la ayuda). */
+        function numerosDelReto(r) {
+            if (r.clase === "mayor") return r.pares.reduce((m, p) => (p[0] * p[1] > m[0] * m[1] ? p : m));
+            if (r.clase === "misterio") return [r.m, r.n];
+            if (r.clase === "sigue") return [r.n, r.k + 3];
+            if (r.clase === "partir") return [r.a, r.b];
+            return [r.n, 2];
+        }
+
+        /** Completa hasta 4 opciones distintas con números cercanos. */
+        function cuatroOpciones(respuesta, otras) {
+            const lista = [respuesta];
+            for (const x of [...otras, respuesta + 1, respuesta + 2, respuesta - 1, respuesta + 3]) {
+                if (lista.length < 4 && Number.isInteger(x) && x > 0 && !lista.includes(x)) lista.push(x);
+            }
+            return barajar(lista).map((v) => ({ valor: v, etiqueta: String(v) }));
+        }
+
+        /** La pregunta de un reto: texto, voz, opciones, respuesta, pista y explicación. */
+        function armarReto(r) {
+            const base = { tipo: "logica", clase: r.clase, reto: r };
+            if (r.clase === "mayor") {
+                const pares = r.pares.map(([x, y]) => ({ x, y, p: x * y }));
+                const max = pares.reduce((m, q) => (q.p > m.p ? q : m));
+                const otras = pares.filter((q) => q !== max).sort((u, v) => v.p - u.p);
+                const texto = "¿Cuál da más?";
+                return { ...base, texto, respuesta: max.p,
+                    voz: `¿Cuál da más: ${comas(pares.map((q) => `${q.x} por ${q.y}`)).replace(/ y ([^y]*)$/, " o $1")}?`,
+                    opciones: barajar(pares).map((q) => ({ valor: q.p, etiqueta: `${q.x} × ${q.y}` })),
+                    pista: "Calcula cada una y compáralas. Empieza por las que ya te sabes.",
+                    explicacion: `${max.x} × ${max.y} = ${max.p} es la que da más. Las otras: ${comas(otras.map((q) => `${q.x} × ${q.y} = ${q.p}`))}.` };
+            }
+            if (r.clase === "misterio") {
+                const { m, n } = r;
+                const mcm = (m * n) / mcd(m, n);
+                const deM = (k) => Array.from({ length: k }, (_, i) => m * (i + 1));
+                const deN = (k) => Array.from({ length: k }, (_, i) => n * (i + 1));
+                const soloM = [mcm + m, mcm - m, mcm + 2 * m].find((x) => x > 0 && x % n !== 0);
+                const soloN = [mcm + n, mcm - n].find((x) => x > 0 && x % m !== 0);
+                const otraComun = m * n !== mcm ? m * n : 2 * mcm;
+                const texto = `Soy el número más pequeño que está en la tabla del ${m} y también en la del ${n}. ¿Quién soy?`;
+                return { ...base, texto, voz: texto, respuesta: mcm,
+                    opciones: cuatroOpciones(mcm, [soloM, soloN, otraComun]),
+                    pista: `Di la tabla del ${n} (${deN(3).join(", ")}…) y busca el primero que también esté en la del ${m}.`,
+                    explicacion: `Es ${mcm}: la tabla del ${m} va ${deM(mcm / m).join(", ")}, y la del ${n}, ${deN(mcm / n).join(", ")}. El ${mcm} es el primero que está en las dos.` };
+            }
+            if (r.clase === "sigue") {
+                const { n, k, hueco } = r;
+                const serie = [0, 1, 2, 3].map((i) => n * (k + i));
+                const respuesta = serie[hueco];
+                const visible = serie.map((x, i) => (i === hueco ? "__" : String(x))).join(", ");
+                const texto = `¿Qué número falta? ${visible}`;
+                return { ...base, texto, respuesta,
+                    voz: `¿Qué número falta? ${serie.map((x, i) => (i === hueco ? "cuál" : x)).join(", ")}`,
+                    opciones: cuatroOpciones(respuesta, [respuesta + n, respuesta - 1, respuesta + 1].filter((x) => !serie.includes(x) || x === respuesta)),
+                    pista: "¿Cuánto aumenta de un número al siguiente? Mira los que están juntos.",
+                    explicacion: `Van de ${n} en ${n}: ${serie.join(", ")}. Es la tabla del ${n}.` };
+            }
+            if (r.clase === "partir") {
+                const { a, b } = r;
+                const resto = b - 5;
+                const texto = `Completa: ${a} × ${b} = ${a} × 5 + ${a} × __`;
+                return { ...base, texto, respuesta: resto,
+                    voz: `Completa: ${a} por ${b} es ${a} por 5, más ${a} por cuánto`,
+                    opciones: cuatroOpciones(resto, [resto + 1, resto - 1, b].filter((x) => x !== 5)),
+                    pista: `Parte el ${b} en 5 y lo que falta para llegar a ${b}: el rectángulo tiene un hueco después de 5 columnas.`,
+                    explicacion: `${b} es 5 + ${resto}, así que ${a} × ${b} = ${a} × 5 + ${a} × ${resto} = ${a * 5} + ${a * resto} = ${a * b}.` };
+            }
+            const { n, dentro, intruso } = r;
+            const abajo = Math.floor(intruso / n) * n;
+            const texto = `¿Cuál NO está en la tabla del ${n}?`;
+            return { ...base, texto, respuesta: intruso,
+                voz: `¿Cuál no está en la tabla del ${n}: ${comas([...dentro, intruso].sort((x, y) => x - y)).replace(/ y ([^y]*)$/, " o $1")}?`,
+                opciones: barajar([...dentro, intruso]).map((v) => ({ valor: v, etiqueta: String(v) })),
+                pista: `Los de la tabla del ${n} se reparten en grupos de ${n} sin que sobre nada. Prueba con cada uno.`,
+                explicacion: `${intruso} no está: ${n} × ${abajo / n} = ${abajo} y ${n} × ${abajo / n + 1} = ${abajo + n}. Los demás sí: ${comas(dentro.map((x) => `${x} = ${n} × ${x / n}`))}.` };
+        }
+
         /**
          * Arma la pregunta de un hecho según la partida: qué se ve, qué se
          * oye, la respuesta y la explicación que se da al contestar.
@@ -3055,6 +3203,9 @@
                     voz: `¿Cuánto es, ${producto} entre ${a}?`,
                     explicacion: `${producto} ÷ ${a} = ${b}, porque ${a} × ${b} = ${producto}.`,
                 };
+            }
+            if (currentTable === "logica" && h.reto) {
+                return { ...armarReto(h.reto), a, b };
             }
             if (currentTable === "problemas") {
                 const op = h.op === "÷" ? "÷" : "×";
@@ -3123,16 +3274,21 @@
             }
 
             ultimoHecho = claveHecho(numA, numB);
-            pregunta = armarPregunta(repasoActual || { a: numA, b: numB, op: hechoSacado?.op, t: hechoSacado?.t });
+            pregunta = armarPregunta(repasoActual || { a: numA, b: numB, op: hechoSacado?.op, t: hechoSacado?.t, reto: hechoSacado?.reto });
+            // Los números de un reto salen del reto mismo (la ayuda de «partir»
+            // dibuja su rectángulo con ellos).
+            if (pregunta.tipo === "logica") [numA, numB] = numerosDelReto(pregunta.reto);
             correctAnswer = pregunta.respuesta;
             ayudaGirada = false;
 
             // Al dividir o en un problema se escribe solo si la multiplicación
             // de debajo ya floreció: entonces lo nuevo es solo darle la vuelta.
             // Lo recién fallado se elige, como siempre.
+            // Los retos de lógica se eligen siempre: varios no tienen una
+            // respuesta que se pueda escribir (¿cuál da más?).
             modoEscrito = pregunta.tipo === "mult"
                 ? seEscribe(numA, numB)
-                : !repasoActual && estadoHecho(numA, numB) === "florecida";
+                : pregunta.tipo !== "logica" && !repasoActual && estadoHecho(numA, numB) === "florecida";
             document.getElementById("escritura-aviso").innerText = pregunta.tipo === "mult"
                 ? "Esta ya te salió bien: ahora escríbela."
                 : "Esta multiplicación ya te la sabes: escribe la respuesta.";
@@ -3149,8 +3305,9 @@
             // girasol solo pregunta. El lector de pantalla lo lee desde aquí.
             const textoPregunta = document.getElementById("question-text");
             const problema = document.getElementById("problema-texto");
-            problema.classList.toggle("hidden", pregunta.tipo !== "problema");
-            if (pregunta.tipo === "problema") {
+            const largo = pregunta.tipo === "problema" || pregunta.tipo === "logica";
+            problema.classList.toggle("hidden", !largo);
+            if (largo) {
                 problema.innerText = pregunta.texto;
                 const visible = document.createElement("span");
                 visible.setAttribute("aria-hidden", "true");
@@ -3173,16 +3330,19 @@
 
             speak(pregunta.voz);
 
-            let optionsArray = seDivide()
+            // Un reto trae sus opciones, y su texto puede no ser el valor
+            // («6 × 7» vale 42).
+            const optionsArray = pregunta.opciones || (seDivide()
                 ? generarOpcionesDivision(numA, numB)
-                : generarOpciones(numA, numB, correctAnswer);
+                : generarOpciones(numA, numB, correctAnswer)).map((v) => ({ valor: v, etiqueta: String(v) }));
 
             for (let i = 0; i < 4; i++) {
                 const optBtn = document.getElementById(`opt-${i}`);
-                optBtn.innerText = optionsArray[i];
+                optBtn.innerText = optionsArray[i].etiqueta;
                 // El valor se guarda aparte: el texto del botón cambia al
                 // marcarlo (✓/✗) y no debe ser la fuente de verdad.
-                optBtn.dataset.valor = String(optionsArray[i]);
+                optBtn.dataset.valor = String(optionsArray[i].valor);
+                optBtn.dataset.etiqueta = optionsArray[i].etiqueta;
             }
 
             if (!document.getElementById("help-panel").classList.contains("hidden")) {
@@ -3217,6 +3377,15 @@
         let ayudaGirada = false;
 
         function generateHelpVisual() {
+            // En los retos, el rectángulo solo ayuda a partir una multiplicación.
+            const sinDibujo = pregunta?.tipo === "logica" && pregunta.clase !== "partir";
+            document.getElementById("btn-girar").classList.toggle("hidden", pregunta?.tipo === "logica");
+            if (sinDibujo) {
+                document.getElementById("help-truco").innerText = pistaPara().texto;
+                document.getElementById("help-explain").innerText = "";
+                document.getElementById("help-visual-container").replaceChildren();
+                return;
+            }
             const filas = ayudaGirada ? numB : numA;
             const columnas = ayudaGirada ? numA : numB;
 
@@ -3224,7 +3393,9 @@
             // Al dividir, el rectángulo es el mismo, pero lo que se busca es
             // otro: cuántos hay en cada fila, sabiendo el total y las filas.
             const total = numA * numB;
-            document.getElementById("help-explain").innerText = seDivide()
+            document.getElementById("help-explain").innerText = pregunta?.clase === "partir"
+                ? `${numA} × ${numB}: ${numA} filas de ${numB}. A la izquierda del hueco hay ${numA} × 5; cuenta cuántas columnas quedan a la derecha.`
+                : seDivide()
                 ? (ayudaGirada
                     ? `Girado: ${total} puntos en filas de ${numA}. ¿Cuántas filas hay? Es la misma respuesta.`
                     : `${total} puntos repartidos en ${numA} filas iguales. ¿Cuántos hay en cada fila?`)
@@ -3433,6 +3604,7 @@
          * la respuesta.
          */
         function pistaPara() {
+            if (pregunta?.tipo === "logica") return { texto: pregunta.pista, voz: textoParaVoz(pregunta.pista) };
             if (!pregunta || pregunta.tipo === "mult") {
                 const truco = trucoPara(numA, numB);
                 const puente = puenteDesdeLoSabido(numA, numB);
@@ -3522,7 +3694,7 @@
             marca.setAttribute("aria-hidden", "true");
             marca.textContent = acierto ? "✓" : "✗";
             boton.appendChild(marca);
-            boton.setAttribute("aria-label", `${boton.dataset.valor}, ${acierto ? "correcta" : "incorrecta"}`);
+            boton.setAttribute("aria-label", `${boton.dataset.etiqueta || boton.dataset.valor}, ${acierto ? "correcta" : "incorrecta"}`);
         }
 
         function selectOption(index) {
@@ -3649,7 +3821,7 @@
                 }
 
                 score++;
-                aciertosPorOp[seDivide() ? "÷" : "×"]++;
+                aciertosPorOp[pregunta.tipo === "logica" ? "L" : seDivide() ? "÷" : "×"]++;
                 ganarEstrellas(1 + (florecio ? BONO_FLOR : 0));
                 updateHUD();
 
@@ -3713,6 +3885,7 @@
 
         /** Lo que hace falta guardar en la cola para repetir la misma pregunta. */
         function extraDeRepaso() {
+            if (pregunta.tipo === "logica") return { reto: pregunta.reto };
             return pregunta.tipo === "problema" ? { op: pregunta.op, t: pregunta.t } : {};
         }
 
@@ -3770,10 +3943,11 @@
                 : currentTable === "falta" ? "Lo que te faltaba"
                 : currentTable === "div" ? "La División del Jardín"
                 : currentTable === "problemas" ? "Los Problemas del Jardín"
+                : currentTable === "logica" ? "Los Retos de Lógica"
                 : `La Tabla del ${currentTable}`;
             document.getElementById("victory-table-name").innerText = tableName;
 
-            const aprendido = currentTable === "div" || currentTable === "problemas"
+            const aprendido = ["div", "problemas", "logica"].includes(currentTable)
                 ? fraseDeLoResuelto()
                 : fraseDeLoAprendido();
             document.getElementById("victoria-aprendido").innerText = aprendido;
@@ -3807,6 +3981,10 @@
          * idea que hay que llevarse.
          */
         function fraseDeLoResuelto() {
+            if (currentTable === "logica") {
+                const n = aciertosPorOp["L"];
+                return `Resolviste ${n} ${n === 1 ? "reto" : "retos"} de lógica. Pensar con las tablas, y no solo recordarlas, es saberlas de verdad.`;
+            }
             if (currentTable === "div") {
                 const total = numA * numB;
                 return `Resolviste ${aciertosPorOp["÷"]} divisiones. Dividir es multiplicar al revés: como ${numA} × ${numB} = ${total}, ${total} ÷ ${numA} = ${numB}.`;
