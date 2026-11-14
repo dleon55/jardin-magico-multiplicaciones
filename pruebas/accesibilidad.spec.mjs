@@ -161,7 +161,7 @@ test("elegir mundo y personaje, en la bienvenida y en el menú", async ({ page }
   await auditar(page, "cambiar de mundo");
 });
 
-for (const mundo of ["huerto", "bosque", "dinos", "desierto", "flores"]) {
+for (const mundo of ["huerto", "bosque", "dinos", "espacio", "mar", "granja", "desierto", "flores"]) {
   test(`el menú y el jardín se leen bien en el mundo «${mundo}»`, async ({ page }) => {
     await page.goto("./");
     await page.click(`#screen-welcome .elegir-mundo label:has(input[value="${mundo}"])`);

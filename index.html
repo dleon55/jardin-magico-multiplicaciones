@@ -78,6 +78,9 @@
         body[data-mundo="bosque"] { background: linear-gradient(135deg, #ecfccb 0%, #d1fae5 50%, #e0f2fe 100%); }
         body[data-mundo="dinos"] { background: linear-gradient(135deg, #fef3c7 0%, #d9f99d 50%, #ccfbf1 100%); }
         body[data-mundo="desierto"] { background: linear-gradient(135deg, #fffbeb 0%, #fde68a 50%, #fed7aa 100%); }
+        body[data-mundo="espacio"] { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #ede9fe 100%); }
+        body[data-mundo="mar"] { background: linear-gradient(135deg, #cffafe 0%, #bae6fd 50%, #e0f2fe 100%); }
+        body[data-mundo="granja"] { background: linear-gradient(135deg, #fef9c3 0%, #fde68a 50%, #dcfce7 100%); }
         body[data-mundo="flores"] { background: linear-gradient(135deg, #fef6e4 0%, #fce7f3 50%, #e8f5e9 100%); }
 
         /* Fichas para elegir mundo y personaje: radios de verdad (teclado y
@@ -266,7 +269,7 @@
                 
                 <fieldset class="text-left">
                     <legend class="block text-gray-700 font-bold text-center w-full mb-1">Elige tu mundo</legend>
-                    <div class="elegir-mundo grid grid-cols-3 sm:grid-cols-5 gap-2" data-nombre="mundo"></div>
+                    <div class="elegir-mundo grid grid-cols-4 gap-2" data-nombre="mundo"></div>
                 </fieldset>
                 <fieldset class="text-left">
                     <legend class="block text-gray-700 font-bold text-center w-full mb-1">Elige tu personaje</legend>
@@ -671,7 +674,7 @@
             </div>
             <fieldset class="max-w-md mx-auto">
                 <legend class="block text-gray-700 font-bold text-center w-full mb-1">Mundo</legend>
-                <div class="elegir-mundo grid grid-cols-3 sm:grid-cols-5 gap-2" data-nombre="mundo-cambio"></div>
+                <div class="elegir-mundo grid grid-cols-4 gap-2" data-nombre="mundo-cambio"></div>
             </fieldset>
             <fieldset class="max-w-md mx-auto">
                 <legend class="block text-gray-700 font-bold text-center w-full mb-1">Personaje</legend>
@@ -854,6 +857,21 @@
                 nombre: "Selva de dinosaurios", emoji: "🦖", flor: "🦕", nombreFlor: "dinosaurio", capullo: "🥚", nombreCapullo: "huevo, casi",
                 flora: ["🦕", "🦖", "🐊", "🦎", "🐢", "🌴", "🌋", "🐉", "🦕"],
                 crecen: ["🦕", "🦖", "🌴", "🐊", "🦎", "🐢", "🌋", "🥚", "🌿", "🐉"],
+            },
+            espacio: {
+                nombre: "Espacio", emoji: "🚀", flor: "🌟", nombreFlor: "estrella", capullo: "🌙", nombreCapullo: "luna, casi",
+                flora: ["🌍", "🌙", "⭐", "☄️", "🛸", "🌌", "🛰️", "🌠", "🚀"],
+                crecen: ["⭐", "🌟", "🌙", "☄️", "🛸", "🛰️", "🌠", "🌍", "🌌", "✨"],
+            },
+            mar: {
+                nombre: "Fondo del mar", emoji: "🐠", flor: "🐠", nombreFlor: "pez", capullo: "🐚", nombreCapullo: "concha, casi",
+                flora: ["🐟", "🐠", "🐡", "🐙", "🦀", "🐢", "🐬", "🐳", "🦈"],
+                crecen: ["🐟", "🐠", "🐡", "🐙", "🦀", "🐢", "🐬", "🐳", "🐚", "🦐"],
+            },
+            granja: {
+                nombre: "Granja", emoji: "🐄", flor: "🐔", nombreFlor: "animal de la granja", capullo: "🐣", nombreCapullo: "pollito, casi",
+                flora: ["🐔", "🐄", "🐖", "🐑", "🐐", "🐴", "🦆", "🐇", "🐓"],
+                crecen: ["🐔", "🐄", "🐖", "🐑", "🐐", "🐴", "🦆", "🐇", "🌾", "🚜"],
             },
             desierto: {
                 nombre: "Desierto", emoji: "🌵", flor: "🌵", nombreFlor: "cactus", capullo: "🌾", nombreCapullo: "brote de cactus, casi",
