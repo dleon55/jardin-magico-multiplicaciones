@@ -374,7 +374,7 @@
                 </button>
                 <button type="button" onclick="startTable('fracciones')" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🍕</span> Fracciones</span>
-                    <span class="text-xs font-sans font-semibold">¾ de 24: partes iguales</span>
+                    <span class="text-xs font-sans font-semibold">¾ de 24, iguales y ¿cuál es mayor?</span>
                 </button>
             </div>
 
@@ -3205,7 +3205,9 @@
         // de siempre: quedarse con una parte, calcular lo que sobra o dividir
         // entre el número de arriba. No cuentan para el mapa ni el jardín.
         const NOMBRE_PARTE = { 2: ["medio", "medios"], 3: ["tercio", "tercios"], 4: ["cuarto", "cuartos"], 5: ["quinto", "quintos"],
-            6: ["sexto", "sextos"], 7: ["séptimo", "séptimos"], 8: ["octavo", "octavos"], 9: ["noveno", "novenos"], 10: ["décimo", "décimos"] };
+            6: ["sexto", "sextos"], 7: ["séptimo", "séptimos"], 8: ["octavo", "octavos"], 9: ["noveno", "novenos"], 10: ["décimo", "décimos"],
+            12: ["doceavo", "doceavos"], 14: ["catorceavo", "catorceavos"], 15: ["quinceavo", "quinceavos"], 16: ["dieciseisavo", "dieciseisavos"],
+            18: ["dieciochoavo", "dieciochoavos"], 20: ["veinteavo", "veinteavos"], 24: ["veinticuatroavo", "veinticuatroavos"] };
         const NUMERO_PALABRA = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
 
         /** «tres cuartos», «un tercio». */
@@ -3215,22 +3217,124 @@
         }
 
         /**
-         * Diez fracciones { m, d, k }: se pregunta m/d de d·k. Cuatro de una
-         * parte (¼ de 24) y seis de varias (¾ de 24), que es lo que más cuesta.
-         * Con pocas multiplicaciones sabidas, partes del 2 al 5.
+         * Diez preguntas de fracciones, de tres clases:
+         *   - «de»: m/d de d·k ({ m, d, k }). Dos de una parte (1/4 de 24) y
+         *     dos de varias (3/4 de 24), que es lo que más cuesta;
+         *   - «equivalente»: ¿cuál es igual a a/b? ({ a, b, k }: a·k/b·k), tres;
+         *   - «comparar»: ¿cuál es la más grande?, tres: mismo denominador,
+         *     mismo numerador (1/3 > 1/5, el error clásico) y distintos.
+         * Con pocas multiplicaciones sabidas, partes del 2 al 5 al sacar «de».
          */
         function bolsaDeFracciones() {
             const hi = parejasConocidas().length >= MIN_CONOCIDAS ? 9 : 5;
-            const lista = Array.from({ length: 10 }, (_, i) => {
-                const d = entre(i < 4 ? 2 : 3, hi);
-                const m = i < 4 ? 1 : entre(2, d - 1);
-                const reto = { m, d, k: entre(2, 9) };
-                return { a: d, b: reto.k, reto };
+            const de = Array.from({ length: 4 }, (_, i) => {
+                const d = entre(i < 2 ? 2 : 3, hi);
+                return { clase: "de", m: i < 2 ? 1 : entre(2, d - 1), d, k: entre(2, 9) };
             });
-            return barajar(lista);
+            const equivalentes = Array.from({ length: 3 }, () => crearEquivalente());
+            const comparar = ["mismoDen", "mismoNum", "distintos"].map(crearComparacion);
+            return barajar([...de, ...equivalentes, ...comparar].map((reto) => {
+                const [a, b] = numerosDeFraccion(reto);
+                return { a, b, reto };
+            }));
+        }
+
+        /** Dos números que representan la pregunta (para el repaso). */
+        function numerosDeFraccion(r) {
+            if (r.clase === "equivalente") return [r.b, r.k];
+            if (r.clase === "comparar") return [r.fracs[0][1], r.fracs.length];
+            return [r.d, r.k];
+        }
+
+        // Fracciones propias en mínima expresión con denominador del 2 al 6.
+        function fraccionesBase() {
+            const lista = [];
+            for (let b = 2; b <= 6; b++) for (let a = 1; a < b; a++) if (mcd(a, b) === 1) lista.push([a, b]);
+            return lista;
+        }
+
+        function crearEquivalente() {
+            const [a, b] = azar(fraccionesBase());
+            return { clase: "equivalente", a, b, k: entre(2, b <= 3 ? 4 : 3) };
+        }
+
+        function crearComparacion(variante) {
+            const valorDe = ([m, d]) => m / d;
+            const distintas = (lista) => new Set(lista.map((f) => valorDe(f).toFixed(6))).size === lista.length;
+            for (;;) {
+                let fracs;
+                if (variante === "mismoDen") {
+                    const d = entre(5, 10);
+                    fracs = barajar(Array.from({ length: d - 1 }, (_, i) => [i + 1, d])).slice(0, 4);
+                } else if (variante === "mismoNum") {
+                    const m = entre(1, 3);
+                    fracs = barajar([2, 3, 4, 5, 6, 7, 8, 9, 10].filter((d) => d > m).map((d) => [m, d])).slice(0, 4);
+                } else {
+                    // Denominadores que caben en 12 o 24: el común es fácil de hallar.
+                    const pool = [];
+                    for (const d of [2, 3, 4, 6, 8, 12]) for (let m = 1; m < d; m++) if (mcd(m, d) === 1) pool.push([m, d]);
+                    fracs = barajar(pool).slice(0, 4);
+                    if (new Set(fracs.map((f) => f[1])).size < 3) continue;   // que de verdad sean distintos
+                }
+                if (fracs.length === 4 && distintas(fracs)) return { clase: "comparar", variante, fracs };
+            }
+        }
+
+        const codigoFraccion = (m, d) => m * 100 + d;   // el valor de un botón que muestra «m/d»
+        const textoFraccion = (m, d) => `${m}/${d}`;
+
+        function armarEquivalente(r) {
+            const { a, b, k } = r;
+            const [c, d] = [a * k, b * k];
+            const falsas = [[a + k, b + k], [a, d], [c, b], [a * (k + 1), d], [c, d + b], [a + 1, b + 1]]
+                .filter(([m, n]) => m < n && !(m * b === a * n));   // propias y no equivalentes
+            const lista = [[c, d]];
+            for (const f of falsas) if (lista.length < 4 && !lista.some(([m, n]) => m === f[0] && n === f[1])) lista.push(f);
+            const texto = `¿Cuál fracción es igual a ${textoFraccion(a, b)}?`;
+            // La ayuda dibuja la de la pregunta y una tira por opción, en el
+            // orden de los botones: se compara, no se regala la respuesta.
+            const enOrden = barajar(lista);
+            return {
+                tipo: "fraccion", clase: "equivalente", reto: r, a: b, b: k,
+                respuesta: codigoFraccion(c, d), texto, voz: texto.replace(/\d+\/\d+/, nombreFraccion(a, b)),
+                opciones: enOrden.map(([m, n]) => ({ valor: codigoFraccion(m, n), etiqueta: textoFraccion(m, n) })),
+                tiras: [[a, b], ...enOrden],
+                pista: `Una fracción no cambia si multiplicas el número de arriba y el de abajo por lo mismo. Busca cuál se hizo así a partir de ${textoFraccion(a, b)}.`,
+                explicacion: `${textoFraccion(c, d)} = ${textoFraccion(a, b)}: arriba y abajo se multiplicaron por ${k} (${a} × ${k} = ${c} y ${b} × ${k} = ${d}). Sumar lo mismo arriba y abajo no da una igual.`,
+            };
+        }
+
+        function armarComparacion(r) {
+            const { variante, fracs } = r;
+            const max = fracs.reduce((x, f) => (f[0] / f[1] > x[0] / x[1] ? f : x));
+            const t = textoFraccion(...max);
+            let pista;
+            let explicacion;
+            if (variante === "mismoDen") {
+                pista = "Todas están partidas en las mismas partes: gana la que toma más partes.";
+                explicacion = `Todas están partidas en ${NOMBRE_PARTE[max[1]]?.[1] || `${max[1]} partes`}: ${t} es la que toma más partes.`;
+            } else if (variante === "mismoNum") {
+                pista = "Todas toman las mismas partes: gana la que tiene las partes más grandes, es decir, el número de abajo más chico.";
+                const chica = fracs.reduce((x, f) => (f[1] > x[1] ? f : x));
+                explicacion = `${t} es la más grande: entre más partes se reparte, más chica es cada una. Por eso ${textoFraccion(...chica)} es la más chica.`;
+            } else {
+                const D = fracs.reduce((acc, [, d]) => (acc * d) / mcd(acc, d), 1);
+                pista = `Pásalas todas al mismo número de abajo, ${D}: multiplica arriba y abajo por lo que haga falta, y compara.`;
+                explicacion = `Con ${D} abajo: ${fracs.map(([m, d]) => `${textoFraccion(m, d)} = ${textoFraccion(m * (D / d), D)}`).join(", ")}. La más grande es ${t}.`;
+            }
+            return {
+                tipo: "fraccion", clase: "comparar", reto: r, a: max[1], b: fracs.length,
+                respuesta: codigoFraccion(...max),
+                texto: "¿Cuál fracción es la más grande?",
+                voz: `¿Cuál fracción es la más grande: ${comas(fracs.map(([m, d]) => nombreFraccion(m, d))).replace(/ y ([^y]*)$/, " o $1")}?`,
+                opciones: barajar(fracs).map(([m, d]) => ({ valor: codigoFraccion(m, d), etiqueta: textoFraccion(m, d) })),
+                tiras: fracs, pista, explicacion,
+            };
         }
 
         function armarFraccion(r) {
+            if (r.clase === "equivalente") return armarEquivalente(r);
+            if (r.clase === "comparar") return armarComparacion(r);
             const { m, d, k } = r;
             const total = d * k;
             const respuesta = m * k;
@@ -3343,7 +3447,7 @@
             // Los números de un reto salen del reto mismo (la ayuda de «partir»
             // dibuja su rectángulo con ellos).
             if (pregunta.tipo === "logica") [numA, numB] = numerosDelReto(pregunta.reto);
-            if (pregunta.tipo === "fraccion") [numA, numB] = [pregunta.reto.d, pregunta.reto.k];
+            if (pregunta.tipo === "fraccion") [numA, numB] = numerosDeFraccion(pregunta.reto);
             correctAnswer = pregunta.respuesta;
             ayudaGirada = false;
 
@@ -3354,7 +3458,7 @@
             // respuesta que se pueda escribir (¿cuál da más?).
             modoEscrito = pregunta.tipo === "mult"
                 ? seEscribe(numA, numB)
-                : pregunta.tipo !== "logica" && !repasoActual && estadoHecho(numA, numB) === "florecida";
+                : pregunta.tipo !== "logica" && !pregunta.tiras && !repasoActual && estadoHecho(numA, numB) === "florecida";
             document.getElementById("escritura-aviso").innerText = pregunta.tipo === "mult"
                 ? "Esta ya te salió bien: ahora escríbela."
                 : "Esta multiplicación ya te la sabes: escribe la respuesta.";
@@ -3448,7 +3552,8 @@
             const sinDibujo = pregunta?.tipo === "logica" && pregunta.clase !== "partir";
             document.getElementById("btn-girar").classList.toggle("hidden", pregunta?.tipo === "logica" || pregunta?.tipo === "fraccion");
             if (pregunta?.tipo === "fraccion") {
-                dibujarFraccion();
+                if (pregunta.tiras) dibujarTiras(pregunta.tiras);
+                else dibujarFraccion();
                 return;
             }
             if (sinDibujo) {
@@ -3493,6 +3598,38 @@
         }
 
         /** m/d de d·k: d filas de k puntos; las m primeras, en verde. */
+        /**
+         * Tiras del mismo largo, cada una partida en partes iguales, con las
+         * partes que se toman en verde: se VE que 1/2 y 2/4 ocupan lo mismo,
+         * y cuál de varias es la más grande.
+         */
+        function dibujarTiras(tiras) {
+            document.getElementById("help-truco").innerText = pistaPara().texto;
+            document.getElementById("help-explain").innerText = pregunta.clase === "equivalente"
+                ? `Todas las tiras miden lo mismo. ¿Cuál tiene tanto verde como ${textoFraccion(...tiras[0])}?`
+                : "Todas las tiras miden lo mismo. ¿Cuál tiene más verde?";
+            const caja = document.createElement("div");
+            caja.className = "bg-white border-2 border-indigo-100 rounded-xl p-3 space-y-2 w-full max-w-sm";
+            tiras.forEach(([m, d], i) => {
+                const fila = document.createElement("div");
+                // En equivalentes, la primera es la de la pregunta: separada.
+                fila.className = `tira flex items-center gap-2 ${pregunta.clase === "equivalente" && i === 0 ? "pb-2 border-b-2 border-dashed border-indigo-200" : ""}`;
+                const nombre = document.createElement("span");
+                nombre.className = "w-12 text-right font-bold text-indigo-900";
+                nombre.textContent = textoFraccion(m, d);
+                const barra = document.createElement("div");
+                barra.className = "flex flex-1 h-6 border-2 border-indigo-300 rounded";
+                for (let i = 0; i < d; i++) {
+                    const parte = document.createElement("span");
+                    parte.className = `flex-1 ${i < m ? "bg-green-600 parte-tomada" : "bg-gray-200"} ${i > 0 ? "border-l-2 border-white" : ""}`;
+                    barra.appendChild(parte);
+                }
+                fila.append(nombre, barra);
+                caja.appendChild(fila);
+            });
+            document.getElementById("help-visual-container").replaceChildren(caja);
+        }
+
         function dibujarFraccion() {
             const { m, d, k } = pregunta.reto;
             document.getElementById("help-truco").innerText = pistaPara().texto;
@@ -3766,7 +3903,7 @@
         // Los signos se leen mal o no se leen: se dicen con palabras.
         function textoParaVoz(texto) {
             return texto
-                .replace(/\b(\d)\/(\d{1,2})\b/g, (_, m, d) => nombreFraccion(Number(m), Number(d)))
+                .replace(/\b(\d{1,2})\/(\d{1,2})\b/g, (_, m, d) => nombreFraccion(Number(m), Number(d)))
                 .replace(/×\s*\?/g, " por cuánto ").replace(/÷/g, " entre ").replace(/…/g, "")
                 .replace(/×/g, " por ").replace(/\+/g, " más ").replace(/−/g, " menos ").replace(/ → ¿\?/g, ", y otra vez el doble")
                 .replace(/→/g, ",").replace(/ = /g, " es ").replace(/ +/g, " ").replace(/ ,/g, ",");
@@ -4080,7 +4217,7 @@
         function fraseDeLoResuelto() {
             if (currentTable === "fracciones") {
                 const n = aciertosPorOp["F"];
-                return `Resolviste ${n} ${n === 1 ? "fracción" : "fracciones"}. Para sacar 3/4 de un número, se divide entre 4 y se multiplica por 3.`;
+                return `Resolviste ${n} ${n === 1 ? "fracción" : "fracciones"}. Para sacar 3/4 de un número, se divide entre 4 y se multiplica por 3; y una fracción no cambia si multiplicas arriba y abajo por lo mismo.`;
             }
             if (currentTable === "logica") {
                 const n = aciertosPorOp["L"];

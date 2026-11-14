@@ -9,6 +9,10 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-14
 
+- **Fracciones equivalentes y comparar fracciones** (#25), dentro de
+  «🍕 Fracciones»: «¿Cuál es igual a 1/2?» y «¿Cuál es la más grande?», con
+  tiras del mismo largo en la ayuda y las opciones falsas de los errores
+  típicos (sumar lo mismo arriba y abajo; creer que 1/5 > 1/3).
 - **🍕 Fracciones de un número** (#24), para 4.º a 6.º: 1/4 de 24 y 3/4 de
   24, con el rectángulo repartido en partes iguales y las opciones falsas
   de los errores típicos. No cuenta para el mapa ni el jardín.
