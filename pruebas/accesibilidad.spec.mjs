@@ -199,3 +199,11 @@ test("comparar fracciones con las tiras de la ayuda", async ({ page }) => {
   await page.click("#btn-help");
   await auditar(page, "comparar fracciones con tiras");
 });
+
+test("sumar fracciones con las tiras de la ayuda", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.evaluate(() => { startTable("fracciones"); colaRepaso = []; bolsa = [{ a: 7, b: 2, reto: { clase: "sumar", op: "+", a: 2, b: 3, d: 7 } }]; nextQuestion(); });
+  await page.click("#btn-help");
+  await auditar(page, "sumar fracciones con tiras");
+});

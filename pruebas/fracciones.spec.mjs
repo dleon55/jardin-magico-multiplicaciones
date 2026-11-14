@@ -46,7 +46,7 @@ test("los nombres de las partes, en la voz", async ({ page }) => {
   expect(r).toEqual(["un medio", "dos tercios", "cinco octavos", "siete novenos", "tres cuartos de 24 es 18: un cuarto es 24 entre 4 es 6."]);
 });
 
-test("una partida: 4 «de» (2 de una parte, 2 de varias), 3 equivalentes y 3 para comparar", async ({ page }) => {
+test("una partida: 3 «de» (1 de una parte, 2 de varias), 2 equivalentes, 2 para comparar y 3 de sumar o restar", async ({ page }) => {
   await page.goto("./");
   const r = await page.evaluate(() => {
     const b = bolsaDeFracciones();
@@ -54,10 +54,14 @@ test("una partida: 4 «de» (2 de una parte, 2 de varias), 3 equivalentes y 3 pa
     return { n: b.length, de: de.length, unitarias: de.filter((h) => h.reto.m === 1).length,
       propias: de.every((h) => h.reto.m < h.reto.d), maxD: Math.max(...de.map((h) => h.reto.d)),
       equivalentes: b.filter((h) => h.reto.clase === "equivalente").length,
-      comparar: b.filter((h) => h.reto.clase === "comparar").map((h) => h.reto.variante).sort() };
+      comparar: b.filter((h) => h.reto.clase === "comparar").map((h) => h.reto.variante),
+      ops: b.filter((h) => h.reto.clase === "sumar").map((h) => h.reto.op) };
   });
-  expect(r).toEqual({ n: 10, de: 4, unitarias: 2, propias: true, maxD: expect.any(Number), equivalentes: 3,
-    comparar: ["distintos", "mismoDen", "mismoNum"] });
+  expect(r).toEqual({ n: 10, de: 3, unitarias: 1, propias: true, maxD: expect.any(Number), equivalentes: 2,
+    comparar: expect.any(Array), ops: expect.any(Array) });
+  expect(new Set(r.comparar).size).toBe(2);
+  expect(r.ops).toHaveLength(3);
+  expect(r.ops).toEqual(expect.arrayContaining(["+", "−"]));
   expect(r.maxD).toBeLessThanOrEqual(5);
 });
 
@@ -81,7 +85,7 @@ test("se juega desde el menú y no toca el jardín; un fallo vuelve igual", asyn
   await page.goto("./");
   await page.click("#screen-welcome button");
   await page.click("#screen-selector >> text=Fracciones");
-  await expect(page.locator("#problema-texto")).toHaveText(/fracción|¿Cuánto es \d\/\d de \d+\?/);
+  await expect(page.locator("#problema-texto")).toHaveText(/fracción|¿Cuánto es \d+\/\d+ (de \d+|[+−] \d+\/\d+)\?/);
   const antes = await page.evaluate(() => JSON.stringify(pregunta.reto));
   const mala = await page.evaluate(() => [...document.querySelectorAll(".btn-option")].find((b) => Number(b.dataset.valor) !== correctAnswer).id);
   await page.click(`#${mala}`);
@@ -131,8 +135,8 @@ test("diez aciertos: la victoria dice cuántas se resolvieron y cómo se saca", 
     await page.locator("#btn-siguiente:not([disabled])").click();
   }
   await expect(page.locator("#victory-table-name")).toHaveText("Las Fracciones del Jardín");
-  await expect(page.locator("#victoria-aprendido")).toHaveText(
-    "Resolviste 10 fracciones. Para sacar 3/4 de un número, se divide entre 4 y se multiplica por 3; y una fracción no cambia si multiplicas arriba y abajo por lo mismo.");
+  // La idea que se lleva depende de la última pregunta.
+  await expect(page.locator("#victoria-aprendido")).toHaveText(/^Resolviste 10 fracciones\. (Con el mismo número de abajo|Una fracción no cambia|Para comparar|Para sacar 3\/4)/);
 });
 
 test.describe("equivalentes y comparar", () => {
@@ -215,5 +219,75 @@ test.describe("equivalentes y comparar", () => {
     await page.click(`.btn-option[data-etiqueta="3/4"]`);
     await expect(page.locator(`.btn-option[data-etiqueta="3/4"]`)).toHaveAttribute("aria-label", "3/4, incorrecta");
     await expect(page.locator("#game-feedback")).toContainText("Con 12 abajo: 3/4 = 9/12");
+  });
+});
+
+test.describe("sumar y restar con el mismo denominador", () => {
+  test("2/7 + 3/7: se suman las de arriba; la opción falsa clásica suma también las de abajo", async ({ page }) => {
+    await page.goto("./");
+    const p = await page.evaluate(() => armarFraccion({ clase: "sumar", op: "+", a: 2, b: 3, d: 7 }));
+    expect(p.texto).toBe("¿Cuánto es 2/7 + 3/7?");
+    expect(p.voz).toBe("¿Cuánto es dos séptimos más tres séptimos?");
+    const et = p.opciones.map((o) => o.etiqueta);
+    expect(et).toEqual(expect.arrayContaining(["5/7", "5/14"]));
+    expect(p.opciones.find((o) => o.etiqueta === "5/7").valor).toBe(p.respuesta);
+    expect(p.explicacion).toBe("2/7 + 3/7 = 5/7: son séptimos las dos, así que se suman las partes (2 + 3 = 5) y siguen siendo séptimos. Los de abajo no se suman.");
+  });
+
+  test("5/8 − 2/8: se restan las de arriba; sumar en lugar de restar es una opción falsa", async ({ page }) => {
+    await page.goto("./");
+    const p = await page.evaluate(() => armarFraccion({ clase: "sumar", op: "−", a: 5, b: 2, d: 8 }));
+    expect(p.texto).toBe("¿Cuánto es 5/8 − 2/8?");
+    expect(p.voz).toBe("¿Cuánto es cinco octavos menos dos octavos?");
+    expect(p.opciones.map((o) => o.etiqueta)).toEqual(expect.arrayContaining(["3/8", "7/8"]));
+    expect(p.explicacion).toBe("5/8 − 2/8 = 3/8: se quitan partes (5 − 2 = 3) y siguen siendo octavos. Los de abajo no se restan.");
+  });
+
+  test("trescientas al azar: resultado propio, 4 opciones distintas y una sola con el valor correcto", async ({ page }) => {
+    await page.goto("./");
+    const malos = await page.evaluate(() => {
+      const f = [];
+      const val = (c) => Math.floor(c / 100) / (c % 100);
+      for (let i = 0; i < 150; i++) for (const op of ["+", "−"]) {
+        const r = crearSuma(op);
+        const p = armarFraccion(r);
+        const v = p.opciones.map((o) => o.valor);
+        const bien = op === "+" ? (r.a + r.b) / r.d : (r.a - r.b) / r.d;
+        const iguales = v.filter((c) => Math.abs(val(c) - bien) < 1e-9);
+        if (bien <= 0 || bien >= 1 || v.length !== 4 || new Set(v).size !== 4 || iguales.length !== 1 || iguales[0] !== p.respuesta) f.push(JSON.stringify(r));
+      }
+      return f;
+    });
+    expect(malos).toEqual([]);
+  });
+
+  test("la ayuda: al sumar, dos tiras para juntar lo verde; al restar, una para quitar partes", async ({ page }) => {
+    await page.goto("./");
+    await page.click("#screen-welcome button");
+    const abrir = async (r) => {
+      await page.evaluate((x) => { startTable("fracciones"); colaRepaso = []; bolsa = [{ a: 2, b: 2, reto: x }]; document.getElementById("help-panel").classList.add("hidden"); nextQuestion(); }, r);
+      await page.click("#btn-help");
+    };
+    await abrir({ clase: "sumar", op: "+", a: 2, b: 3, d: 7 });
+    await expect(page.locator("#help-visual-container .tira")).toHaveCount(2);
+    await expect(page.locator("#help-visual-container .parte-tomada")).toHaveCount(5);
+    await expect(page.locator("#help-explain")).toHaveText("Las dos tiras están partidas igual. Junta lo verde de las dos: ¿cuántas partes son?");
+    await expect(page.locator("#help-truco")).toContainText("El número de abajo dice el tamaño de las partes y no cambia.");
+    await abrir({ clase: "sumar", op: "−", a: 5, b: 2, d: 8 });
+    await expect(page.locator("#help-visual-container .tira")).toHaveCount(1);
+    await expect(page.locator("#help-explain")).toHaveText("Quita 2 de las partes verdes: ¿cuántas quedan?");
+    await expect(page.locator("#opciones")).toBeVisible();
+  });
+
+  test("al ganar con una suma al final, la idea es la de sumar", async ({ page }) => {
+    await page.goto("./");
+    await page.click("#screen-welcome button");
+    await page.evaluate(() => {
+      startTable("fracciones");
+      pregunta = armarFraccion({ clase: "sumar", op: "+", a: 1, b: 2, d: 5 });
+      aciertosPorOp.F = 10;
+      endGameSuccess();
+    });
+    await expect(page.locator("#victoria-aprendido")).toHaveText("Resolviste 10 fracciones. Con el mismo número de abajo, se suman o se restan solo los de arriba.");
   });
 });
