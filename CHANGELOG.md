@@ -9,6 +9,10 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Una música para cada mundo de la Aventura** (#39): alegre con los
+  brócolis, saltarina con los monstruos, misteriosa con los fantasmas, menor y
+  apurada con los zombis, «espacial» con los aliens y lenta, como olas, en el
+  mar. Todas al mismo volumen.
 - **Mejor en el teléfono, y con música** (#38), tras jugarlo el titular en su móvil:
   - el teclado de la Aventura tiene la distribución de un teléfono (1 2 3 / 4 5 6 / 7 8 9 / ⌫ 0 ✨), como el del juego; antes iba en cuatro columnas;
   - tocar ya no mueve la pantalla: sin zoom por doble toque, y los teclados, las opciones y la arena no desplazan la página;

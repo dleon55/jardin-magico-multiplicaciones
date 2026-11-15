@@ -335,8 +335,11 @@ Este último se enciende solo si el dispositivo ya lo pide, y apaga los
 fundidos de entrada, la onda de los botones y los adornos que flotan.
 
 **Música de fondo.** Compuesta para el juego y tocada con el sintetizador del
-navegador, sin archivos ni internet: una pieza tranquila para el jardín y otra
-con más ritmo para la Aventura, en escala pentatónica. Va bajita, baja más
+navegador, sin archivos ni internet: una pieza tranquila para el jardín y una
+distinta para cada mundo de la Aventura (alegre en el huerto, saltarina con
+los monstruos, misteriosa y en menor con los fantasmas, menor y apurada con los
+zombis, «espacial» en escala lidia con los aliens y lenta, como olas, en el
+mar). Va bajita, baja más
 mientras habla la voz y se calla al cambiar de app. Empieza con el primer
 toque, porque los navegadores no dejan sonar antes.
 

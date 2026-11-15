@@ -68,13 +68,12 @@ test("tocar no mueve la pantalla: sin zoom por doble toque, y teclados, opciones
   await expect(page.locator('meta[name="viewport"]')).toHaveAttribute("content", "width=device-width, initial-scale=1.0");
 });
 
-test("hay música: tranquila en el jardín y con ritmo en la Aventura", async ({ page }) => {
+test("hay música: tranquila en el jardín y la de cada mundo en la Aventura", async ({ page }) => {
   await alMenu(page);
   await page.evaluate(() => startTable(2));   // un toque ya creó el audio
   await expect.poll(() => page.evaluate(() => [musica.pieza, musica.temporizador !== null])).toEqual(["jardin", true]);
   await page.evaluate(() => { mostrarAventura(); aventura.manual = true; empezarNivel(0, 0); });
-  expect(await page.evaluate(() => musica.pieza)).toBe("aventura");
-  expect(await page.evaluate(() => PIEZAS.aventura.tempo > PIEZAS.jardin.tempo)).toBe(true);
+  expect(await page.evaluate(() => musica.pieza)).toBe("brocolis");
   await page.evaluate(() => salirDeNivel());
   expect(await page.evaluate(() => musica.pieza)).toBe("jardin");
 });
@@ -121,12 +120,47 @@ test("mientras habla la voz, la música baja", async ({ page }) => {
   expect(r[1]).toBeCloseTo(0.05, 3);
 });
 
-test("la música está escrita en su escala: cada nota de la melodía cae en la pentatónica", async ({ page }) => {
+test("la música está escrita en su escala: cada nota de la melodía cae en la de su pieza", async ({ page }) => {
   await page.goto("./");
   const fuera = await page.evaluate(() => Object.entries(PIEZAS).flatMap(([nombre, p]) =>
-    p.melodia.flat().filter((g) => g !== null).map((g) => notaPentatonica(p.base, g) - p.base)
-      .filter((d) => !PENTATONICA.includes(((d % 12) + 12) % 12)).map((d) => `${nombre}:${d}`)));
+    p.melodia.flat().filter((g) => g !== null).map((g) => notaDeGrado(p, g) - p.base)
+      .filter((d) => !p.escala.includes(((d % 12) + 12) % 12)).map((d) => `${nombre}:${d}`)));
   expect(fuera).toEqual([]);
+});
+
+test("cada mundo de la Aventura tiene su propia música, completa y distinta de las demás", async ({ page }) => {
+  await page.goto("./");
+  const r = await page.evaluate(() => ({
+    mundos: AVENTURA_MUNDOS.length,
+    piezas: MUSICA_DE_MUNDO,
+    completas: MUSICA_DE_MUNDO.every((n) => {
+      const p = PIEZAS[n];
+      return p && p.melodia.length === 8 && p.melodia.every((c) => c.length === 8) && p.acordes.length === 8 &&
+        p.acordes.every((a) => Array.isArray(a) && a.length >= 3) && p.tempo >= 60 && p.tempo <= 140;
+    }),
+    melodiasDistintas: new Set(Object.values(PIEZAS).map((p) => JSON.stringify(p.melodia))).size,
+    sonidosDistintos: new Set(Object.values(PIEZAS).map((p) => `${p.tempo}|${p.base}|${p.escala}|${p.onda}|${p.bajo}|${p.pulso}`)).size,
+    menores: MUSICA_DE_MUNDO.filter((n) => PIEZAS[n].escala.includes(3) && !PIEZAS[n].escala.includes(4)),
+  }));
+  expect(r.piezas).toHaveLength(r.mundos);
+  expect(new Set(r.piezas).size).toBe(r.mundos);
+  expect(r.completas).toBe(true);
+  expect(r.melodiasDistintas).toBe(7);    // las seis de la Aventura y la del jardín
+  expect(r.sonidosDistintos).toBe(7);
+  expect(r.menores).toEqual(["fantasmas", "zombis"]);   // las de miedo, en menor
+});
+
+test("al pasar de mundo cambia la música, y cada nivel suena con la de su mundo", async ({ page }) => {
+  await alMenu(page);
+  await page.evaluate(() => startTable(2));
+  await expect.poll(() => page.evaluate(() => musica.temporizador !== null)).toBe(true);
+  const r = await page.evaluate(() => {
+    aventuraGuardada.alcanzado = 23;
+    mostrarAventura();
+    aventura.manual = true;
+    return AVENTURA_MUNDOS.map((_, m) => { empezarNivel(m, 0); return musica.pieza; });
+  });
+  expect(r).toEqual(["brocolis", "monstruos", "fantasmas", "zombis", "aliens", "mar"]);
 });
 
 test.describe("en el teléfono", () => {
