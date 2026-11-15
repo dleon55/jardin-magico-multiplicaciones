@@ -150,6 +150,18 @@ test("la semana de la misión se entiende: leyenda, «Hoy» y días vacíos sin 
   await expect(dias.last().locator(".sr-only")).toHaveText("hoy: misión cumplida");
 });
 
+test("al pasar el ratón, los botones no se mueven (antes temblaban si el puntero quedaba en el borde)", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "escritorio", "solo con ratón");
+  await alMenu(page);
+  const boton = page.locator("#grid-tablas-container button").first();
+  const antes = await boton.boundingBox();
+  await page.mouse.move(antes.x + antes.width / 2, antes.y + antes.height - 1);   // en el borde de abajo
+  await page.waitForTimeout(100);
+  const despues = await boton.boundingBox();
+  expect(despues.y).toBe(antes.y);
+  expect(await boton.evaluate((b) => getComputedStyle(b).transform)).toBe("none");
+});
+
 test.describe("en el teléfono", () => {
   test.use({ viewport: { width: 390, height: 664 }, isMobile: true, hasTouch: true });
 

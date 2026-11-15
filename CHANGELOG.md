@@ -9,6 +9,11 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Hecho para los dedos** (#43), tras medir cada pantalla en un teléfono:
+  - todo lo que se toca mide al menos 44 × 44 px; antes «⬅ Menú» medía 52 × 20 en todas las pantallas y las tablas del mapa, 15 × 16;
+  - la partida se juega sin desplazarse en un teléfono, hasta en uno de 360 × 640: antes las opciones quedaban debajo y el teclado de escribir a 870 px;
+  - en la Aventura, los modos son botones de icono junto a la respuesta, para que el nivel siga cabiendo con botones más grandes;
+  - en computadora, los botones ya no tiemblan cuando el ratón queda en su borde.
 - **Música más larga** (#42): cada una de las 15 piezas suena en cuatro
   partes, como una canción (el tema, la respuesta una tercera arriba, el tema
   más agudo y un respiro), y tarda de 63 a 111 segundos en repetirse (antes,
