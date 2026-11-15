@@ -9,6 +9,11 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Una música para cada mundo del jardín** (#41): campirana en el huerto,
+  suave en el bosque, con pasos grandes entre dinosaurios, flotante en el
+  espacio, como olas en el mar, de rancho en la granja, con sabor árabe en el
+  desierto y dulce entre flores. Más tranquilas que las de la Aventura;
+  cambian al guardar otro mundo.
 - **Volumen de la música** (#40): en Ajustes, de 0 a 10 (5, el de antes). Se
   oye al momento mientras se desliza y se recuerda; subirlo con la música
   apagada la enciende.

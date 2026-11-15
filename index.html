@@ -1420,9 +1420,10 @@
         const MAYOR_PENTA = [0, 2, 4, 7, 9];
         const MENOR_PENTA = [0, 3, 5, 7, 10];
         const LIDIA = [0, 2, 4, 6, 7, 9, 11];   // la cuarta subida suena «espacial»
+        const FRIGIA_DOMINANTE = [0, 1, 4, 5, 7, 8, 10];   // el sabor del desierto
         // Acordes por su grado: mayúscula, mayor; minúscula, menor (y «m» en los de tono menor).
         const AC = {
-            I: [0, 4, 7], ii: [2, 5, 9], II: [2, 6, 9], iii: [4, 7, 11], IV: [5, 9, 12], V: [7, 11, 14], vi: [9, 12, 16],
+            I: [0, 4, 7], bII: [1, 5, 8], ii: [2, 5, 9], II: [2, 6, 9], iii: [4, 7, 11], IV: [5, 9, 12], V: [7, 11, 14], vi: [9, 12, 16],
             im: [0, 3, 7], ivm: [5, 8, 12], VIm: [8, 12, 15], VIIm: [10, 14, 17], Vm: [7, 11, 14],
         };
         const PIEZAS = {
@@ -1503,9 +1504,111 @@
                     [2, null, 1, null, 0, null, 1, null], [0, null, null, null, null, null, null, null],
                 ],
             },
+            // --- Los mundos del jardín: más tranquilas que las de la Aventura,
+            // porque aquí se practica. Una por mundo.
+            // Huerto: campirana y alegre.
+            jardin_huerto: {
+                tempo: 88, base: 67, escala: MAYOR_PENTA, onda: "triangle", bajo: "triangle", pulso: 2,
+                acordes: [AC.I, AC.IV, AC.I, AC.V, AC.vi, AC.IV, AC.V, AC.I],
+                melodia: [
+                    [0, null, 1, 2, 3, null, 2, null], [1, null, 0, null, 1, null, null, null],
+                    [2, null, 3, 4, 5, null, 4, null], [3, null, null, null, 2, null, null, null],
+                    [4, null, 3, null, 2, null, 3, null], [2, null, 1, null, 0, null, null, null],
+                    [1, null, 2, null, 3, null, 1, null], [0, null, null, null, null, null, null, null],
+                ],
+            },
+            // Bosque: suave, en menor.
+            jardin_bosque: {
+                tempo: 80, base: 57, escala: MENOR_PENTA, onda: "sine", bajo: "triangle", pulso: 4,
+                acordes: [AC.im, AC.VIm, AC.VIIm, AC.im, AC.ivm, AC.VIm, AC.Vm, AC.im],
+                melodia: [
+                    [0, null, null, 1, 2, null, null, null], [3, null, 2, null, 1, null, null, null],
+                    [2, null, null, 3, 4, null, null, null], [5, null, 4, null, 3, null, null, null],
+                    [4, null, 3, null, 2, null, 3, null], [2, null, null, 1, 0, null, null, null],
+                    [1, null, 2, null, 1, null, 0, null], [0, null, null, null, null, null, null, null],
+                ],
+            },
+            // Selva de dinosaurios: pasos grandes, bajo marcado.
+            jardin_dinos: {
+                tempo: 96, base: 65, escala: MAYOR_PENTA, onda: "triangle", bajo: "square", pulso: 2,
+                acordes: [AC.I, AC.I, AC.IV, AC.IV, AC.V, AC.IV, AC.V, AC.I],
+                melodia: [
+                    [0, null, 0, null, 2, null, 2, null], [3, null, 2, null, 0, null, null, null],
+                    [0, null, 0, null, 3, null, 3, null], [4, null, 3, null, 2, null, null, null],
+                    [5, null, 4, null, 3, null, 4, null], [3, null, 2, null, 1, null, null, null],
+                    [2, null, 3, null, 4, null, 3, null], [0, null, null, null, 0, null, null, null],
+                ],
+            },
+            // Espacio: flotante, notas muy largas.
+            jardin_espacio: {
+                tempo: 72, base: 60, escala: LIDIA, onda: "sine", bajo: "sine", pulso: 4,
+                acordes: [AC.I, AC.II, AC.I, AC.II, AC.iii, AC.II, AC.I, AC.I],
+                melodia: [
+                    [4, null, null, null, 6, null, null, null], [7, null, null, null, null, null, null, null],
+                    [8, null, null, null, 6, null, null, null], [4, null, null, null, null, null, null, null],
+                    [3, null, 4, null, 6, null, 7, null], [9, null, null, null, 8, null, null, null],
+                    [7, null, null, 6, 4, null, null, null], [0, null, null, null, null, null, null, null],
+                ],
+            },
+            // Fondo del mar: lenta, como olas.
+            jardin_mar: {
+                tempo: 70, base: 62, escala: MAYOR_PENTA, onda: "sine", bajo: "sine", pulso: 4,
+                acordes: [AC.I, AC.IV, AC.I, AC.V, AC.vi, AC.IV, AC.V, AC.I],
+                melodia: [
+                    [0, null, 1, null, 2, null, null, null], [1, null, 2, null, 3, null, null, null],
+                    [4, null, 3, null, 2, null, null, null], [1, null, null, null, null, null, null, null],
+                    [2, null, 3, null, 4, null, null, null], [5, null, 4, null, 3, null, null, null],
+                    [2, null, 1, null, 2, null, 1, null], [0, null, null, null, null, null, null, null],
+                ],
+            },
+            // Granja: saltarina, de rancho.
+            jardin_granja: {
+                tempo: 96, base: 60, escala: MAYOR_PENTA, onda: "triangle", bajo: "triangle", pulso: 1,
+                acordes: [AC.I, AC.IV, AC.V, AC.I, AC.I, AC.IV, AC.V, AC.I],
+                melodia: [
+                    [2, 2, 3, null, 2, null, 1, null], [0, null, 1, null, 2, null, null, null],
+                    [3, 3, 4, null, 3, null, 2, null], [1, null, null, null, null, null, null, null],
+                    [2, 2, 3, null, 4, null, 5, null], [4, null, 3, null, 2, null, null, null],
+                    [1, null, 1, 2, 1, null, 0, null], [0, null, null, null, null, null, null, null],
+                ],
+            },
+            // Desierto: sabor árabe.
+            jardin_desierto: {
+                tempo: 84, base: 64, escala: FRIGIA_DOMINANTE, onda: "triangle", bajo: "sine", pulso: 2,
+                acordes: [AC.I, AC.bII, AC.I, AC.bII, AC.ivm, AC.bII, AC.I, AC.I],
+                melodia: [
+                    [4, null, 5, null, 4, 3, 2, null], [1, null, 2, null, 0, null, null, null],
+                    [4, null, 5, null, 6, 5, 4, null], [5, null, null, null, 4, null, null, null],
+                    [7, null, 6, null, 5, 4, 5, null], [4, null, 3, null, 2, null, null, null],
+                    [3, null, 2, null, 1, null, 2, null], [0, null, null, null, null, null, null, null],
+                ],
+            },
+            // Jardín de flores: dulce.
+            jardin_flores: {
+                tempo: 80, base: 69, escala: MAYOR_PENTA, onda: "sine", bajo: "triangle", pulso: 2,
+                acordes: [AC.I, AC.vi, AC.ii, AC.V, AC.I, AC.vi, AC.V, AC.I],
+                melodia: [
+                    [4, null, 3, null, 2, null, 3, null], [4, null, null, null, 5, null, null, null],
+                    [3, null, 2, null, 1, null, 2, null], [3, null, null, null, null, null, null, null],
+                    [5, null, 4, null, 3, null, 4, null], [5, null, 6, null, 7, null, null, null],
+                    [6, null, 5, null, 4, null, 2, null], [5, null, null, null, null, null, null, null],
+                ],
+            },
         };
         // La pieza de cada mundo de la Aventura, en su orden.
         const MUSICA_DE_MUNDO = ["brocolis", "monstruos", "fantasmas", "zombis", "aliens", "mar"];
+        // Y la de cada mundo del jardín (fuera de la Aventura); en la bienvenida, «jardin».
+        const MUSICA_DE_JARDIN = {
+            huerto: "jardin_huerto", bosque: "jardin_bosque", dinos: "jardin_dinos", espacio: "jardin_espacio",
+            mar: "jardin_mar", granja: "jardin_granja", desierto: "jardin_desierto", flores: "jardin_flores",
+        };
+
+        /** La música de la pantalla en que se está: la del nivel, la del mundo del jardín o la de la bienvenida. */
+        function elegirMusica() {
+            if (pantallaActual === "screen-aventura-juego") ambienteMusical(MUSICA_DE_MUNDO[aventura.mundo]);
+            else if (pantallaActual === "screen-welcome") ambienteMusical("jardin");
+            else ambienteMusical(MUSICA_DE_JARDIN[perfilEnUso().mundo] || "jardin");
+        }
         const musica = { pieza: "jardin", salida: null, siguiente: 0, paso: 0, temporizador: null };
 
         const midiAHz = (m) => 440 * 2 ** ((m - 69) / 12);
@@ -1904,6 +2007,7 @@
             document.querySelectorAll(".sim-flor").forEach((e) => { e.textContent = m.flor; });
             document.querySelectorAll(".sim-capullo").forEach((e) => { e.textContent = m.capullo; });
             document.querySelectorAll(".sim-mundo").forEach((e) => { e.textContent = m.emoji; });
+            elegirMusica();   // al cambiar de mundo, cambia la música
         }
 
         // --- PRESENTACIÓN: fondo, entrada de pantallas y onda al tocar ---
@@ -2570,7 +2674,7 @@
             aplicarMundo();
             entrarPantalla(document.getElementById(id));
             window.scrollTo(0, 0);
-            ambienteMusical(id === "screen-aventura-juego" ? MUSICA_DE_MUNDO[aventura.mundo] : "jardin");
+            elegirMusica();
             const destino = document.querySelector(`#${id} [data-foco]`);
             if (destino) {
                 destino.setAttribute("tabindex", "-1");

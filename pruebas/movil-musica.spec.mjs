@@ -71,11 +71,11 @@ test("tocar no mueve la pantalla: sin zoom por doble toque, y teclados, opciones
 test("hay música: tranquila en el jardín y la de cada mundo en la Aventura", async ({ page }) => {
   await alMenu(page);
   await page.evaluate(() => startTable(2));   // un toque ya creó el audio
-  await expect.poll(() => page.evaluate(() => [musica.pieza, musica.temporizador !== null])).toEqual(["jardin", true]);
+  await expect.poll(() => page.evaluate(() => [musica.pieza, musica.temporizador !== null])).toEqual(["jardin_huerto", true]);
   await page.evaluate(() => { mostrarAventura(); aventura.manual = true; empezarNivel(0, 0); });
   expect(await page.evaluate(() => musica.pieza)).toBe("brocolis");
   await page.evaluate(() => salirDeNivel());
-  expect(await page.evaluate(() => musica.pieza)).toBe("jardin");
+  expect(await page.evaluate(() => musica.pieza)).toBe("jardin_huerto");
 });
 
 test("la música se apaga en Ajustes, se recuerda, y se calla al cambiar de app", async ({ page }) => {
@@ -145,8 +145,8 @@ test("cada mundo de la Aventura tiene su propia música, completa y distinta de 
   expect(r.piezas).toHaveLength(r.mundos);
   expect(new Set(r.piezas).size).toBe(r.mundos);
   expect(r.completas).toBe(true);
-  expect(r.melodiasDistintas).toBe(7);    // las seis de la Aventura y la del jardín
-  expect(r.sonidosDistintos).toBe(7);
+  expect(r.melodiasDistintas).toBe(15);   // las seis de la Aventura, las ocho del jardín y la de la bienvenida
+  expect(r.sonidosDistintos).toBe(15);
   expect(r.menores).toEqual(["fantasmas", "zombis"]);   // las de miedo, en menor
 });
 
@@ -206,6 +206,44 @@ test("subir el volumen con la música apagada la enciende; lo guardado raro vuel
     }, raro);
     expect(v).toBe(5);
   }
+});
+
+test("cada mundo del jardín tiene su música, más tranquila que la de la Aventura", async ({ page }) => {
+  await page.goto("./");
+  const r = await page.evaluate(() => ({
+    mundos: Object.keys(MUNDOS).sort(),
+    conMusica: Object.keys(MUSICA_DE_JARDIN).sort(),
+    completas: Object.values(MUSICA_DE_JARDIN).every((n) => {
+      const p = PIEZAS[n];
+      return p && p.melodia.length === 8 && p.melodia.every((c) => c.length === 8) && p.acordes.length === 8;
+    }),
+    distintas: new Set(Object.values(MUSICA_DE_JARDIN)).size,
+    masLentaDelJardin: Math.max(...Object.values(MUSICA_DE_JARDIN).map((n) => PIEZAS[n].tempo)),
+    masRapidaDeLaAventura: Math.max(...MUSICA_DE_MUNDO.map((n) => PIEZAS[n].tempo)),
+  }));
+  expect(r.conMusica).toEqual(r.mundos);
+  expect(r.completas).toBe(true);
+  expect(r.distintas).toBe(8);
+  expect(r.masLentaDelJardin).toBeLessThanOrEqual(100);
+  expect(r.masLentaDelJardin).toBeLessThan(r.masRapidaDeLaAventura);
+});
+
+test("suena la música del mundo de quien juega; la bienvenida, la neutra; al cambiar de mundo, cambia", async ({ page }) => {
+  await page.goto("./");
+  await page.fill("#player-name", "Ana");
+  await page.click('#screen-welcome .elegir-mundo label:has(input[value="desierto"])');
+  expect(await page.evaluate(() => musica.pieza)).toBe("jardin");               // aún en la bienvenida
+  await page.click("#screen-welcome button:has-text('Comenzar')");
+  await expect.poll(() => page.evaluate(() => musica.pieza)).toBe("jardin_desierto");
+  await page.click("#screen-selector >> text=Mi mundo y mi personaje");
+  await page.click('#screen-mundo .elegir-mundo label:has(input[value="espacio"])');
+  await page.click('#screen-mundo button[onclick="guardarMiMundo()"]');        // como el fondo: al guardar
+  await expect.poll(() => page.evaluate(() => musica.pieza)).toBe("jardin_espacio");
+  // En la Aventura, la del mundo del nivel; al volver, otra vez la del jardín.
+  await page.evaluate(() => { mostrarAventura(); aventura.manual = true; empezarNivel(0, 0); });
+  expect(await page.evaluate(() => musica.pieza)).toBe("brocolis");
+  await page.evaluate(() => salirDeNivel());
+  expect(await page.evaluate(() => musica.pieza)).toBe("jardin_espacio");
 });
 
 test.describe("en el teléfono", () => {

@@ -335,8 +335,11 @@ Este último se enciende solo si el dispositivo ya lo pide, y apaga los
 fundidos de entrada, la onda de los botones y los adornos que flotan.
 
 **Música de fondo.** Compuesta para el juego y tocada con el sintetizador del
-navegador, sin archivos ni internet: una pieza tranquila para el jardín y una
-distinta para cada mundo de la Aventura (alegre en el huerto, saltarina con
+navegador, sin archivos ni internet: una pieza para cada mundo del jardín, más
+tranquilas (campirana en el huerto, suave y en menor en el bosque, con pasos
+grandes entre dinosaurios, flotante en el espacio, como olas en el mar, de
+rancho en la granja, con sabor árabe en el desierto y dulce entre flores; en la
+bienvenida, una neutra), y una distinta para cada mundo de la Aventura (alegre en el huerto, saltarina con
 los monstruos, misteriosa y en menor con los fantasmas, menor y apurada con los
 zombis, «espacial» en escala lidia con los aliens y lenta, como olas, en el
 mar). Va bajita, baja más
