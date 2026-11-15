@@ -137,7 +137,9 @@ test("la cabecera del menú es del niño; lo de las personas adultas va aparte, 
 
 test("la semana de la misión se entiende: leyenda, «Hoy» y días vacíos sin marcas raras", async ({ page }) => {
   await alMenu(page);
-  await expect(page.locator("#mision-leyenda")).toHaveText(/Tu semana: cada ✓\s*(marca\s*)?es un día con la misión cumplida\./);
+  // La marca es el icono de «listo»; el lector de pantalla oye «marca».
+  await expect(page.locator("#mision-leyenda")).toHaveText(/Tu semana: cada\s*marca\s*es un día con la misión cumplida\./);
+  await expect(page.locator('#mision-leyenda svg.icono use[href="#i-listo"]')).toHaveCount(1);
   const dias = page.locator("#mision-semana li");
   await expect(dias).toHaveCount(7);
   await expect(dias.last().locator("span").first()).toHaveText("Hoy");

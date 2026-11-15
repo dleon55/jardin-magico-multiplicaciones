@@ -169,11 +169,11 @@ async function tablaQueSeEscribe(page) {
 test("en el juego se puede escribir con el dedo: lo leído se ve y cuenta al tocar «Listo»", async ({ page }) => {
   await tablaQueSeEscribe(page);
   await expect(page.locator("#teclado-juego")).toBeVisible();          // de serie, con teclas
-  await expect(page.locator("#btn-letra")).toHaveText("✍️ Mejor con el dedo");
+  await expect(page.locator("#btn-letra")).toHaveText("Mejor con el dedo");
   await page.click("#btn-letra");
   await expect(page.locator("#teclado-juego")).toBeHidden();
   await expect(page.locator("#pizarra-juego")).toBeVisible();
-  await expect(page.locator("#btn-letra")).toHaveText("🔢 Mejor con teclas");
+  await expect(page.locator("#btn-letra")).toHaveText("Mejor con teclas");
   const { a, b, producto } = await preguntaActual(page);
   await escribir(page, producto, "#pizarra-juego");
   await expect(page.locator("#escrito")).toHaveText(String(producto));
