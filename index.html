@@ -1656,14 +1656,39 @@
             while (musica.siguiente < audioCtx.currentTime + 0.35) {
                 tocarPaso(p, musica.paso, musica.siguiente, corchea);
                 musica.siguiente += corchea;
-                musica.paso = (musica.paso + 1) % (p.melodia.length * 8);
+                musica.paso = (musica.paso + 1) % (melodiaCompleta(p).length * 8);
             }
         }
 
+        // FORMA DE CANCIÓN. Cada pieza se escribe con ocho compases (el tema,
+        // A) y suena en cuatro partes de ocho: A, B (la respuesta, el tema una
+        // tercera más arriba sobre los mismos acordes), A′ (el tema con la
+        // segunda mitad una octava arriba) y C (un respiro: solo los tiempos
+        // fuertes, con el bajo y los acordes). Así tarda de uno a dos minutos en
+        // repetirse, en lugar de 16 a 28 segundos, sin dejar de sonar a sí misma.
+        const PARTES = ["A", "B", "A′", "C"];
+        const NOTA_MAS_AGUDA = 88;   // más arriba, chilla
+
+        /** Los 32 compases de melodía de una pieza (se calculan una vez). */
+        function melodiaCompleta(p) {
+            if (p.completa) return p.completa;
+            const octava = p.escala.length;
+            const parte = (k) => p.melodia.map((compas, c) => compas.map((g, d) => {
+                if (k === 0) return g;
+                if (g === null) return null;
+                if (k === 1) return notaDeGrado(p, g + 2) <= NOTA_MAS_AGUDA ? g + 2 : g;
+                if (k === 2) return c >= 4 && notaDeGrado(p, g + octava) <= NOTA_MAS_AGUDA ? g + octava : g;
+                return d % 4 === 0 ? g : null;
+            }));
+            p.completa = [0, 1, 2, 3].flatMap(parte);
+            return p.completa;
+        }
+
         function tocarPaso(p, paso, t, corchea) {
-            const compas = Math.floor(paso / 8), dentro = paso % 8;
+            const compasTotal = Math.floor(paso / 8), dentro = paso % 8;
+            const compas = compasTotal % p.melodia.length;
             const acorde = p.acordes[compas];
-            const grado = p.melodia[compas][dentro];
+            const grado = melodiaCompleta(p)[compasTotal][dentro];
             if (grado !== null) notaMusica(notaDeGrado(p, grado), t, corchea * 1.7, p.onda, p.onda === "square" ? 0.22 : 0.5);
             if (dentro % p.pulso === 0) {
                 const octava = p.pulso === 1 && dentro % 2 ? 12 : 0;

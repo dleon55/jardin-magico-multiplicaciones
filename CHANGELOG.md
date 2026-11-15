@@ -9,6 +9,10 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Música más larga** (#42): cada una de las 15 piezas suena en cuatro
+  partes, como una canción (el tema, la respuesta una tercera arriba, el tema
+  más agudo y un respiro), y tarda de 63 a 111 segundos en repetirse (antes,
+  de 16 a 28).
 - **Una música para cada mundo del jardín** (#41): campirana en el huerto,
   suave en el bosque, con pasos grandes entre dinosaurios, flotante en el
   espacio, como olas en el mar, de rancho en la granja, con sabor árabe en el

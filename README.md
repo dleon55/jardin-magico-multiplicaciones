@@ -342,7 +342,7 @@ rancho en la granja, con sabor árabe en el desierto y dulce entre flores; en la
 bienvenida, una neutra), y una distinta para cada mundo de la Aventura (alegre en el huerto, saltarina con
 los monstruos, misteriosa y en menor con los fantasmas, menor y apurada con los
 zombis, «espacial» en escala lidia con los aliens y lenta, como olas, en el
-mar). Va bajita, baja más
+mar). Cada pieza tiene forma de canción (tema, respuesta una tercera arriba, el tema más agudo y un respiro) y tarda de uno a casi dos minutos en repetirse. Va bajita, baja más
 mientras habla la voz y se calla al cambiar de app. Empieza con el primer
 toque, porque los navegadores no dejan sonar antes.
 

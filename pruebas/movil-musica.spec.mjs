@@ -128,6 +128,34 @@ test("la música está escrita en su escala: cada nota de la melodía cae en la 
   expect(fuera).toEqual([]);
 });
 
+test("las piezas son largas: cuatro partes (A, B, A′, C) y de uno a dos minutos antes de repetirse", async ({ page }) => {
+  await page.goto("./");
+  const r = await page.evaluate(() => Object.entries(PIEZAS).map(([nombre, p]) => {
+    const toda = melodiaCompleta(p);
+    const parte = (k) => JSON.stringify(toda.slice(k * 8, k * 8 + 8));
+    const segundos = (toda.length * 8 * 60) / p.tempo / 2;
+    const notas = toda.flat().filter((g) => g !== null).map((g) => notaDeGrado(p, g));
+    return {
+      nombre, compases: toda.length, segundos,
+      aEsElTema: parte(0) === JSON.stringify(p.melodia),
+      distintas: new Set([0, 1, 2, 3].map(parte)).size,
+      enEscala: notas.every((m) => p.escala.includes((((m - p.base) % 12) + 12) % 12)),
+      masAguda: Math.max(...notas),
+      respiro: toda.slice(24).flat().filter((g) => g !== null).length < p.melodia.flat().filter((g) => g !== null).length,
+    };
+  }));
+  for (const x of r) {
+    expect(x.compases, x.nombre).toBe(32);
+    expect(x.segundos, x.nombre).toBeGreaterThanOrEqual(60);
+    expect(x.segundos, x.nombre).toBeLessThanOrEqual(120);
+    expect(x.aEsElTema, x.nombre).toBe(true);
+    expect(x.distintas, x.nombre).toBeGreaterThanOrEqual(3);   // A′ puede quedar igual que A si ya es aguda
+    expect(x.enEscala, x.nombre).toBe(true);
+    expect(x.masAguda, x.nombre).toBeLessThanOrEqual(88);
+    expect(x.respiro, x.nombre).toBe(true);                     // C tiene menos notas que el tema
+  }
+});
+
 test("cada mundo de la Aventura tiene su propia música, completa y distinta de las demás", async ({ page }) => {
   await page.goto("./");
   const r = await page.evaluate(() => ({
