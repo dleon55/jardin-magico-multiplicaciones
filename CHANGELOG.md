@@ -9,6 +9,13 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Paisajes dibujados** (#78, tarea #55): el fondo de los 8 mundos del
+  jardín, el de la bienvenida y las 6 arenas de la Aventura son paisajes SVG
+  por capas, en lugar de degradados con emojis sueltos. Por ejemplo, el
+  huerto tiene zanahorias, el bosque tiene pinos, el castillo tiene luna y
+  murciélagos, y el mar tiene algas y burbujas. Nubes, estrellas y burbujas
+  se mueven despacio, y se quedan quietas con «Menos movimiento». Suman
+  unos 15 KB.
 - **Héroes y enemigos dibujados** (#77, tareas #53 y #54): los 8 héroes y
   los 6 enemigos de la Aventura son SVG propios, según la guía de estilo,
   en lugar de emojis:

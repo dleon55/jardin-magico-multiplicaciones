@@ -26,6 +26,21 @@ Lumi dice cada paso en voz alta. La guía se puede saltar, y en un dispositivo
 que ya la vio, o que ya tiene jardines, no vuelve a salir. Cabe sin
 desplazarse en el teléfono, en vertical y acostado.
 
+**Cada mundo del jardín tiene su paisaje** dibujado por capas (cielo, colinas
+lejos y cerca):
+- zanahorias y maíz en el huerto;
+- pinos y hongos en el bosque;
+- un volcán y helechos entre los dinosaurios;
+- planetas, estrellas y un cohete en el espacio;
+- algas, coral y burbujas en el mar;
+- un granero y una cerca en la granja;
+- dunas y cactus en el desierto;
+- flores de colores en el jardín de flores.
+
+Los adornos quedan a los lados, alrededor de la tarjeta. Las nubes se
+mueven, las estrellas titilan y las burbujas suben; con «Menos movimiento»,
+todo queda quieto.
+
 **Lumi**, una semilla mágica que acaba de brotar, acompaña al niño. Es la
 mascota del juego, un dibujo original, y cambia de cara según lo que pasa:
 - en la bienvenida saluda, y se duerme si nadie toca nada en 20 s;
@@ -72,6 +87,14 @@ mismo.
   - al vencer a un enemigo sale un «pof» de estrellas.
 
   Una operación larga entra lo justo para leerse entera.
+
+  Cada mundo tiene su arena dibujada:
+  - el huerto de día, con surcos;
+  - el bosque de pinos;
+  - el castillo al atardecer, con luna y murciélagos;
+  - la noche, con árboles secos;
+  - el espacio, con planetas;
+  - el fondo del mar, con algas, coral y rayos de luz.
 
   **🐢 Sin prisa** (en el mapa, por jugador): para quien se frustra o
   necesita pensar. Los enemigos van a la mitad de velocidad, salen de dos en

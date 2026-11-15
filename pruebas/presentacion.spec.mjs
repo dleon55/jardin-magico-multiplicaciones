@@ -17,24 +17,26 @@ async function entrar(page, nombre = "Leo", mundo = null) {
   await expect(page.locator("#screen-selector")).toBeVisible();
 }
 
-const adornos = (page) => page.locator("#fondo .adorno").allTextContents();
+const paisaje = (page) => page.locator("#fondo svg.paisaje").getAttribute("data-paisaje");
+const EMOJI = /\p{Extended_Pictographic}/u;
 
 test("el fondo es neutro en la bienvenida y del mundo de cada quien después; no se lee ni se toca", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator("#fondo")).toHaveAttribute("aria-hidden", "true");
   expect(await page.locator("#fondo").evaluate((e) => getComputedStyle(e).pointerEvents)).toBe("none");
-  expect(await adornos(page)).toEqual(["🌱", "☀️", "🌳", "🍃", "⭐", "☁️", "🌻", "🦋"]);
+  expect(await paisaje(page)).toBe("neutro");
   await entrar(page, "Leo", "espacio");
-  const espacio = await adornos(page);
-  expect(espacio.slice(0, 2)).toEqual(["🌙", "⭐"]);
-  expect(espacio).toHaveLength(8);
-  expect(await page.evaluate(() => MUNDOS.espacio.flora.slice(0, 6))).toEqual(espacio.slice(2));
+  expect(await paisaje(page)).toBe("espacio");
+  // Es un dibujo propio: sin emojis, con planeta y estrellas.
+  const dibujo = await page.locator("#fondo").innerHTML();
+  expect(EMOJI.test(dibujo)).toBe(false);
+  expect(dibujo).toContain('class="titila"');
   // Las colinas toman el color del mundo.
   expect(await page.evaluate(() => getComputedStyle(document.body).getPropertyValue("--colina1").trim())).toBe("#c7d2fe");
   // Cambiar de pantalla en el mismo mundo no lo vuelve a pintar.
-  await page.evaluate(() => { document.querySelector("#fondo .adorno").dataset.marca = "1"; });
+  await page.evaluate(() => { document.querySelector("#fondo svg.paisaje").dataset.marca = "1"; });
   await page.click("#screen-selector >> text=Mi jardín");
-  expect(await page.locator("#fondo .adorno[data-marca]").count()).toBe(1);
+  expect(await page.locator("#fondo svg.paisaje[data-marca]").count()).toBe(1);
 });
 
 test("el fondo no tapa nada: la tarjeta del juego queda encima", async ({ page }) => {
@@ -99,13 +101,13 @@ test.describe("con movimiento", () => {
     await expect(page.locator("#screen-selector .onda")).toHaveCount(0, { timeout: 2000 });
   });
 
-  test("los adornos del fondo flotan despacio", async ({ page }) => {
+  test("las nubes del fondo se mueven despacio", async ({ page }) => {
     await page.goto("./");
-    const nombre = await page.locator("#fondo .adorno").first().evaluate((a) => getComputedStyle(a).animationName);
-    expect(nombre).toBe("deriva");
+    const nombre = await page.locator("#fondo .nube").first().evaluate((a) => getComputedStyle(a).animationName);
+    expect(nombre).toBe("nube-deriva");
   });
 
-  test("con «Menos movimiento» no hay fundidos, ni ondas, ni adornos que floten", async ({ page }) => {
+  test("con «Menos movimiento» no hay fundidos, ni ondas, ni nubes que se muevan", async ({ page }) => {
     await page.goto("./");
     await page.click("#ajustes summary");
     await page.click('[data-ajuste="calma"]');
@@ -120,7 +122,7 @@ test.describe("con movimiento", () => {
       return {
         entrar: document.getElementById("screen-selector").getAnimations().length,
         ondas: document.querySelectorAll("#screen-selector .onda").length,
-        flota: getComputedStyle(document.querySelector("#fondo .adorno")).animationName,
+        flota: getComputedStyle(document.querySelector("#fondo .nube")).animationName,
       };
     });
     expect(r).toEqual({ entrar: 0, ondas: 0, flota: "none" });
