@@ -21,6 +21,21 @@
     <link rel="preload" href="fuentes/fredoka-one-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="estilos.css">
     <style>
+        /* GUÍA DE ESTILO (docs/ESTILO.md): los colores del juego y del arte.
+           Lo nuevo usa estas variables en lugar de colores sueltos. */
+        :root {
+            --hoja: #047857; --hoja-clara: #d1fae5;
+            --cielo: #0369a1; --cielo-claro: #e0f2fe;
+            --sol: #facc15; --sol-oscuro: #a16207;
+            --flor: #be185d; --tierra: #78350f;
+            --tinta: #1f2937; --tinta-suave: #4b5563; --papel: #fffdf7;
+            /* Arte: contorno cálido (nunca negro puro), brillo, sombra y mejillas. */
+            --contorno: #2e2a3b;
+            --brillo: rgba(255, 255, 255, 0.55);
+            --sombra-arte: rgba(46, 42, 59, 0.18);
+            --mejilla: rgba(251, 113, 133, 0.55);
+        }
+
         /* Casillas del mapa de tablas: color Y símbolo (🌸 🌷 🌱), no solo color. */
         .celda-mapa {
             display: inline-flex; align-items: center; justify-content: center;

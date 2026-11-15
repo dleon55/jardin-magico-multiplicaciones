@@ -5,6 +5,9 @@ que están aprendiéndolas.
 
 Sitio publicado en GitHub Pages: https://dleon55.github.io/jardin-magico-multiplicaciones/
 
+Hacia dónde va: el [plan de evolución](docs/PLAN.md) (tres hitos con sus
+issues) y la [guía de estilo visual](docs/ESTILO.md) que sigue el arte nuevo.
+
 ## Cómo se juega
 
 Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
