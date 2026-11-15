@@ -108,6 +108,17 @@ test("pregunta que se responde escribiendo, con un número a medias", async ({ p
   await auditar(page, "el teclado de números");
   await page.click("#btn-letra");
   await auditar(page, "escribir la respuesta con el dedo");
+  await page.evaluate(() => {
+    pizarraJuego.trazos = [Array.from({ length: 20 }, (_, i) => ({ x: 100, y: 20 + i * 8 }))];
+    pizarraJuego.dibujar();
+    pizarraJuego.leer();
+  });
+  await page.click("#pizarra-juego-corregir");
+  await auditar(page, "corregir lo que leyó, para aprender la letra");
+  await page.evaluate(() => { aprenderCifra(pizarraJuego.trazos, 1); guardarLetra(); });
+  await page.evaluate(() => mostrarAdultos());
+  await expect(page.locator(".adulto-letra")).toBeVisible();
+  await auditar(page, "la vista para adultos con la letra aprendida");
 });
 
 test("mi jardín, con plantas en todos los estados", async ({ page }) => {

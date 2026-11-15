@@ -2190,6 +2190,20 @@
                     piezas.push(parrafo("adulto-aventura text-gray-800",
                         `La Aventura: ${puntajeAventura(av)} puntos, ${estrellasAventura(av)} estrellas; va en el mundo ${m + 1} (${AVENTURA_MUNDOS[m].retos.toLowerCase()}).`));
                 }
+                const cifrasLetra = Object.keys(letraDePerfil(perfil.id).muestras);
+                if (cifrasLetra.length) {
+                    const lista = cifrasLetra.map((c) => `el ${c}`);
+                    const caja = document.createElement("div");
+                    caja.className = "adulto-letra text-gray-800 space-y-1";
+                    caja.appendChild(parrafo("", `Escribir con el dedo: aprendió cómo escribe ${lista.length === 1 ? lista[0] : `${lista.slice(0, -1).join(", ")} y ${lista.at(-1)}`}. Si lo enseñó mal jugando y ahora lee cosas raras, se puede olvidar.`));
+                    const olvidar = document.createElement("button");
+                    olvidar.type = "button";
+                    olvidar.className = "btn-olvidar-letra text-sm font-bold text-indigo-800 underline";
+                    olvidar.textContent = "Olvidar cómo escribe";
+                    olvidar.onclick = () => { olvidarLetraDe(perfil.id); pintarAdultos(); };
+                    caja.appendChild(olvidar);
+                    piezas.push(caja);
+                }
                 for (const [prefijo, nombre, clase] of [["fraccion:", "Fracciones", "adulto-fracciones"], ["logica:", "Retos de lógica", "adulto-retos"]]) {
                     const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
                     if (filas.length === 0) continue;
@@ -4519,12 +4533,58 @@
         // escribir con el dedo, como en la Aventura. Cada jugador elige y se
         // recuerda («letra», en su jardín). Lo leído se ve en la caja y solo
         // cuenta al tocar «Listo»: una mala lectura no es un error.
-        let letra = { modo: "teclas" };
+        let letra = { modo: "teclas", muestras: {} };
+        const MUESTRAS_POR_CIFRA = 3;   // las más recientes: la letra cambia al crecer
+
+        /** Una nube guardada es válida si son 32 puntos con números razonables. */
+        function nubeValida(n) {
+            return Array.isArray(n) && n.length === PUNTOS_NUBE &&
+                n.every((q) => Array.isArray(q) && q.length === 2 && q.every((v) => Number.isFinite(v) && Math.abs(v) <= 2));
+        }
 
         function cargarLetra() {
             let g = null;
             try { g = JSON.parse(almacen.leer("letra") || "null"); } catch (e) { g = null; }
-            letra = { modo: g && g.modo === "dedo" ? "dedo" : "teclas" };
+            letra = { modo: g && g.modo === "dedo" ? "dedo" : "teclas", muestras: {} };
+            const m = g && typeof g.muestras === "object" && g.muestras ? g.muestras : {};
+            for (let c = 0; c <= 9; c++) {
+                const nubes = Array.isArray(m[c]) ? m[c].filter(nubeValida).slice(-MUESTRAS_POR_CIFRA) : [];
+                if (nubes.length) letra.muestras[c] = nubes;
+            }
+        }
+
+        /** La letra de otro jardín, sin cargarlo (vista para adultos). */
+        function letraDePerfil(id) {
+            if (id === perfilActual) return letra;
+            const antes = letra;
+            const leer = almacen.leer;
+            try {
+                almacen.leer = (clave) => almacen.leerDe(id, clave);
+                cargarLetra();
+                return letra;
+            } finally {
+                almacen.leer = leer;
+                letra = antes;
+            }
+        }
+
+        /** Olvida lo aprendido de su letra; se queda con teclas o dedo como estaba. */
+        function olvidarLetraDe(id) {
+            const nueva = { modo: letraDePerfil(id).modo, muestras: {} };
+            try { localStorage.setItem(almacen.clave("letra", id), JSON.stringify(nueva)); } catch (e) { /* sin memoria */ }
+            if (id === perfilActual) letra = nueva;
+        }
+
+        // --- APRENDER LA LETRA ---
+        // Si el juego lee mal, el niño toca «¿Leí mal?» y dice con teclas qué
+        // número escribió. Cada cifra dibujada se guarda como modelo suyo (las
+        // 3 más recientes por cifra), y desde entonces se lee bien. Solo se
+        // aprende de una corrección del niño, nunca a ciegas: así una mala
+        // lectura no se vuelve costumbre.
+        function aprenderCifra(trazos, cifra) {
+            const nube = normalizarNube(remuestrear(trazos.filter((t) => t.length > 0)))
+                .map((q) => [Math.round(q.x * 1000) / 1000, Math.round(q.y * 1000) / 1000]);
+            letra.muestras[cifra] = [...(letra.muestras[cifra] || []), nube].slice(-MUESTRAS_POR_CIFRA);
         }
 
         function guardarLetra() {
@@ -5470,13 +5530,23 @@
             return nubesModelo;
         }
 
+        /**
+         * Los modelos de la letra de quien juega: cifras que el juego leyó mal
+         * y el niño corrigió (ver «APRENDER LA LETRA»). Se comparan igual que
+         * los de serie, así que su forma de escribir el 5 pasa a ser un 5.
+         */
+        function modelosPropios() {
+            return Object.entries(letra.muestras).flatMap(([cifra, nubes]) =>
+                nubes.map((n) => ({ cifra: Number(cifra), nube: n.map(([x, y]) => ({ x, y })) })));
+        }
+
         /** La cifra más parecida a unos trazos, o null si no hay trazos. */
         function reconocerCifra(trazos) {
             const validos = trazos.filter((t) => t.length > 0);
             if (validos.length === 0) return null;
             const nube = normalizarNube(remuestrear(validos));
             let mejor = null;
-            for (const m of modelosNormalizados()) {
+            for (const m of [...modelosNormalizados(), ...modelosPropios()]) {
                 const d = compararNubes(nube, m.nube);
                 if (!mejor || d < mejor.d) mejor = { cifra: m.cifra, d };
             }
@@ -5517,7 +5587,7 @@
         const TEXTO_PIZARRA = "Escribe la respuesta con el dedo.";
 
         function crearPizarra(id, { ayudaId, boton, alLeer, puede = () => true, maxCifras = 3 }) {
-            const p = { trazos: [], actual: null, espera: null };
+            const p = { trazos: [], actual: null, espera: null, leido: "", grupos: [] };
             const lienzo = () => document.getElementById(id);
             const ayuda = (texto) => { document.getElementById(ayudaId).textContent = texto; };
 
@@ -5541,25 +5611,105 @@
                 const n = reconocerNumero(p.trazos);
                 const largo = n !== null && String(n).length > maxCifras;
                 const texto = n === null || largo ? "" : String(n);
+                p.leido = texto;
+                p.grupos = texto === "" ? [] : separarCifras(p.trazos).slice(0, 3);
                 alLeer(texto);
                 ayuda(largo ? `Son demasiadas cifras: bórralo y escribe un número de ${maxCifras === 2 ? "dos cifras" : "tres cifras"} como mucho.`
                     : texto === "" ? TEXTO_PIZARRA
                     : `¿Escribiste ${texto}? Toca ${boton}. Si no, bórralo.`);
+                mostrarCorregir(texto !== "");
             };
 
             p.borrar = () => {
                 clearTimeout(p.espera);
                 p.trazos = [];
                 p.actual = null;
+                p.leido = "";
+                p.grupos = [];
                 p.dibujar();
                 alLeer("");
                 ayuda(TEXTO_PIZARRA);
+                mostrarCorregir(false);
             };
+
+            // «¿Leí mal?»: el niño dice con teclas qué escribió y se aprende.
+            let tecleado = "";
+            const corregir = () => document.getElementById(`${id}-corregir`);
+            const corrector = () => document.getElementById(`${id}-corrector`);
+            function mostrarCorregir(si) {
+                if (!corregir()) return;
+                corregir().classList.toggle("hidden", !si);
+                corrector().classList.add("hidden");
+                tecleado = "";
+            }
+            function abrirCorrector() {
+                if (!puede() || p.grupos.length === 0) return;
+                tecleado = "";
+                corregir().classList.add("hidden");
+                corrector().classList.remove("hidden");
+                alLeer("");
+                ayuda(p.grupos.length === 1 ? "¿Qué número escribiste? Tócalo y aprendo tu letra."
+                    : `¿Qué número escribiste? Toca sus ${p.grupos.length} cifras y aprendo tu letra.`);
+            }
+            function teclaCorrector(d) {
+                if (!puede()) return;
+                tecleado += String(d);
+                alLeer(tecleado);
+                if (tecleado.length < p.grupos.length) return;
+                const nuevas = [...tecleado].filter((c, i) => c !== p.leido[i]);
+                [...tecleado].forEach((c, i) => { if (c !== p.leido[i]) aprenderCifra(p.grupos[i], Number(c)); });
+                if (nuevas.length) guardarLetra();
+                p.leido = tecleado;
+                corrector().classList.add("hidden");
+                const lista = [...new Set(nuevas)];
+                ayuda(nuevas.length === 0 ? `Eso es lo que leí: ${tecleado}. Toca ${boton}.`
+                    : `¡Gracias! Ya sé cómo escribes ${lista.length === 1 ? `el ${lista[0]}` : `el ${lista.slice(0, -1).join(", el ")} y el ${lista.at(-1)}`}. Toca ${boton}.`);
+                tecleado = "";
+            }
+            function cancelarCorrector() {
+                corrector().classList.add("hidden");
+                corregir().classList.remove("hidden");
+                tecleado = "";
+                alLeer(p.leido);
+                ayuda(`¿Escribiste ${p.leido}? Toca ${boton}. Si no, bórralo.`);
+            }
+            function armarCorrector(l) {
+                const clase = "bg-white hover:bg-indigo-50 border-2 border-indigo-200 active:scale-95 py-1 text-xl font-bold rounded-xl text-gray-800";
+                const b = document.createElement("button");
+                b.type = "button";
+                b.id = `${id}-corregir`;
+                b.className = "hidden block mx-auto text-sm font-bold text-indigo-800 underline";
+                b.innerHTML = '<span aria-hidden="true">🤔</span> ¿Leí mal? Enséñame';
+                b.onclick = abrirCorrector;
+                const panel = document.createElement("div");
+                panel.id = `${id}-corrector`;
+                panel.className = "hidden grid grid-cols-6 gap-1";
+                panel.setAttribute("role", "group");
+                panel.setAttribute("aria-label", "Qué número escribiste");
+                for (let d = 0; d <= 9; d++) {
+                    const t = document.createElement("button");
+                    t.type = "button";
+                    t.className = `tecla-corrector ${clase}`;
+                    t.dataset.digito = String(d);
+                    t.textContent = String(d);
+                    t.onclick = () => teclaCorrector(d);
+                    panel.appendChild(t);
+                }
+                const cancelar = document.createElement("button");
+                cancelar.type = "button";
+                cancelar.className = "col-span-2 text-sm font-bold text-gray-700 underline";
+                cancelar.textContent = "Cancelar";
+                cancelar.onclick = cancelarCorrector;
+                panel.appendChild(cancelar);
+                const tras = document.getElementById(ayudaId);
+                tras.after(b, panel);
+            }
 
             p.preparar = () => {
                 const l = lienzo();
                 if (l.dataset.lista) return;
                 l.dataset.lista = "1";
+                armarCorrector(l);
                 const punto = (ev) => {
                     const r = l.getBoundingClientRect();
                     return { x: ((ev.clientX - r.left) / r.width) * l.width, y: ((ev.clientY - r.top) / r.height) * l.height };
@@ -5569,6 +5719,7 @@
                     if (!puede()) return;
                     l.setPointerCapture?.(ev.pointerId);
                     clearTimeout(p.espera);
+                    mostrarCorregir(false);   // escribe más: lo leído ya no vale
                     p.actual = [punto(ev)];
                     p.trazos.push(p.actual);
                     p.dibujar();
@@ -5602,6 +5753,7 @@
         // La de la Aventura.
         const pizarra = crearPizarra("pizarra", {
             ayudaId: "pizarra-ayuda", boton: "«¡Lanzar!»",
+            puede: () => aventura.activo && !aventura.terminado,
             alLeer: (texto) => { aventura.escrito = texto; pintarEscritoAventura(); },
         });
         function prepararPizarra() { pizarra.preparar(); }

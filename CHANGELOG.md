@@ -9,6 +9,10 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Aprende la letra de cada niño** (#34): si lee mal, «🤔 ¿Leí mal?
+  Enséñame» pide el número con teclas y guarda esas cifras como modelos del
+  jugador; desde entonces las lee bien. En el juego y en la Aventura. La
+  vista para adultos dice qué aprendió y permite olvidarlo.
 - **Escribir con el dedo también en el juego** (#33): al responder escribiendo
   se puede usar el dedo en lugar del teclado de la pantalla. Lo leído se ve y
   solo cuenta al tocar «Listo». Cada jugador elige, y se guarda en su jardín
