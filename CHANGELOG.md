@@ -9,6 +9,14 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Celebraciones** (#75, tarea #49): cada logro tiene su momento, de 600 ms
+  o menos y sin retrasar la siguiente pregunta:
+  - al acertar, el botón salta y las estrellas brincan;
+  - con 3, 5 y 8 seguidas, Lumi lo dice en un globo y el aviso lo repite (el lector de pantalla lo oye una vez);
+  - al florecer, la flor nace con brillo y el bono sale de las estrellas;
+  - en la victoria, las estrellas salen una a una y el confeti son hojas, estrellas y semillas de colores, no emojis.
+
+  Con «Menos movimiento», nada se mueve y el mensaje sigue.
 - **Lumi, la mascota** (#74, tarea #52 del plan): una semilla mágica dibujada
   a mano en SVG, según la guía de estilo, con seis caras:
   - contenta;

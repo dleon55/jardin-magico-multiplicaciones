@@ -59,6 +59,51 @@
         @keyframes lumi-respira { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.03, 0.97); } }
         @keyframes lumi-salta { 0% { transform: translateY(0); } 40% { transform: translateY(-14%) scale(1.04); } 70% { transform: translateY(0) scale(1.04, 0.95); } 100% { transform: none; } }
         @keyframes lumi-parpadea { 0%, 95%, 100% { transform: scaleY(1); } 97.5% { transform: scaleY(0.1); } }
+        /* Lo que dice Lumi en una racha: un globo bajo ella, encima de todo, que
+           no empuja nada. Es aria-hidden: el lector de pantalla ya lo oye en
+           #game-feedback, una sola vez. */
+        .globo-lumi {
+            position: absolute; top: calc(100% + 0.35rem); left: 50%; transform: translateX(-50%);
+            z-index: 30; white-space: nowrap; pointer-events: none;
+            background: var(--papel); color: var(--tierra); border: 3px solid var(--sol);
+            border-radius: 1rem; padding: 0.15rem 0.7rem; font-weight: 800; font-size: 0.95rem;
+            box-shadow: 0 3px 0 var(--sombra-arte);
+        }
+        .globo-lumi::before {
+            content: ""; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+            border: 0.45rem solid transparent; border-bottom-color: var(--sol);
+        }
+        .globo-lumi.aparece { animation: globo-aparece 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes globo-aparece { from { transform: translateX(-50%) scale(0.4); opacity: 0; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
+
+        /* CELEBRACIONES (docs/ESTILO.md, «Movimiento»): todas de 600 ms o menos
+           y ninguna retrasa la siguiente pregunta. «Menos movimiento» las apaga
+           (ver al final), y el mensaje sigue en el texto. */
+        .celebra-pop { animation: celebra-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes celebra-pop { 0% { transform: scale(1); } 45% { transform: scale(1.12); } 100% { transform: scale(1); } }
+        .celebra-brinca { animation: celebra-brinca 0.4s ease-out; }
+        @keyframes celebra-brinca { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-25%) scale(1.15); } 100% { transform: none; } }
+        .bono-flota {
+            position: absolute; right: 0.5rem; top: 100%; z-index: 30; pointer-events: none;
+            font-weight: 800; color: var(--sol-oscuro); background: var(--papel);
+            border: 2px solid var(--sol); border-radius: 9999px; padding: 0 0.5rem;
+            animation: bono-flota 0.6s ease-out forwards;
+        }
+        @keyframes bono-flota { 0% { transform: translateY(0.6rem) scale(0.6); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+        /* Una flor que florece de verdad (se sabe de memoria) crece más y brilla. */
+        .flor-florecida { filter: drop-shadow(0 0 6px #fde047); font-size: 2.6rem; z-index: 5; }
+        /* Las estrellas del diploma aparecen una tras otra. */
+        .estrella-victoria { display: inline-block; }
+        .estrellas-victoria.aparecen .estrella-victoria { animation: estrella-aparece 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+        .estrellas-victoria.aparecen .estrella-victoria:nth-child(2) { animation-delay: 0.15s; }
+        .estrellas-victoria.aparecen .estrella-victoria:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes estrella-aparece { from { transform: scale(0) rotate(-90deg); opacity: 0; } to { transform: none; opacity: 1; } }
+        /* Confeti propio: hojas, estrellas y semillas con los colores de la guía. */
+        .confeti { position: absolute; pointer-events: none; width: 0.9rem; height: 0.9rem; animation: fall linear forwards; z-index: 50; }
+        .confeti-hoja { border-radius: 0 100% 0 100%; }
+        .confeti-estrella { clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); width: 1.1rem; height: 1.1rem; }
+        .confeti-semilla { border-radius: 50%; width: 0.7rem; height: 0.9rem; }
+
         .lumi-bienvenida { width: 7rem; height: 7rem; }
         .lumi-victoria { width: 8rem; height: 8rem; }
         .lumi-partida { width: 2.75rem; height: 2.75rem; }
@@ -423,7 +468,7 @@
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
         .animate-bloom {
-            animation: bloom 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: bloom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         /* Regadera regando */
@@ -807,9 +852,12 @@
                 </button>
                 <!-- Lumi acompaña la partida: celebra, anima tras un fallo y
                      piensa con la ayuda abierta. -->
-                <span id="lumi-partida" class="lumi-caja lumi-partida" data-lumi="contenta"></span>
+                <span class="relative inline-flex">
+                    <span id="lumi-partida" class="lumi-caja lumi-partida" data-lumi="contenta"></span>
+                    <span id="globo-lumi" class="globo-lumi hidden" aria-hidden="true"></span>
+                </span>
                 <!-- Estrellas de este nivel -->
-                <div class="flex items-center gap-1 bg-yellow-100 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
+                <div id="pastilla-estrellas" class="relative flex items-center gap-1 bg-yellow-100 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
                     <span aria-hidden="true">⭐</span>
                     <span class="sr-only">Aciertos:</span>
                     <span id="current-stars">0</span><span aria-hidden="true">/</span><span class="sr-only">de</span><span id="target-stars">10</span>
@@ -966,7 +1014,7 @@
                 <p class="text-amber-800 text-xs font-bold uppercase tracking-widest">Premio Especial</p>
                 <h3 class="bubble-font text-2xl text-amber-700">Diploma del Jardín Mágico</h3>
                 <p class="text-gray-700 font-bold text-base">Completado con éxito: <span id="victory-table-name" class="text-green-700">La Tabla del X</span></p>
-                <div class="text-4xl" aria-hidden="true">🌟🌟🌟</div>
+                <div id="estrellas-victoria" class="estrellas-victoria text-4xl" aria-hidden="true"><span class="estrella-victoria">🌟</span><span class="estrella-victoria">🌟</span><span class="estrella-victoria">🌟</span></div>
             </div>
 
             <p id="victoria-aprendido" class="text-green-800 font-bold text-lg max-w-md mx-auto"></p>
@@ -1542,6 +1590,7 @@
         // hay debajo, también al dividir (56 ÷ 8 = 7: numA 8, numB 7).
         let pregunta = null;
         let aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0 };
+        let rachaPartida = 0;   // aciertos seguidos en esta partida (celebraciones)
         // --- AJUSTES ---
         //
         // Antes había un solo botón para todo el sonido. En un aula hace falta
@@ -2225,6 +2274,8 @@
             hechosDeLaPartida = new Set();
             estrellasAlEmpezar = globalStars;
             aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0 };
+            rachaPartida = 0;
+            callarGloboLumi();
 
             // Los amigos comprados en el vivero acompañan la partida: se ven
             // arriba del bancal, donde no tapan las flores que van naciendo.
@@ -3000,7 +3051,54 @@
         ["pointerdown", "keydown"].forEach((tipo) => document.addEventListener(tipo, despertarLumi, { passive: true }));
         document.addEventListener("animationend", (e) => {
             if (e.animationName === "lumi-salta") e.target.classList.remove("salta");
+            if (e.animationName === "celebra-pop") e.target.classList.remove("celebra-pop");
+            if (e.animationName === "celebra-brinca") e.target.classList.remove("celebra-brinca");
         });
+
+        // --- CELEBRACIONES ---
+        //
+        // Cada logro tiene su momento, corto (600 ms o menos) y sin retrasar la
+        // siguiente pregunta: el botón acertado salta, las estrellas brincan,
+        // una racha la dice Lumi, florecer hace crecer la flor con brillo y
+        // muestra el bono, y en la victoria las estrellas salen una a una. Con
+        // «Menos movimiento» no se mueve nada, pero el mensaje está en el texto.
+        const FRASES_RACHA = { 3: "¡Tres seguidas! 🔥", 5: "¡Cinco seguidas! ¡Imparable!", 8: "¡Ocho seguidas! ¡Qué memoria!" };
+        const GLOBO_LUMI_MS = 1800;
+        let globoLumi = null;
+
+        /** Vuelve a lanzar una animación de una vez (clase que se quita al acabar). */
+        function celebrar(elemento, clase) {
+            if (!elemento) return;
+            elemento.classList.remove(clase);
+            void elemento.offsetWidth;
+            elemento.classList.add(clase);
+        }
+
+        /** Lumi dice algo en su globo, un momento. El texto también va en #game-feedback. */
+        function decirLumi(texto) {
+            const globo = document.getElementById("globo-lumi");
+            clearTimeout(globoLumi);
+            globo.textContent = texto;
+            globo.classList.remove("hidden");
+            celebrar(globo, "aparece");
+            globoLumi = setTimeout(callarGloboLumi, GLOBO_LUMI_MS);
+        }
+        function callarGloboLumi() {
+            clearTimeout(globoLumi);
+            document.getElementById("globo-lumi").classList.add("hidden");
+        }
+
+        /** «+3 ⭐» que sale de las estrellas de la partida al florecer. */
+        function mostrarBono(cantidad) {
+            const pastilla = document.getElementById("pastilla-estrellas");
+            pastilla.querySelector(".bono-flota")?.remove();
+            const bono = document.createElement("span");
+            bono.className = "bono-flota";
+            bono.setAttribute("aria-hidden", "true");
+            bono.textContent = `+${cantidad} ⭐`;
+            pastilla.appendChild(bono);
+            setTimeout(() => bono.remove(), 1400);
+        }
 
         function mostrarPantalla(id) {
             PANTALLAS.forEach((p) => document.getElementById(p).classList.toggle("hidden", p !== id));
@@ -5418,6 +5516,10 @@
                 triggerBurstEffect(selectedBtn || document.getElementById("escrito"));
                 // Florecer es lo que de verdad se aprendió: Lumi se sorprende.
                 lumi("lumi-partida", florecio ? "sorprendida" : "celebrando", 1500);
+                celebrar(selectedBtn || document.getElementById("escrito"), "celebra-pop");
+                rachaPartida++;
+                const fraseRacha = FRASES_RACHA[rachaPartida] ?? "";
+                if (fraseRacha) decirLumi(fraseRacha);
 
                 const felicitaciones = ["¡Espectacular! 🎉", "¡Excelente trabajo! 👏", "¡Correcto! ⭐", "¡Súper bien hecho! 🌟", "¡Tu jardín va creciendo! 🌱"];
                 const rFrase = florecio
@@ -5435,7 +5537,7 @@
                 const misionCumplida = modoEscrito && avanzarMision("escrita");
                 const avisoMision = misionCumplida ? ` ☀️ ¡Misión de hoy cumplida! +${BONO_MISION} ⭐` : "";
 
-                feedback.innerText = `${rFrase}  ${pregunta.explicacion}${consejo}${bono}${avisoMision}`;
+                feedback.innerText = `${rFrase}  ${pregunta.explicacion}${consejo}${bono}${avisoMision}${fraseRacha ? ` ${fraseRacha}` : ""}`;
                 feedback.classList.add("text-green-800", "scale-110");
 
                 // La voz ya no solo celebra: también ENSEÑA. Oír el hecho
@@ -5447,7 +5549,7 @@
                         ? `${rFrase} ${numA} por ${numB}, ${correctAnswer}.`
                         : `${rFrase} ${textoParaVoz(pregunta.explicacion)}`);
                 if (misionCumplida) speak("¡Misión de hoy cumplida!");
-                sproutFlower();
+                sproutFlower(florecio);
 
                 // Si era un repaso, se programa UNA segunda vuelta más tarde:
                 // acertar una vez no es haberlo aprendido, y acertarlo dos
@@ -5463,6 +5565,8 @@
                 aciertosPorOp[pregunta.tipo === "logica" ? "L" : pregunta.tipo === "fraccion" ? "F" : seDivide() ? "÷" : "×"]++;
                 ganarEstrellas(1 + (florecio ? BONO_FLOR : 0));
                 updateHUD();
+                celebrar(document.getElementById("pastilla-estrellas"), "celebra-brinca");
+                if (florecio) mostrarBono(BONO_FLOR);
 
                 // Sin mínimo: quien acierta rápido puede seguir enseguida.
                 programarSiguiente(0, 1600, () => {
@@ -5480,6 +5584,8 @@
                 playIncorrectSound();
                 // Animando, no triste: «¡casi!». Se queda así hasta la siguiente.
                 lumi("lumi-partida", "animando");
+                rachaPartida = 0;
+                callarGloboLumi();
 
                 // Equivocarse NO alarga la partida.
                 //
@@ -5531,7 +5637,7 @@
         }
 
         // --- ACCIÓN DE HACER CRECER UNA FLOR EN EL JARDÍN ---
-        function sproutFlower() {
+        function sproutFlower(florecio = false) {
             const plot = document.getElementById("garden-plot");
             const flower = document.createElement("div");
             
@@ -5541,7 +5647,8 @@
                 can.classList.remove("animate-pour");
             }, 1500);
 
-            flower.className = "absolute text-4xl animate-bloom transition-all duration-300";
+            // La que florece (ya se sabe de memoria) crece más y brilla.
+            flower.className = `absolute text-4xl animate-bloom transition-all duration-300${florecio ? " flor-florecida" : ""}`;
             
             // Distribución basada en el porcentaje actual de avance
             const percentage = (score / targetScore) * 100;
@@ -5610,6 +5717,7 @@
             document.getElementById("victoria-estrellas").innerText = `⭐ ${textoEstrellas}`;
 
             mostrarPantalla("screen-victory");
+            celebrar(document.getElementById("estrellas-victoria"), "aparecen");
 
             const logro = currentTable === "falta" ? "Has repasado lo que te faltaba" : `Has completado ${tableName}`;
             speak(`¡Increíble${playerName ? `, ${playerName}` : ""}! ${logro}. ${textoParaVoz(aprendido)}` +
@@ -6763,11 +6871,15 @@
             }
         }
 
+        const COLORES_CONFETI = ["#4ade80", "#facc15", "#38bdf8", "#f472b6", "#fb923c", "#a78bfa"];
         function createConfetti() {
             const confetti = document.createElement("div");
             confetti.setAttribute("aria-hidden", "true");
-            confetti.className = "confetti-particle text-2xl";
-            confetti.innerText = algoQueCrece();
+            // Formas propias (hojas, estrellas y semillas) con los colores de
+            // la guía de estilo, en lugar de emojis que cambian con el teléfono.
+            const forma = ["hoja", "estrella", "semilla"][Math.floor(Math.random() * 3)];
+            confetti.className = `confeti confeti-${forma}`;
+            confetti.style.background = COLORES_CONFETI[Math.floor(Math.random() * COLORES_CONFETI.length)];
             
             confetti.style.left = Math.random() * 100 + "vw";
             confetti.style.top = "-5vh";

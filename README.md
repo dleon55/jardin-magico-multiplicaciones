@@ -22,8 +22,19 @@ mascota del juego, un dibujo original, y cambia de cara según lo que pasa:
   - piensa mientras la ayuda está abierta;
 - en la victoria, celebra.
 
+**Celebraciones.** Cada logro tiene su momento, de 600 ms o menos y sin
+retrasar la siguiente pregunta:
+- el botón acertado salta y las estrellas de la partida brincan;
+- con 3, 5 y 8 aciertos seguidos, Lumi lo dice en un globo («¡Tres
+  seguidas! 🔥»);
+- al florecer, la flor nace más grande y con brillo, y el bono sale de las
+  estrellas;
+- en la victoria, las estrellas del diploma salen una a una y cae confeti de
+  hojas, estrellas y semillas.
+
 Respira y parpadea; con «Menos movimiento» se queda quieta y solo cambia de
-cara. Es decorativa para el lector de pantalla, porque el texto ya dice lo
+cara. Las celebraciones tampoco se mueven, pero el texto dice lo mismo, y el
+lector de pantalla oye cada logro una sola vez. Es decorativa para el lector de pantalla, porque el texto ya dice lo
 mismo.
 
 - **🐾 La Aventura.** Un animalito con su varita (gatito, perrito, conejito,
