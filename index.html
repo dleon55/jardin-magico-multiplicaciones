@@ -104,6 +104,49 @@
         .confeti-estrella { clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); width: 1.1rem; height: 1.1rem; }
         .confeti-semilla { border-radius: 50%; width: 0.7rem; height: 0.9rem; }
 
+        /* La bienvenida guiada cabe sin desplazarse: en el teléfono, Lumi y el
+           título se achican; acostado, dos columnas (Lumi y lo que dice a la
+           izquierda; lo que se elige y el botón a la derecha). */
+        @media (max-width: 640px) {
+            #screen-guia { padding-top: 0; }
+            #screen-guia > * + * { margin-top: 0.6rem !important; }
+            #screen-guia .lumi-bienvenida { width: 4.5rem; height: 4.5rem; }
+            #guia-titulo { font-size: 1.6rem; }
+            #guia-texto { font-size: 1rem; }
+            #screen-guia .ficha span.cara { padding: 0.25rem 0.2rem; }
+            #screen-guia [data-paso="practica"] > * + * { margin-top: 0.5rem; }
+            #screen-guia .puntos-practica { grid-template-columns: repeat(3, 1.8rem); gap: 0.4rem; padding: 0.45rem; }
+            #screen-guia .puntos-practica span { width: 1.8rem; height: 1.8rem; }
+            #guia-opciones button { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        }
+        @media (orientation: landscape) and (max-height: 520px) {
+            #screen-guia {
+                display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+                column-gap: 1.25rem; row-gap: 0.4rem; align-items: center; padding: 0;
+            }
+            #screen-guia.hidden { display: none; }
+            #screen-guia > * { margin: 0 !important; }
+            #screen-guia > :first-child { grid-column: 1 / 3; grid-row: 1; }
+            #screen-guia #lumi-guia { grid-column: 1; grid-row: 2; justify-self: center; width: 4rem; height: 4rem; }
+            #guia-titulo { grid-column: 1; grid-row: 3; font-size: 1.5rem; }
+            #guia-texto { grid-column: 1; grid-row: 4; font-size: 1rem; }
+            #guia-contenido { grid-column: 2; grid-row: 2 / 4; width: 100%; }
+            #guia-seguir { grid-column: 2; grid-row: 4; }
+            #screen-guia .ficha span.cara { padding: 0.15rem; }
+            #screen-guia .ficha .text-3xl { font-size: 1.5rem; }
+            #screen-guia .puntos-practica { grid-template-columns: repeat(3, 1.6rem); gap: 0.35rem; padding: 0.4rem; }
+            #screen-guia .puntos-practica span { width: 1.6rem; height: 1.6rem; }
+            #guia-opciones button { padding-top: 0.35rem; padding-bottom: 0.35rem; font-size: 1.5rem; }
+            /* La práctica, acostada: los puntos a un lado y las opciones al otro. */
+            #screen-guia [data-paso="practica"]:not(.hidden) { display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 0.75rem; align-items: center; }
+            #screen-guia [data-paso="practica"] > * { margin: 0 !important; }
+            #guia-respuesta { grid-column: 1 / 3; min-height: 1.5rem; font-size: 1rem; }
+        }
+
+        /* La pregunta de práctica de la bienvenida guiada: 2 filas de 3. */
+        .puntos-practica { display: grid; grid-template-columns: repeat(3, 2.2rem); gap: 0.5rem; width: max-content; padding: 0.6rem; background: var(--papel); border: 3px solid var(--hoja-clara); border-radius: 1rem; }
+        .puntos-practica span { width: 2.2rem; height: 2.2rem; border-radius: 50%; background: #f4c27a; border: 3px solid var(--contorno); }
+
         .lumi-bienvenida { width: 7rem; height: 7rem; }
         .lumi-victoria { width: 8rem; height: 8rem; }
         .lumi-partida { width: 2.75rem; height: 2.75rem; }
@@ -666,6 +709,55 @@
             </div>
         </details>
         
+        <!-- ================= BIENVENIDA GUIADA (la primera vez) =================
+             Lumi lleva al niño paso a paso: se presenta, pide su nombre, el
+             mundo y el personaje (uno por pantalla), le enseña a responder con
+             una pregunta fácil y lo lleva a su primera tabla. Se puede saltar,
+             y no vuelve a salir en este dispositivo. -->
+        <div id="screen-guia" class="hidden text-center space-y-4 py-2">
+            <div class="flex justify-between items-center gap-2">
+                <p id="guia-paso" class="text-sm font-bold text-gray-700"></p>
+                <button type="button" id="guia-saltar" onclick="saltarGuia()" class="enlace-tactil text-sm font-bold text-gray-700 underline hover:text-green-800">Saltar</button>
+            </div>
+            <span id="lumi-guia" class="lumi-caja lumi-bienvenida" data-lumi="contenta"></span>
+            <h1 id="guia-titulo" data-foco class="bubble-font text-3xl md:text-4xl text-sky-800 leading-tight"></h1>
+            <p id="guia-texto" class="text-gray-700 text-lg md:text-xl max-w-md mx-auto"></p>
+
+            <div id="guia-contenido" class="max-w-md mx-auto">
+                <section data-paso="nombre" class="hidden">
+                    <label for="guia-nombre" class="sr-only">Tu nombre</label>
+                    <input type="text" id="guia-nombre" placeholder="Escríbelo aquí…" maxlength="20" autocomplete="off"
+                           class="w-full max-w-xs mx-auto block px-5 py-3 rounded-2xl border-2 border-sky-500 text-center text-xl font-bold text-sky-900 focus:border-sky-700 focus:ring-4 focus:ring-sky-200 shadow-inner placeholder-gray-500">
+                </section>
+                <section data-paso="mundo" class="hidden">
+                    <fieldset class="text-left">
+                        <legend class="sr-only">Elige tu mundo</legend>
+                        <div class="elegir-mundo grid grid-cols-4 gap-2" data-nombre="guia-mundo"></div>
+                    </fieldset>
+                </section>
+                <section data-paso="personaje" class="hidden">
+                    <fieldset class="text-left">
+                        <legend class="sr-only">Elige tu personaje</legend>
+                        <div class="elegir-personaje grid grid-cols-4 sm:grid-cols-6 gap-2" data-nombre="guia-personaje"></div>
+                    </fieldset>
+                </section>
+                <section data-paso="practica" class="hidden space-y-3">
+                    <div class="puntos-practica mx-auto" role="img" aria-label="2 filas de 3 puntos">
+                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <div id="guia-opciones" role="group" aria-label="Elige la respuesta" class="grid grid-cols-3 gap-3">
+                        <button type="button" class="btn-guia-op bg-white border-4 border-sky-200 rounded-2xl py-3 text-3xl font-bold text-gray-800 shadow-md" data-valor="5" onclick="responderGuia(this)">5</button>
+                        <button type="button" class="btn-guia-op bg-white border-4 border-sky-200 rounded-2xl py-3 text-3xl font-bold text-gray-800 shadow-md" data-valor="6" onclick="responderGuia(this)">6</button>
+                        <button type="button" class="btn-guia-op bg-white border-4 border-sky-200 rounded-2xl py-3 text-3xl font-bold text-gray-800 shadow-md" data-valor="8" onclick="responderGuia(this)">8</button>
+                    </div>
+                    <p id="guia-respuesta" role="status" aria-live="polite" class="min-h-7 font-bold text-lg"></p>
+                </section>
+            </div>
+
+            <button type="button" id="guia-seguir" onclick="seguirGuia()"
+                    class="w-full max-w-xs mx-auto block bubble-font bg-green-700 hover:bg-green-800 disabled:opacity-50 text-white text-xl px-8 py-4 rounded-2xl shadow-lg"></button>
+        </div>
+
         <!-- ================= PANTALLA 1: BIENVENIDA ================= -->
         <div id="screen-welcome" class="text-center space-y-6 py-4">
             <span id="lumi-bienvenida" class="lumi-caja lumi-bienvenida" data-lumi="contenta"></span>
@@ -1383,7 +1475,9 @@
         // nombre» borraba todo: otro niño que tocara ese botón se llevaba
         // semanas de práctica de su hermano.
         const PREFIJO = "jardin:";
-        const GLOBALES = new Set(["ajustes", "perfiles", "perfil"]);
+        // «guia»: si este dispositivo ya vio la bienvenida guiada. Es del
+        // dispositivo, no de un jardín, y no va en la copia de seguridad.
+        const GLOBALES = new Set(["ajustes", "perfiles", "perfil", "guia"]);
         const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra"];
         let perfilActual = "p1";
 
@@ -2177,6 +2271,7 @@
 
             buildSelectorGrid();
             setupMagicParticles();
+            if (debeGuiar()) mostrarGuia();
         };
 
         function saveNameAndGo() {
@@ -2184,7 +2279,18 @@
             // Sin género en ninguna parte: el sitio habla del jardín o usa el
             // nombre. Antes decía "jardinera", "campeona" e "Invitada" a todo el
             // mundo, de modo que a un niño le hablaba como si no fuera para él.
-            const nombre = document.getElementById("player-name").value.trim().slice(0, 20);
+            const raiz = document.getElementById("screen-welcome");
+            crearJugador(document.getElementById("player-name").value, elegidoEn(raiz, "mundo"), elegidoEn(raiz, "personaje"));
+            entrarAlJardin();
+        }
+
+        /**
+         * Entra con el jardín de `nombre` si ya existe; si no, lo crea con ese
+         * mundo y personaje (o los de siempre). Lo usan la bienvenida y la
+         * bienvenida guiada.
+         */
+        function crearJugador(nombreEscrito, mundo, personaje) {
+            const nombre = nombreEscrito.trim().slice(0, 20);
             // Quien escribe un nombre que ya tiene jardín sigue con el suyo:
             // no se crean dos «Ana». El primer perfil, mientras nadie lo haya
             // empezado, toma el nombre; si no, es alguien nuevo.
@@ -2195,10 +2301,9 @@
             if (mismo) {
                 usarPerfil(mismo.id);
             } else {
-                const raiz = document.getElementById("screen-welcome");
                 const elegido = {
-                    mundo: elegidoEn(raiz, "mundo") || MUNDO_INICIAL,
-                    emoji: elegidoEn(raiz, "personaje") || PERSONAJE_INICIAL,
+                    mundo: mundo || MUNDO_INICIAL,
+                    emoji: personaje || PERSONAJE_INICIAL,
                 };
                 if (!perfilEnUso().iniciado) {
                     Object.assign(perfilEnUso(), { nombre, iniciado: true }, elegido);
@@ -2209,7 +2314,6 @@
                     usarPerfil(nuevoPerfil(nombre, true, elegido.mundo, elegido.emoji).id);
                 }
             }
-            entrarAlJardin();
         }
 
         function elegirPerfil(id) {
@@ -2989,7 +3093,7 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
+        const PANTALLAS = ["screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
         let pantallaActual = "screen-welcome";
 
         // --- LUMI, LA MASCOTA ---
@@ -3046,6 +3150,131 @@
                 if (pantallaActual === "screen-welcome") lumi("lumi-bienvenida", "durmiendo");
             }, SUENO_LUMI_MS);
         }
+        // --- BIENVENIDA GUIADA ---
+        //
+        // La primera vez, el niño caía en un formulario y luego en un menú
+        // lleno de opciones. Ahora Lumi lo guía, una cosa por pantalla: se
+        // presenta, pide el nombre (si quiere), el mundo y el personaje, le
+        // enseña a responder con 2 × 3 y lo lleva a descubrir su primera tabla.
+        // Solo sale en un dispositivo sin jardines que nunca la vio; se puede
+        // saltar, y saltarla también cuenta como vista.
+        const PASOS_GUIA = ["hola", "nombre", "mundo", "personaje", "practica"];
+        const PRIMERA_TABLA = 2;
+        let pasoGuia = 0;
+        let guiaAcerto = false;
+
+        function debeGuiar() {
+            return !almacen.leer("guia") && !perfiles.some((p) => p.iniciado);
+        }
+
+        function mostrarGuia() {
+            pasoGuia = 0;
+            guiaAcerto = false;
+            document.getElementById("guia-nombre").value = "";
+            const raiz = document.getElementById("screen-guia");
+            pintarElecciones(raiz, MUNDO_INICIAL, PERSONAJE_INICIAL);
+            raiz.querySelectorAll(".btn-guia-op").forEach((b) => {
+                b.disabled = false;
+                b.className = b.className.replace(/ ?(border-green-600|bg-green-100|border-red-600|bg-red-100)/g, "");
+            });
+            document.getElementById("guia-respuesta").textContent = "";
+            mostrarPantalla("screen-guia");
+            pintarPasoGuia();
+        }
+
+        /** Textos de cada paso: lo que dice Lumi, en pantalla y en voz. */
+        function textosGuia(paso) {
+            const nombre = document.getElementById("guia-nombre").value.trim();
+            const tu = nombre ? `${nombre}, ` : "";
+            return {
+                hola: { titulo: "¡Hola! Soy Lumi", texto: "Soy una semilla mágica. ¿Me ayudas a hacer crecer un jardín con las multiplicaciones?", boton: "¡Sí, vamos!", cara: "contenta" },
+                nombre: { titulo: "¿Cómo te llamas?", texto: "Así sabré de quién es el jardín. Si no quieres, sigue sin escribirlo.", boton: "Seguir", cara: "contenta" },
+                mundo: { titulo: `${nombre ? `${nombre}, elige` : "Elige"} tu mundo`, texto: "Es donde crecerá tu jardín. Puedes cambiarlo cuando quieras.", boton: "Seguir", cara: "sorprendida" },
+                personaje: { titulo: "Elige tu personaje", texto: "Te acompañará en el jardín.", boton: "Seguir", cara: "contenta" },
+                practica: { titulo: "Vamos a practicar", texto: `${tu}2 × 3 son 2 filas de 3 puntos. ¿Cuántos puntos hay? Toca la respuesta.`, boton: "¡A mi jardín!", cara: "pensando" },
+            }[paso];
+        }
+
+        function pintarPasoGuia() {
+            const paso = PASOS_GUIA[pasoGuia];
+            const t = textosGuia(paso);
+            document.getElementById("guia-paso").textContent = `Paso ${pasoGuia + 1} de ${PASOS_GUIA.length}`;
+            document.getElementById("guia-titulo").textContent = t.titulo;
+            document.getElementById("guia-texto").textContent = t.texto;
+            document.querySelectorAll("#screen-guia [data-paso]").forEach((s) => s.classList.toggle("hidden", s.dataset.paso !== paso));
+            const seguir = document.getElementById("guia-seguir");
+            seguir.textContent = t.boton;
+            // En la práctica, primero hay que dar con la respuesta.
+            seguir.disabled = paso === "practica" && !guiaAcerto;
+            lumi("lumi-guia", paso === "practica" && guiaAcerto ? "celebrando" : t.cara);
+            // El foco va al título del paso: el lector de pantalla lo lee y el
+            // teclado sigue desde ahí.
+            const titulo = document.getElementById("guia-titulo");
+            titulo.setAttribute("tabindex", "-1");
+            titulo.focus({ preventScroll: true });
+            if (paso === "nombre") document.getElementById("guia-nombre").focus({ preventScroll: true });
+            window.scrollTo(0, 0);
+            callarVoz();
+            speak(`${t.titulo}. ${t.texto}`);
+        }
+
+        function seguirGuia() {
+            initAudio();
+            if (pasoGuia < PASOS_GUIA.length - 1) {
+                pasoGuia++;
+                pintarPasoGuia();
+            } else {
+                terminarGuia();
+            }
+        }
+
+        function responderGuia(boton) {
+            const raiz = document.getElementById("screen-guia");
+            const salida = document.getElementById("guia-respuesta");
+            if (Number(boton.dataset.valor) === 6) {
+                guiaAcerto = true;
+                boton.classList.add("border-green-600", "bg-green-100");
+                raiz.querySelectorAll(".btn-guia-op").forEach((b) => { b.disabled = true; });
+                salida.className = "min-h-7 font-bold text-lg text-green-800";
+                salida.textContent = "¡Eso es! 2 × 3 = 6. ¡Así se juega!";
+                lumi("lumi-guia", "celebrando");
+                playCorrectSound();
+                document.getElementById("guia-seguir").disabled = false;
+                speak("¡Eso es! 2 por 3, 6.");
+            } else {
+                boton.classList.add("border-red-600", "bg-red-100");
+                boton.disabled = true;
+                salida.className = "min-h-7 font-bold text-lg text-rose-800";
+                salida.textContent = "¡Casi! Cuenta los puntos: 3 y 3.";
+                lumi("lumi-guia", "animando");
+                speak("¡Casi! Cuenta los puntos: 3 y 3.");
+            }
+        }
+
+        function marcarGuiaVista() {
+            almacen.guardar("guia", "1");
+        }
+
+        /** Saltar: a la bienvenida de siempre, y la guía no vuelve a salir. */
+        function saltarGuia() {
+            marcarGuiaVista();
+            callarVoz();
+            mostrarPantalla("screen-welcome");
+        }
+
+        /** Crea el jardín con lo elegido y lleva a descubrir la primera tabla. */
+        function terminarGuia() {
+            const raiz = document.getElementById("screen-guia");
+            marcarGuiaVista();
+            crearJugador(document.getElementById("guia-nombre").value, elegidoEn(raiz, "guia-mundo"), elegidoEn(raiz, "guia-personaje"));
+            entrarAlJardin();
+            elegirTabla(PRIMERA_TABLA);
+        }
+
+        document.getElementById("guia-nombre").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") { e.preventDefault(); seguirGuia(); }
+        });
+
         ponerLumis();
         despertarLumi();
         ["pointerdown", "keydown"].forEach((tipo) => document.addEventListener(tipo, despertarLumi, { passive: true }));

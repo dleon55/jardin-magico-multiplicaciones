@@ -20,6 +20,10 @@ export default defineConfig({
     // "quieto" para un clic automatizado. Las pruebas que necesitan las
     // animaciones abren su propio contexto sin esta preferencia.
     reducedMotion: "reduce",
+    // Cada prueba empieza en un dispositivo que ya vio la bienvenida guiada:
+    // si no, todas empezarían en ella. Las de la guía (guia.spec.mjs) parten
+    // de un dispositivo vacío.
+    storageState: "pruebas/estado-inicial.json",
     trace: "retain-on-failure",
     ...(ejecutable ? { launchOptions: { executablePath: ejecutable } } : {}),
   },
