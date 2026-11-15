@@ -329,10 +329,21 @@ Con teclado (en una tableta estos atajos no se muestran):
 | `Espacio` | Otra fila, al descubrir una tabla |
 | `Esc` | Volver al menú, desde el juego, el mapa, el jardín, el vivero o al descubrir una tabla; desde la vista para adultos, volver a donde se estaba |
 
-En **Ajustes** se pueden apagar por separado la voz y los sonidos, elegir la
+En **Ajustes** se pueden apagar por separado la voz, los sonidos y la música, elegir la
 velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento».
 Este último se enciende solo si el dispositivo ya lo pide, y apaga los
 fundidos de entrada, la onda de los botones y los adornos que flotan.
+
+**Música de fondo.** Compuesta para el juego y tocada con el sintetizador del
+navegador, sin archivos ni internet: una pieza tranquila para el jardín y otra
+con más ritmo para la Aventura, en escala pentatónica. Va bajita, baja más
+mientras habla la voz y se calla al cambiar de app. Empieza con el primer
+toque, porque los navegadores no dejan sonar antes.
+
+**En el teléfono, tocar no mueve la pantalla.** Los teclados (con la
+distribución de un teléfono: 1 2 3 / 4 5 6 / 7 8 9 / ⌫ 0 ✓), las opciones y la
+arena no desplazan la página aunque el dedo se deslice, y dos toques rápidos ya
+no hacen zoom. El zoom con dos dedos sigue disponible.
 
 ### Velocidad de la voz
 
@@ -404,7 +415,7 @@ plantas nuevas, cuándo sale y cuándo no), la copia de seguridad (guardar y
 recuperar en otro dispositivo, confirmar, archivos dañados o de otra versión,
 aviso en iPad), los mundos (elegir, cambiar sin
 borrar, lo que crece en cada uno, lo guardado de antes, contraste en cada
-fondo), la usabilidad (nada tapa a nada, la respuesta junto a las opciones, el nivel de la aventura cabe en el teléfono, textos que no se contradicen), la presentación (paisaje de cada mundo, fundidos, relieve y onda, y que
+fondo), el teléfono y la música (teclado de teléfono, tocar sin desplazar ni hacer zoom, música por pantalla, apagarla, bajar con la voz, callar en segundo plano), la usabilidad (nada tapa a nada, la respuesta junto a las opciones, el nivel de la aventura cabe en el teléfono, textos que no se contradicen), la presentación (paisaje de cada mundo, fundidos, relieve y onda, y que
 «menos movimiento» lo apague), los perfiles y la vista para
 adultos (cada quien lo suyo, cambiar sin borrar, borrar solo uno, lo que
 más falla, días de práctica, lo de antes de los perfiles), el jardín (parejas, bancales y riego), las

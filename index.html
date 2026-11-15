@@ -92,13 +92,22 @@
         .ficha input:focus-visible + span.cara { outline: 3px solid #0369a1; outline-offset: 2px; }
 
         /* --- LA AVENTURA --- */
+        /* TOCAR SIN QUE LA PANTALLA SE MUEVA. En el teléfono, dos toques
+           rápidos en un botón hacían zoom, y un dedo que se desliza un poco
+           sobre el teclado arrastraba la página: se perdía tiempo en pleno
+           nivel. «manipulation» quita el zoom por doble toque (el de dos dedos
+           sigue, hace falta para quien ve poco); sobre los teclados, las
+           opciones y la arena, tocar nunca desplaza. */
+        html { touch-action: manipulation; overscroll-behavior-y: none; }
+        button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+        .teclado-tactil, .teclado-tactil button, #aventura-opciones, #aventura-opciones button, #opciones .btn-option { touch-action: none; }
         .pizarra { touch-action: none; aspect-ratio: 12 / 5; cursor: crosshair; }
         .modo-aventura[aria-pressed="true"] { background: #4338ca; border-color: #4338ca; color: #fff; }
         .sin-prisa[aria-pressed="true"] { background: #047857; border-color: #047857; color: #fff; }
         /* Sin prisa: el enemigo que llegó a su sitio espera, balanceándose. */
         @keyframes esperar { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
         html:not(.calma) .enemigo.esperando { animation: esperar 1.6s ease-in-out infinite; }
-        .arena { position: relative; overflow: hidden; height: 20rem; border-radius: 1.5rem; touch-action: manipulation; user-select: none; }
+        .arena { position: relative; overflow: hidden; height: 20rem; border-radius: 1.5rem; touch-action: none; user-select: none; -webkit-user-select: none; }
         @media (min-width: 768px) { .arena { height: 24rem; } }
         /* En el teléfono, la arena y el teclado tienen que caber juntos: si
            hay que desplazarse para teclear, los enemigos avanzan sin verse. */
@@ -114,14 +123,15 @@
             #aventura-mensaje:empty { display: none; }
             #modos-aventura { font-size: 0.8rem; }
             #modos-aventura .modo-aventura { padding: 0.2rem 0.6rem; }
-            .arena { height: 12rem; }
+            .arena { height: 11.25rem; }
             .heroe { font-size: 2.6rem; bottom: 0.4rem; }
             .enemigo .cara { font-size: 2.1rem; }
             .enemigo.jefe .cara { font-size: 3.4rem; }
             .decor { font-size: 1.5rem; }
             #nivel-titulo { font-size: 1rem; line-height: 1.3; }
-            #aventura-teclado button { padding-top: 0.35rem; padding-bottom: 0.35rem; }
-            #aventura-escrito { min-height: 3rem; font-size: 1.75rem; }
+            #aventura-teclado { gap: 0.4rem; }
+            #aventura-teclado button { padding-top: 0.3rem; padding-bottom: 0.3rem; }
+            #aventura-escrito { min-height: 2.75rem; font-size: 1.6rem; padding-top: 0; padding-bottom: 0; }
             #aventura-lanzar { font-size: 0.95rem; }
         }
         .arena[data-mundo="0"] { background: linear-gradient(#bae6fd 0%, #e0f2fe 55%, #86efac 55%, #4ade80 100%); }
@@ -337,6 +347,9 @@
                 </button>
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="efectos" aria-pressed="true">
                     <span><span aria-hidden="true">🎵</span> Sonidos</span><span class="estado font-bold">Sí</span>
+                </button>
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="musica" aria-pressed="true">
+                    <span><span aria-hidden="true">🎶</span> Música</span><span class="estado font-bold">Sí</span>
                 </button>
                 <!-- Tres posiciones: cada toque pasa a la siguiente. Sin aria-pressed:
                      no es un interruptor, y el nombre accesible ya incluye el valor. -->
@@ -611,7 +624,7 @@
                         <button type="button" id="pizarra-juego-listo" onclick="responderConDedo()" class="btn-tecla bg-green-700 hover:bg-green-800 disabled:opacity-50 active:scale-95 py-3 text-xl font-bold rounded-2xl shadow-md text-white"><span aria-hidden="true">✓</span> Listo</button>
                     </div>
                 </div>
-                <div id="teclado-juego" role="group" aria-label="Teclado de números" class="grid grid-cols-3 gap-2">
+                <div id="teclado-juego" role="group" aria-label="Teclado de números" class="teclado-tactil grid grid-cols-3 gap-2">
                     <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="1" onclick="teclear(1)">1</button>
                     <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="2" onclick="teclear(2)">2</button>
                     <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="3" onclick="teclear(3)">3</button>
@@ -881,7 +894,7 @@
                     <button type="button" data-modo="dedo" onclick="cambiarModoAventura('dedo')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">✍️</span> Con el dedo</button>
                 </div>
                 <output id="aventura-escrito" aria-label="Tu respuesta" class="block min-h-14 bg-white border-4 border-indigo-300 rounded-2xl text-center text-3xl font-bold text-gray-800 py-1 tabular-nums"></output>
-                <div id="aventura-teclado" role="group" aria-label="Teclado de números" class="grid grid-cols-4 gap-2"></div>
+                <div id="aventura-teclado" role="group" aria-label="Teclado de números" class="teclado-tactil grid grid-cols-3 gap-2"></div>
                 <div id="aventura-opciones" class="hidden grid grid-cols-2 gap-2"></div>
                 <div id="aventura-pizarra" class="hidden space-y-2">
                     <canvas id="pizarra" width="480" height="200" aria-label="Recuadro para escribir la respuesta con el dedo" aria-describedby="pizarra-ayuda" class="pizarra block w-full bg-white border-4 border-dashed border-indigo-300 rounded-2xl"></canvas>
@@ -1272,7 +1285,7 @@
         // al sistema operativo (y a sus cambios); true o false, lo que se eligió
         // aquí. Si se guardara el valor derivado del sistema, cambiar la voz
         // congelaría "calma" para siempre.
-        const ajustes = { voz: true, efectos: true, velocidad: "normal", calma: null };
+        const ajustes = { voz: true, efectos: true, musica: true, velocidad: "normal", calma: null };
 
         // Velocidades de la voz, en el orden en que las recorre el botón. Más de
         // 1,2 y en español los números se atropellan ("siete por ocho, cincuenta
@@ -1328,6 +1341,10 @@
                 if (ajustes.voz) speak("Voz activada.");
                 else callarVoz();
             }
+            if (nombre === "musica") {
+                if (ajustes.musica) { initAudio(); arrancarMusica(); }
+                else pararMusica();
+            }
             if (nombre === "velocidad" && ajustes.voz) {
                 callarVoz();
                 speak(VELOCIDADES[ajustes.velocidad].aviso);
@@ -1346,6 +1363,8 @@
             try {
                 if (!audioCtx) {
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    // El navegador solo deja sonar tras un toque: la música empieza aquí.
+                    setTimeout(arrancarMusica, 0);
                 }
                 // iOS suspende el contexto al bloquear la pantalla o cambiar de
                 // app, y no lo reanuda solo: el juego se quedaba mudo sin aviso.
@@ -1358,6 +1377,120 @@
         }
         ["pointerdown", "keydown"].forEach((evento) =>
             document.addEventListener(evento, () => { if (audioCtx) initAudio(); }, { passive: true }));
+
+
+        // --- MÚSICA DE FONDO ---
+        // Compuesta para el juego y tocada con el sintetizador del navegador: sin
+        // archivos ni internet. Dos piezas: «jardín», tranquila, y «aventura»,
+        // con más ritmo. Va bajita, baja más mientras habla la voz, y se calla
+        // si se cambia de app. Ocho compases que se repiten: melodía en escala
+        // pentatónica (nunca suena «mal»), bajo y un acorde suave por compás.
+        const VOLUMEN_MUSICA = 0.05;
+        const PENTATONICA = [0, 2, 4, 7, 9];
+        const PIEZAS = {
+            jardin: {
+                tempo: 84, base: 60, onda: "sine", bajo: "triangle", pulso: 2,
+                acordes: [0, 9, 5, 7, 0, 9, 7, 0],
+                melodia: [
+                    [2, null, 3, null, 4, 3, 2, null], [1, null, 2, null, 0, null, null, null],
+                    [2, null, 3, null, 4, 5, 4, null], [3, null, null, null, null, null, null, null],
+                    [5, null, 4, null, 3, null, 2, 3], [4, null, 3, null, 2, null, null, null],
+                    [1, 2, 3, null, 2, null, 1, null], [0, null, null, null, null, null, null, null],
+                ],
+            },
+            aventura: {
+                tempo: 116, base: 62, onda: "triangle", bajo: "triangle", pulso: 1,
+                acordes: [0, 7, 9, 5, 0, 7, 9, 5],
+                melodia: [
+                    [3, null, 3, 4, 5, null, 4, 3], [4, null, 3, null, 1, null, null, null],
+                    [2, null, 3, 2, 3, null, 4, null], [3, null, null, 2, 1, null, null, null],
+                    [5, null, 5, 6, 7, null, 6, 5], [6, null, 5, null, 4, null, null, null],
+                    [3, 4, 5, null, 4, 3, 2, null], [0, null, 2, null, 0, null, null, null],
+                ],
+            },
+        };
+        const musica = { pieza: "jardin", salida: null, siguiente: 0, paso: 0, temporizador: null };
+
+        const midiAHz = (m) => 440 * 2 ** ((m - 69) / 12);
+        const notaPentatonica = (base, grado) => base + PENTATONICA[((grado % 5) + 5) % 5] + 12 * Math.floor(grado / 5);
+
+        function ambienteMusical(nombre) {
+            if (musica.pieza === nombre && musica.temporizador) return;
+            musica.pieza = nombre;
+            arrancarMusica();
+        }
+
+        function arrancarMusica() {
+            pararMusica();
+            if (!ajustes.musica || !audioCtx || document.hidden) return;
+            try {
+                if (!musica.salida) {
+                    musica.salida = audioCtx.createGain();
+                    musica.salida.connect(audioCtx.destination);
+                }
+                musica.salida.gain.value = VOLUMEN_MUSICA;
+                musica.siguiente = audioCtx.currentTime + 0.15;
+                musica.paso = 0;
+                musica.temporizador = setInterval(programarMusica, 100);
+            } catch (e) { pararMusica(); }
+        }
+
+        function pararMusica() {
+            clearInterval(musica.temporizador);
+            musica.temporizador = null;
+        }
+
+        /** Programa las notas de los próximos 0,35 s (así no se entrecorta). */
+        function programarMusica() {
+            if (!audioCtx || !ajustes.musica) { pararMusica(); return; }
+            const p = PIEZAS[musica.pieza];
+            const corchea = 60 / p.tempo / 2;
+            const hablando = "speechSynthesis" in window && Boolean(window.speechSynthesis.speaking);
+            musica.salida.gain.value = VOLUMEN_MUSICA * (hablando ? 0.3 : 1);
+            // Si el reloj se adelantó (pestaña en pausa), se retoma desde ahora.
+            if (musica.siguiente < audioCtx.currentTime) musica.siguiente = audioCtx.currentTime + 0.05;
+            while (musica.siguiente < audioCtx.currentTime + 0.35) {
+                tocarPaso(p, musica.paso, musica.siguiente, corchea);
+                musica.siguiente += corchea;
+                musica.paso = (musica.paso + 1) % (p.melodia.length * 8);
+            }
+        }
+
+        function tocarPaso(p, paso, t, corchea) {
+            const compas = Math.floor(paso / 8), dentro = paso % 8;
+            const raiz = p.acordes[compas];
+            const grado = p.melodia[compas][dentro];
+            if (grado !== null) notaMusica(notaPentatonica(p.base, grado), t, corchea * 1.7, p.onda, 0.5);
+            if (dentro % p.pulso === 0) {
+                const octava = p.pulso === 1 && dentro % 2 ? 12 : 0;
+                notaMusica(p.base - 24 + raiz + octava, t, corchea * p.pulso * 0.9, p.bajo, p.pulso === 1 ? 0.28 : 0.4);
+            }
+            if (dentro === 0) {
+                const tercera = raiz === 9 ? 3 : 4;   // el sexto grado, menor
+                for (const i of [0, tercera, 7]) notaMusica(p.base - 12 + raiz + i, t, corchea * 8, "sine", 0.1);
+            }
+        }
+
+        function notaMusica(midi, t, dur, onda, vol) {
+            try {
+                const o = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                o.type = onda;
+                o.frequency.value = midiAHz(midi);
+                g.gain.setValueAtTime(0.0001, t);
+                g.gain.exponentialRampToValueAtTime(vol, t + 0.02);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                o.connect(g);
+                g.connect(musica.salida);
+                o.start(t);
+                o.stop(t + dur + 0.05);
+            } catch (e) { /* una nota menos */ }
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) pararMusica();
+            else arrancarMusica();
+        });
 
         // --- SISTEMA DE AUDIO SINTÉTICO (Sin archivos externos) ---
         function playTone(freq, type, duration, volumen = 0.15) {
@@ -2337,6 +2470,7 @@
             aplicarMundo();
             entrarPantalla(document.getElementById(id));
             window.scrollTo(0, 0);
+            ambienteMusical(id === "screen-aventura-juego" ? "aventura" : "jardin");
             const destino = document.querySelector(`#${id} [data-foco]`);
             if (destino) {
                 destino.setAttribute("tabindex", "-1");
@@ -5434,6 +5568,8 @@
             const t = document.getElementById("aventura-teclado");
             if (t.childElementCount) return;
             const clase = "bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 py-2 text-2xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150";
+            // Como el de un teléfono: 1 2 3 / 4 5 6 / 7 8 9 / ⌫ 0 ✨. Antes iba en
+            // cuatro columnas (1 2 3 4 / 5 6 7 8 / 9 ⌫ 0 ✨) y había que buscar cada cifra.
             const teclas = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "✨"];
             teclas.forEach((k) => {
                 const b = document.createElement("button");
