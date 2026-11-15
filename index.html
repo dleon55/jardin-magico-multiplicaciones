@@ -125,7 +125,7 @@
             /* LA PARTIDA EN EL TELÉFONO: la pregunta y las respuestas (o el
                teclado) a la vista sin desplazarse. Antes, en un teléfono de
                667 px, las opciones quedaban debajo y el teclado a 870 px. */
-            #screen-game > * + * { margin-top: 0.6rem !important; }
+            #screen-game > * + *, .grupo-partida > * + * { margin-top: 0.6rem !important; }
             #screen-game > div:first-child { padding: 0.3rem 0.5rem; }
             #aviso-repaso { font-size: 0.75rem; padding: 0.3rem 0.6rem; line-height: 1.25; }
             #girasol { width: 8rem; height: 8rem; }
@@ -169,6 +169,84 @@
             #aventura-teclado button { padding-top: 0.3rem; padding-bottom: 0.3rem; }
             #aventura-escrito { min-height: 2.75rem; font-size: 1.6rem; padding-top: 0; padding-bottom: 0; }
             #aventura-lanzar { font-size: 0.95rem; }
+        }
+        /* EL TELÉFONO ACOSTADO. La altura es muy poca (360 a 390 px), así que
+           se usa el ancho: la pregunta a la izquierda y la respuesta a la
+           derecha; en la Aventura, la arena a la izquierda y el teclado a la
+           derecha. «Ajustes» queda como un icono en la esquina. */
+        @media (orientation: landscape) and (max-height: 520px) {
+            body { padding: 0.25rem; align-items: flex-start; }
+            main { max-width: 64rem; padding: 0.5rem 0.75rem 0.75rem !important; border-width: 2px; border-radius: 1.25rem; }
+            #ajustes { top: 0.4rem; right: 0.5rem; }
+            #ajustes summary { width: 2.75rem; justify-content: center; padding: 0; }
+            #ajustes .texto-ajustes { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+            #screen-game > div:first-child, #nivel-cabecera, #cabecera-menu { margin-right: 3.25rem; }
+            /* Los encabezados de las demás pantallas tampoco van bajo el icono. */
+            main > div[id^="screen-"] > div:first-child:not(#cabecera-menu) { padding-right: 3.25rem; }
+
+            /* El menú: quién juega y la misión, lado a lado; las tablas, de cinco en cinco. */
+            #screen-selector { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 0.75rem; row-gap: 0.75rem; align-items: stretch; }
+            #screen-selector.hidden { display: none; }
+            #screen-selector > * { grid-column: 1 / -1; margin-top: 0 !important; }
+            #screen-selector > #cabecera-menu { grid-column: 1; margin-right: 0; }
+            #screen-selector > #mision { grid-column: 2; max-width: none; margin-right: 3.25rem; }
+            #grid-tablas-container { grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: none; }
+
+            /* La partida, lado a lado. */
+            #screen-game { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); column-gap: 1rem; row-gap: 0.5rem; align-items: start; }
+            #screen-game.hidden { display: none; }
+            #screen-game > * { margin-top: 0 !important; }
+            #screen-game > div:first-child, #screen-game > #help-panel, #screen-game > div:last-child { grid-column: 1 / -1; }
+            #screen-game > div:first-child { padding: 0.25rem 0.5rem; }
+            .grupo-partida > * + * { margin-top: 0.5rem !important; }
+            #aviso-repaso { font-size: 0.7rem; padding: 0.25rem 0.5rem; line-height: 1.2; }
+            #girasol { width: 7rem; height: 7rem; margin: -0.5rem auto; }
+            #girasol #question-text { font-size: 1.25rem; }
+            #girasol.girasol-chico { width: 3.5rem; height: 3.5rem; }
+            #girasol.girasol-chico #question-text { font-size: 1rem; }
+            #problema-texto { font-size: 0.95rem; padding: 0.4rem 0.6rem; }
+            #opciones { gap: 0.5rem; max-width: none; }
+            #opciones .btn-option { padding: 0.45rem; font-size: 1.5rem; }
+            #escritura { max-width: none; }
+            /* La respuesta y «Mejor con el dedo» en una fila; el aviso («ahora
+               escríbela») queda para el lector de pantalla: el teclado ya lo dice. */
+            #escritura { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 0.5rem; row-gap: 0.35rem; }
+            #escritura.hidden { display: none; }
+            #escritura > * { grid-column: 1 / -1; margin-top: 0 !important; }
+            #escritura > p:first-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+            #escritura > #escrito { grid-column: 1; grid-row: 1; }
+            #escritura > p:nth-child(2) { grid-column: 2; grid-row: 1; }
+            #escrito { min-height: 2.75rem; font-size: 1.6rem; padding-top: 0; padding-bottom: 0; }
+            #teclado-juego { gap: 0.35rem; }
+            #teclado-juego button { min-height: 2.75rem; padding-top: 0; padding-bottom: 0; font-size: 1.3rem; line-height: 1; border-width: 3px; }
+            #game-feedback { font-size: 0.95rem; min-height: 1.25rem; }
+
+            /* La Aventura, lado a lado: la arena tan alta como quepa. */
+            #screen-aventura-juego { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); grid-template-rows: auto auto auto 1fr; column-gap: 0.75rem; row-gap: 0.25rem; align-items: start; }
+            #screen-aventura-juego.hidden { display: none; }
+            #screen-aventura-juego > * { margin-top: 0 !important; }
+            #nivel-cabecera { grid-column: 1 / -1; display: flex; padding: 0.1rem 0.5rem; }
+            #nivel-titulo { font-size: 0.95rem; line-height: 1.2; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .arena { grid-column: 1; grid-row: 2 / span 3; height: calc(100vh - 5.4rem); height: calc(100dvh - 5.4rem); min-height: 11rem; }
+            #aventura-objetivo { grid-column: 2; grid-row: 2; font-size: 0.85rem; min-height: 0; position: static; width: auto; height: auto; clip-path: none; }
+            #aventura-mensaje { grid-column: 2; grid-row: 3; font-size: 0.8rem; min-height: 0; }
+            #aventura-mensaje:empty { display: none; }
+            #aventura-entrada { grid-column: 2; grid-row: 4; max-width: none; display: grid; grid-template-columns: auto 1fr; column-gap: 0.5rem; row-gap: 0.35rem; }
+            #aventura-entrada > * { grid-column: 1 / -1; margin-top: 0 !important; }
+            #aventura-entrada > #modos-aventura { grid-column: 1; align-self: center; }
+            #aventura-entrada > #aventura-escrito:not(.hidden) { grid-column: 2; grid-row: 1; }
+            #modos-aventura .modo-aventura { width: 2.75rem; padding: 0; font-size: 1.2rem; display: inline-flex; align-items: center; justify-content: center; }
+            #modos-aventura .texto-modo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+            #aventura-escrito { min-height: 2.75rem; font-size: 1.5rem; padding-top: 0; padding-bottom: 0; }
+            #aventura-teclado { gap: 0.25rem; }
+            #aventura-teclado button { min-height: 2.75rem; padding-top: 0; padding-bottom: 0; font-size: 1.25rem; line-height: 1; }
+            #aventura-opciones button { padding-top: 0.5rem; padding-bottom: 0.5rem; font-size: 1.4rem; }
+            #aventura-lanzar { font-size: 0.9rem; white-space: nowrap; }
+            #aventura-pizarra > * + * { margin-top: 0.3rem !important; }
+            .heroe { font-size: 2.4rem; bottom: 0.4rem; }
+            .enemigo .cara { font-size: 2rem; }
+            .enemigo.jefe .cara { font-size: 3.2rem; }
+            .decor { font-size: 1.4rem; }
         }
         .arena[data-mundo="0"] { background: linear-gradient(#bae6fd 0%, #e0f2fe 55%, #86efac 55%, #4ade80 100%); }
         .arena[data-mundo="1"] { background: linear-gradient(#a7f3d0 0%, #d1fae5 50%, #166534 50%, #14532d 100%); }
@@ -377,7 +455,7 @@
         <!-- ================= AJUSTES (en todas las pantallas) ================= -->
         <details id="ajustes" class="absolute top-3 right-3 z-40 text-sm">
             <summary class="cursor-pointer list-none bg-white border-2 border-sky-200 rounded-full px-3 py-1 min-h-11 inline-flex items-center gap-1 font-bold text-gray-700 shadow-sm hover:bg-sky-50">
-                <span aria-hidden="true">⚙️</span> Ajustes
+                <span aria-hidden="true">⚙️</span> <span class="texto-ajustes">Ajustes</span>
             </summary>
             <div class="mt-2 bg-white border-2 border-sky-200 rounded-2xl p-3 shadow-lg w-60 space-y-2">
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="voz" aria-pressed="true">
@@ -605,6 +683,9 @@
                 </div>
             </div>
 
+            <!-- La pregunta y la respuesta van en dos bloques: uno debajo del
+                 otro en vertical, y lado a lado con el teléfono acostado. -->
+            <div id="partida-pregunta" class="grupo-partida space-y-6">
             <!-- Cómo funciona el repaso: equivocarse no castiga, hace volver -->
             <!-- Solo hasta la primera respuesta: después ya se sabe, y en cada
                  pregunta ocupaba sitio y empujaba las opciones hacia abajo. -->
@@ -649,6 +730,9 @@
                 </div>
             </div>
 
+            </div>
+
+            <div id="partida-respuesta" class="grupo-partida space-y-6">
             <!-- Opciones de Respuesta: para lo nuevo y lo recién fallado -->
             <div id="opciones" role="group" aria-label="Elige la respuesta" class="grid grid-cols-2 gap-4 max-w-md mx-auto">
                 <button onclick="selectOption(0)" id="opt-0" data-tecla="1" class="btn-option relative bg-white hover:bg-sky-50 border-4 border-sky-200 active:scale-95 py-4 px-6 text-3xl font-bold rounded-2xl shadow-md text-gray-700 transition duration-150">?</button>
@@ -702,6 +786,8 @@
                 <button onclick="toggleHelp()" id="btn-help" aria-expanded="false" aria-controls="help-panel" class="min-h-11 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold px-4 py-2 rounded-full text-sm shadow-sm transition">
                     🪄 ¿Necesitas ayuda mágica?
                 </button>
+            </div>
+
             </div>
 
             <!-- Panel de ayuda: la multiplicación como rectángulo de filas × columnas,

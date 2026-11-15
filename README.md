@@ -352,7 +352,11 @@ arena no desplazan la página aunque el dedo se deslice, y dos toques rápidos y
 no hacen zoom. El zoom con dos dedos sigue disponible. Todo lo que se toca mide al menos 44 × 44 px (lo que piden
 Apple y la WCAG para dedos), y en un teléfono, hasta uno pequeño de 360 × 640,
 la pregunta y sus respuestas, el teclado de escribir y el nivel entero de la
-Aventura se ven sin desplazarse.
+Aventura se ven sin desplazarse. **Con el teléfono acostado** se usa el ancho: en la partida, la
+pregunta a la izquierda y las respuestas o el teclado a la derecha; en la
+Aventura, la arena a la izquierda (tan alta como quepa) y el teclado a la
+derecha; en el menú, quién juega y la misión lado a lado, y las tablas de cinco
+en cinco. «Ajustes» queda como un icono en la esquina.
 
 ### Velocidad de la voz
 
@@ -424,7 +428,7 @@ plantas nuevas, cuándo sale y cuándo no), la copia de seguridad (guardar y
 recuperar en otro dispositivo, confirmar, archivos dañados o de otra versión,
 aviso en iPad), los mundos (elegir, cambiar sin
 borrar, lo que crece en cada uno, lo guardado de antes, contraste en cada
-fondo), lo táctil (44 × 44 px en cada pantalla, la partida y el nivel sin desplazarse en 360 × 640, el texto dentro del girasol), el teléfono y la música (teclado de teléfono, tocar sin desplazar ni hacer zoom, música por pantalla, apagarla, bajar con la voz, callar en segundo plano), la usabilidad (nada tapa a nada, la respuesta junto a las opciones, el nivel de la aventura cabe en el teléfono, textos que no se contradicen), la presentación (paisaje de cada mundo, fundidos, relieve y onda, y que
+fondo), el teléfono acostado (lado a lado en 667 × 375 y 640 × 360, sin nada fuera de la pantalla), lo táctil (44 × 44 px en cada pantalla, la partida y el nivel sin desplazarse en 360 × 640, el texto dentro del girasol), el teléfono y la música (teclado de teléfono, tocar sin desplazar ni hacer zoom, música por pantalla, apagarla, bajar con la voz, callar en segundo plano), la usabilidad (nada tapa a nada, la respuesta junto a las opciones, el nivel de la aventura cabe en el teléfono, textos que no se contradicen), la presentación (paisaje de cada mundo, fundidos, relieve y onda, y que
 «menos movimiento» lo apague), los perfiles y la vista para
 adultos (cada quien lo suyo, cambiar sin borrar, borrar solo uno, lo que
 más falla, días de práctica, lo de antes de los perfiles), el jardín (parejas, bancales y riego), las
