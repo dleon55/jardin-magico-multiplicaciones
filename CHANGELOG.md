@@ -9,6 +9,11 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **El teléfono acostado** (#44): se usa el ancho. En la partida, la pregunta
+  a la izquierda y las respuestas o el teclado a la derecha; en la Aventura, la
+  arena a la izquierda y el teclado a la derecha; en el menú, quién juega y la
+  misión lado a lado. Antes, en horizontal, las respuestas quedaban a 650 px y
+  el teclado de la Aventura a más de 900, en pantallas de 360 a 390 de alto.
 - **Hecho para los dedos** (#43), tras medir cada pantalla en un teléfono:
   - todo lo que se toca mide al menos 44 × 44 px; antes «⬅ Menú» medía 52 × 20 en todas las pantallas y las tablas del mapa, 15 × 16;
   - la partida se juega sin desplazarse en un teléfono, hasta en uno de 360 × 640: antes las opciones quedaban debajo y el teclado de escribir a 870 px;
