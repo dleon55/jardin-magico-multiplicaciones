@@ -73,6 +73,13 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   que existen en tabletas viejas (Unicode 13 o anterior). El vivero suma
   premios variados: tortuga, búho, tractor, dinosaurio, cohete y dragón.
 
+- **Presentación.** Cada mundo tiene su paisaje de fondo: colinas de su
+  color y adornos que flotan despacio alrededor de la tarjeta (en el espacio,
+  la luna y los planetas; en el mar, peces y pulpos). Cada pantalla entra con
+  un fundido corto y las tablas del menú aparecen una tras otra. Los botones
+  tienen relieve, se hunden al tocarlos y dejan una onda en el punto del
+  toque. Con «menos movimiento» nada se mueve, pero todo se ve igual.
+
 - **Cada partida va en otro orden.** Dentro de una tabla no se repite ninguna
   multiplicación hasta haber salido todas.
 - **Lo que se falla vuelve.** Una multiplicación que salió mal se pregunta otra
@@ -304,7 +311,8 @@ Con teclado (en una tableta estos atajos no se muestran):
 
 En **Ajustes** se pueden apagar por separado la voz y los sonidos, elegir la
 velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento».
-Este último se enciende solo si el dispositivo ya lo pide.
+Este último se enciende solo si el dispositivo ya lo pide, y apaga los
+fundidos de entrada, la onda de los botones y los adornos que flotan.
 
 ### Velocidad de la voz
 
@@ -374,7 +382,8 @@ plantas nuevas, cuándo sale y cuándo no), la copia de seguridad (guardar y
 recuperar en otro dispositivo, confirmar, archivos dañados o de otra versión,
 aviso en iPad), los mundos (elegir, cambiar sin
 borrar, lo que crece en cada uno, lo guardado de antes, contraste en cada
-fondo), los perfiles y la vista para
+fondo), la presentación (paisaje de cada mundo, fundidos, relieve y onda, y que
+«menos movimiento» lo apague), los perfiles y la vista para
 adultos (cada quien lo suyo, cambiar sin borrar, borrar solo uno, lo que
 más falla, días de práctica, lo de antes de los perfiles), el jardín (parejas, bancales y riego), las
 estrellas y la misión del día (vivero, bono por florecer, misión que se elige

@@ -7,6 +7,16 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-15
+
+- **Presentación más viva** (#32):
+  - cada mundo tiene su paisaje de fondo (colinas de su color y adornos que flotan);
+  - cada pantalla entra con un fundido corto y las tablas del menú aparecen una tras otra;
+  - los botones tienen relieve, se hunden al tocarlos y dejan una onda;
+  - el color de la barra del navegador pasa de rosa a verde.
+
+  «Menos movimiento» lo apaga todo.
+
 ## 2026-11-14
 
 - **✍️ Escribir con el dedo en La Aventura** (#31): un tercer modo para
