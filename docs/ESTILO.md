@@ -92,6 +92,25 @@ brillo y la sombra.
    `<symbol>` y se usan con `<use href="#…">`.
 10. **Sin internet:** todo va dentro del HTML, sin imágenes externas.
 
+## Iconos
+
+La interfaz usa un solo juego de símbolos SVG (`<symbol id="i-…">`, al principio
+del `<body>`), no emojis. Hay 28: volver, siguiente, estrella, corazón (lleno y
+vacío), ajustes, ayuda, lanzar, borrar, goma, listo, voz, habla, efectos,
+música, velocidad, calma, candado, corona, compartir, mapa, jardín, vivero, los
+tres modos (teclear, elegir y dedo), girar y adultos.
+
+- Se usan con `<svg class="icono" aria-hidden="true" focusable="false"><use href="#i-nombre"/></svg>`,
+  o desde el código con `icono("nombre")`.
+- Lienzo de 24 × 24 y contorno de 2 (1,8 en los rellenos).
+- Los de línea (siguiente, listo, compartir, modos y girar) usan
+  `currentColor`, para tomar el color del botón.
+- Son decorativos: el nombre lo da el texto del botón o su `aria-label`.
+- Miden lo que la letra (1,25 em). En las teclas no pasan de 1 em de alto, para
+  que la fila no crezca.
+- Los emojis siguen donde son contenido: lo que crece en cada mundo, los
+  personajes del jardín y las frases.
+
 ## Movimiento
 
 - **Corto:** de 150 a 600 ms para reacciones y hasta 1.2 s para celebraciones

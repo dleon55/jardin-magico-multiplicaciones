@@ -36,6 +36,14 @@
             --mejilla: rgba(251, 113, 133, 0.55);
         }
 
+        /* ICONOS DE LA INTERFAZ: del tamaño de la letra, alineados con el texto. */
+        .icono { display: inline-block; width: 1.25em; height: 1.25em; vertical-align: -0.25em; flex: none; overflow: visible; }
+        .modo-aventura .icono { width: 1.5em; height: 1.5em; }
+        /* En las teclas, el icono no pasa de la altura de la letra: si no, la
+           fila de abajo crece y el nivel deja de caber en el teléfono. */
+        #tecla-borrar .icono, #aventura-borrar .icono { width: 1.4em; height: 1em; vertical-align: -0.12em; }
+        #nivel-corazones .icono { width: 1.35rem; height: 1.35rem; vertical-align: -0.2rem; }
+
         /* LUMI, la mascota (docs/ESTILO.md). Un solo dibujo con las piezas de
            las seis caras; data-expresion decide cuáles se ven. Así cambiar de
            cara es cambiar un atributo, y cabe una animación entre una y otra. */
@@ -593,6 +601,41 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
+    <!-- ICONOS DE LA INTERFAZ (docs/ESTILO.md): 24 × 24, contorno de 2 en
+         --contorno, colores planos de la guía. Se usan con
+         <svg class="icono"><use href="#i-nombre"/></svg>; son decorativos:
+         el nombre lo da el texto del botón. -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <symbol id="i-volver" viewBox="0 0 24 24"><path d="M14 5 L7 12 L14 19" fill="none" stroke="var(--contorno)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="i-siguiente" viewBox="0 0 24 24"><path d="M10 5 L17 12 L10 19" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="i-estrella" viewBox="0 0 24 24"><path d="M12 2.8 L14.7 8.6 L21 9.3 L16.3 13.6 L17.6 19.9 L12 16.7 L6.4 19.9 L7.7 13.6 L3 9.3 L9.3 8.6 Z" fill="var(--sol)" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+        <symbol id="i-corazon" viewBox="0 0 24 24"><path d="M12 20 C5 15 2.5 11.5 2.5 8.2 C2.5 5.6 4.5 3.6 7 3.6 C9 3.6 10.8 4.8 12 6.6 C13.2 4.8 15 3.6 17 3.6 C19.5 3.6 21.5 5.6 21.5 8.2 C21.5 11.5 19 15 12 20 Z" fill="#f43f5e" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/><ellipse cx="7.5" cy="8" rx="2" ry="1.3" fill="#fff" opacity=".6"/></symbol>
+        <symbol id="i-corazon-vacio" viewBox="0 0 24 24"><path d="M12 20 C5 15 2.5 11.5 2.5 8.2 C2.5 5.6 4.5 3.6 7 3.6 C9 3.6 10.8 4.8 12 6.6 C13.2 4.8 15 3.6 17 3.6 C19.5 3.6 21.5 5.6 21.5 8.2 C21.5 11.5 19 15 12 20 Z" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+        <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M10.3 2.5 L13.7 2.5 L14.3 5.2 L16.6 6.5 L19.2 5.6 L20.9 8.5 L18.9 10.4 L18.9 13.6 L20.9 15.5 L19.2 18.4 L16.6 17.5 L14.3 18.8 L13.7 21.5 L10.3 21.5 L9.7 18.8 L7.4 17.5 L4.8 18.4 L3.1 15.5 L5.1 13.6 L5.1 10.4 L3.1 8.5 L4.8 5.6 L7.4 6.5 L9.7 5.2 Z" fill="#94a3b8" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.4" fill="#fff" stroke="var(--contorno)" stroke-width="1.8"/></symbol>
+        <symbol id="i-ayuda" viewBox="0 0 24 24"><path d="M4 20 L14 10" stroke="var(--contorno)" stroke-width="4.4" stroke-linecap="round"/><path d="M4 20 L14 10" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/><path d="M17 2.5 L18.3 5.7 L21.5 7 L18.3 8.3 L17 11.5 L15.7 8.3 L12.5 7 L15.7 5.7 Z" fill="var(--sol)" stroke="var(--contorno)" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+        <symbol id="i-lanzar" viewBox="0 0 24 24"><path d="M12 2 L14.2 9.8 L22 12 L14.2 14.2 L12 22 L9.8 14.2 L2 12 L9.8 9.8 Z" fill="var(--sol)" stroke="var(--contorno)" stroke-width="1.6" stroke-linejoin="round"/><circle cx="19" cy="5" r="1.6" fill="#fff"/></symbol>
+        <symbol id="i-borrar" viewBox="0 0 24 24"><path d="M8.5 5 L21 5 L21 19 L8.5 19 L2.5 12 Z" fill="#fff" stroke="var(--contorno)" stroke-width="2" stroke-linejoin="round"/><path d="M11.5 9 L17 15 M17 9 L11.5 15" stroke="#e11d48" stroke-width="2.2" stroke-linecap="round"/></symbol>
+        <symbol id="i-goma" viewBox="0 0 24 24"><path d="M3.5 14.5 L13 5 L20 12 L12.5 19.5 L7.5 19.5 Z" fill="#f9a8d4" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/><path d="M3.5 14.5 L8.5 19.5 L12.5 19.5 L16.5 15.5 L9 8 Z" fill="#60a5fa" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+        <symbol id="i-listo" viewBox="0 0 24 24"><path d="M4.5 12.5 L9.5 17.5 L19.5 6.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="i-voz" viewBox="0 0 24 24"><path d="M3 9 L7 9 L12 4.5 L12 19.5 L7 15 L3 15 Z" fill="#38bdf8" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/><path d="M15.5 8.5 Q18 12 15.5 15.5 M18 6 Q22 12 18 18" fill="none" stroke="var(--contorno)" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="i-efectos" viewBox="0 0 24 24"><path d="M12 3 Q6 3 6 10 L6 14.5 L4 17.5 L20 17.5 L18 14.5 L18 10 Q18 3 12 3 Z" fill="var(--sol)" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="20" r="2" fill="var(--contorno)"/></symbol>
+        <symbol id="i-musica" viewBox="0 0 24 24"><path d="M9 17 L9 5 L20 3 L20 15" fill="none" stroke="var(--contorno)" stroke-width="2" stroke-linejoin="round"/><ellipse cx="6.5" cy="17.5" rx="3.2" ry="2.6" fill="#a78bfa" stroke="var(--contorno)" stroke-width="1.8"/><ellipse cx="17.5" cy="15.5" rx="3.2" ry="2.6" fill="#a78bfa" stroke="var(--contorno)" stroke-width="1.8"/></symbol>
+        <symbol id="i-calma" viewBox="0 0 24 24"><path d="M3 15 Q3 7 11 7 Q19 7 19 15 Z" fill="#4ade80" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 10 L11 13 L14 10" fill="none" stroke="#15803d" stroke-width="1.5"/><circle cx="21" cy="12.5" r="2.2" fill="#86efac" stroke="var(--contorno)" stroke-width="1.6"/><path d="M6 15 L6 18 M16 15 L16 18" stroke="var(--contorno)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="i-candado" viewBox="0 0 24 24"><path d="M7.5 10.5 L7.5 7.5 Q7.5 3 12 3 Q16.5 3 16.5 7.5 L16.5 10.5" fill="none" stroke="var(--contorno)" stroke-width="2.2"/><rect x="4.5" y="10" width="15" height="11" rx="2.5" fill="#94a3b8" stroke="var(--contorno)" stroke-width="1.8"/><circle cx="12" cy="15.5" r="1.8" fill="var(--contorno)"/></symbol>
+        <symbol id="i-corona" viewBox="0 0 24 24"><path d="M3 18.5 L3 7.5 L8 12 L12 4.5 L16 12 L21 7.5 L21 18.5 Z" fill="var(--sol)" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="14" r="1.8" fill="#f43f5e"/></symbol>
+        <symbol id="i-compartir" viewBox="0 0 24 24"><path d="M5 12 L5 20 L19 20 L19 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 15 L12 3.5 M7.5 8 L12 3.5 L16.5 8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="i-mapa" viewBox="0 0 24 24"><path d="M3 6 L9 4 L15 6 L21 4 L21 18 L15 20 L9 18 L3 20 Z" fill="#fef3c7" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 4 L9 18 M15 6 L15 20" stroke="var(--contorno)" stroke-width="1.4"/><path d="M5.5 14 Q8 10 11 12 T17.5 9" fill="none" stroke="#e11d48" stroke-width="1.6" stroke-dasharray="2 2"/></symbol>
+        <symbol id="i-jardin" viewBox="0 0 24 24"><path d="M12 21 L12 11" stroke="#15803d" stroke-width="2.2" stroke-linecap="round"/><path d="M12 12 C8 12 4.5 9 4.5 5 C8.5 5 12 8 12 12 Z" fill="#4ade80" stroke="var(--contorno)" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 14 C15.5 14 19.5 11.5 19.5 7.5 C15.5 7.5 12 10 12 14 Z" fill="#86efac" stroke="var(--contorno)" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 21 L19 21" stroke="#a16207" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="i-vivero" viewBox="0 0 24 24"><path d="M12 11 C12 7 9.5 4.5 6 4.5 C6 8 8.5 11 12 11 Z M12 11 C12 7 14.5 4.5 18 4.5 C18 8 15.5 11 12 11 Z" fill="#4ade80" stroke="var(--contorno)" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.5 12 L18.5 12 L17 21 L7 21 Z" fill="#f97316" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/><path d="M5 12 L19 12" stroke="var(--contorno)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="i-teclear" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="#e0e7ff" stroke="currentColor" stroke-width="1.8"/><g fill="currentColor"><circle cx="8" cy="8" r="1.6"/><circle cx="12" cy="8" r="1.6"/><circle cx="16" cy="8" r="1.6"/><circle cx="8" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="16" cy="12" r="1.6"/><circle cx="12" cy="16" r="1.6"/></g></symbol>
+        <symbol id="i-elegir" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.8" fill="none"><rect x="3" y="3" width="8" height="8" rx="2.5"/><rect x="13" y="3" width="8" height="8" rx="2.5"/><rect x="3" y="13" width="8" height="8" rx="2.5"/></g><rect x="13" y="13" width="8" height="8" rx="2.5" fill="currentColor"/></symbol>
+        <symbol id="i-dedo" viewBox="0 0 24 24"><path d="M4 20 L5.5 15 L16 4.5 L19.5 8 L9 18.5 Z" fill="var(--sol)" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 6.5 L17.5 10" stroke="currentColor" stroke-width="1.8"/><path d="M4 20 L5.5 15 L9 18.5 Z" fill="currentColor"/></symbol>
+        <symbol id="i-girar" viewBox="0 0 24 24"><path d="M19 12 A7 7 0 1 1 16 6.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16.5 2.5 L16.5 7 L12 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="i-habla" viewBox="0 0 24 24"><path d="M4 4 L20 4 Q21.5 4 21.5 5.5 L21.5 15 Q21.5 16.5 20 16.5 L10 16.5 L5.5 20.5 L6 16.5 L4 16.5 Q2.5 16.5 2.5 15 L2.5 5.5 Q2.5 4 4 4 Z" fill="#fff" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 8.5 L17 8.5 M7 12 L14 12" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="i-velocidad" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8.5" fill="#fff" stroke="var(--contorno)" stroke-width="1.8"/><path d="M12 13 L15.5 9.5" stroke="#e11d48" stroke-width="2.2" stroke-linecap="round"/><path d="M10 2.5 L14 2.5 M12 2.5 L12 4.5" stroke="var(--contorno)" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="13" r="1.4" fill="var(--contorno)"/></symbol>
+        <symbol id="i-adultos" viewBox="0 0 24 24"><circle cx="8" cy="7" r="3" fill="#fdba74" stroke="var(--contorno)" stroke-width="1.6"/><circle cx="16.5" cy="9" r="2.4" fill="#fde68a" stroke="var(--contorno)" stroke-width="1.6"/><path d="M2.5 20 Q2.5 12 8 12 Q13.5 12 13.5 20 Z" fill="#38bdf8" stroke="var(--contorno)" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 20 Q12 13.5 16.5 13.5 Q21 13.5 21 20 Z" fill="#4ade80" stroke="var(--contorno)" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    </svg>
+
     <!-- LUMI, la mascota: una semilla mágica que acaba de brotar. Dibujo
          original (docs/ESTILO.md). ponerLumi() lo copia donde haga falta; es
          decorativo (aria-hidden): lo que Lumi comunica va también en texto. -->
@@ -696,22 +739,22 @@
         <!-- ================= AJUSTES (en todas las pantallas) ================= -->
         <details id="ajustes" class="absolute top-3 right-3 z-40 text-sm">
             <summary class="cursor-pointer list-none bg-white border-2 border-sky-200 rounded-full px-3 py-1 min-h-11 inline-flex items-center gap-1 font-bold text-gray-700 shadow-sm hover:bg-sky-50">
-                <span aria-hidden="true">⚙️</span> <span class="texto-ajustes">Ajustes</span>
+                <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-ajustes"/></svg> <span class="texto-ajustes">Ajustes</span>
             </summary>
             <div class="mt-2 bg-white border-2 border-sky-200 rounded-2xl p-3 shadow-lg w-60 space-y-2">
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="voz" aria-pressed="true">
-                    <span><span aria-hidden="true">🗣️</span> Voz</span><span class="estado font-bold">Sí</span>
+                    <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-habla"/></svg> Voz</span><span class="estado font-bold">Sí</span>
                 </button>
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="efectos" aria-pressed="true">
-                    <span><span aria-hidden="true">🎵</span> Sonidos</span><span class="estado font-bold">Sí</span>
+                    <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-efectos"/></svg> Sonidos</span><span class="estado font-bold">Sí</span>
                 </button>
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="musica" aria-pressed="true">
-                    <span><span aria-hidden="true">🎶</span> Música</span><span class="estado font-bold">Sí</span>
+                    <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-musica"/></svg> Música</span><span class="estado font-bold">Sí</span>
                 </button>
                 <!-- Volumen de la música: de 0 a 10; 5 es el de antes. -->
                 <div class="px-3 py-1 space-y-1">
                     <label for="volumen-musica" class="flex justify-between text-sm font-bold text-gray-700">
-                        <span><span aria-hidden="true">🔉</span> Volumen de la música</span>
+                        <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-voz"/></svg> Volumen de la música</span>
                         <span id="volumen-musica-valor" aria-hidden="true">5</span>
                     </label>
                     <input type="range" id="volumen-musica" min="0" max="10" step="1" value="5"
@@ -720,10 +763,10 @@
                 <!-- Tres posiciones: cada toque pasa a la siguiente. Sin aria-pressed:
                      no es un interruptor, y el nombre accesible ya incluye el valor. -->
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="velocidad">
-                    <span><span aria-hidden="true">⏱️</span> Velocidad<span class="sr-only"> de la voz</span></span><span class="estado font-bold">Normal</span>
+                    <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-velocidad"/></svg> Velocidad<span class="sr-only"> de la voz</span></span><span class="estado font-bold">Normal</span>
                 </button>
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="calma" aria-pressed="false">
-                    <span><span aria-hidden="true">🍃</span> Menos movimiento</span><span class="estado font-bold">No</span>
+                    <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-calma"/></svg> Menos movimiento</span><span class="estado font-bold">No</span>
                 </button>
                 <p id="aviso-voz" class="hidden text-xs text-gray-700 px-1"></p>
             </div>
@@ -821,7 +864,7 @@
                 </button>
             </div>
             <button type="button" onclick="mostrarAdultos()" class="enlace-tactil text-sm font-bold text-gray-700 underline hover:text-green-800">
-                <span aria-hidden="true">👪</span> Para las personas adultas
+                <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-adultos"/></svg> Para las personas adultas
             </button>
         </div>
 
@@ -838,7 +881,7 @@
                         <p class="text-sm text-gray-600">¡Haz crecer tu jardín ganando estrellas doradas!</p>
                     </div>
                     <div class="flex items-center gap-2 bg-yellow-100 text-yellow-900 px-4 py-2 rounded-full font-bold whitespace-nowrap">
-                        <span><span aria-hidden="true">⭐</span> Tus estrellas:</span>
+                        <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-estrella"/></svg> Tus estrellas:</span>
                         <span id="global-stars" class="bubble-font">0</span>
                     </div>
                 </div>
@@ -860,7 +903,7 @@
                      class="w-full h-3 bg-white border border-sky-200 rounded-full overflow-hidden">
                     <div id="mision-barra" class="h-full bg-gradient-to-r from-sky-400 to-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
-                <p id="mision-leyenda" class="text-xs text-gray-700">Tu semana: cada <span aria-hidden="true" class="inline-flex w-4 h-4 rounded-full bg-emerald-200 text-emerald-900 items-center justify-center font-bold">✓</span><span class="sr-only">marca</span> es un día con la misión cumplida.</p>
+                <p id="mision-leyenda" class="text-xs text-gray-700">Tu semana: cada <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-listo"/></svg><span class="sr-only">marca</span> es un día con la misión cumplida.</p>
                 <ol id="mision-semana" class="flex justify-between gap-1 text-xs" aria-label="Misiones de los últimos 7 días"></ol>
             </section>
 
@@ -940,16 +983,16 @@
                     <span class="sim-mundo" aria-hidden="true">🌱</span> Mi jardín (<span class="cuenta-flores">0</span> de 54 flores)
                 </button>
                 <button onclick="mostrarVivero()" class="w-full bubble-font bg-gradient-to-r from-yellow-100 to-amber-100 hover:from-yellow-200 hover:to-amber-200 border-2 border-amber-400 text-amber-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3 flex flex-col items-center gap-1">
-                    <span><span aria-hidden="true">🛍️</span> Vivero mágico</span>
+                    <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-vivero"/></svg> Vivero mágico</span>
                     <span id="vivero-antojo" class="text-xs subtitulo font-semibold"></span>
                 </button>
                 <button onclick="mostrarMapa()" class="w-full bubble-font bg-white hover:bg-green-50 border-2 border-green-300 text-green-800 py-3 rounded-2xl shadow-sm transition text-lg">
-                    <span aria-hidden="true">🗺️</span> Mi mapa de tablas
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-mapa"/></svg> Mi mapa de tablas
                 </button>
             </div>
             <!-- Para las personas adultas: aparte, al final, como en la bienvenida. -->
             <p class="text-center pt-2 border-t border-dashed border-gray-200">
-                <button type="button" id="btn-adultos-menu" onclick="mostrarAdultos()" class="enlace-tactil mt-1 text-sm font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">👪</span> Para las personas adultas</button>
+                <button type="button" id="btn-adultos-menu" onclick="mostrarAdultos()" class="enlace-tactil mt-1 text-sm font-bold text-gray-700 underline hover:text-green-800"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-adultos"/></svg> Para las personas adultas</button>
             </p>
         </div>
 
@@ -960,7 +1003,7 @@
             <!-- Barra superior: Información y controles de audio -->
             <div class="flex justify-between items-center bg-gray-50 rounded-2xl p-3 border border-gray-100">
                 <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
-                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
                 <!-- Lumi acompaña la partida: celebra, anima tras un fallo y
                      piensa con la ayuda abierta. -->
@@ -970,7 +1013,7 @@
                 </span>
                 <!-- Estrellas de este nivel -->
                 <div id="pastilla-estrellas" class="relative flex items-center gap-1 bg-yellow-100 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
-                    <span aria-hidden="true">⭐</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-estrella"/></svg>
                     <span class="sr-only">Aciertos:</span>
                     <span id="current-stars">0</span><span aria-hidden="true">/</span><span class="sr-only">de</span><span id="target-stars">10</span>
                 </div>
@@ -1037,15 +1080,15 @@
             <!-- Respuesta escrita: para lo que ya salió bien. Recordarla sin opciones
                  delante es saberla; elegirla entre cuatro solo es reconocerla. -->
             <div id="escritura" class="hidden max-w-xs mx-auto space-y-3">
-                <p class="text-center text-sm font-bold text-indigo-800"><span aria-hidden="true">✍️</span> <span id="escritura-aviso">Esta ya te salió bien: ahora escríbela.</span></p>
+                <p class="text-center text-sm font-bold text-indigo-800"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-dedo"/></svg> <span id="escritura-aviso">Esta ya te salió bien: ahora escríbela.</span></p>
                 <p class="text-center"><button type="button" id="btn-letra" onclick="cambiarLetra()" class="enlace-tactil text-sm font-bold text-indigo-800 underline"></button></p>
                 <output id="escrito" aria-label="Tu respuesta" class="block min-h-16 bg-white border-4 border-indigo-300 rounded-2xl text-center text-4xl font-bold text-gray-800 py-2 tabular-nums"></output>
                 <div id="pizarra-juego-caja" class="hidden space-y-2">
                     <canvas id="pizarra-juego" width="480" height="200" aria-label="Recuadro para escribir la respuesta con el dedo" aria-describedby="pizarra-juego-ayuda" class="pizarra block w-full bg-white border-4 border-dashed border-indigo-300 rounded-2xl"></canvas>
                     <p id="pizarra-juego-ayuda" class="text-center text-sm font-bold text-gray-700" aria-live="polite">Escribe la respuesta con el dedo.</p>
                     <div class="grid grid-cols-2 gap-2">
-                        <button type="button" id="pizarra-juego-borrar" onclick="borrarPizarraJuego()" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-lg font-bold rounded-2xl shadow-md text-gray-800"><span aria-hidden="true">🧽</span> Borrar</button>
-                        <button type="button" id="pizarra-juego-listo" onclick="responderConDedo()" class="btn-tecla bg-green-700 hover:bg-green-800 disabled:opacity-50 active:scale-95 py-3 text-xl font-bold rounded-2xl shadow-md text-white"><span aria-hidden="true">✓</span> Listo</button>
+                        <button type="button" id="pizarra-juego-borrar" onclick="borrarPizarraJuego()" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-lg font-bold rounded-2xl shadow-md text-gray-800"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-goma"/></svg> Borrar</button>
+                        <button type="button" id="pizarra-juego-listo" onclick="responderConDedo()" class="btn-tecla bg-green-700 hover:bg-green-800 disabled:opacity-50 active:scale-95 py-3 text-xl font-bold rounded-2xl shadow-md text-white"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-listo"/></svg> Listo</button>
                     </div>
                 </div>
                 <div id="teclado-juego" role="group" aria-label="Teclado de números" class="teclado-tactil grid grid-cols-3 gap-2">
@@ -1058,7 +1101,7 @@
                     <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="7" onclick="teclear(7)">7</button>
                     <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="8" onclick="teclear(8)">8</button>
                     <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="9" onclick="teclear(9)">9</button>
-                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-2xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" id="tecla-borrar" onclick="borrarDigito()" aria-label="Borrar"><span aria-hidden="true">⌫</span></button>
+                    <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-2xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" id="tecla-borrar" onclick="borrarDigito()" aria-label="Borrar"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-borrar"/></svg></button>
                     <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="0" onclick="teclear(0)">0</button>
                     <button type="button" id="tecla-listo" onclick="responderEscrito()" disabled class="btn-tecla bg-green-700 hover:bg-green-800 disabled:opacity-50 active:scale-95 py-3 text-xl font-bold rounded-2xl shadow-md text-white transition duration-150">Listo</button>
                 </div>
@@ -1070,14 +1113,14 @@
             <!-- Aparece tras responder: permite adelantar la espera -->
             <div class="text-center">
                 <button id="btn-siguiente" onclick="continuar()" class="hidden bubble-font bg-green-700 hover:bg-green-800 disabled:opacity-50 text-white text-lg px-8 py-3 rounded-2xl shadow-md transition">
-                    Siguiente <span aria-hidden="true">→</span> <span class="solo-teclado text-sm subtitulo">(Enter)</span>
+                    Siguiente <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-siguiente"/></svg> <span class="solo-teclado text-sm subtitulo">(Enter)</span>
                 </button>
             </div>
 
             <!-- Ayuda Mágica Interactiva -->
             <div class="text-center pt-1">
                 <button onclick="toggleHelp()" id="btn-help" aria-expanded="false" aria-controls="help-panel" class="min-h-11 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold px-4 py-2 rounded-full text-sm shadow-sm transition">
-                    🪄 ¿Necesitas ayuda mágica?
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-ayuda"/></svg> <span class="texto-ayuda">¿Necesitas ayuda mágica?</span>
                 </button>
             </div>
 
@@ -1091,7 +1134,7 @@
                 <div id="help-visual-container" aria-hidden="true" class="flex justify-center"></div>
                 <div class="text-center">
                     <button type="button" id="btn-girar" onclick="girarAyuda()" class="min-h-11 bg-white hover:bg-indigo-100 border-2 border-indigo-200 text-indigo-800 font-bold px-4 py-1 rounded-full text-sm transition">
-                        <span aria-hidden="true">🔄</span> Girar el rectángulo
+                        <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-girar"/></svg> Girar el rectángulo
                     </button>
                 </div>
             </div>
@@ -1148,7 +1191,7 @@
                     <span class="sim-mundo" aria-hidden="true">🌱</span> Ver mi jardín
                 </button>
                 <button type="button" onclick="mostrarMapa()" class="enlace-tactil text-green-800 font-bold underline hover:text-green-900">
-                    <span aria-hidden="true">🗺️</span> Ver mi mapa de tablas
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-mapa"/></svg> Ver mi mapa de tablas
                 </button>
             </div>
         </div>
@@ -1160,7 +1203,7 @@
         <div id="screen-jardin" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
-                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
             <div class="text-center space-y-1">
@@ -1200,12 +1243,12 @@
         <div id="screen-vivero" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
-                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
             <div class="text-center space-y-1">
                 <h2 data-foco class="bubble-font text-2xl text-amber-800">Vivero mágico</h2>
-                <p class="text-gray-800 font-bold text-lg">Tienes <span class="cuenta-estrellas bubble-font">0</span> <span aria-hidden="true">⭐</span><span class="sr-only">estrellas</span></p>
+                <p class="text-gray-800 font-bold text-lg">Tienes <span class="cuenta-estrellas bubble-font">0</span> <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-estrella"/></svg><span class="sr-only">estrellas</span></p>
                 <p class="text-gray-700 text-sm max-w-md mx-auto">Ganas 1 estrella por cada acierto, 5 cuando una multiplicación florece y 10 por la misión del día. Lo que compres vive para siempre en tu jardín.</p>
             </div>
             <ul id="vivero-lista" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></ul>
@@ -1221,7 +1264,7 @@
         <div id="screen-descubrir" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
-                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
             <div class="text-center space-y-1">
@@ -1257,7 +1300,7 @@
         <div id="screen-aventura" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
-                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
             <div class="text-center space-y-1">
@@ -1272,14 +1315,14 @@
             <div class="max-w-md mx-auto text-center space-y-1">
                 <button type="button" id="btn-sin-prisa" onclick="cambiarSinPrisa()" aria-pressed="false" aria-describedby="sin-prisa-texto"
                         class="sin-prisa inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 border-emerald-300 bg-white font-bold text-emerald-900 shadow-sm">
-                    <span aria-hidden="true">🐢</span> Sin prisa: <span class="estado">No</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-calma"/></svg> Sin prisa: <span class="estado">No</span>
                 </button>
                 <p id="sin-prisa-texto" class="text-sm text-gray-700">Los enemigos van despacio y se quedan esperando tu respuesta: nadie te quita corazones por tardar.</p>
             </div>
             <ol id="aventura-mundos" class="escalonar space-y-3" aria-label="Mundos de la aventura"></ol>
             <div class="text-center">
                 <button type="button" id="btn-compartir" onclick="compartirPuntaje()" class="bubble-font bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-700 hover:to-fuchsia-700 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition">
-                    <span aria-hidden="true">📤</span> Compartir mi puntaje
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-compartir"/></svg> Compartir mi puntaje
                 </button>
                 <p id="aviso-compartir" role="status" aria-live="polite" class="min-h-5 text-sm font-bold text-green-800 mt-2"></p>
             </div>
@@ -1289,12 +1332,12 @@
         <div id="screen-aventura-juego" class="hidden space-y-3">
             <div id="nivel-cabecera" class="flex flex-wrap justify-between items-center gap-2 bg-gray-50 rounded-2xl p-2 border border-gray-100">
                 <button type="button" onclick="salirDeNivel()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
-                    <span aria-hidden="true">⬅</span> Mapa <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Mapa <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
                 <h2 data-foco id="nivel-titulo" class="bubble-font text-lg text-indigo-900"></h2>
                 <div class="flex items-center gap-3 font-bold">
                     <span id="nivel-corazones" class="text-xl" role="img"></span>
-                    <span class="bg-yellow-100 text-yellow-900 px-3 py-1 rounded-full"><span aria-hidden="true">⭐</span> <span class="sr-only">Puntos:</span> <span id="nivel-puntos">0</span></span>
+                    <span class="bg-yellow-100 text-yellow-900 px-3 py-1 rounded-full"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-estrella"/></svg> <span class="sr-only">Puntos:</span> <span id="nivel-puntos">0</span></span>
                 </div>
             </div>
             <div id="arena" class="arena" data-mundo="0">
@@ -1305,7 +1348,7 @@
                     <p id="fin-estrellas" class="text-4xl text-amber-600 tracking-widest"></p>
                     <p id="fin-texto" class="font-bold text-gray-800"></p>
                     <div class="flex flex-wrap justify-center gap-2">
-                        <button type="button" id="btn-fin-siguiente" onclick="siguienteNivel()" class="bubble-font bg-green-700 hover:bg-green-800 text-white text-lg px-5 py-2 rounded-2xl shadow-md">Siguiente nivel <span aria-hidden="true">→</span></button>
+                        <button type="button" id="btn-fin-siguiente" onclick="siguienteNivel()" class="bubble-font bg-green-700 hover:bg-green-800 text-white text-lg px-5 py-2 rounded-2xl shadow-md">Siguiente nivel <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-siguiente"/></svg></button>
                         <button type="button" id="btn-fin-otra" onclick="reintentarNivel()" class="bubble-font bg-indigo-600 hover:bg-indigo-700 text-white text-lg px-5 py-2 rounded-2xl shadow-md">¡Otra vez!</button>
                         <button type="button" onclick="salirDeNivel()" class="bubble-font bg-white border-2 border-gray-300 text-gray-800 text-lg px-5 py-2 rounded-2xl shadow-sm">Mapa</button>
                     </div>
@@ -1315,9 +1358,9 @@
             <p id="aventura-mensaje" role="status" class="text-center text-sm font-bold text-amber-900 min-h-5"></p>
             <div id="aventura-entrada" class="max-w-sm mx-auto space-y-2">
                 <div id="modos-aventura" role="group" aria-label="Cómo respondo" class="flex justify-center gap-1 text-sm font-bold">
-                    <button type="button" data-modo="teclear" onclick="cambiarModoAventura('teclear')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">🔢</span> <span class="texto-modo">Teclear</span></button>
-                    <button type="button" data-modo="elegir" onclick="cambiarModoAventura('elegir')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">🔘</span> <span class="texto-modo">Elegir</span></button>
-                    <button type="button" data-modo="dedo" onclick="cambiarModoAventura('dedo')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">✍️</span> <span class="texto-modo">Con el dedo</span></button>
+                    <button type="button" data-modo="teclear" onclick="cambiarModoAventura('teclear')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-teclear"/></svg> <span class="texto-modo">Teclear</span></button>
+                    <button type="button" data-modo="elegir" onclick="cambiarModoAventura('elegir')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-elegir"/></svg> <span class="texto-modo">Elegir</span></button>
+                    <button type="button" data-modo="dedo" onclick="cambiarModoAventura('dedo')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-dedo"/></svg> <span class="texto-modo">Con el dedo</span></button>
                 </div>
                 <output id="aventura-escrito" aria-label="Tu respuesta" class="block min-h-14 bg-white border-4 border-indigo-300 rounded-2xl text-center text-3xl font-bold text-gray-800 py-1 tabular-nums"></output>
                 <div id="aventura-teclado" role="group" aria-label="Teclado de números" class="teclado-tactil grid grid-cols-3 gap-2"></div>
@@ -1326,8 +1369,8 @@
                     <canvas id="pizarra" width="480" height="200" aria-label="Recuadro para escribir la respuesta con el dedo" aria-describedby="pizarra-ayuda" class="pizarra block w-full bg-white border-4 border-dashed border-indigo-300 rounded-2xl"></canvas>
                     <p id="pizarra-ayuda" class="text-center text-sm font-bold text-gray-700" aria-live="polite">Escribe la respuesta con el dedo.</p>
                     <div class="grid grid-cols-2 gap-2">
-                        <button type="button" id="pizarra-borrar" onclick="borrarPizarra()" class="bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 py-2 text-lg font-bold rounded-2xl shadow-md text-gray-800"><span aria-hidden="true">🧽</span> Borrar</button>
-                        <button type="button" id="pizarra-lanzar" onclick="lanzarPizarra()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 py-2 text-lg font-bold rounded-2xl shadow-md text-white"><span aria-hidden="true">✨</span> ¡Lanzar!</button>
+                        <button type="button" id="pizarra-borrar" onclick="borrarPizarra()" class="bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 py-2 text-lg font-bold rounded-2xl shadow-md text-gray-800"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-goma"/></svg> Borrar</button>
+                        <button type="button" id="pizarra-lanzar" onclick="lanzarPizarra()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 py-2 text-lg font-bold rounded-2xl shadow-md text-white"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-lanzar"/></svg> ¡Lanzar!</button>
                     </div>
                 </div>
             </div>
@@ -1340,7 +1383,7 @@
         <div id="screen-fracciones" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
-                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
             <div class="text-center space-y-1">
@@ -1379,7 +1422,7 @@
         <div id="screen-mundo" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
-                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
             <div class="text-center space-y-1">
@@ -1406,7 +1449,7 @@
         <div id="screen-adultos" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <button type="button" onclick="volverDeAdultos()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
-                    <span aria-hidden="true">⬅</span> Volver <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Volver <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
             <div class="text-center space-y-1">
@@ -1448,7 +1491,7 @@
         <div id="screen-mapa" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
-                    <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
             <div class="text-center space-y-1">
@@ -2417,7 +2460,7 @@
             mostrarPantalla("screen-game");
 
             document.getElementById("help-panel").classList.add("hidden");
-            document.getElementById("btn-help").innerText = "🪄 ¿Necesitas ayuda mágica?";
+            ponerTextoAyuda(false);
             document.getElementById("btn-help").setAttribute("aria-expanded", "false");
 
             updateHUD();
@@ -5211,13 +5254,18 @@
         }
 
         // --- SISTEMA DE AYUDA VISUAL (Para entender la lógica) ---
+        /** Icono, sin emoji, y texto del botón de ayuda: abrir u ocultar. */
+        function ponerTextoAyuda(abierta) {
+            document.querySelector("#btn-help .texto-ayuda").textContent = abierta ? "Ocultar ayuda" : "¿Necesitas ayuda mágica?";
+        }
+
         function toggleHelp() {
             const panel = document.getElementById("help-panel");
             const btn = document.getElementById("btn-help");
             if (panel.classList.contains("hidden")) {
                 panel.classList.remove("hidden");
                 ayudaUsada = true;
-                btn.innerText = "🪄 Ocultar ayuda";
+                ponerTextoAyuda(true);
                 btn.setAttribute("aria-expanded", "true");
                 lumi("lumi-partida", "pensando");
                 generateHelpVisual();
@@ -5225,7 +5273,7 @@
                 speak(pistaPara().voz);
             } else {
                 panel.classList.add("hidden");
-                btn.innerText = "🪄 ¿Necesitas ayuda mágica?";
+                ponerTextoAyuda(false);
                 btn.setAttribute("aria-expanded", "false");
                 lumi("lumi-partida", "contenta");
             }
@@ -5759,7 +5807,7 @@
             const dedo = letra.modo === "dedo";
             document.getElementById("teclado-juego").classList.toggle("hidden", dedo);
             document.getElementById("pizarra-juego-caja").classList.toggle("hidden", !dedo);
-            document.getElementById("btn-letra").textContent = dedo ? "🔢 Mejor con teclas" : "✍️ Mejor con el dedo";
+            document.getElementById("btn-letra").innerHTML = dedo ? `${icono("teclear")} Mejor con teclas` : `${icono("dedo")} Mejor con el dedo`;
             if (dedo) pizarraJuego.preparar();
         }
 
@@ -6073,6 +6121,9 @@
         // no mide la memoria como «escrita en 6 segundos». Sí se guarda el
         // avance de cada jugador: estrellas, mejor puntaje por nivel y hasta
         // dónde llegó. Y se puede compartir una imagen con el puntaje.
+        /** Un icono de la interfaz (ver «ICONOS DE LA INTERFAZ»): decorativo. */
+        const icono = (nombre) => `<svg class="icono" aria-hidden="true" focusable="false"><use href="#i-${nombre}"/></svg>`;
+
         // --- ARTE DE LA AVENTURA (docs/ESTILO.md) ---
         //
         // Héroes y enemigos dibujados en SVG propio, en lugar de emojis que
@@ -6327,7 +6378,7 @@
                 li.dataset.mundo = String(mi);
                 const titulo = document.createElement("h3");
                 titulo.className = "font-bold text-indigo-900 flex items-center gap-2";
-                titulo.innerHTML = `<span aria-hidden="true" class="text-2xl titulo-mundo-arte">${abierto ? svgEnemigo(mi) : "🔒"}</span>`;
+                titulo.innerHTML = `<span aria-hidden="true" class="text-2xl titulo-mundo-arte">${abierto ? svgEnemigo(mi) : icono("candado")}</span>`;
                 const t = document.createElement("span");
                 t.textContent = `${mi + 1}. ${mundo.nombre}`;
                 titulo.appendChild(t);
@@ -6345,7 +6396,7 @@
                     b.dataset.nivel = claveNivel(mi, n);
                     b.className = "btn-nivel rounded-xl border-2 py-2 text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed " +
                         (disponible ? "bg-indigo-50 hover:bg-indigo-100 border-indigo-300 text-indigo-900" : "bg-gray-50 border-gray-200 text-gray-700");
-                    b.innerHTML = `<span>${n === NIVELES_POR_MUNDO - 1 ? "👑 Jefe" : n + 1}</span><span class="block text-xs" aria-hidden="true">${disponible ? "★".repeat(est) + "☆".repeat(3 - est) : "🔒"}</span>`;
+                    b.innerHTML = `<span>${n === NIVELES_POR_MUNDO - 1 ? `${icono("corona")} Jefe` : n + 1}</span><span class="block text-xs" aria-hidden="true">${disponible ? "★".repeat(est) + "☆".repeat(3 - est) : icono("candado")}</span>`;
                     b.setAttribute("aria-label", `${mundo.nombre}, ${nombreNivel(n)}: ${disponible ? `${est} de 3 estrellas` : "cerrado"}`);
                     b.onclick = () => empezarNivel(mi, n);
                     niveles.appendChild(b);
@@ -6704,7 +6755,8 @@
 
         function pintarMarcador() {
             const c = document.getElementById("nivel-corazones");
-            c.textContent = "❤️".repeat(Math.max(0, aventura.corazones)) + "🤍".repeat(CORAZONES - Math.max(0, aventura.corazones));
+            const vivos = Math.max(0, aventura.corazones);
+            c.innerHTML = icono("corazon").repeat(vivos) + icono("corazon-vacio").repeat(CORAZONES - vivos);
             c.setAttribute("aria-label", `${Math.max(0, aventura.corazones)} de ${CORAZONES} corazones`);
             document.getElementById("nivel-puntos").textContent = String(aventura.puntos);
         }
@@ -6722,8 +6774,8 @@
                 b.type = "button";
                 b.className = k === "✨" ? "bg-indigo-600 hover:bg-indigo-700 active:scale-95 py-2 text-lg font-bold rounded-2xl shadow-md text-white transition" : clase;
                 if (/\d/.test(k)) { b.dataset.digito = k; b.textContent = k; b.onclick = () => teclearAventura(Number(k)); }
-                if (k === "⌫") { b.id = "aventura-borrar"; b.setAttribute("aria-label", "Borrar"); b.innerHTML = '<span aria-hidden="true">⌫</span>'; b.onclick = borrarAventura; }
-                if (k === "✨") { b.id = "aventura-lanzar"; b.innerHTML = '<span aria-hidden="true">✨</span> ¡Lanzar!'; b.onclick = lanzarAventura; }
+                if (k === "⌫") { b.id = "aventura-borrar"; b.setAttribute("aria-label", "Borrar"); b.innerHTML = '<svg class="icono" aria-hidden="true" focusable="false"><use href="#i-borrar"/></svg>'; b.onclick = borrarAventura; }
+                if (k === "✨") { b.id = "aventura-lanzar"; b.innerHTML = '<svg class="icono" aria-hidden="true" focusable="false"><use href="#i-lanzar"/></svg> ¡Lanzar!'; b.onclick = lanzarAventura; }
                 t.appendChild(b);
             });
         }

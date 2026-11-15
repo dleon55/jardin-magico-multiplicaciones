@@ -9,6 +9,11 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Iconos propios** (#79, tarea #56): la interfaz usa 28 iconos SVG
+  propios, según la guía de estilo, en lugar de emojis que cambian con cada
+  teléfono. Por ejemplo: volver, ajustes, estrellas, corazones, ayuda,
+  borrar, lanzar, los modos de la Aventura, candado, corona y compartir.
+  Los botones conservan su nombre para el lector de pantalla.
 - **Paisajes dibujados** (#78, tarea #55): el fondo de los 8 mundos del
   jardín, el de la bienvenida y las 6 arenas de la Aventura son paisajes SVG
   por capas, en lugar de degradados con emojis sueltos. Por ejemplo, el
