@@ -41,7 +41,7 @@
             background: #ecfccb;
         }
         .planta .emoji { font-size: 1.6rem; line-height: 1.2; }
-        .planta .etiqueta { font-size: 0.7rem; font-weight: 700; color: #365314; }
+        .planta .etiqueta { font-size: 0.75rem; font-weight: 700; color: #365314; }
         .planta-nuevo { background: #f5f5f4; }
         .planta-nuevo .emoji { filter: grayscale(0.4); opacity: 0.8; }
         .planta-marchita { background: #e7e5e4; }
@@ -101,6 +101,15 @@
         html { touch-action: manipulation; overscroll-behavior-y: none; }
         button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
         .teclado-tactil, .teclado-tactil button, #aventura-opciones, #aventura-opciones button, #opciones .btn-option { touch-action: none; }
+        /* DEDOS, NO PUNTEROS. Todo lo que se toca mide al menos 44 × 44 px
+           (lo que piden Apple y la WCAG para dedos). Antes, «⬅ Menú» medía
+           52 × 20 en todas las pantallas, y las tablas del mapa, 15 × 16. */
+        .btn-volver { min-height: 2.75rem; padding: 0 0.9rem 0 0.7rem; background: #fff; border: 2px solid #e5e7eb; border-radius: 9999px; }
+        .btn-volver:active { background: #f0fdf4; }
+        .enlace-tactil { min-height: 2.75rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; padding: 0 0.5rem; }
+        .mapa-fila { min-width: 2.75rem; min-height: 2.75rem; }
+        .deslizador-tactil { height: 2.75rem; }
+        .modo-aventura { min-height: 2.75rem; }
         .pizarra { touch-action: none; aspect-ratio: 12 / 5; cursor: crosshair; }
         .modo-aventura[aria-pressed="true"] { background: #4338ca; border-color: #4338ca; color: #fff; }
         .sin-prisa[aria-pressed="true"] { background: #047857; border-color: #047857; color: #fff; }
@@ -113,17 +122,44 @@
            hay que desplazarse para teclear, los enemigos avanzan sin verse. */
         @media (max-width: 640px) {
             body { padding: 0.5rem; }
+            /* LA PARTIDA EN EL TELÉFONO: la pregunta y las respuestas (o el
+               teclado) a la vista sin desplazarse. Antes, en un teléfono de
+               667 px, las opciones quedaban debajo y el teclado a 870 px. */
+            #screen-game > * + * { margin-top: 0.6rem !important; }
+            #screen-game > div:first-child { padding: 0.3rem 0.5rem; }
+            #aviso-repaso { font-size: 0.75rem; padding: 0.3rem 0.6rem; line-height: 1.25; }
+            #girasol { width: 8rem; height: 8rem; }
+            #girasol #question-text { font-size: 1.4rem; }
+            #girasol.girasol-chico { width: 3.75rem; height: 3.75rem; }
+            #girasol.girasol-chico #question-text { font-size: 1.1rem; }
+            #girasol { margin-top: -0.6rem; margin-bottom: -0.6rem; }
+            #problema-texto { font-size: 1rem; padding: 0.5rem 0.75rem; }
+            #opciones { gap: 0.6rem; }
+            #opciones .btn-option { padding-top: 0.55rem; padding-bottom: 0.55rem; font-size: 1.6rem; }
+            #escritura > * + * { margin-top: 0.4rem !important; }
+            #escritura > p:first-child { font-size: 0.8rem; }
+            #escrito { min-height: 2.9rem; font-size: 1.9rem; padding-top: 0.1rem; padding-bottom: 0.1rem; }
+            #teclado-juego { gap: 0.4rem; }
+            #teclado-juego button { min-height: 2.75rem; padding-top: 0; padding-bottom: 0; font-size: 1.4rem; line-height: 1; border-width: 3px; }
+            #game-feedback { font-size: 1rem; min-height: 1.5rem; }
             main:has(#screen-aventura-juego:not(.hidden)) { padding-top: 3.25rem; }
             #screen-aventura-juego > * + * { margin-top: 0.5rem; }
             /* Cabecera en dos filas: «Mapa», corazones y puntos arriba; el nivel debajo. */
             #nivel-cabecera { display: grid; grid-template-columns: 1fr auto; row-gap: 0.15rem; padding: 0.35rem 0.6rem; }
             #nivel-cabecera > h2 { grid-column: 1 / -1; grid-row: 2; }
+            #nivel-cabecera > button { justify-self: start; }
             /* La operación ya va marcada en rojo en la arena: el texto queda para el lector de pantalla. */
             #aventura-objetivo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
             #aventura-mensaje:empty { display: none; }
-            #modos-aventura { font-size: 0.8rem; }
-            #modos-aventura .modo-aventura { padding: 0.2rem 0.6rem; }
-            .arena { height: 11.25rem; }
+            /* Los modos, solo con su icono y a la izquierda de la respuesta:
+               una fila menos. El nombre sigue ahí para el lector de pantalla. */
+            #aventura-entrada { display: grid; grid-template-columns: auto 1fr; column-gap: 0.5rem; row-gap: 0.4rem; }
+            #aventura-entrada > * { grid-column: 1 / -1; margin-top: 0 !important; }
+            #aventura-entrada > #modos-aventura { grid-column: 1; align-self: center; }
+            #aventura-entrada > #aventura-escrito:not(.hidden) { grid-column: 2; grid-row: 1; }
+            #modos-aventura .modo-aventura { width: 2.75rem; padding: 0; font-size: 1.25rem; display: inline-flex; align-items: center; justify-content: center; }
+            #modos-aventura .texto-modo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+            .arena { height: 12.5rem; }
             .heroe { font-size: 2.6rem; bottom: 0.4rem; }
             .enemigo .cara { font-size: 2.1rem; }
             .enemigo.jefe .cara { font-size: 3.4rem; }
@@ -200,7 +236,9 @@
             box-shadow: 0 1px 0 rgb(15 23 42 / 0.16), 0 3px 6px -3px rgb(15 23 42 / 0.25);
         }
         @media (hover: hover) and (pointer: fine) {
-            main button:is(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl):hover:not(:disabled):not(:active) { transform: translateY(-2px); filter: brightness(1.04); }
+            /* Sin moverlo: si sube, deja de estar bajo el ratón, baja, vuelve a
+               estar bajo el ratón… y tiembla sin parar en el borde. */
+            main button:is(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl):hover:not(:disabled):not(:active) { transform: none; filter: brightness(1.05); box-shadow: 0 5px 0 rgb(15 23 42 / 0.16), 0 14px 22px -8px rgb(15 23 42 / 0.3); }
         }
         .ficha span.cara:active { transform: scale(0.96); }
         .con-onda { position: relative; overflow: hidden; }
@@ -338,17 +376,17 @@
 
         <!-- ================= AJUSTES (en todas las pantallas) ================= -->
         <details id="ajustes" class="absolute top-3 right-3 z-40 text-sm">
-            <summary class="cursor-pointer list-none bg-white border-2 border-sky-200 rounded-full px-3 py-1 font-bold text-gray-700 shadow-sm hover:bg-sky-50">
+            <summary class="cursor-pointer list-none bg-white border-2 border-sky-200 rounded-full px-3 py-1 min-h-11 inline-flex items-center gap-1 font-bold text-gray-700 shadow-sm hover:bg-sky-50">
                 <span aria-hidden="true">⚙️</span> Ajustes
             </summary>
             <div class="mt-2 bg-white border-2 border-sky-200 rounded-2xl p-3 shadow-lg w-60 space-y-2">
-                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="voz" aria-pressed="true">
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="voz" aria-pressed="true">
                     <span><span aria-hidden="true">🗣️</span> Voz</span><span class="estado font-bold">Sí</span>
                 </button>
-                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="efectos" aria-pressed="true">
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="efectos" aria-pressed="true">
                     <span><span aria-hidden="true">🎵</span> Sonidos</span><span class="estado font-bold">Sí</span>
                 </button>
-                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="musica" aria-pressed="true">
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="musica" aria-pressed="true">
                     <span><span aria-hidden="true">🎶</span> Música</span><span class="estado font-bold">Sí</span>
                 </button>
                 <!-- Volumen de la música: de 0 a 10; 5 es el de antes. -->
@@ -358,14 +396,14 @@
                         <span id="volumen-musica-valor" aria-hidden="true">5</span>
                     </label>
                     <input type="range" id="volumen-musica" min="0" max="10" step="1" value="5"
-                           class="w-full accent-green-700" style="touch-action: pan-y">
+                           class="deslizador-tactil w-full accent-green-700" style="touch-action: pan-y">
                 </div>
                 <!-- Tres posiciones: cada toque pasa a la siguiente. Sin aria-pressed:
                      no es un interruptor, y el nombre accesible ya incluye el valor. -->
-                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="velocidad">
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="velocidad">
                     <span><span aria-hidden="true">⏱️</span> Velocidad<span class="sr-only"> de la voz</span></span><span class="estado font-bold">Normal</span>
                 </button>
-                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="calma" aria-pressed="false">
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="calma" aria-pressed="false">
                     <span><span aria-hidden="true">🍃</span> Menos movimiento</span><span class="estado font-bold">No</span>
                 </button>
                 <p id="aviso-voz" class="hidden text-xs text-gray-700 px-1"></p>
@@ -417,7 +455,7 @@
                     ¡Comenzar a jugar! <span aria-hidden="true">🌱</span>
                 </button>
             </div>
-            <button type="button" onclick="mostrarAdultos()" class="text-sm font-bold text-gray-700 underline hover:text-green-800">
+            <button type="button" onclick="mostrarAdultos()" class="enlace-tactil text-sm font-bold text-gray-700 underline hover:text-green-800">
                 <span aria-hidden="true">👪</span> Para las personas adultas
             </button>
         </div>
@@ -440,8 +478,8 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <button type="button" onclick="cambiarDeJugador()" class="chip-cabecera bg-white hover:bg-sky-100 border-2 border-sky-200 rounded-full px-3 py-1 text-sm font-bold text-sky-900 shadow-sm"><span aria-hidden="true">👥</span> Cambiar de jugador</button>
-                    <button type="button" onclick="mostrarMiMundo()" class="chip-cabecera bg-white hover:bg-sky-100 border-2 border-sky-200 rounded-full px-3 py-1 text-sm font-bold text-sky-900 shadow-sm"><span aria-hidden="true">🎨</span> Mi mundo y mi personaje</button>
+                    <button type="button" onclick="cambiarDeJugador()" class="chip-cabecera min-h-11 bg-white hover:bg-sky-100 border-2 border-sky-200 rounded-full px-3 py-1 text-sm font-bold text-sky-900 shadow-sm"><span aria-hidden="true">👥</span> Cambiar de jugador</button>
+                    <button type="button" onclick="mostrarMiMundo()" class="chip-cabecera min-h-11 bg-white hover:bg-sky-100 border-2 border-sky-200 rounded-full px-3 py-1 text-sm font-bold text-sky-900 shadow-sm"><span aria-hidden="true">🎨</span> Mi mundo y mi personaje</button>
                 </div>
             </div>
 
@@ -546,7 +584,7 @@
             </div>
             <!-- Para las personas adultas: aparte, al final, como en la bienvenida. -->
             <p class="text-center pt-2 border-t border-dashed border-gray-200">
-                <button type="button" id="btn-adultos-menu" onclick="mostrarAdultos()" class="mt-3 text-sm font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">👪</span> Para las personas adultas</button>
+                <button type="button" id="btn-adultos-menu" onclick="mostrarAdultos()" class="enlace-tactil mt-1 text-sm font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">👪</span> Para las personas adultas</button>
             </p>
         </div>
 
@@ -556,7 +594,7 @@
             
             <!-- Barra superior: Información y controles de audio -->
             <div class="flex justify-between items-center bg-gray-50 rounded-2xl p-3 border border-gray-100">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
                 <!-- Estrellas de este nivel -->
@@ -623,7 +661,7 @@
                  delante es saberla; elegirla entre cuatro solo es reconocerla. -->
             <div id="escritura" class="hidden max-w-xs mx-auto space-y-3">
                 <p class="text-center text-sm font-bold text-indigo-800"><span aria-hidden="true">✍️</span> <span id="escritura-aviso">Esta ya te salió bien: ahora escríbela.</span></p>
-                <p class="text-center"><button type="button" id="btn-letra" onclick="cambiarLetra()" class="text-sm font-bold text-indigo-800 underline"></button></p>
+                <p class="text-center"><button type="button" id="btn-letra" onclick="cambiarLetra()" class="enlace-tactil text-sm font-bold text-indigo-800 underline"></button></p>
                 <output id="escrito" aria-label="Tu respuesta" class="block min-h-16 bg-white border-4 border-indigo-300 rounded-2xl text-center text-4xl font-bold text-gray-800 py-2 tabular-nums"></output>
                 <div id="pizarra-juego-caja" class="hidden space-y-2">
                     <canvas id="pizarra-juego" width="480" height="200" aria-label="Recuadro para escribir la respuesta con el dedo" aria-describedby="pizarra-juego-ayuda" class="pizarra block w-full bg-white border-4 border-dashed border-indigo-300 rounded-2xl"></canvas>
@@ -661,8 +699,8 @@
 
             <!-- Ayuda Mágica Interactiva -->
             <div class="text-center pt-1">
-                <button onclick="toggleHelp()" id="btn-help" aria-expanded="false" aria-controls="help-panel" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold px-4 py-2 rounded-full text-sm shadow-sm transition">
-                    🪄 ¿Necesitas ayuda mágica? (Ver truco)
+                <button onclick="toggleHelp()" id="btn-help" aria-expanded="false" aria-controls="help-panel" class="min-h-11 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold px-4 py-2 rounded-full text-sm shadow-sm transition">
+                    🪄 ¿Necesitas ayuda mágica?
                 </button>
             </div>
 
@@ -673,7 +711,7 @@
                 <p id="help-explain" class="text-indigo-800 text-center font-bold text-sm md:text-base"></p>
                 <div id="help-visual-container" aria-hidden="true" class="flex justify-center"></div>
                 <div class="text-center">
-                    <button type="button" id="btn-girar" onclick="girarAyuda()" class="bg-white hover:bg-indigo-100 border-2 border-indigo-200 text-indigo-800 font-bold px-4 py-1 rounded-full text-sm transition">
+                    <button type="button" id="btn-girar" onclick="girarAyuda()" class="min-h-11 bg-white hover:bg-indigo-100 border-2 border-indigo-200 text-indigo-800 font-bold px-4 py-1 rounded-full text-sm transition">
                         <span aria-hidden="true">🔄</span> Girar el rectángulo
                     </button>
                 </div>
@@ -727,10 +765,10 @@
                 </button>
             </div>
             <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
-                <button type="button" onclick="mostrarJardin()" class="text-green-800 font-bold underline hover:text-green-900">
+                <button type="button" onclick="mostrarJardin()" class="enlace-tactil text-green-800 font-bold underline hover:text-green-900">
                     <span class="sim-mundo" aria-hidden="true">🌱</span> Ver mi jardín
                 </button>
-                <button type="button" onclick="mostrarMapa()" class="text-green-800 font-bold underline hover:text-green-900">
+                <button type="button" onclick="mostrarMapa()" class="enlace-tactil text-green-800 font-bold underline hover:text-green-900">
                     <span aria-hidden="true">🗺️</span> Ver mi mapa de tablas
                 </button>
             </div>
@@ -742,7 +780,7 @@
              vacía al terminar. -->
         <div id="screen-jardin" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -782,7 +820,7 @@
              solo se contaban y no servían para nada. -->
         <div id="screen-vivero" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -803,7 +841,7 @@
              sueltos; verla crecer es entender qué son. -->
         <div id="screen-descubrir" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -839,7 +877,7 @@
         <!-- ================= PANTALLA 12: LA AVENTURA (MAPA) ================= -->
         <div id="screen-aventura" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -871,7 +909,7 @@
         <!-- ================= PANTALLA 13: LA AVENTURA (NIVEL) ================= -->
         <div id="screen-aventura-juego" class="hidden space-y-3">
             <div id="nivel-cabecera" class="flex flex-wrap justify-between items-center gap-2 bg-gray-50 rounded-2xl p-2 border border-gray-100">
-                <button type="button" onclick="salirDeNivel()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                <button type="button" onclick="salirDeNivel()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Mapa <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
                 <h2 data-foco id="nivel-titulo" class="bubble-font text-lg text-indigo-900"></h2>
@@ -898,9 +936,9 @@
             <p id="aventura-mensaje" role="status" class="text-center text-sm font-bold text-amber-900 min-h-5"></p>
             <div id="aventura-entrada" class="max-w-sm mx-auto space-y-2">
                 <div id="modos-aventura" role="group" aria-label="Cómo respondo" class="flex justify-center gap-1 text-sm font-bold">
-                    <button type="button" data-modo="teclear" onclick="cambiarModoAventura('teclear')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">🔢</span> Teclear</button>
-                    <button type="button" data-modo="elegir" onclick="cambiarModoAventura('elegir')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">🔘</span> Elegir</button>
-                    <button type="button" data-modo="dedo" onclick="cambiarModoAventura('dedo')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">✍️</span> Con el dedo</button>
+                    <button type="button" data-modo="teclear" onclick="cambiarModoAventura('teclear')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">🔢</span> <span class="texto-modo">Teclear</span></button>
+                    <button type="button" data-modo="elegir" onclick="cambiarModoAventura('elegir')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">🔘</span> <span class="texto-modo">Elegir</span></button>
+                    <button type="button" data-modo="dedo" onclick="cambiarModoAventura('dedo')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">✍️</span> <span class="texto-modo">Con el dedo</span></button>
                 </div>
                 <output id="aventura-escrito" aria-label="Tu respuesta" class="block min-h-14 bg-white border-4 border-indigo-300 rounded-2xl text-center text-3xl font-bold text-gray-800 py-1 tabular-nums"></output>
                 <div id="aventura-teclado" role="group" aria-label="Teclado de números" class="teclado-tactil grid grid-cols-3 gap-2"></div>
@@ -922,7 +960,7 @@
              ejemplo) se elige sola. -->
         <div id="screen-fracciones" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -961,7 +999,7 @@
         <!-- ================= PANTALLA 10: MI MUNDO Y MI PERSONAJE ================= -->
         <div id="screen-mundo" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -988,7 +1026,7 @@
              guarda; no mide nada nuevo ni lo envía a ningún lado. -->
         <div id="screen-adultos" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button type="button" onclick="volverDeAdultos()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                <button type="button" onclick="volverDeAdultos()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Volver <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -1030,7 +1068,7 @@
         <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
         <div id="screen-mapa" class="hidden space-y-4">
             <div class="flex justify-between items-center">
-                <button onclick="backToSelector()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
             </div>
@@ -1985,7 +2023,7 @@
             mostrarPantalla("screen-game");
 
             document.getElementById("help-panel").classList.add("hidden");
-            document.getElementById("btn-help").innerText = "🪄 ¿Necesitas ayuda mágica? (Ver truco)";
+            document.getElementById("btn-help").innerText = "🪄 ¿Necesitas ayuda mágica?";
             document.getElementById("btn-help").setAttribute("aria-expanded", "false");
 
             updateHUD();
@@ -2615,7 +2653,7 @@
                     caja.appendChild(parrafo("", `Escribir con el dedo: aprendió cómo escribe ${lista.length === 1 ? lista[0] : `${lista.slice(0, -1).join(", ")} y ${lista.at(-1)}`}. Si lo enseñó mal jugando y ahora lee cosas raras, se puede olvidar.`));
                     const olvidar = document.createElement("button");
                     olvidar.type = "button";
-                    olvidar.className = "btn-olvidar-letra text-sm font-bold text-indigo-800 underline";
+                    olvidar.className = "btn-olvidar-letra enlace-tactil text-sm font-bold text-indigo-800 underline";
                     olvidar.textContent = "Olvidar cómo escribe";
                     olvidar.onclick = () => { olvidarLetraDe(perfil.id); pintarAdultos(); };
                     caja.appendChild(olvidar);
@@ -2643,7 +2681,7 @@
                 borrar.className = "pt-1";
                 const pedir = document.createElement("button");
                 pedir.type = "button";
-                pedir.className = "btn-borrar text-sm font-bold text-red-800 underline";
+                pedir.className = "btn-borrar enlace-tactil text-sm font-bold text-red-800 underline";
                 pedir.textContent = "Borrar este jardín";
                 const confirmar = document.createElement("div");
                 confirmar.className = "confirmar-borrar hidden bg-red-50 border border-red-200 rounded-xl p-2 space-y-2";
@@ -2651,11 +2689,11 @@
                     `Se borrarán las flores, estrellas y amigos de ${nombreDe(perfil)}. No se puede deshacer.`));
                 const si = document.createElement("button");
                 si.type = "button";
-                si.className = "btn-borrar-si bg-red-700 hover:bg-red-800 text-white font-bold px-3 py-1 rounded-lg mr-2";
+                si.className = "btn-borrar-si min-h-11 bg-red-700 hover:bg-red-800 text-white font-bold px-4 py-2 rounded-lg mr-2";
                 si.textContent = "Sí, borrarlo";
                 const no = document.createElement("button");
                 no.type = "button";
-                no.className = "btn-borrar-no bg-white border border-gray-400 text-gray-800 font-bold px-3 py-1 rounded-lg";
+                no.className = "btn-borrar-no min-h-11 bg-white border border-gray-400 text-gray-800 font-bold px-4 py-2 rounded-lg";
                 no.textContent = "No, dejarlo";
                 confirmar.append(si, no);
                 pedir.onclick = () => { confirmar.classList.remove("hidden"); pedir.classList.add("hidden"); no.focus(); };
@@ -3401,8 +3439,8 @@
                 const titulo = document.createElement("h3");
                 titulo.id = `bancal-${a}`;
                 titulo.className = "text-sm font-bold text-green-900 mb-1 flex items-center justify-between gap-2";
-                titulo.innerHTML = `<button type="button" class="hover:underline">Tabla del ${a}</button>` +
-                    `<button type="button" class="descubrir-bancal text-xs font-semibold text-indigo-800 hover:underline"><span aria-hidden="true">🔍</span> Ver la tabla del ${a}</button>`;
+                titulo.innerHTML = `<button type="button" class="enlace-tactil hover:underline">Tabla del ${a}</button>` +
+                    `<button type="button" class="descubrir-bancal enlace-tactil text-sm font-semibold text-indigo-800 hover:underline"><span aria-hidden="true">🔍</span> Ver la tabla del ${a}</button>`;
                 const [practicar, ver] = titulo.querySelectorAll("button");
                 practicar.onclick = () => startTable(a);
                 ver.onclick = () => mostrarDescubrir(a);
@@ -3747,7 +3785,7 @@
                 th.scope = "row";
                 // En pantallas estrechas solo se ve el número: con "Tabla del" la
                 // cuadrícula no cabe en un teléfono. El lector oye el nombre entero.
-                th.innerHTML = `<button type="button" class="text-xs md:text-sm font-bold text-green-800 hover:underline px-1 whitespace-nowrap"><span class="sr-only sm:not-sr-only">Tabla del </span>${a}</button>`;
+                th.innerHTML = `<button type="button" class="mapa-fila text-sm font-bold text-green-800 bg-green-50 border border-green-200 rounded-lg hover:underline px-1 whitespace-nowrap"><span class="sr-only sm:not-sr-only">Tabla del </span>${a}</button>`;
                 th.querySelector("button").onclick = () => startTable(a);
                 fila.appendChild(th);
                 for (let b = 1; b <= MULTIPLICADORES; b++) {
@@ -4500,7 +4538,7 @@
                 speak(pistaPara().voz);
             } else {
                 panel.classList.add("hidden");
-                btn.innerText = "🪄 ¿Necesitas ayuda mágica? (Ver truco)";
+                btn.innerText = "🪄 ¿Necesitas ayuda mágica?";
                 btn.setAttribute("aria-expanded", "false");
             }
         }
