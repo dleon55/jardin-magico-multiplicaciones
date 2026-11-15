@@ -9,6 +9,9 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Volumen de la música** (#40): en Ajustes, de 0 a 10 (5, el de antes). Se
+  oye al momento mientras se desliza y se recuerda; subirlo con la música
+  apagada la enciende.
 - **Una música para cada mundo de la Aventura** (#39): alegre con los
   brócolis, saltarina con los monstruos, misteriosa con los fantasmas, menor y
   apurada con los zombis, «espacial» con los aliens y lenta, como olas, en el
