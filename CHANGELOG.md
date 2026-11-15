@@ -9,6 +9,10 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Mejor en el teléfono, y con música** (#38), tras jugarlo el titular en su móvil:
+  - el teclado de la Aventura tiene la distribución de un teléfono (1 2 3 / 4 5 6 / 7 8 9 / ⌫ 0 ✨), como el del juego; antes iba en cuatro columnas;
+  - tocar ya no mueve la pantalla: sin zoom por doble toque, y los teclados, las opciones y la arena no desplazan la página;
+  - **música de fondo** original, tranquila en el jardín y con ritmo en la Aventura; baja mientras habla la voz, se calla al cambiar de app y se apaga en Ajustes («🎶 Música»).
 - **Cabecera del menú y misión del día más claras** (#37):
   - la cabecera es del niño: su nombre, sus estrellas y dos botones («Cambiar de jugador», «Mi mundo y mi personaje»); «Para las personas adultas» pasa al final del menú, como en la bienvenida;
   - la semana de la misión dice qué es («Tu semana: cada ✓ es un día con la misión cumplida»), marca «Hoy» y deja vacíos los días sin misión (antes, un «·» que parecía un botón).
