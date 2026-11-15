@@ -189,7 +189,7 @@ test("la vista para adultos dice cómo va en la aventura; la copia la incluye; l
     cargarAventura();
     return aventuraGuardada;
   });
-  expect(r).toEqual({ heroe: "🐱", alcanzado: 23, estrellas: { "1-1": 2 }, mejores: { "2-3": 40 }, modo: "teclear" });
+  expect(r).toEqual({ heroe: "🐱", alcanzado: 23, estrellas: { "1-1": 2 }, mejores: { "2-3": 40 }, modo: "teclear", sinPrisa: false });
 });
 
 test("la operación que llegó al héroe vuelve tras dos enemigos más", async ({ page }) => {
@@ -208,4 +208,112 @@ test("la operación que llegó al héroe vuelve tras dos enemigos más", async (
     return salen;
   });
   expect(r).toEqual([false, false, true]);
+});
+
+// --- Sin prisa ---
+
+test("«Sin prisa» se enciende en el mapa, se recuerda y lo dice el nivel", async ({ page }) => {
+  await alMapa(page);
+  const boton = page.locator("#btn-sin-prisa");
+  await expect(boton).toHaveAttribute("aria-pressed", "false");
+  await expect(boton).toContainText("Sin prisa: No");
+  await boton.click();
+  await expect(boton).toHaveAttribute("aria-pressed", "true");
+  await expect(boton).toContainText("Sin prisa: Sí");
+  expect(await page.evaluate(() => { cargarAventura(); return aventuraGuardada.sinPrisa; })).toBe(true);
+  await page.click('.btn-nivel[data-nivel="0-0"]');
+  await expect(page.locator("#nivel-titulo")).toHaveText("El huerto de los brócolis · Nivel 1 · 🐢 Sin prisa");
+});
+
+test("sin prisa: la mitad de velocidad y como mucho dos a la vez", async ({ page }) => {
+  await alMapa(page);
+  const r = await page.evaluate(() => {
+    const normal = configNivel(0, 2);
+    aventuraGuardada.sinPrisa = true;
+    const lento = configNivel(0, 2);
+    return { normal, lento };
+  });
+  expect(r.lento.cruce).toBeCloseTo(r.normal.cruce * 2);
+  expect(r.normal.simultaneos).toBe(3);
+  expect(r.lento.simultaneos).toBe(2);
+  expect(r.lento.sinPrisa).toBe(true);
+});
+
+test("sin prisa: los enemigos se paran antes de llegar y esperan; no se pierden corazones", async ({ page }) => {
+  await alMapa(page);
+  await page.click("#btn-sin-prisa");
+  await page.click('.btn-nivel[data-nivel="0-0"]');
+  const r = await page.evaluate(() => {
+    for (let i = 0; i < 120; i++) aventuraPaso(500);   // un minuto sin responder
+    return {
+      corazones: aventura.corazones,
+      terminado: aventura.terminado,
+      vivos: aventura.enemigos.length,
+      // Por lado, de cerca a lejos: 0,22 el primero y 0,36 el de detrás (hacen fila).
+      distancias: ["izq", "der"].map((l) => aventura.enemigos.filter((e) => e.lado === l)
+        .map((e) => Math.round(Math.abs(e.x - 0.5) * 100) / 100).sort()).every((d) => d.every((x, i) => x === [0.22, 0.36][i])),
+      esperan: aventura.enemigos.every((e) => e.el.classList.contains("esperando")),
+    };
+  });
+  expect(r).toEqual({ corazones: 3, terminado: false, vivos: 2, distancias: true, esperan: true });
+  // Responder sigue venciendo, sin premio por rapidez: 10 puntos el primero.
+  const pts = await page.evaluate(() => { responderAventura(enemigoObjetivo().op.respuesta); return aventura.puntos; });
+  expect(pts).toBe(10);
+});
+
+test("sin prisa: el nivel y el jefe se ganan igual, y cuentan para avanzar", async ({ page }) => {
+  await alMapa(page);
+  await page.click("#btn-sin-prisa");
+  await page.evaluate(() => { aventuraGuardada.alcanzado = 3; pintarAventura(); });
+  await page.click('.btn-nivel[data-nivel="0-3"]');
+  const r = await page.evaluate(() => {
+    let jefeEspero = false;
+    for (let i = 0; i < 400 && !aventura.terminado; i++) {
+      const e = enemigoObjetivo();
+      if (e && e.jefe && !jefeEspero) {
+        for (let k = 0; k < 60; k++) aventuraPaso(500);   // el jefe también espera
+        jefeEspero = e.esperando === true && aventura.corazones === 3;
+      }
+      if (e) responderAventura(e.op.respuesta); else aventuraPaso(aventura.config.cruce * 500);
+    }
+    return { jefeEspero, terminado: aventura.terminado, alcanzado: aventuraGuardada.alcanzado, estrellas: aventuraGuardada.estrellas["0-3"] };
+  });
+  expect(r).toEqual({ jefeEspero: true, terminado: true, alcanzado: 4, estrellas: 3 });
+  await expect(page.locator("#fin-titulo")).toHaveText("¡Venciste al jefe! Se abre el mundo 2");
+});
+
+test("sin «sin prisa», el enemigo sí llega y quita un corazón", async ({ page }) => {
+  await alMapa(page);
+  await page.click('.btn-nivel[data-nivel="0-0"]');
+  const corazones = await page.evaluate(() => { for (let i = 0; i < 120; i++) aventuraPaso(500); return aventura.corazones; });
+  expect(corazones).toBeLessThan(3);
+});
+
+test("la vista para adultos dice si juega sin prisa", async ({ page }) => {
+  await alMapa(page);
+  await page.click("#btn-sin-prisa");
+  await page.click('.btn-nivel[data-nivel="0-0"]');
+  await ganarNivel(page);
+  await page.click("#arena-fin >> text=Mapa");
+  await page.click("#screen-aventura button:has-text('Menú')");
+  await page.click("#screen-selector >> text=Para las personas adultas");
+  await expect(page.locator(".adulto-aventura")).toContainText("Juega «sin prisa»: los enemigos lo esperan.");
+});
+
+test("sin prisa: dos del mismo lado hacen fila, y el de detrás avanza al vencer al primero", async ({ page }) => {
+  await alMapa(page);
+  await page.click("#btn-sin-prisa");
+  await page.evaluate(() => { Math.random = () => 0.1; });   // todos entran por la izquierda
+  await page.click('.btn-nivel[data-nivel="0-0"]');
+  const r = await page.evaluate(() => {
+    for (let i = 0; i < 120; i++) aventuraPaso(500);
+    const antes = aventura.enemigos.map((e) => Math.round(Math.abs(e.x - 0.5) * 100) / 100).sort();
+    const primero = aventura.enemigos.reduce((m, e) => (Math.abs(e.x - 0.5) < Math.abs(m.x - 0.5) ? m = e : m));
+    responderAventura(primero.op.respuesta, primero);
+    const queda = aventura.enemigos.find((e) => e !== primero);
+    for (let i = 0; i < 4; i++) aventuraPaso(500);   // poco tiempo: aún no sale otro
+    return { antes, despues: Math.round(Math.abs(queda.x - 0.5) * 100) / 100 };
+  });
+  expect(r.antes).toEqual([0.22, 0.36]);
+  expect(r.despues).toBeLessThan(0.36);
 });

@@ -94,6 +94,10 @@
         /* --- LA AVENTURA --- */
         .pizarra { touch-action: none; aspect-ratio: 12 / 5; cursor: crosshair; }
         .modo-aventura[aria-pressed="true"] { background: #4338ca; border-color: #4338ca; color: #fff; }
+        .sin-prisa[aria-pressed="true"] { background: #047857; border-color: #047857; color: #fff; }
+        /* Sin prisa: el enemigo que llegó a su sitio espera, balanceándose. */
+        @keyframes esperar { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
+        html:not(.calma) .enemigo.esperando { animation: esperar 1.6s ease-in-out infinite; }
         .arena { position: relative; overflow: hidden; height: 20rem; border-radius: 1.5rem; touch-action: manipulation; user-select: none; }
         @media (min-width: 768px) { .arena { height: 24rem; } }
         .arena[data-mundo="0"] { background: linear-gradient(#bae6fd 0%, #e0f2fe 55%, #86efac 55%, #4ade80 100%); }
@@ -784,6 +788,13 @@
                 <legend class="block text-gray-700 font-bold text-center w-full mb-1">Tu héroe</legend>
                 <div class="elegir-heroe grid grid-cols-4 sm:grid-cols-8 gap-1" data-nombre="heroe"></div>
             </fieldset>
+            <div class="max-w-md mx-auto text-center space-y-1">
+                <button type="button" id="btn-sin-prisa" onclick="cambiarSinPrisa()" aria-pressed="false" aria-describedby="sin-prisa-texto"
+                        class="sin-prisa inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 border-emerald-300 bg-white font-bold text-emerald-900 shadow-sm">
+                    <span aria-hidden="true">🐢</span> Sin prisa: <span class="estado">No</span>
+                </button>
+                <p id="sin-prisa-texto" class="text-sm text-gray-700">Los enemigos van despacio y se quedan esperando tu respuesta: nadie te quita corazones por tardar.</p>
+            </div>
             <ol id="aventura-mundos" class="escalonar space-y-3" aria-label="Mundos de la aventura"></ol>
             <div class="text-center">
                 <button type="button" id="btn-compartir" onclick="compartirPuntaje()" class="bubble-font bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-700 hover:to-fuchsia-700 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition">
@@ -2188,7 +2199,8 @@
                 if (puntajeAventura(av) > 0) {
                     const m = Math.floor(av.alcanzado / NIVELES_POR_MUNDO);
                     piezas.push(parrafo("adulto-aventura text-gray-800",
-                        `La Aventura: ${puntajeAventura(av)} puntos, ${estrellasAventura(av)} estrellas; va en el mundo ${m + 1} (${AVENTURA_MUNDOS[m].retos.toLowerCase()}).`));
+                        `La Aventura: ${puntajeAventura(av)} puntos, ${estrellasAventura(av)} estrellas; va en el mundo ${m + 1} (${AVENTURA_MUNDOS[m].retos.toLowerCase()}).` +
+                        (av.sinPrisa ? " Juega «sin prisa»: los enemigos lo esperan." : "")));
                 }
                 const cifrasLetra = Object.keys(letraDePerfil(perfil.id).muestras);
                 if (cifrasLetra.length) {
@@ -4935,11 +4947,12 @@
             let g = null;
             try { g = JSON.parse(almacen.leer("aventura") || "null"); } catch (e) { g = null; }
             const total = AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO;
-            const limpio = { heroe: "🐱", alcanzado: 0, estrellas: {}, mejores: {}, modo: "teclear" };
+            const limpio = { heroe: "🐱", alcanzado: 0, estrellas: {}, mejores: {}, modo: "teclear", sinPrisa: false };
             if (g && typeof g === "object") {
                 if (HEROES.some((h) => h.emoji === g.heroe)) limpio.heroe = g.heroe;
                 if (Number.isInteger(g.alcanzado)) limpio.alcanzado = Math.max(0, Math.min(total - 1, g.alcanzado));
                 if (g.modo === "elegir" || g.modo === "dedo") limpio.modo = g.modo;
+                limpio.sinPrisa = g.sinPrisa === true;
                 for (const campo of ["estrellas", "mejores"]) {
                     if (!g[campo] || typeof g[campo] !== "object") continue;
                     for (const [k, v] of Object.entries(g[campo])) {
@@ -5001,6 +5014,7 @@
             document.querySelectorAll('#screen-aventura input[name="heroe"]').forEach((i) => {
                 i.addEventListener("change", () => { aventuraGuardada.heroe = i.value; guardarAventura(); });
             });
+            pintarSinPrisa();
             const lista = document.getElementById("aventura-mundos");
             lista.replaceChildren(...AVENTURA_MUNDOS.map((mundo, mi) => {
                 const li = document.createElement("li");
@@ -5064,10 +5078,40 @@
         }
 
         /** Qué tan difícil es el nivel: cuántos enemigos, cuántos a la vez y qué tan rápido. */
+        // SIN PRISA. Para quien se frustra o necesita pensar: los enemigos van
+        // a la mitad de velocidad, salen de dos en dos como mucho y se paran
+        // antes de llegar al héroe, esperando la respuesta. No se pierden
+        // corazones por tardar, así que el nivel siempre se puede terminar;
+        // el avance y las estrellas cuentan igual. Solo se pierde el premio
+        // por responder rápido: los récords se hacen con prisa.
+        const SIN_PRISA_ESPERA = 0.22;   // a qué distancia del centro se para el primero
+        const SIN_PRISA_FILA = 0.14;     // y cada uno de detrás, un poco más lejos: hacen fila
+
+        /** Dónde se para un enemigo sin prisa: tras los de su lado que van delante. */
+        function paradaSinPrisa(e) {
+            const delante = aventura.enemigos.filter((o) => o !== e && o.lado === e.lado && Math.abs(o.x - 0.5) < Math.abs(e.x - 0.5)).length;
+            return SIN_PRISA_ESPERA + SIN_PRISA_FILA * delante;
+        }
+
         function configNivel(mi, n) {
             const base = AVENTURA_MUNDOS[mi].cruce;
-            if (n === NIVELES_POR_MUNDO - 1) return { enemigos: 4, simultaneos: 2, cruce: base * 0.9, jefe: true };
-            return { enemigos: 6 + 2 * n, simultaneos: n === 0 ? 2 : 3, cruce: base * (1 - 0.12 * n), jefe: false };
+            const c = n === NIVELES_POR_MUNDO - 1
+                ? { enemigos: 4, simultaneos: 2, cruce: base * 0.9, jefe: true }
+                : { enemigos: 6 + 2 * n, simultaneos: n === 0 ? 2 : 3, cruce: base * (1 - 0.12 * n), jefe: false };
+            if (aventuraGuardada.sinPrisa) Object.assign(c, { cruce: c.cruce * 2, simultaneos: Math.min(2, c.simultaneos), sinPrisa: true });
+            return c;
+        }
+
+        function cambiarSinPrisa() {
+            aventuraGuardada.sinPrisa = !aventuraGuardada.sinPrisa;
+            guardarAventura();
+            pintarSinPrisa();
+        }
+
+        function pintarSinPrisa() {
+            const b = document.getElementById("btn-sin-prisa");
+            b.setAttribute("aria-pressed", String(aventuraGuardada.sinPrisa));
+            b.querySelector(".estado").textContent = aventuraGuardada.sinPrisa ? "Sí" : "No";
         }
 
         function empezarNivel(mi, n) {
@@ -5087,7 +5131,7 @@
             document.getElementById("arena-fin").classList.add("hidden");
             pintarDecor(mi);
             document.getElementById("heroe-cara").textContent = aventuraGuardada.heroe;
-            document.getElementById("nivel-titulo").textContent = `${AVENTURA_MUNDOS[mi].nombre} · ${nombreNivel(n)}`;
+            document.getElementById("nivel-titulo").textContent = `${AVENTURA_MUNDOS[mi].nombre} · ${nombreNivel(n)}${c.sinPrisa ? " · 🐢 Sin prisa" : ""}`;
             construirTecladoAventura();
             pintarModoAventura();
             pintarMarcador();
@@ -5133,7 +5177,12 @@
             for (const e of [...aventura.enemigos]) {
                 const velocidad = 0.5 / ((e.jefe ? c.cruce * 1.6 : c.cruce) * 1000);   // de la orilla al centro en `cruce` s
                 e.x += (e.lado === "izq" ? 1 : -1) * velocidad * dt;
-                if (Math.abs(e.x - 0.5) < 0.07) enemigoLlega(e);
+                const parada = c.sinPrisa ? paradaSinPrisa(e) : 0;
+                if (c.sinPrisa && Math.abs(e.x - 0.5) <= parada) {
+                    e.x = 0.5 + (e.lado === "izq" ? -1 : 1) * parada;
+                    if (!e.esperando) { e.esperando = true; e.el.classList.add("esperando"); }
+                    colocarEnemigo(e);
+                } else if (Math.abs(e.x - 0.5) < 0.07) enemigoLlega(e);
                 else colocarEnemigo(e);
             }
             aventura.hastaAparecer -= dt;
@@ -5262,7 +5311,8 @@
             lanzarRayo(e);
             aventura.racha++;
             // Más puntos si estaba lejos (se respondió rápido) y por racha.
-            const lejos = Math.min(1, Math.abs(e.x - 0.5) / 0.48);
+            // Sin prisa no hay premio por rapidez: los enemigos van despacio.
+            const lejos = aventura.config.sinPrisa ? 0 : Math.min(1, Math.abs(e.x - 0.5) / 0.48);
             const pts = (e.jefe ? 20 : 10) + Math.round(10 * lejos) + (aventura.racha >= 3 ? 5 : 0);
             aventura.puntos += pts;
             flotarPuntos(e, pts);

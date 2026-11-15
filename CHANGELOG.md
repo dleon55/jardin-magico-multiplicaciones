@@ -9,6 +9,10 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **🐢 Sin prisa en la Aventura** (#35): los enemigos van a la mitad de
+  velocidad y se paran en fila antes de llegar, esperando la respuesta; no
+  se pierden corazones por tardar. Avance y estrellas cuentan igual, sin
+  premio por rapidez. Por jugador; la vista para adultos lo dice.
 - **Aprende la letra de cada niño** (#34): si lee mal, «🤔 ¿Leí mal?
   Enséñame» pide el número con teclas y guarda esas cifras como modelos del
   jugador; desde entonces las lee bien. En el juego y en la Aventura. La
