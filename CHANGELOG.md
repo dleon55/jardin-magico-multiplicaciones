@@ -9,6 +9,22 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Sonidos por capas** (#81, tarea #50): los pitidos de un tono se cambian
+  por efectos de tres capas (ataque, cuerpo y brillo), todos de la escala
+  pentatónica de do, como la música, y con el volumen igualado. Hay uno para
+  cada momento:
+  - entrar al jardín;
+  - acertar;
+  - equivocarse (suave y hacia arriba);
+  - una racha;
+  - florecer;
+  - vencer a un enemigo;
+  - el último golpe al jefe;
+  - superar un nivel;
+  - comprar;
+  - el toque de los botones del menú.
+
+  La melodía de entrada usaba un do sostenido, fuera de la escala.
 - **Plantas dibujadas** (#80, tarea #57): las 54 plantas de «Mi jardín» son
   dibujos. El estado se distingue por la forma: semilla, brote, capullo,
   florecida y marchita. Lo florecido es propio de cada mundo, con un color
