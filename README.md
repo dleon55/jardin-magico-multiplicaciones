@@ -26,6 +26,20 @@ Lumi dice cada paso en voz alta. La guía se puede saltar, y en un dispositivo
 que ya la vio, o que ya tiene jardines, no vuelve a salir. Cabe sin
 desplazarse en el teléfono, en vertical y acostado.
 
+**Las plantas de «Mi jardín» están dibujadas.** El estado se distingue por la
+forma, no solo por el color:
+- por sembrar: tierra con una semilla;
+- brote: dos hojitas;
+- casi: un capullo cerrado;
+- florecida: lo que crece en el mundo, con brillo (tomate, árbol, dinosaurio
+  saliendo del huevo, estrella, pez, pollito, cactus en flor o flor), con un
+  color distinto para cada tabla;
+- marchita: tallo caído.
+
+Al abrir el jardín, lo que cambió desde la última vez se anima: crece, se
+marchita o revive. En la partida, cada acierto deja un capullo del color de la
+tabla.
+
 **Cada mundo del jardín tiene su paisaje** dibujado por capas (cielo, colinas
 lejos y cerca):
 - zanahorias y maíz en el huerto;

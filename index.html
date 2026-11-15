@@ -182,10 +182,18 @@
             width: 3rem; min-height: 3.4rem; border-radius: 0.75rem; padding: 0.15rem 0;
             background: #ecfccb;
         }
-        .planta .emoji { font-size: 1.6rem; line-height: 1.2; }
+        .planta .dibujo svg { display: block; width: 2.7rem; height: 2.5rem; overflow: visible; transform-origin: 50% 90%; }
+        .planta-partida svg { display: block; width: 2.6rem; height: 2.4rem; overflow: visible; }
+        .flor-florecida .planta-partida svg { width: 3.2rem; height: 3rem; }
+        /* Lo que cambió desde la última visita: crece, se marchita o revive al regarlo. */
+        .cambia-crece .dibujo svg { animation: planta-crece 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+        .cambia-revive .dibujo svg { animation: planta-revive 0.6s ease-out both; }
+        .cambia-marchita .dibujo svg { animation: planta-marchita 0.6s ease-in both; }
+        @keyframes planta-crece { from { transform: scale(0.35); } to { transform: scale(1); } }
+        @keyframes planta-revive { 0% { transform: scale(0.8) rotate(10deg); filter: grayscale(1); } 60% { transform: scale(1.12); filter: drop-shadow(0 0 6px #fde047); } 100% { transform: none; } }
+        @keyframes planta-marchita { from { transform: rotate(-8deg) scale(1.05); filter: none; } to { transform: none; } }
         .planta .etiqueta { font-size: 0.75rem; font-weight: 700; color: #365314; }
         .planta-nuevo { background: #f5f5f4; }
-        .planta-nuevo .emoji { filter: grayscale(0.4); opacity: 0.8; }
         .planta-marchita { background: #e7e5e4; }
         /* Fuentes con licencia SIL OFL 1.1: ver fuentes/OFL-*.txt.
            Solo el subconjunto latino, que incluye ñ, tildes, ¡, ¿ y ×. */
@@ -1541,7 +1549,10 @@
         // «guia»: si este dispositivo ya vio la bienvenida guiada. Es del
         // dispositivo, no de un jardín, y no va en la copia de seguridad.
         const GLOBALES = new Set(["ajustes", "perfiles", "perfil", "guia"]);
-        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra"];
+        // Lo que es de cada jardín y viaja en la copia de seguridad. «vistos»:
+        // el estado de cada planta la última vez que se abrió «Mi jardín», para
+        // animar lo que cambió desde entonces (también al pasar a otro equipo).
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos"];
         let perfilActual = "p1";
 
         const almacen = {
@@ -4120,6 +4131,53 @@
         const NOMBRES_ESTADO = { florecida: "florecida, ya te la sabes", marchita: "marchita, toca repasarla", casi: "casi", practica: "practicando", nuevo: "sin jugar" };
         const simboloEstado = (estado) => ({ florecida: mundo().flor, marchita: "🥀", casi: mundo().capullo, practica: "🌱", nuevo: "" })[estado];
 
+        // --- PLANTAS DEL JARDÍN (docs/ESTILO.md) ---
+        //
+        // Cada planta es un dibujo según su estado, y el estado se distingue
+        // por la FORMA, no solo por el color (accesibilidad):
+        //   por sembrar: montoncito de tierra con una semilla;
+        //   brote: dos hojitas;
+        //   casi: tallo con un capullo cerrado;
+        //   florecida: lo que crece en el mundo, con brillo;
+        //   marchita: tallo caído y hojas secas.
+        // Lo florecido es propio de cada mundo y su color cambia con la tabla,
+        // así cada bancal se distingue del otro.
+        const TRAZO_P = 'stroke="var(--contorno)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"';
+        const TONOS_TABLA = ["#f43f5e", "#f97316", "#facc15", "#84cc16", "#22c55e", "#14b8a6", "#38bdf8", "#818cf8", "#d946ef"];
+        const TIERRA = `<path d="M8 50 Q32 38 56 50 L56 54 Q32 60 8 54 Z" fill="#a16207" ${TRAZO_P}/><path d="M16 49 Q22 46 28 47" stroke="#ca8a04" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+        const TALLO = (alto = 26, curva = 0) => `<path d="M32 48 Q${32 + curva} ${48 - alto / 2} 32 ${48 - alto}" stroke="#16a34a" stroke-width="3.4" fill="none" stroke-linecap="round"/>`;
+        const HOJA = (x, y, lado, c = "#4ade80") => `<path d="M${x} ${y} Q${x + lado * 12} ${y - 12} ${x + lado * 16} ${y - 2} Q${x + lado * 8} ${y + 4} ${x} ${y} Z" fill="${c}" ${TRAZO_P} stroke-width="2"/>`;
+        const BRILLO_P = `<circle cx="32" cy="22" r="22" fill="#fef08a" opacity=".45"/>`;
+
+        // Lo florecido de cada mundo: (tono de la tabla) => dibujo sobre la tierra.
+        const FLORECIDA = {
+            huerto: (c) => `${TALLO(18)}${HOJA(32, 40, -1)}${HOJA(32, 36, 1)}<circle cx="32" cy="20" r="11" fill="${c}" ${TRAZO_P}/><path d="M27 11 L32 14 L37 11 L35 16 L29 16 Z" fill="#22c55e" ${TRAZO_P} stroke-width="1.6"/><circle cx="28" cy="17" r="2.6" fill="#fff" opacity=".6"/>`,
+            bosque: (c) => `<rect x="29" y="30" width="6" height="18" rx="2" fill="#a16207" ${TRAZO_P} stroke-width="2"/><circle cx="32" cy="22" r="15" fill="${c}" ${TRAZO_P}/><circle cx="26" cy="17" r="4" fill="#fff" opacity=".35"/>`,
+            dinos: (c) => `<path d="M18 48 Q16 30 32 26 Q48 30 46 48 Z" fill="#fef3c7" ${TRAZO_P}/><path d="M18 36 L23 40 L28 35 L33 40 L38 35 L43 40 L46 37" fill="none" ${TRAZO_P} stroke-width="2"/><circle cx="32" cy="22" r="9" fill="${c}" ${TRAZO_P}/><circle cx="29" cy="20" r="1.8" fill="var(--contorno)"/><circle cx="35" cy="20" r="1.8" fill="var(--contorno)"/><path d="M29 25 Q32 27 35 25" fill="none" stroke="var(--contorno)" stroke-width="1.6" stroke-linecap="round"/>`,
+            espacio: (c) => `${TALLO(14)}<path d="M32 6 L36 16 L47 17 L39 24 L41 35 L32 29 L23 35 L25 24 L17 17 L28 16 Z" fill="${c}" ${TRAZO_P}/><circle cx="29" cy="19" r="1.6" fill="var(--contorno)"/><circle cx="35" cy="19" r="1.6" fill="var(--contorno)"/>`,
+            mar: (c) => `${TALLO(10, 4)}<path d="M18 24 Q30 10 42 24 Q30 36 18 24 Z" fill="${c}" ${TRAZO_P}/><path d="M42 24 L50 17 L50 31 Z" fill="${c}" ${TRAZO_P}/><circle cx="25" cy="22" r="2" fill="var(--contorno)"/><circle cx="12" cy="14" r="2.2" fill="none" stroke="#38bdf8" stroke-width="1.6"/>`,
+            granja: (c) => `<ellipse cx="32" cy="36" rx="13" ry="11" fill="${c}" ${TRAZO_P}/><circle cx="32" cy="22" r="8" fill="${c}" ${TRAZO_P}/><path d="M38 22 L43 24 L38 26 Z" fill="#f97316" ${TRAZO_P} stroke-width="1.6"/><circle cx="34" cy="20" r="1.6" fill="var(--contorno)"/><path d="M29 14 Q31 10 33 14 Q35 11 36 15" fill="#ef4444" ${TRAZO_P} stroke-width="1.6"/>`,
+            desierto: (c) => `<rect x="26" y="18" width="12" height="31" rx="6" fill="#22c55e" ${TRAZO_P}/><path d="M26 34 L20 34 Q17 34 17 31 L17 25" fill="none" stroke="#22c55e" stroke-width="6" stroke-linecap="round"/><path d="M38 30 L44 30 Q47 30 47 27 L47 22" fill="none" stroke="#22c55e" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="15" r="5" fill="${c}" ${TRAZO_P} stroke-width="2"/>`,
+            flores: (c) => `${TALLO(22)}${HOJA(32, 40, -1)}${HOJA(32, 36, 1)}<g fill="${c}" ${TRAZO_P} stroke-width="2"><circle cx="32" cy="12" r="6"/><circle cx="41" cy="18" r="6"/><circle cx="38" cy="28" r="6"/><circle cx="26" cy="28" r="6"/><circle cx="23" cy="18" r="6"/></g><circle cx="32" cy="21" r="5" fill="#fde047" ${TRAZO_P} stroke-width="2"/>`,
+        };
+
+        const DIBUJO_ESTADO = {
+            nuevo: () => `<ellipse cx="32" cy="45" rx="5" ry="3.5" fill="#fde68a" ${TRAZO_P} stroke-width="2"/>`,
+            practica: () => `${TALLO(14)}${HOJA(32, 36, -1)}${HOJA(32, 36, 1)}`,
+            casi: (c) => `${TALLO(26)}${HOJA(32, 42, -1)}${HOJA(32, 38, 1)}<path d="M32 12 Q24 18 27 26 Q32 30 37 26 Q40 18 32 12 Z" fill="${c}" ${TRAZO_P}/><path d="M27 26 Q32 22 37 26" fill="#22c55e" ${TRAZO_P} stroke-width="1.8"/>`,
+            marchita: () => `<path d="M32 48 Q34 34 42 30 Q48 30 48 38" stroke="#a8a29e" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M48 38 Q54 40 50 46 Q44 44 48 38 Z" fill="#d6d3d1" ${TRAZO_P} stroke-width="2"/>${HOJA(32, 42, -1, "#d6d3d1")}`,
+        };
+
+        /** Una planta del jardín: estado, mundo y tabla (para su color). */
+        function svgPlanta(estado, clave = "flores", tabla = 1) {
+            const tono = TONOS_TABLA[(tabla - 1) % TONOS_TABLA.length];
+            const dibujo = estado === "florecida"
+                ? BRILLO_P + (FLORECIDA[clave] || FLORECIDA.flores)(tono)
+                : (DIBUJO_ESTADO[estado] || DIBUJO_ESTADO.nuevo)(tono);
+            const mundoDibujo = FLORECIDA[clave] ? clave : "flores";
+            return `<svg class="arte planta-arte" data-estado="${estado}" data-mundo="${mundoDibujo}" data-tabla="${tabla}" viewBox="0 0 64 60" aria-hidden="true" focusable="false">${TIERRA}${dibujo}</svg>`;
+        }
+
         // --- MI JARDÍN ---
         //
         // Antes, el jardín se vaciaba al terminar cada partida y lo único que
@@ -4156,10 +4214,23 @@
             return "¡Qué jardín! Repásalo de vez en cuando para que no se marchite.";
         }
 
+        const ORDEN_PLANTA = { nuevo: 0, practica: 1, casi: 2, florecida: 3 };
+        /** Cómo cambió una planta desde la última visita: crece, marchita, revive o nada. */
+        function cambioDePlanta(antes, ahora) {
+            if (!antes || antes === ahora) return null;
+            if (ahora === "marchita") return "marchita";
+            if (antes === "marchita") return "revive";
+            return (ORDEN_PLANTA[ahora] ?? 0) > (ORDEN_PLANTA[antes] ?? 0) ? "crece" : null;
+        }
+
         function mostrarJardin() {
             const contenedor = document.getElementById("jardin-bancales");
             contenedor.replaceChildren();
             let marchitas = 0;
+            let vistos = null;
+            try { vistos = JSON.parse(almacen.leer("vistos") || "null"); } catch (e) { vistos = null; }
+            if (!vistos || typeof vistos !== "object") vistos = null;   // la primera vez no se anima nada
+            const ahora = {};
             for (let a = 1; a <= TABLAS; a++) {
                 const bancal = document.createElement("section");
                 bancal.className = "bg-gradient-to-b from-amber-50 to-amber-100 border-b-4 border-amber-800/40 rounded-2xl px-2 py-2";
@@ -4181,8 +4252,11 @@
                     li.className = `planta planta-${p.estado}`;
                     li.dataset.planta = `${a}x${b}`;
                     li.dataset.estado = p.estado;
+                    ahora[`${a}x${b}`] = p.estado;
+                    const cambio = vistos && cambioDePlanta(vistos[`${a}x${b}`], p.estado);
+                    if (cambio) li.classList.add(`cambia-${cambio}`);
                     const otra = b !== a && b <= TABLAS ? ` y ${b} por ${a}` : "";
-                    li.innerHTML = `<span class="emoji" aria-hidden="true">${p.emoji}</span>` +
+                    li.innerHTML = `<span class="dibujo">${svgPlanta(p.estado, perfilEnUso().mundo, a)}</span>` +
                         `<span class="etiqueta" aria-hidden="true">${a}×${b}</span>` +
                         `<span class="sr-only">${a} por ${b}${otra}: ${p.nombre}</span>`;
                     fila.appendChild(li);
@@ -4191,6 +4265,7 @@
                 contenedor.appendChild(bancal);
             }
 
+            almacen.guardar("vistos", JSON.stringify(ahora));
             const cuenta = cuentaPorEstado();
             const total = plantas().length;
             document.getElementById("jardin-resumen").innerText = `${cuenta.florecida} de ${total} flores`;
@@ -6009,7 +6084,9 @@
             
             const sizeScale = 0.8 + (Math.random() * 0.4);
             const swayDelay = Math.random() * 2;
-            const rFlower = algoQueCrece();
+            // Cada acierto deja un capullo del color de la tabla; lo que
+            // florece de verdad (se sabe de memoria) sale ya florecido.
+            const dibujo = svgPlanta(florecio ? "florecida" : "casi", perfilEnUso().mundo, numA || 1);
 
             flower.style.left = `${leftPos}%`;
             flower.style.bottom = "8px";
@@ -6018,8 +6095,7 @@
             
             flower.innerHTML = `
                 <div class="relative flex flex-col items-center">
-                    <span class="animate-sway inline-block">${rFlower}</span>
-                    <span class="text-xs text-emerald-300 -mt-2">🌱</span>
+                    <span class="animate-sway inline-block planta-partida" aria-hidden="true">${dibujo}</span>
                 </div>
             `;
 

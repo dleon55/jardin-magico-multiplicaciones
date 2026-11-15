@@ -98,9 +98,9 @@ test.describe("Mi jardín", () => {
     await expect(planta("7x8")).toHaveAttribute("data-estado", "florecida");
     await expect(planta("7x8")).toContainText("7 por 8 y 8 por 7: cosecha, te la sabes");
     await expect(planta("6x9")).toHaveAttribute("data-estado", "casi");
-    await expect(planta("6x9")).toContainText("🌿");
+    await expect(planta("6x9").locator("svg.planta-arte")).toHaveAttribute("data-estado", "casi");   // el dibujo del capullo
     await expect(planta("3x4")).toHaveAttribute("data-estado", "practica");
-    await expect(planta("3x4")).toContainText("🌱");
+    await expect(planta("3x4").locator("svg.planta-arte")).toHaveAttribute("data-estado", "practica");
     await expect(planta("9x10")).toHaveAttribute("data-estado", "nuevo");
     await expect(planta("9x10")).toContainText("9 por 10: por sembrar");   // el ×10 no tiene pareja
     await expect(page.locator("#jardin-resumen")).toHaveText("1 de 54 flores");
@@ -156,7 +156,7 @@ test.describe("regar: lo que no se repasa se marchita", () => {
     await expect(page.locator("#screen-selector .btn-falta")).toContainText("(1)");
     await page.click("#screen-selector >> text=Mi jardín");
     await expect(page.locator('[data-planta="3x3"]')).toHaveAttribute("data-estado", "marchita");
-    await expect(page.locator('[data-planta="3x3"]')).toContainText("🥀");
+    await expect(page.locator('[data-planta="3x3"] svg.planta-arte')).toHaveAttribute("data-estado", "marchita");
     await expect(page.locator("#jardin-consejo")).toContainText("Una flor se está marchitando");
     await page.click("#screen-jardin button:has-text('Menú')");
     await page.click("text=Mi mapa de tablas");
