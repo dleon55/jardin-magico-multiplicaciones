@@ -9,6 +9,12 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Plan de evolución y guía de estilo** (#73): `docs/PLAN.md` ordena lo que
+  sigue en tres hitos (#45 calidad que se ve y se oye, #46 un solo camino y
+  mejor enseñanza, #47 plataforma), con 25 tareas en issues. `docs/ESTILO.md`
+  fija colores, letra, formas, reglas del dibujo y a Lumi, la mascota; los
+  colores quedan como variables CSS. Se quitan unas capturas que se habían
+  colado en el sitio con #44.
 - **El teléfono acostado** (#44): se usa el ancho. En la partida, la pregunta
   a la izquierda y las respuestas o el teclado a la derecha; en la Aventura, la
   arena a la izquierda y el teclado a la derecha; en el menú, quién juega y la
