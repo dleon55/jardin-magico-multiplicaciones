@@ -122,6 +122,34 @@ test("cada pantalla empieza arriba: abrir «Mi jardín» desde el final del men�
   expect(await page.evaluate(() => scrollY)).toBe(0);
 });
 
+test("la cabecera del menú es del niño; lo de las personas adultas va aparte, al final", async ({ page }) => {
+  await alMenu(page);
+  const cabecera = page.locator("#cabecera-menu");
+  await expect(cabecera.locator("button")).toHaveText([/Cambiar de jugador/, /Mi mundo y mi personaje/]);
+  await expect(cabecera).not.toContainText("personas adultas");
+  await expect(cabecera).toContainText("Tus estrellas:");
+  // El de adultos es lo último del menú.
+  const ultimo = await page.evaluate(() => [...document.querySelectorAll("#screen-selector button")].at(-1).id);
+  expect(ultimo).toBe("btn-adultos-menu");
+  await page.click("#btn-adultos-menu");
+  await expect(page.locator("#screen-adultos")).toBeVisible();
+});
+
+test("la semana de la misión se entiende: leyenda, «Hoy» y días vacíos sin marcas raras", async ({ page }) => {
+  await alMenu(page);
+  await expect(page.locator("#mision-leyenda")).toHaveText(/Tu semana: cada ✓\s*(marca\s*)?es un día con la misión cumplida\./);
+  const dias = page.locator("#mision-semana li");
+  await expect(dias).toHaveCount(7);
+  await expect(dias.last().locator("span").first()).toHaveText("Hoy");
+  // Ningún día sin misión muestra «·»: solo un círculo vacío.
+  const marcas = await dias.evaluateAll((ls) => ls.map((l) => l.querySelectorAll("span")[1].textContent));
+  expect(marcas).toEqual(["", "", "", "", "", "", ""]);
+  // Al cumplirla, el de hoy lleva ✓ y el lector de pantalla lo dice.
+  await page.evaluate(() => { misiones.dias.push(hoy()); actualizarMision(); });
+  await expect(dias.last().locator("span").nth(1)).toHaveText("✓");
+  await expect(dias.last().locator(".sr-only")).toHaveText("hoy: misión cumplida");
+});
+
 test.describe("en el teléfono", () => {
   test.use({ viewport: { width: 390, height: 664 }, isMobile: true, hasTouch: true });
 

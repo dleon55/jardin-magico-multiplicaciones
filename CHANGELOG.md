@@ -9,6 +9,9 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Cabecera del menú y misión del día más claras** (#37):
+  - la cabecera es del niño: su nombre, sus estrellas y dos botones («Cambiar de jugador», «Mi mundo y mi personaje»); «Para las personas adultas» pasa al final del menú, como en la bienvenida;
+  - la semana de la misión dice qué es («Tu semana: cada ✓ es un día con la misión cumplida»), marca «Hoy» y deja vacíos los días sin misión (antes, un «·» que parecía un botón).
 - **Revisión de usabilidad** (#36), tras recorrer cada pantalla en tableta y teléfono:
   - «Ajustes» ya no tapa las cabeceras (estrellas de la partida, corazones y puntos del nivel);
   - el menú, por secciones: tablas, «Juegos y retos» y «Tu progreso»; los subtítulos, en la letra del juego;
