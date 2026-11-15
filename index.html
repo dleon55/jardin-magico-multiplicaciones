@@ -2217,29 +2217,88 @@
             }
         }
 
-        function playCorrectSound() {
-            setTimeout(() => playTone(523.25, "sine", 0.15), 0);   
-            setTimeout(() => playTone(659.25, "sine", 0.15), 100); 
-            setTimeout(() => playTone(783.99, "sine", 0.15), 200); 
-            setTimeout(() => playTone(1046.50, "sine", 0.3), 300);  
+        // --- SONIDOS POR CAPAS ---
+        //
+        // Antes, cada efecto era un pitido de un solo tono. Ahora cada nota
+        // tiene tres capas, como un instrumento: un ataque corto y brillante
+        // (triangular), el cuerpo (seno, con su envolvente) y un brillo una
+        // octava y una quinta arriba, muy suave. Todas las notas son de la
+        // escala pentatónica de do, así ningún efecto desafina con la música,
+        // y pasan por un mismo volumen («volumenEfectos») para sonar parejas.
+        // El fallo sube un poquito, como una pregunta: no suena a castigo.
+        const DO = { C4: 261.63, D4: 293.66, E4: 329.63, G4: 392, A4: 440, C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880, C6: 1046.5, D6: 1174.66, E6: 1318.51, G6: 1567.98, A6: 1760, C7: 2093 };
+        // [segundos desde el inicio, nota, duración, volumen relativo, nota final (deslizar)]
+        const SONIDOS = {
+            toque: [[0, "G6", 0.05, 0.35]],
+            acierto: [[0, "E5", 0.12, 0.8], [0.07, "G5", 0.12, 0.8], [0.14, "C6", 0.26, 0.9]],
+            fallo: [[0, "G4", 0.16, 0.55], [0.12, "A4", 0.22, 0.5]],
+            racha: [[0, "C6", 0.08, 0.6], [0.05, "E6", 0.08, 0.6], [0.1, "G6", 0.08, 0.6], [0.15, "C7", 0.3, 0.7]],
+            florecer: [[0, "C5", 0.14, 0.7], [0.08, "E5", 0.14, 0.7], [0.16, "G5", 0.14, 0.7], [0.24, "C6", 0.16, 0.75], [0.32, "E6", 0.5, 0.8]],
+            nivel: [[0, "C5", 0.16, 0.75], [0.18, "C5", 0.16, 0.75], [0.36, "G5", 0.2, 0.8], [0.6, "C6", 0.6, 0.9], [0.6, "E5", 0.6, 0.5], [0.6, "G5", 0.6, 0.5]],
+            vencer: [[0, "A6", 0.12, 0.5, "E5"], [0.06, "C6", 0.14, 0.55]],
+            jefe: [[0, "G4", 0.18, 0.7], [0.16, "C5", 0.18, 0.75], [0.32, "E5", 0.18, 0.8], [0.48, "G5", 0.6, 0.9], [0.48, "C6", 0.6, 0.55]],
+            comprar: [[0, "A5", 0.08, 0.6], [0.08, "E6", 0.3, 0.7]],
+            entrar: [[0, "C5", 0.14, 0.7], [0.12, "E5", 0.14, 0.7], [0.24, "G5", 0.3, 0.75]],
+        };
+        // Ajuste de cada efecto, medido sin conexión (RMS de los 100 ms más
+        // fuertes): los de logro quedan parejos (≈ 0,10), los grandes apenas
+        // más fuertes (≈ 0,12), el fallo más suave (≈ 0,07) y el toque, casi
+        // un susurro (≈ 0,03).
+        const AJUSTE_SONIDO = { toque: 1.5, acierto: 0.94, fallo: 1.43, racha: 1.19, florecer: 0.95, nivel: 0.73, vencer: 1.85, jefe: 0.81, comprar: 1.32, entrar: 1 };
+        const VOLUMEN_EFECTOS = 0.32;
+        let salidaEfectos = null;
+
+        /** Una nota de tres capas en `ctx`, que sale por `destino`, a los `t` s. */
+        function notaPorCapas(ctx, destino, t, frec, dur, vol, frecFinal) {
+            const capas = [
+                { tipo: "triangle", mult: 1, vol: vol * 0.55, dur: Math.min(0.06, dur) },   // ataque
+                { tipo: "sine", mult: 1, vol, dur },                                       // cuerpo
+                { tipo: "sine", mult: 3, vol: vol * 0.12, dur: dur * 0.7 },               // brillo (octava + quinta)
+            ];
+            for (const c of capas) {
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = c.tipo;
+                osc.frequency.setValueAtTime(frec * c.mult, t);
+                if (frecFinal) osc.frequency.exponentialRampToValueAtTime?.(frecFinal * c.mult, t + c.dur);
+                // Envolvente: arranca casi en silencio, sube en 8 ms y se apaga.
+                g.gain.setValueAtTime(0.0001, t);
+                g.gain.exponentialRampToValueAtTime(Math.max(0.0002, c.vol), t + 0.008);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + c.dur);
+                osc.connect(g);
+                g.connect(destino);
+                osc.start(t);
+                osc.stop(t + c.dur + 0.02);
+            }
         }
 
-        // Antes: dos tonos graves descendentes (220 -> 180 Hz), el sonido
-        // universal de "has perdido". Para un niño que está aprendiendo, el
-        // error tiene que sonar a "casi", no a derrota: un solo tono suave y
-        // breve. La información va en la voz, que dice la respuesta correcta.
-        function playIncorrectSound() {
-            playTone(392, "sine", 0.18, 0.08);
+        /** Pinta el sonido `nombre` en un contexto (también sin conexión, para medirlo). */
+        function tocarSonido(ctx, destino, nombre, inicio = ctx.currentTime) {
+            const ajuste = AJUSTE_SONIDO[nombre] ?? 1;
+            for (const [t, nota, dur, vol, final] of SONIDOS[nombre] || []) {
+                notaPorCapas(ctx, destino, inicio + t, DO[nota], dur, vol * ajuste, final ? DO[final] : null);
+            }
         }
 
-        function playVictorySound() {
-            setTimeout(() => playTone(523.25, "sine", 0.2), 0);
-            setTimeout(() => playTone(523.25, "sine", 0.2), 200);
-            setTimeout(() => playTone(523.25, "sine", 0.2), 400);
-            setTimeout(() => playTone(659.25, "sine", 0.3), 600);
-            setTimeout(() => playTone(783.99, "sine", 0.3), 800);
-            setTimeout(() => playTone(1046.50, "sine", 0.6), 1000);
+        /** Un efecto del juego. Respeta «Sonidos: No». */
+        function sonar(nombre) {
+            if (!ajustes.efectos || !SONIDOS[nombre]) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                if (!salidaEfectos) {
+                    salidaEfectos = audioCtx.createGain();
+                    salidaEfectos.gain.setValueAtTime(VOLUMEN_EFECTOS, audioCtx.currentTime);
+                    salidaEfectos.connect(audioCtx.destination);
+                }
+                tocarSonido(audioCtx, salidaEfectos, nombre);
+            } catch (e) { /* sin audio, el juego sigue */ }
         }
+
+        // Nombres de siempre, para no cambiar cada llamada: ahora son efectos por capas.
+        function playCorrectSound() { sonar("acierto"); }
+        function playIncorrectSound() { sonar("fallo"); }
+        function playVictorySound() { sonar("nivel"); }
 
         // --- SISTEMA DE SÍNTESIS DE VOZ ---
         //
@@ -2397,9 +2456,7 @@
         }
 
         function entrarAlJardin() {
-            playTone(440, "sine", 0.2);
-            setTimeout(() => playTone(554, "sine", 0.2), 150);
-            setTimeout(() => playTone(659, "sine", 0.4), 300);
+            sonar("entrar");
 
             mostrarPantalla("screen-selector");
 
@@ -3405,6 +3462,14 @@
             if (e.key === "Enter") { e.preventDefault(); seguirGuia(); }
         });
 
+        // Un toque suave en los botones del menú y la navegación. Los de
+        // responder ya tienen su sonido (acierto o fallo): ahí no.
+        const SIN_TOQUE = ".btn-option, .btn-tecla, #aventura-teclado button, #aventura-opciones button, .btn-guia-op, #pizarra-lanzar, #aventura-lanzar, .ajuste";
+        document.addEventListener("pointerdown", (e) => {
+            const b = e.target.closest?.("button, summary");
+            if (b && !b.disabled && !b.matches(SIN_TOQUE)) sonar("toque");
+        }, { passive: true });
+
         ponerLumis();
         despertarLumi();
         ["pointerdown", "keydown"].forEach((tipo) => document.addEventListener(tipo, despertarLumi, { passive: true }));
@@ -4364,7 +4429,7 @@
             compras.push(id);
             almacen.guardar("compras", JSON.stringify(compras));
             ganarEstrellas(-v.precio);
-            playVictorySound();
+            sonar("comprar");
             const aviso = `¡${v.emoji} ${v.nombre} llegó a tu jardín!`;
             document.getElementById("vivero-aviso").textContent = aviso;
             speak(`¡${articulo(v).replace(/^./, (c) => c.toUpperCase())} llegó a tu jardín!`);
@@ -5940,14 +6005,17 @@
                     selectedBtn.classList.add("scale-105");
                 }
 
-                playCorrectSound();
+                sonar(florecio ? "florecer" : "acierto");
                 triggerBurstEffect(selectedBtn || document.getElementById("escrito"));
                 // Florecer es lo que de verdad se aprendió: Lumi se sorprende.
                 lumi("lumi-partida", florecio ? "sorprendida" : "celebrando", 1500);
                 celebrar(selectedBtn || document.getElementById("escrito"), "celebra-pop");
                 rachaPartida++;
                 const fraseRacha = FRASES_RACHA[rachaPartida] ?? "";
-                if (fraseRacha) decirLumi(fraseRacha);
+                if (fraseRacha) {
+                    decirLumi(fraseRacha);
+                    setTimeout(() => sonar("racha"), 320);   // tras el del acierto, no encima
+                }
 
                 const felicitaciones = ["¡Espectacular! 🎉", "¡Excelente trabajo! 👏", "¡Correcto! ⭐", "¡Súper bien hecho! 🌟", "¡Tu jardín va creciendo! 🌱"];
                 const rFrase = florecio
@@ -6752,7 +6820,8 @@
             const pts = (e.jefe ? 20 : 10) + Math.round(10 * lejos) + (aventura.racha >= 3 ? 5 : 0);
             aventura.puntos += pts;
             flotarPuntos(e, pts);
-            playCorrectSound();
+            // Vencer suena a «pof»; el último golpe al jefe, a fanfarria.
+            sonar(e.jefe && e.vida <= 1 ? "jefe" : "vencer");
             if (e.jefe && e.vida > 1) {
                 e.vida--;
                 e.op = operacionAventura(aventura.mundo);
@@ -7283,6 +7352,7 @@
         // --- Fin del nivel ---
         function terminarNivel(gano) {
             aventura.terminado = true;
+            if (gano) setTimeout(() => sonar("nivel"), 450);   // tras el del último enemigo
             detenerAventura();
             // El nivel acabó: fuera el teclado y lo que se iba diciendo, que ya
             // no sirven y distraían de «Siguiente nivel».

@@ -55,6 +55,24 @@ Los adornos quedan a los lados, alrededor de la tarjeta. Las nubes se
 mueven, las estrellas titilan y las burbujas suben; con «Menos movimiento»,
 todo queda quieto.
 
+**Sonidos por capas.** Cada momento tiene su efecto:
+- entrar al jardín;
+- acertar;
+- equivocarse (suave, y sube un poquito, como una pregunta: no suena a
+  castigo);
+- una racha;
+- florecer;
+- vencer a un enemigo;
+- el último golpe al jefe;
+- superar un nivel;
+- comprar en el vivero;
+- un toque suave en los botones del menú (los de responder no lo llevan).
+
+Cada nota se arma con tres capas: un ataque breve, el cuerpo y un brillo. Todas
+son de la escala pentatónica de do, como la música, así que nunca desafinan
+con ella. Están igualadas de volumen, medido sin conexión, y se apagan en
+Ajustes («Sonidos»).
+
 **Lumi**, una semilla mágica que acaba de brotar, acompaña al niño. Es la
 mascota del juego, un dibujo original, y cambia de cara según lo que pasa:
 - en la bienvenida saluda, y se duerme si nadie toca nada en 20 s;

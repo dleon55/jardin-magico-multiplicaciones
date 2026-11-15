@@ -108,14 +108,26 @@ test("voz y sonidos se apagan por separado", async ({ page }) => {
   expect((await page.evaluate(() => window.__dicho)).at(-1).texto).toBe("hola");
 });
 
-test("el sonido de error es un tono neutro, no el descenso grave de antes", async ({ page }) => {
+test("el sonido de error sube un poquito, como una pregunta: no es el descenso grave de antes", async ({ page }) => {
   await instalarDobles(page, [{ lang: "es-MX" }]);
   await entrarATabla(page, 7);
-  // La melodía de bienvenida termina 300 ms después de entrar (último tono,
-  // 659 Hz); si no se espera, sus tonos se cuelan en la medición.
-  await page.waitForFunction(() => window.__tonos.includes(659));
+  // La melodía de entrada (do, mi, sol) termina en mi5 = 659,25 Hz; si no se
+  // espera, sus tonos se cuelan en la medición.
+  await page.waitForFunction(() => window.__tonos.includes(783.99));
   await page.evaluate(() => { window.__tonos = []; });
   await responder(page, false);
   const tonos = await page.evaluate(() => window.__tonos);
-  expect(tonos).toEqual([392]);
+  // Cada nota suena en capas (ataque, cuerpo y brillo): sol4 y luego la4.
+  expect(tonos.filter((f) => f < 1000)).toEqual([392, 392, 440, 440]);
+  expect(Math.min(...tonos)).toBe(392);   // nada más grave: no suena a castigo
+});
+
+test("cada efecto es de la escala pentatónica de do, como la música", async ({ page }) => {
+  await page.goto("./");
+  const fuera = await page.evaluate(() => {
+    const escala = new Set(Object.values(DO).map((f) => f.toFixed(2)));
+    return Object.entries(SONIDOS).flatMap(([n, notas]) => notas.flatMap(([, nota, , , final]) =>
+      [nota, final].filter(Boolean).filter((x) => !DO[x] || !escala.has(DO[x].toFixed(2))).map((x) => `${n}:${x}`)));
+  });
+  expect(fuera).toEqual([]);
 });
