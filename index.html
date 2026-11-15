@@ -403,20 +403,23 @@
 
         <!-- ================= PANTALLA 2: SELECCIÓN DE TABLA ================= -->
         <div id="screen-selector" class="hidden space-y-6">
-            <!-- Encabezado personalizado -->
-            <div class="flex flex-col md:flex-row justify-between items-center bg-sky-50 rounded-2xl p-4 gap-2 border border-sky-100">
-                <div class="text-center md:text-left">
-                    <h2 class="text-xl font-bold text-sky-900"><span id="display-name" class="bubble-font">Tu jardín</span> <span id="display-personaje" aria-hidden="true">🧑‍🌾</span></h2>
-                    <p class="text-sm text-gray-600">¡Haz crecer tu jardín ganando estrellas doradas!</p>
+            <!-- Encabezado: quién juega y sus estrellas, y lo que el niño puede
+                 cambiar. Lo de las personas adultas va aparte, al final del menú:
+                 antes estaba mezclado aquí, en una columna de tres enlaces. -->
+            <div id="cabecera-menu" class="bg-sky-50 rounded-2xl p-4 border border-sky-100 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold text-sky-900"><span id="display-name" class="bubble-font">Tu jardín</span> <span id="display-personaje" aria-hidden="true">🧑‍🌾</span></h2>
+                        <p class="text-sm text-gray-600">¡Haz crecer tu jardín ganando estrellas doradas!</p>
+                    </div>
+                    <div class="flex items-center gap-2 bg-yellow-100 text-yellow-900 px-4 py-2 rounded-full font-bold whitespace-nowrap">
+                        <span><span aria-hidden="true">⭐</span> Tus estrellas:</span>
+                        <span id="global-stars" class="bubble-font">0</span>
+                    </div>
                 </div>
-                <div class="flex flex-col items-center md:items-end gap-1 text-sm">
-                    <button type="button" onclick="cambiarDeJugador()" class="font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">👥</span> Cambiar de jugador</button>
-                    <button type="button" onclick="mostrarMiMundo()" class="font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">🎨</span> Mi mundo y mi personaje</button>
-                    <button type="button" onclick="mostrarAdultos()" class="font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">👪</span> Para las personas adultas</button>
-                </div>
-                <div class="flex items-center gap-2 bg-yellow-100 text-yellow-900 px-4 py-2 rounded-full font-bold">
-                    <span><span aria-hidden="true">⭐</span> Tus estrellas:</span>
-                    <span id="global-stars" class="bubble-font">0</span>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="cambiarDeJugador()" class="chip-cabecera bg-white hover:bg-sky-100 border-2 border-sky-200 rounded-full px-3 py-1 text-sm font-bold text-sky-900 shadow-sm"><span aria-hidden="true">👥</span> Cambiar de jugador</button>
+                    <button type="button" onclick="mostrarMiMundo()" class="chip-cabecera bg-white hover:bg-sky-100 border-2 border-sky-200 rounded-full px-3 py-1 text-sm font-bold text-sky-900 shadow-sm"><span aria-hidden="true">🎨</span> Mi mundo y mi personaje</button>
                 </div>
             </div>
 
@@ -432,6 +435,7 @@
                      class="w-full h-3 bg-white border border-sky-200 rounded-full overflow-hidden">
                     <div id="mision-barra" class="h-full bg-gradient-to-r from-sky-400 to-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
+                <p id="mision-leyenda" class="text-xs text-gray-700">Tu semana: cada <span aria-hidden="true" class="inline-flex w-4 h-4 rounded-full bg-emerald-200 text-emerald-900 items-center justify-center font-bold">✓</span><span class="sr-only">marca</span> es un día con la misión cumplida.</p>
                 <ol id="mision-semana" class="flex justify-between gap-1 text-xs" aria-label="Misiones de los últimos 7 días"></ol>
             </section>
 
@@ -518,6 +522,10 @@
                     <span aria-hidden="true">🗺️</span> Mi mapa de tablas
                 </button>
             </div>
+            <!-- Para las personas adultas: aparte, al final, como en la bienvenida. -->
+            <p class="text-center pt-2 border-t border-dashed border-gray-200">
+                <button type="button" id="btn-adultos-menu" onclick="mostrarAdultos()" class="mt-3 text-sm font-bold text-gray-700 underline hover:text-green-800"><span aria-hidden="true">👪</span> Para las personas adultas</button>
+            </p>
         </div>
 
 
@@ -3343,8 +3351,11 @@
                 li.dataset.cumplida = hecho ? "si" : "no";
                 li.className = "flex flex-col items-center gap-0.5 flex-1";
                 const quien = k === 0 ? "hoy" : nombreLargo.format(new Date(Date.parse(d)));
-                li.innerHTML = `<span aria-hidden="true" class="font-bold text-gray-700">${nombreDia.format(new Date(Date.parse(d)))}</span>` +
-                    `<span aria-hidden="true" class="w-7 h-7 rounded-full flex items-center justify-center ${hecho ? "bg-emerald-200 text-emerald-900" : "bg-white border border-sky-200 text-gray-500"} ${k === 0 ? "ring-2 ring-sky-500" : ""}">${hecho ? "✓" : "·"}</span>` +
+                // Hoy se llama «Hoy» (una letra sola no decía cuál era) y los días
+                // sin misión quedan vacíos: el «·» de antes parecía un botón.
+                const letra = k === 0 ? "Hoy" : nombreDia.format(new Date(Date.parse(d)));
+                li.innerHTML = `<span aria-hidden="true" class="font-bold ${k === 0 ? "text-sky-800" : "text-gray-700"}">${letra}</span>` +
+                    `<span aria-hidden="true" class="w-7 h-7 rounded-full flex items-center justify-center font-bold ${hecho ? "bg-emerald-200 text-emerald-900" : "bg-white border border-sky-200"} ${k === 0 ? "ring-2 ring-sky-500" : ""}">${hecho ? "✓" : ""}</span>` +
                     `<span class="sr-only">${quien}: ${hecho ? "misión cumplida" : "sin misión"}</span>`;
                 semana.appendChild(li);
             }
