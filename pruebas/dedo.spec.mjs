@@ -40,6 +40,7 @@ const muestras = (page) => page.evaluate((m) => {
 /** Escribe un número en la pizarra con el ratón, cifra por cifra. */
 async function escribir(page, numero, lienzo = "#pizarra") {
   const m = await muestras(page);
+  await page.locator(lienzo).scrollIntoViewIfNeeded();   // el ratón solo llega a lo que se ve
   const caja = await page.locator(lienzo).boundingBox();
   const escala = caja.height / 200;          // el lienzo mide 480 × 200
   for (const [i, c] of [...String(numero)].entries()) {

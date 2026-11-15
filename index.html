@@ -100,6 +100,30 @@
         html:not(.calma) .enemigo.esperando { animation: esperar 1.6s ease-in-out infinite; }
         .arena { position: relative; overflow: hidden; height: 20rem; border-radius: 1.5rem; touch-action: manipulation; user-select: none; }
         @media (min-width: 768px) { .arena { height: 24rem; } }
+        /* En el teléfono, la arena y el teclado tienen que caber juntos: si
+           hay que desplazarse para teclear, los enemigos avanzan sin verse. */
+        @media (max-width: 640px) {
+            body { padding: 0.5rem; }
+            main:has(#screen-aventura-juego:not(.hidden)) { padding-top: 3.25rem; }
+            #screen-aventura-juego > * + * { margin-top: 0.5rem; }
+            /* Cabecera en dos filas: «Mapa», corazones y puntos arriba; el nivel debajo. */
+            #nivel-cabecera { display: grid; grid-template-columns: 1fr auto; row-gap: 0.15rem; padding: 0.35rem 0.6rem; }
+            #nivel-cabecera > h2 { grid-column: 1 / -1; grid-row: 2; }
+            /* La operación ya va marcada en rojo en la arena: el texto queda para el lector de pantalla. */
+            #aventura-objetivo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+            #aventura-mensaje:empty { display: none; }
+            #modos-aventura { font-size: 0.8rem; }
+            #modos-aventura .modo-aventura { padding: 0.2rem 0.6rem; }
+            .arena { height: 12rem; }
+            .heroe { font-size: 2.6rem; bottom: 0.4rem; }
+            .enemigo .cara { font-size: 2.1rem; }
+            .enemigo.jefe .cara { font-size: 3.4rem; }
+            .decor { font-size: 1.5rem; }
+            #nivel-titulo { font-size: 1rem; line-height: 1.3; }
+            #aventura-teclado button { padding-top: 0.35rem; padding-bottom: 0.35rem; }
+            #aventura-escrito { min-height: 3rem; font-size: 1.75rem; }
+            #aventura-lanzar { font-size: 0.95rem; }
+        }
         .arena[data-mundo="0"] { background: linear-gradient(#bae6fd 0%, #e0f2fe 55%, #86efac 55%, #4ade80 100%); }
         .arena[data-mundo="1"] { background: linear-gradient(#a7f3d0 0%, #d1fae5 50%, #166534 50%, #14532d 100%); }
         .arena[data-mundo="2"] { background: linear-gradient(#c4b5fd 0%, #ede9fe 55%, #6d28d9 55%, #4c1d95 100%); }
@@ -173,6 +197,11 @@
         /* Del color del texto: clara en los botones de color, oscura en los blancos. */
         .onda { position: absolute; border-radius: 9999px; background: currentColor; pointer-events: none;
             animation: onda 0.5s ease-out forwards; }
+
+        /* Los subtítulos de los botones, en la letra del juego (antes, la del sistema). */
+        .subtitulo { font-family: 'Quicksand', system-ui, sans-serif; }
+        #girasol.girasol-chico { width: 5.5rem; height: 5.5rem; }
+        #girasol.girasol-chico #question-text { font-size: 1.5rem; }
 
         .bubble-font {
             font-family: 'Fredoka One', 'Quicksand', system-ui, sans-serif;
@@ -295,7 +324,7 @@
             class="fixed inset-0 pointer-events-none z-50"></canvas>
 
     <!-- Contenedor Principal del Juego -->
-    <main class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl border-4 border-sky-200 shadow-2xl overflow-hidden relative p-6 md:p-8">
+    <main class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl border-4 border-sky-200 shadow-2xl overflow-hidden relative px-4 pb-6 pt-14 md:px-8 md:pb-8">
 
         <!-- ================= AJUSTES (en todas las pantallas) ================= -->
         <details id="ajustes" class="absolute top-3 right-3 z-40 text-sm">
@@ -363,7 +392,7 @@
 
                 <button onclick="saveNameAndGo()" 
                         class="w-full max-w-xs mx-auto block bubble-font bg-gradient-to-r from-green-700 to-teal-700 hover:from-green-800 hover:to-teal-800 text-white text-xl px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 transition-all duration-200 animate-pulse-soft">
-                    ¡Comenzar Aventura! 🚀
+                    ¡Comenzar a jugar! <span aria-hidden="true">🌱</span>
                 </button>
             </div>
             <button type="button" onclick="mostrarAdultos()" class="text-sm font-bold text-gray-700 underline hover:text-green-800">
@@ -433,12 +462,13 @@
                 <!-- Los botones se insertarán dinámicamente aquí -->
             </div>
 
+            <h3 class="seccion-menu bubble-font text-xl text-indigo-800 text-center pt-2">Juegos y retos</h3>
             <!-- La Aventura: un animalito con su varita contra enemigos que traen
                  operaciones, mundo tras mundo. -->
             <div class="max-w-lg mx-auto">
                 <button type="button" onclick="mostrarAventura()" class="w-full bubble-font bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 hover:from-indigo-700 hover:via-violet-700 hover:to-fuchsia-700 text-white py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 text-xl flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🐾</span> La Aventura</span>
-                    <span id="aventura-menu-resumen" class="text-xs font-sans font-semibold">Vence a los enemigos con tu varita mágica</span>
+                    <span id="aventura-menu-resumen" class="text-xs subtitulo font-semibold">Vence a los enemigos con tu varita mágica</span>
                 </button>
             </div>
 
@@ -446,8 +476,8 @@
             <div class="max-w-lg mx-auto pt-2">
                 <button onclick="startTable('mix')" 
                         class="w-full bubble-font bg-gradient-to-r from-violet-300 via-pink-300 to-yellow-300 text-gray-900 py-4 rounded-2xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 text-lg flex flex-col items-center justify-center gap-1">
-                    <span class="flex items-center gap-2">🌈 Desafío del Arcoíris (Tablas Mezcladas)</span>
-                    <span class="text-xs opacity-90 font-sans font-semibold">Todas las tablas del 2 al 9, mezcladas</span>
+                    <span class="flex items-center gap-2">🌈 Desafío del Arcoíris</span>
+                    <span class="text-xs opacity-90 subtitulo font-semibold">Todas las tablas del 2 al 9, mezcladas</span>
                 </button>
             </div>
 
@@ -456,22 +486,23 @@
             <div class="grid grid-cols-2 gap-3 max-w-lg mx-auto">
                 <button type="button" onclick="startTable('div')" class="bubble-font bg-gradient-to-r from-sky-200 to-cyan-200 hover:from-sky-300 hover:to-cyan-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">➗</span> Dividir</span>
-                    <span class="text-xs font-sans font-semibold">Repartir en partes iguales</span>
+                    <span class="text-xs subtitulo font-semibold">Repartir en partes iguales</span>
                 </button>
                 <button type="button" onclick="startTable('problemas')" class="bubble-font bg-gradient-to-r from-lime-200 to-emerald-200 hover:from-lime-300 hover:to-emerald-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">📖</span> Problemas cortos</span>
-                    <span class="text-xs font-sans font-semibold">¿Se multiplica o se divide?</span>
+                    <span class="text-xs subtitulo font-semibold">¿Se multiplica o se divide?</span>
                 </button>
                 <button type="button" onclick="startTable('logica')" class="bubble-font bg-gradient-to-r from-violet-200 to-indigo-200 hover:from-violet-300 hover:to-indigo-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🧩</span> Retos de lógica</span>
-                    <span class="text-xs font-sans font-semibold">Pensar con las tablas</span>
+                    <span class="text-xs subtitulo font-semibold">Pensar con las tablas</span>
                 </button>
                 <button type="button" onclick="mostrarFracciones()" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🍕</span> Fracciones</span>
-                    <span class="text-xs font-sans font-semibold">De un número, iguales, comparar y sumar</span>
+                    <span class="text-xs subtitulo font-semibold">De un número, iguales, comparar y sumar</span>
                 </button>
             </div>
 
+            <h3 class="seccion-menu bubble-font text-xl text-green-800 text-center pt-2">Tu progreso</h3>
             <div class="max-w-lg mx-auto">
                 <button type="button" onclick="startTable('falta')" class="btn-falta hidden w-full bubble-font bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3">
                     <span aria-hidden="true">🎯</span> Practicar lo que me falta (<span class="cuenta-falta">0</span>)
@@ -481,7 +512,7 @@
                 </button>
                 <button onclick="mostrarVivero()" class="w-full bubble-font bg-gradient-to-r from-yellow-100 to-amber-100 hover:from-yellow-200 hover:to-amber-200 border-2 border-amber-400 text-amber-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3 flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🛍️</span> Vivero mágico</span>
-                    <span id="vivero-antojo" class="text-xs font-sans font-semibold"></span>
+                    <span id="vivero-antojo" class="text-xs subtitulo font-semibold"></span>
                 </button>
                 <button onclick="mostrarMapa()" class="w-full bubble-font bg-white hover:bg-green-50 border-2 border-green-300 text-green-800 py-3 rounded-2xl shadow-sm transition text-lg">
                     <span aria-hidden="true">🗺️</span> Mi mapa de tablas
@@ -507,7 +538,9 @@
             </div>
 
             <!-- Cómo funciona el repaso: equivocarse no castiga, hace volver -->
-            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-4 py-2 text-xs md:text-sm text-center font-semibold">
+            <!-- Solo hasta la primera respuesta: después ya se sabe, y en cada
+                 pregunta ocupaba sitio y empujaba las opciones hacia abajo. -->
+            <div id="aviso-repaso" class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-4 py-2 text-xs md:text-sm text-center font-semibold">
                 🌱 Equivocarse no quita nada: la que falles <span class="font-bold">vuelve a aparecer</span> un poquito después, para que te la aprendas. ¡Usa la ayuda mágica si tienes dudas!
             </div>
 
@@ -527,7 +560,7 @@
 
             <!-- Área de Pregunta (El Girasol Gigante) -->
             <div class="flex flex-col items-center justify-center py-2 relative">
-                <div class="relative w-40 h-40 md:w-48 md:h-48 flex items-center justify-center animate-sway">
+                <div id="girasol" class="relative w-40 h-40 md:w-48 md:h-48 flex items-center justify-center animate-sway">
                     <svg aria-hidden="true" class="absolute inset-0 w-full h-full text-yellow-400" fill="currentColor" viewBox="0 0 100 100">
                         <path d="M50 15 C45 2 55 2 50 15 Z" />
                         <path d="M50 85 C45 98 55 98 50 85 Z" />
@@ -586,10 +619,13 @@
                 </div>
             </div>
 
+            <!-- Qué pasó con la respuesta: justo debajo de donde se respondió. -->
+            <div id="game-feedback" role="status" aria-live="polite" class="min-h-8 text-center text-xl font-bold transition-all duration-300"></div>
+
             <!-- Aparece tras responder: permite adelantar la espera -->
             <div class="text-center">
                 <button id="btn-siguiente" onclick="continuar()" class="hidden bubble-font bg-green-700 hover:bg-green-800 disabled:opacity-50 text-white text-lg px-8 py-3 rounded-2xl shadow-md transition">
-                    Siguiente <span aria-hidden="true">→</span> <span class="solo-teclado text-sm font-sans">(Enter)</span>
+                    Siguiente <span aria-hidden="true">→</span> <span class="solo-teclado text-sm subtitulo">(Enter)</span>
                 </button>
             </div>
 
@@ -613,8 +649,6 @@
                 </div>
             </div>
 
-            <!-- Estado de retroalimentación suave -->
-            <div id="game-feedback" role="status" aria-live="polite" class="min-h-8 text-center text-xl font-bold transition-all duration-300"></div>
 
             <!-- El jardín en la base del juego -->
             <div class="border-t-4 border-dashed border-green-200 pt-4">
@@ -757,7 +791,7 @@
             </div>
             <div class="flex flex-wrap justify-center gap-3">
                 <button id="descubrir-otra" type="button" onclick="otraFila()" class="bubble-font bg-indigo-100 hover:bg-indigo-200 border-2 border-indigo-300 text-indigo-900 px-5 py-3 rounded-2xl shadow-sm transition text-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span aria-hidden="true">➕</span> Otra fila <span class="solo-teclado text-xs font-sans">(Espacio)</span>
+                    <span aria-hidden="true">➕</span> Otra fila <span class="solo-teclado text-xs subtitulo">(Espacio)</span>
                 </button>
             </div>
             <section id="descubrir-final" class="hidden bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 space-y-2 max-w-lg mx-auto" aria-labelledby="descubrir-final-titulo">
@@ -806,7 +840,7 @@
 
         <!-- ================= PANTALLA 13: LA AVENTURA (NIVEL) ================= -->
         <div id="screen-aventura-juego" class="hidden space-y-3">
-            <div class="flex flex-wrap justify-between items-center gap-2 bg-gray-50 rounded-2xl p-2 border border-gray-100">
+            <div id="nivel-cabecera" class="flex flex-wrap justify-between items-center gap-2 bg-gray-50 rounded-2xl p-2 border border-gray-100">
                 <button type="button" onclick="salirDeNivel()" class="text-sm font-bold text-gray-600 hover:text-green-800 transition flex items-center gap-1">
                     <span aria-hidden="true">⬅</span> Mapa <span class="solo-teclado text-xs font-normal">(Esc)</span>
                 </button>
@@ -821,7 +855,7 @@
                 <div id="heroe" class="heroe" aria-hidden="true"><span id="heroe-cara">🐱</span><span class="varita">✨</span></div>
                 <div id="arena-fin" class="hidden absolute inset-0 bg-white/90 flex flex-col items-center justify-center gap-3 text-center p-4 z-10">
                     <p id="fin-titulo" class="bubble-font text-3xl text-indigo-900"></p>
-                    <p id="fin-estrellas" class="text-3xl"></p>
+                    <p id="fin-estrellas" class="text-4xl text-amber-600 tracking-widest"></p>
                     <p id="fin-texto" class="font-bold text-gray-800"></p>
                     <div class="flex flex-wrap justify-center gap-2">
                         <button type="button" id="btn-fin-siguiente" onclick="siguienteNivel()" class="bubble-font bg-green-700 hover:bg-green-800 text-white text-lg px-5 py-2 rounded-2xl shadow-md">Siguiente nivel <span aria-hidden="true">→</span></button>
@@ -832,7 +866,7 @@
             </div>
             <p id="aventura-objetivo" class="text-center font-bold text-indigo-900 min-h-6" aria-live="polite"></p>
             <p id="aventura-mensaje" role="status" class="text-center text-sm font-bold text-amber-900 min-h-5"></p>
-            <div class="max-w-sm mx-auto space-y-2">
+            <div id="aventura-entrada" class="max-w-sm mx-auto space-y-2">
                 <div id="modos-aventura" role="group" aria-label="Cómo respondo" class="flex justify-center gap-1 text-sm font-bold">
                     <button type="button" data-modo="teclear" onclick="cambiarModoAventura('teclear')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">🔢</span> Teclear</button>
                     <button type="button" data-modo="elegir" onclick="cambiarModoAventura('elegir')" class="modo-aventura px-3 py-1 rounded-full border-2 border-indigo-200 text-indigo-900"><span aria-hidden="true">🔘</span> Elegir</button>
@@ -869,27 +903,27 @@
             <div id="clases-fracciones" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
                 <button type="button" data-clase="mezcla" onclick="practicarFracciones('mezcla')" class="sm:col-span-2 bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-3 rounded-2xl shadow-md transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🎲</span> Todo mezclado</span>
-                    <span class="text-xs font-sans font-semibold">Un poco de cada clase</span>
+                    <span class="text-xs subtitulo font-semibold">Un poco de cada clase</span>
                 </button>
                 <button type="button" data-clase="de" onclick="practicarFracciones('de')" class="bubble-font bg-white hover:bg-amber-50 border-2 border-amber-300 text-gray-900 py-3 px-3 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1">
                     <span>De un número</span>
-                    <span class="text-xs font-sans font-semibold text-gray-700">¿Cuánto es 3/4 de 24?</span>
+                    <span class="text-xs subtitulo font-semibold text-gray-700">¿Cuánto es 3/4 de 24?</span>
                 </button>
                 <button type="button" data-clase="equivalente" onclick="practicarFracciones('equivalente')" class="bubble-font bg-white hover:bg-amber-50 border-2 border-amber-300 text-gray-900 py-3 px-3 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1">
                     <span>Equivalentes</span>
-                    <span class="text-xs font-sans font-semibold text-gray-700">¿Cuál es igual a 1/2?</span>
+                    <span class="text-xs subtitulo font-semibold text-gray-700">¿Cuál es igual a 1/2?</span>
                 </button>
                 <button type="button" data-clase="comparar" onclick="practicarFracciones('comparar')" class="bubble-font bg-white hover:bg-amber-50 border-2 border-amber-300 text-gray-900 py-3 px-3 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1">
                     <span>Comparar</span>
-                    <span class="text-xs font-sans font-semibold text-gray-700">¿Cuál es la más grande?</span>
+                    <span class="text-xs subtitulo font-semibold text-gray-700">¿Cuál es la más grande?</span>
                 </button>
                 <button type="button" data-clase="sumar" onclick="practicarFracciones('sumar')" class="bubble-font bg-white hover:bg-amber-50 border-2 border-amber-300 text-gray-900 py-3 px-3 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1">
                     <span>Sumar y restar</span>
-                    <span class="text-xs font-sans font-semibold text-gray-700">Mismo número de abajo: 2/7 + 3/7</span>
+                    <span class="text-xs subtitulo font-semibold text-gray-700">Mismo número de abajo: 2/7 + 3/7</span>
                 </button>
                 <button type="button" data-clase="sumarDistinto" onclick="practicarFracciones('sumarDistinto')" class="sm:col-span-2 bubble-font bg-white hover:bg-amber-50 border-2 border-amber-300 text-gray-900 py-3 px-3 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1">
                     <span>Sumar con distinto número de abajo</span>
-                    <span class="text-xs font-sans font-semibold text-gray-700">1/2 + 1/4 y 1/2 + 1/3</span>
+                    <span class="text-xs subtitulo font-semibold text-gray-700">1/2 + 1/4 y 1/2 + 1/3</span>
                 </button>
             </div>
         </div>
@@ -1549,6 +1583,7 @@
         // --- SISTEMA DE INICIO DE PARTIDA ---
         function startTable(table) {
             initAudio();
+            document.getElementById("aviso-repaso").classList.remove("hidden");
             currentTable = table;
             score = 0;
             targetScore = 10; // Meta fija: equivocarse ya no la mueve
@@ -2293,6 +2328,7 @@
             pantallaActual = id;
             aplicarMundo();
             entrarPantalla(document.getElementById(id));
+            window.scrollTo(0, 0);
             const destino = document.querySelector(`#${id} [data-foco]`);
             if (destino) {
                 destino.setAttribute("tabindex", "-1");
@@ -2994,7 +3030,7 @@
                 const titulo = document.createElement("h3");
                 titulo.id = `bancal-${a}`;
                 titulo.className = "text-sm font-bold text-green-900 mb-1 flex items-center justify-between gap-2";
-                titulo.innerHTML = `<button type="button" class="hover:underline">Bancal del ${a}</button>` +
+                titulo.innerHTML = `<button type="button" class="hover:underline">Tabla del ${a}</button>` +
                     `<button type="button" class="descubrir-bancal text-xs font-semibold text-indigo-800 hover:underline"><span aria-hidden="true">🔍</span> Ver la tabla del ${a}</button>`;
                 const [practicar, ver] = titulo.querySelectorAll("button");
                 practicar.onclick = () => startTable(a);
@@ -4030,6 +4066,9 @@
             // «3/4 de 24» tampoco cabe en el girasol.
             const largo = ["problema", "logica", "fraccion"].includes(pregunta.tipo);
             problema.classList.toggle("hidden", !largo);
+            // Con la pregunta escrita arriba, el girasol solo dice «¿?»: pequeño,
+            // para que las opciones queden a la vista sin desplazarse.
+            document.getElementById("girasol").classList.toggle("girasol-chico", largo);
             if (largo) {
                 problema.innerText = pregunta.texto;
                 const visible = document.createElement("span");
@@ -4288,7 +4327,7 @@
             pintarDescubrir();
             const total = d.tabla * d.filas;
             callarVoz();
-            speak(d.filas === 1 ? `Una fila de ${d.tabla}: ${d.tabla}.` : `${d.filas} filas de ${d.tabla}: ${total}.`);
+            speak(d.filas === 1 ? `Una vez ${d.tabla}: ${d.tabla}.` : `${d.filas} veces ${d.tabla}: ${total}.`);
             if (d.filas === MULTIPLICADORES) {
                 const final = document.getElementById("descubrir-final");
                 final.classList.remove("hidden");
@@ -4317,7 +4356,9 @@
 
             document.getElementById("descubrir-cuenta").textContent = filas === 0
                 ? ""
-                : `${filas} ${filas === 1 ? "fila" : "filas"} de ${n}: ${n} × ${filas} = ${n * filas}`;
+                // «veces» y no «filas de»: la ayuda dibuja 4 × 3 como 4 filas
+                // de 3, y aquí son 3 filas de 4. Las dos dan lo mismo.
+                : `${n} × ${filas} = ${n * filas}: ${filas === 1 ? "una vez" : `${filas} veces`} ${n}`;
             const saltos = document.getElementById("descubrir-saltos");
             saltos.replaceChildren(...Array.from({ length: filas }, (_, i) => {
                 const li = document.createElement("li");
@@ -4653,6 +4694,7 @@
 
             buttons.forEach(btn => btn.disabled = true);
             document.querySelectorAll("#escritura .btn-tecla").forEach((t) => { t.disabled = true; });
+            document.getElementById("aviso-repaso").classList.add("hidden");
             // La pregunta ya está contestada: si la voz aún la estaba leyendo,
             // seguir leyéndola solo retrasa lo importante, que es el resultado.
             callarVoz();
@@ -5129,6 +5171,7 @@
             arena.dataset.mundo = String(mi);
             arena.querySelectorAll(".enemigo, .rayo, .puntos-flotan").forEach((e) => e.remove());
             document.getElementById("arena-fin").classList.add("hidden");
+            document.getElementById("aventura-entrada").classList.remove("hidden");
             pintarDecor(mi);
             document.getElementById("heroe-cara").textContent = aventuraGuardada.heroe;
             document.getElementById("nivel-titulo").textContent = `${AVENTURA_MUNDOS[mi].nombre} · ${nombreNivel(n)}${c.sinPrisa ? " · 🐢 Sin prisa" : ""}`;
@@ -5820,6 +5863,11 @@
         function terminarNivel(gano) {
             aventura.terminado = true;
             detenerAventura();
+            // El nivel acabó: fuera el teclado y lo que se iba diciendo, que ya
+            // no sirven y distraían de «Siguiente nivel».
+            document.getElementById("aventura-entrada").classList.add("hidden");
+            mensajeAventura("");
+            document.getElementById("aventura-objetivo").textContent = "";
             const { mundo: mi, nivel: n } = aventura;
             const clave = claveNivel(mi, n);
             const est = gano ? Math.max(1, aventura.corazones) : 0;

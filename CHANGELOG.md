@@ -9,6 +9,18 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Revisión de usabilidad** (#36), tras recorrer cada pantalla en tableta y teléfono:
+  - «Ajustes» ya no tapa las cabeceras (estrellas de la partida, corazones y puntos del nivel);
+  - el menú, por secciones: tablas, «Juegos y retos» y «Tu progreso»; los subtítulos, en la letra del juego;
+  - la respuesta se dice justo debajo de las opciones, no bajo la ayuda;
+  - el aviso de que equivocarse no quita nada sale solo al empezar la partida;
+  - en fracciones, retos y problemas, el girasol se hace pequeño y las opciones suben;
+  - «Descubre la tabla» dice «4 × 3 = 12: 3 veces 4»: antes decía «3 filas de 4: 4 × 3», al revés que la ayuda;
+  - en el teléfono, un nivel de la Aventura cabe entero (antes había que desplazarse para teclear mientras los enemigos avanzaban);
+  - al terminar un nivel se quita el teclado, y las estrellas son doradas;
+  - cada pantalla empieza arriba;
+  - «¡Comenzar a jugar!» en lugar de «¡Comenzar Aventura!», que se confundía con La Aventura;
+  - «Tabla del 6» en lugar de «Bancal del 6» en el jardín.
 - **🐢 Sin prisa en la Aventura** (#35): los enemigos van a la mitad de
   velocidad y se paran en fila antes de llegar, esperando la respuesta; no
   se pierden corazones por tardar. Avance y estrellas cuentan igual, sin

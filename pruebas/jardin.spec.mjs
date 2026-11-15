@@ -121,7 +121,7 @@ test.describe("Mi jardín", () => {
       await expect(page.locator("#screen-selector")).toBeVisible();
       await page.click("#screen-selector >> text=Mi jardín");
     }
-    await page.click("text=Bancal del 6");
+    await page.click('#jardin-bancales button:text-is("Tabla del 6")');
     await expect(page.locator("#screen-game")).toBeVisible();
     expect(await page.evaluate(() => currentTable)).toBe(6);
   });
