@@ -19,6 +19,13 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   dos enemigos más. Nunca hay dos enemigos en pantalla con la misma
   respuesta.
 
+  **🐢 Sin prisa** (en el mapa, por jugador): para quien se frustra o
+  necesita pensar. Los enemigos van a la mitad de velocidad, salen de dos en
+  dos como mucho y se paran antes de llegar al héroe, en fila, esperando la
+  respuesta: no se pierden corazones por tardar. El avance y las estrellas
+  cuentan igual; solo no hay premio por responder rápido, así que los récords
+  se hacen con prisa. La vista para adultos dice si juega sin prisa.
+
   **✍️ Con el dedo:** se escribe la respuesta en un recuadro y, al levantar
   el dedo un momento, el juego reconoce las cifras y las muestra en grande.
   Solo se lanza al tocar «✨ ¡Lanzar!», así que una mala lectura nunca cuesta
@@ -389,7 +396,7 @@ mano.
 Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, pistas desde lo que ya se sabe, tablas del 1 al 9, estados del mapa y lo
-guardado por la versión anterior), la aventura (retos por mundo, vencer, corazones, operación que vuelve, jefe,
+guardado por la versión anterior), la aventura (retos por mundo, vencer, corazones, operación que vuelve, jefe, sin prisa (velocidad, esperan en fila, sin perder corazones, sin premio por rapidez, lo que se recuerda),
 niveles que se abren, elegir, escribir con el dedo y cuánto acierta el reconocedor, compartir la imagen, lo guardado), escribir con el dedo
 también en el juego (leer, «Listo», borrar, tope de dos cifras, lo que se recuerda), aprender la letra (cuánto mejora
 tras una corrección, corregir, cancelar, de cada jugador, lo guardado dañado, olvidarla desde la vista para adultos), descubrir una tabla (fila a fila, truco,
