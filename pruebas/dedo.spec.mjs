@@ -215,7 +215,7 @@ test("en el juego, más de dos cifras no se toma: pide borrarlo", async ({ page 
 test("cada jugador recuerda si escribe con teclas o con el dedo, y lo guarda la copia", async ({ page }) => {
   await tablaQueSeEscribe(page);
   await page.click("#btn-letra");
-  expect(await page.evaluate(() => JSON.parse(almacen.leer("letra")))).toEqual({ modo: "dedo" });
+  expect(await page.evaluate(() => JSON.parse(almacen.leer("letra")))).toEqual({ modo: "dedo", muestras: {} });
   expect(await page.evaluate(() => Object.keys(armarCopia().datos[perfilActual]))).toContain("letra");
   const r = await page.evaluate(() => {
     cargarLetra();
@@ -250,4 +250,163 @@ test("en el juego, «Listo» antes de que termine la lectura también vale", asy
   await expect(page.locator("#escrito")).toHaveText("");                  // aún sin leer
   await page.click("#pizarra-juego-listo");
   await expect(page.locator("#escrito")).toContainText("✓");
+});
+
+// --- Aprender la letra de cada niño ---
+
+test("aprender: una letra que se lee mal se lee bien tras una corrección, sin estropear las demás", async ({ page }) => {
+  await page.goto("./");
+  const r = await page.evaluate((m) => {
+    const L = trazoLinea, A = trazoArco, U = unir;
+    const muestras = eval(m);
+    let semilla = 11;
+    const azar = () => { semilla = (semilla * 16807) % 2147483647; return semilla / 2147483647; };
+    // Letra muy deformada (ancha abajo, inclinada, aplastada): así son las malas lecturas.
+    const deformar = (tr, q) => tr.map((t) => t.map((p) => {
+      const sx = 1 + q.ab * (p.y / 100 - 0.5);
+      return { x: (p.x - 30) * sx * q.w + q.sh * (50 - p.y) + 30, y: p.y < 50 ? p.y * q.arriba : 50 * q.arriba + (p.y - 50) * q.abajo };
+    }));
+    const temblor = (tr) => {
+      const e = 0.9 + azar() * 0.2, sh = (azar() - 0.5) * 0.1;
+      return tr.map((t) => t.map((p) => ({ x: (p.x + sh * (50 - p.y)) * e + (azar() - 0.5) * 5, y: p.y * (0.95 + azar() * 0.1) + (azar() - 0.5) * 5 })));
+    };
+    const estilos = [];
+    for (let c = 0; c <= 9; c++) {
+      for (let k = 0; k < 300 && estilos.filter((e) => e.c === c).length < 2; k++) {
+        const q = { ab: (azar() - 0.5) * 1.6, w: 0.5 + azar() * 1.3, sh: (azar() - 0.3) * 0.8, arriba: 0.5 + azar(), abajo: 0.5 + azar() };
+        const base = deformar(muestras[c][0], q);
+        if (reconocerCifra(base) !== c) estilos.push({ c, base });
+      }
+    }
+    let antes = 0, despues = 0, n = 0;
+    for (const e of estilos) {
+      letra.muestras = {};
+      const pruebas = Array.from({ length: 10 }, () => temblor(e.base));
+      antes += pruebas.filter((t) => reconocerCifra(t) === e.c).length;
+      aprenderCifra(temblor(e.base), e.c);                // una sola corrección
+      despues += pruebas.filter((t) => reconocerCifra(t) === e.c).length;
+      n += 10;
+    }
+    // Con todo lo aprendido a la vez, las cifras normales se siguen leyendo bien.
+    letra.muestras = {};
+    for (const e of estilos) aprenderCifra(temblor(e.base), e.c);
+    let normales = 0, total = 0;
+    for (let c = 0; c <= 9; c++) for (let k = 0; k < 20; k++) { total++; if (reconocerCifra(temblor(muestras[c][0])) === c) normales++; }
+    return { estilos: estilos.length, antes: antes / n, despues: despues / n, normales: normales / total };
+  }, MUESTRAS);
+  expect(r.estilos).toBeGreaterThanOrEqual(15);
+  expect(r.antes).toBeLessThan(0.5);
+  expect(r.despues).toBeGreaterThanOrEqual(0.95);
+  expect(r.normales).toBeGreaterThanOrEqual(0.95);
+});
+
+test("«¿Leí mal?»: el niño dice qué escribió, el juego lo aprende y la próxima vez lo lee así", async ({ page }) => {
+  await tablaQueSeEscribe(page);
+  await page.click("#btn-letra");
+  const { producto } = await preguntaActual(page);
+  await expect(page.locator("#pizarra-juego-corregir")).toBeHidden();
+  await escribir(page, producto, "#pizarra-juego");
+  await expect(page.locator("#escrito")).toHaveText(String(producto));
+  await page.click("#pizarra-juego-corregir");
+  await expect(page.locator("#pizarra-juego-corrector")).toBeVisible();
+  await expect(page.locator("#escrito")).toHaveText("");
+  // Dice otra última cifra: así se ve que lo dibujado pasa a leerse como dijo.
+  const cifras = [...String(producto)];
+  const ultima = Number(cifras.at(-1));
+  const dicha = ultima === 1 ? 4 : 1;
+  const numero = cifras.slice(0, -1).join("") + dicha;
+  for (const c of numero) await page.click(`#pizarra-juego-corrector [data-digito="${c}"]`);
+  await expect(page.locator("#pizarra-juego-corrector")).toBeHidden();
+  await expect(page.locator("#escrito")).toHaveText(numero);
+  await expect(page.locator("#pizarra-juego-ayuda")).toHaveText(`¡Gracias! Ya sé cómo escribes el ${dicha}. Toca «Listo».`);
+  const guardado = await page.evaluate(() => JSON.parse(almacen.leer("letra")).muestras);
+  expect(Object.keys(guardado)).toEqual([String(dicha)]);                   // solo la que se corrigió
+  // Lo mismo dibujado otra vez ya se lee como lo dijo el niño.
+  await page.click("#pizarra-juego-borrar");
+  await escribir(page, producto, "#pizarra-juego");
+  await expect(page.locator("#escrito")).toHaveText(numero);
+});
+
+test("«¿Leí mal?» con lo que sí leyó no aprende nada; «Cancelar» deja lo leído", async ({ page }) => {
+  await tablaQueSeEscribe(page);
+  await page.click("#btn-letra");
+  const { producto } = await preguntaActual(page);
+  await escribir(page, producto, "#pizarra-juego");
+  await page.click("#pizarra-juego-corregir");
+  await page.click("#pizarra-juego-corrector >> text=Cancelar");
+  await expect(page.locator("#escrito")).toHaveText(String(producto));
+  await expect(page.locator("#pizarra-juego-corregir")).toBeVisible();
+  await page.click("#pizarra-juego-corregir");
+  for (const c of String(producto)) await page.click(`#pizarra-juego-corrector [data-digito="${c}"]`);
+  await expect(page.locator("#pizarra-juego-ayuda")).toHaveText(`Eso es lo que leí: ${producto}. Toca «Listo».`);
+  expect(await page.evaluate(() => letra.muestras)).toEqual({});
+});
+
+test("en la Aventura también se puede enseñar, y lo aprendido es del jugador", async ({ page }) => {
+  await alNivel(page);
+  const respuesta = await page.evaluate(() => enemigoObjetivo().op.respuesta);
+  await escribir(page, respuesta);
+  await expect(page.locator("#aventura-escrito")).toHaveText(String(respuesta));
+  await page.click("#pizarra-corregir");
+  const cifras = [...String(respuesta)];
+  const otra = cifras[0] === "8" ? "6" : "8";
+  const numero = otra + cifras.slice(1).join("");
+  for (const c of numero) await page.click(`#pizarra-corrector [data-digito="${c}"]`);
+  await expect(page.locator("#aventura-escrito")).toHaveText(numero);
+  await expect(page.locator("#pizarra-ayuda")).toHaveText(`¡Gracias! Ya sé cómo escribes el ${otra}. Toca «¡Lanzar!».`);
+  expect(await page.evaluate(() => Object.keys(letra.muestras))).toEqual([otra]);
+  // Otro jugador empieza sin lo aprendido; al volver, sigue ahí.
+  const r = await page.evaluate(() => {
+    const leo = perfilActual;
+    const otro = nuevoPerfil("Ana", true);
+    usarPerfil(otro.id);
+    const deAna = Object.keys(letra.muestras).length;
+    usarPerfil(leo);
+    return [deAna, Object.keys(letra.muestras).length];
+  });
+  expect(r).toEqual([0, 1]);
+});
+
+test("lo aprendido guardado se revisa al cargar: solo nubes válidas y las 3 últimas por cifra", async ({ page }) => {
+  await page.goto("./");
+  const r = await page.evaluate(() => {
+    const buena = (v) => Array.from({ length: 32 }, (_, i) => [v, i / 40]);
+    almacen.guardar("letra", JSON.stringify({
+      modo: "dedo",
+      muestras: { 5: [buena(0.1), buena(0.2), buena(0.3), buena(0.4)], 7: [[[1, 2]], buena(9), "x"], 12: [buena(0)], 3: "nada" },
+    }));
+    cargarLetra();
+    return { cifras: Object.keys(letra.muestras), cinco: letra.muestras[5].map((n) => n[0][0]) };
+  });
+  expect(r).toEqual({ cifras: ["5"], cinco: [0.2, 0.3, 0.4] });
+});
+
+test("al seguir escribiendo, «¿Leí mal?» se esconde: lo leído ya no vale", async ({ page }) => {
+  await tablaQueSeEscribe(page);
+  await page.click("#btn-letra");
+  const { producto } = await preguntaActual(page);
+  await escribir(page, producto, "#pizarra-juego");
+  await expect(page.locator("#pizarra-juego-corregir")).toBeVisible();
+  const caja = await page.locator("#pizarra-juego").boundingBox();
+  await page.mouse.move(caja.x + caja.width - 20, caja.y + 20);
+  await page.mouse.down();
+  await expect(page.locator("#pizarra-juego-corregir")).toBeHidden();       // en cuanto se apoya el dedo
+  await page.mouse.up();
+});
+
+test("la vista para adultos dice qué cifras aprendió de cada quien, y se puede olvidar", async ({ page }) => {
+  await page.goto("./");
+  await page.fill("#player-name", "Leo");
+  await page.click("#screen-welcome button:has-text('Comenzar')");
+  await page.evaluate(() => {
+    const raya = [Array.from({ length: 20 }, (_, i) => ({ x: 30, y: i * 5 }))];
+    aprenderCifra(raya, 7); aprenderCifra(raya, 4);
+    guardarLetra();
+    registrarIntento(2, 3, true);   // para que el jardín cuente como empezado
+  });
+  await page.click("#screen-selector >> text=Para las personas adultas");
+  await expect(page.locator(".adulto-letra")).toContainText("Escribir con el dedo: aprendió cómo escribe el 4 y el 7.");
+  await page.click(".btn-olvidar-letra");
+  await expect(page.locator(".adulto-letra")).toHaveCount(0);
+  expect(await page.evaluate(() => [letra.muestras, JSON.parse(almacen.leer("letra")).muestras])).toEqual([{}, {}]);
 });

@@ -28,6 +28,15 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
   cerrado, el 7 con y sin raya), así que no importa por dónde se empiece ni
   en cuántos trazos.
 
+  **Aprende la letra de cada niño.** Si lee mal, «🤔 ¿Leí mal? Enséñame»
+  pide tocar con teclas el número que se escribió. Cada cifra corregida se
+  guarda como modelo de ese jugador (las 3 más recientes por cifra) y desde
+  entonces se lee bien: en las pruebas, letras muy deformadas pasan de leerse
+  bien menos de la mitad de las veces a casi siempre tras una sola
+  corrección, sin estropear las demás cifras. Solo aprende de lo que el niño
+  corrige, nunca a ciegas. La vista para adultos dice qué cifras aprendió y
+  permite olvidarlas. Va en la copia de seguridad.
+
   | Mundo | Enemigos | Retos |
   | --- | --- | --- |
   | 1. El huerto | 🥦 brócolis | tablas del 2, 5 y 10 |
@@ -382,7 +391,8 @@ respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, pistas desde lo que ya se sabe, tablas del 1 al 9, estados del mapa y lo
 guardado por la versión anterior), la aventura (retos por mundo, vencer, corazones, operación que vuelve, jefe,
 niveles que se abren, elegir, escribir con el dedo y cuánto acierta el reconocedor, compartir la imagen, lo guardado), escribir con el dedo
-también en el juego (leer, «Listo», borrar, tope de dos cifras, lo que se recuerda), descubrir una tabla (fila a fila, truco,
+también en el juego (leer, «Listo», borrar, tope de dos cifras, lo que se recuerda), aprender la letra (cuánto mejora
+tras una corrección, corregir, cancelar, de cada jugador, lo guardado dañado, olvidarla desde la vista para adultos), descubrir una tabla (fila a fila, truco,
 plantas nuevas, cuándo sale y cuándo no), la copia de seguridad (guardar y
 recuperar en otro dispositivo, confirmar, archivos dañados o de otra versión,
 aviso en iPad), los mundos (elegir, cambiar sin
