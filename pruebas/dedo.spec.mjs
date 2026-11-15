@@ -1,6 +1,7 @@
 // La Aventura, «✍️ Con el dedo»: se escribe la respuesta en un recuadro, el
 // juego la reconoce y solo se lanza al tocar «¡Lanzar!».
 import { test, expect } from "@playwright/test";
+import { entrarATabla, preguntaActual, ponerIntentos, elegida } from "./ayudas.mjs";
 
 test.beforeEach(async ({ page }) => {
   await page.clock.setFixedTime(new Date("2026-11-14T12:00:00"));
@@ -37,9 +38,9 @@ const muestras = (page) => page.evaluate((m) => {
 }, MUESTRAS);
 
 /** Escribe un número en la pizarra con el ratón, cifra por cifra. */
-async function escribir(page, numero) {
+async function escribir(page, numero, lienzo = "#pizarra") {
   const m = await muestras(page);
-  const caja = await page.locator("#pizarra").boundingBox();
+  const caja = await page.locator(lienzo).boundingBox();
   const escala = caja.height / 200;          // el lienzo mide 480 × 200
   for (const [i, c] of [...String(numero)].entries()) {
     for (const trazo of m[c][0]) {
@@ -152,4 +153,101 @@ test("el modo con el dedo se recuerda, y uno desconocido vuelve a teclear", asyn
   await page.click('#modos-aventura [data-modo="teclear"]');
   await expect(page.locator("#aventura-pizarra")).toBeHidden();
   await expect(page.locator("#aventura-teclado")).toBeVisible();
+});
+
+// --- En el juego: al responder escribiendo, también con el dedo ---
+
+/** La tabla del 3 con todo acertado una vez: todas las preguntas se escriben. */
+async function tablaQueSeEscribe(page) {
+  await page.goto("./");
+  for (let b = 1; b <= 10; b++) await ponerIntentos(page, `3x${b}`, [elegida("2026-11-01")]);
+  await entrarATabla(page, 3);
+  await expect(page.locator("#escritura")).toBeVisible();
+}
+
+test("en el juego se puede escribir con el dedo: lo leído se ve y cuenta al tocar «Listo»", async ({ page }) => {
+  await tablaQueSeEscribe(page);
+  await expect(page.locator("#teclado-juego")).toBeVisible();          // de serie, con teclas
+  await expect(page.locator("#btn-letra")).toHaveText("✍️ Mejor con el dedo");
+  await page.click("#btn-letra");
+  await expect(page.locator("#teclado-juego")).toBeHidden();
+  await expect(page.locator("#pizarra-juego")).toBeVisible();
+  await expect(page.locator("#btn-letra")).toHaveText("🔢 Mejor con teclas");
+  const { a, b, producto } = await preguntaActual(page);
+  await escribir(page, producto, "#pizarra-juego");
+  await expect(page.locator("#escrito")).toHaveText(String(producto));
+  await expect(page.locator("#pizarra-juego-ayuda")).toHaveText(`¿Escribiste ${producto}? Toca «Listo». Si no, bórralo.`);
+  expect(await page.evaluate(() => espera)).toBeNull();                  // aún no se respondió
+  await page.click("#pizarra-juego-listo");
+  await expect(page.locator("#escrito")).toContainText("✓");
+  await expect(page.locator("#game-feedback")).toContainText(`${a} × ${b} = ${producto}`);
+  // Cuenta como respuesta escrita, igual que con teclas.
+  expect(await page.evaluate(([x, y]) => intentosDe(x, y).at(-1).m, [a, b])).toBe("e");
+  // La siguiente pregunta empieza con el recuadro limpio y sigue con el dedo.
+  await page.locator("#btn-siguiente:not([disabled])").click();
+  expect(await page.evaluate(() => pizarraJuego.trazos.length)).toBe(0);
+  await expect(page.locator("#pizarra-juego")).toBeVisible();
+});
+
+test("en el juego, lo mal leído se borra sin contar como error", async ({ page }) => {
+  await tablaQueSeEscribe(page);
+  await page.click("#btn-letra");
+  const { a, b, producto } = await preguntaActual(page);
+  const otro = producto === 7 ? 4 : 7;
+  await escribir(page, otro, "#pizarra-juego");
+  await expect(page.locator("#escrito")).toHaveText(String(otro));
+  await page.click("#pizarra-juego-borrar");
+  await expect(page.locator("#escrito")).toHaveText("");
+  expect(await page.evaluate(([x, y]) => intentosDe(x, y).length, [a, b])).toBe(1);   // solo el de antes
+  // Con nada escrito, «Listo» no responde.
+  await page.click("#pizarra-juego-listo");
+  expect(await page.evaluate(() => espera)).toBeNull();
+});
+
+test("en el juego, más de dos cifras no se toma: pide borrarlo", async ({ page }) => {
+  await tablaQueSeEscribe(page);
+  await page.click("#btn-letra");
+  await escribir(page, 108, "#pizarra-juego");
+  await expect(page.locator("#pizarra-juego-ayuda")).toHaveText("Son demasiadas cifras: bórralo y escribe un número de dos cifras como mucho.");
+  await expect(page.locator("#escrito")).toHaveText("");
+});
+
+test("cada jugador recuerda si escribe con teclas o con el dedo, y lo guarda la copia", async ({ page }) => {
+  await tablaQueSeEscribe(page);
+  await page.click("#btn-letra");
+  expect(await page.evaluate(() => JSON.parse(almacen.leer("letra")))).toEqual({ modo: "dedo" });
+  expect(await page.evaluate(() => Object.keys(armarCopia().datos[perfilActual]))).toContain("letra");
+  const r = await page.evaluate(() => {
+    cargarLetra();
+    const a = letra.modo;
+    almacen.guardar("letra", "{roto");
+    cargarLetra();
+    return [a, letra.modo];
+  });
+  expect(r).toEqual(["dedo", "teclas"]);
+});
+
+test("en el juego, con el dedo, las cifras del teclado físico no escriben y Enter responde", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "escritorio", "teclado físico");
+  await tablaQueSeEscribe(page);
+  await page.click("#btn-letra");
+  await page.evaluate(() => document.activeElement.blur());
+  await page.keyboard.press("5");
+  await expect(page.locator("#escrito")).toHaveText("");
+  const { producto } = await preguntaActual(page);
+  await escribir(page, producto, "#pizarra-juego");
+  await expect(page.locator("#escrito")).toHaveText(String(producto));
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#escrito")).toContainText("✓");
+});
+
+test("en el juego, «Listo» antes de que termine la lectura también vale", async ({ page }) => {
+  await tablaQueSeEscribe(page);
+  await page.click("#btn-letra");
+  await page.evaluate(() => { const real = setTimeout; window.setTimeout = (f, ms) => (ms === 450 ? 0 : real(f, ms)); });
+  const { producto } = await preguntaActual(page);
+  await escribir(page, producto, "#pizarra-juego");
+  await expect(page.locator("#escrito")).toHaveText("");                  // aún sin leer
+  await page.click("#pizarra-juego-listo");
+  await expect(page.locator("#escrito")).toContainText("✓");
 });

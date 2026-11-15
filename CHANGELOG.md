@@ -9,6 +9,10 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Escribir con el dedo también en el juego** (#33): al responder escribiendo
+  se puede usar el dedo en lugar del teclado de la pantalla. Lo leído se ve y
+  solo cuenta al tocar «Listo». Cada jugador elige, y se guarda en su jardín
+  y en la copia de seguridad.
 - **Presentación más viva** (#32):
   - cada mundo tiene su paisaje de fondo (colinas de su color y adornos que flotan);
   - cada pantalla entra con un fundido corto y las tablas del menú aparecen una tras otra;

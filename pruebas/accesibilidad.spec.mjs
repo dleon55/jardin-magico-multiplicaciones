@@ -106,6 +106,8 @@ test("pregunta que se responde escribiendo, con un número a medias", async ({ p
   await page.locator("#grid-tablas-container button").nth(2).click();
   await page.click('#escritura [data-digito="1"]');
   await auditar(page, "el teclado de números");
+  await page.click("#btn-letra");
+  await auditar(page, "escribir la respuesta con el dedo");
 });
 
 test("mi jardín, con plantas en todos los estados", async ({ page }) => {

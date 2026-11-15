@@ -88,7 +88,11 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 - **Primero se elige, después se escribe.** Lo nuevo y lo recién fallado se
   responden eligiendo entre cuatro opciones. Lo que ya salió bien se responde
   **escribiendo** en un teclado de números grande: recordarlo sin opciones
-  delante es saberlo, y elegirlo entre cuatro solo es reconocerlo.
+  delante es saberlo, y elegirlo entre cuatro solo es reconocerlo. En lugar
+  del teclado se puede **escribir con el dedo** («✍️ Mejor con el dedo»),
+  con el mismo reconocedor de la Aventura: lo leído se ve en la caja y solo
+  cuenta al tocar «Listo», así que una mala lectura no es un error. Cada
+  jugador elige y se recuerda.
 - **Las opciones se parecen a la respuesta.** Son errores típicos, como el
   resultado de la fila de al lado, así que no basta con adivinar.
 - **La ayuda dibuja la multiplicación como un rectángulo** de filas × columnas,
@@ -377,7 +381,8 @@ Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
 (rectángulo de ayuda, trucos, pistas desde lo que ya se sabe, tablas del 1 al 9, estados del mapa y lo
 guardado por la versión anterior), la aventura (retos por mundo, vencer, corazones, operación que vuelve, jefe,
-niveles que se abren, elegir, escribir con el dedo y cuánto acierta el reconocedor, compartir la imagen, lo guardado), descubrir una tabla (fila a fila, truco,
+niveles que se abren, elegir, escribir con el dedo y cuánto acierta el reconocedor, compartir la imagen, lo guardado), escribir con el dedo
+también en el juego (leer, «Listo», borrar, tope de dos cifras, lo que se recuerda), descubrir una tabla (fila a fila, truco,
 plantas nuevas, cuándo sale y cuándo no), la copia de seguridad (guardar y
 recuperar en otro dispositivo, confirmar, archivos dañados o de otra versión,
 aviso en iPad), los mundos (elegir, cambiar sin
