@@ -556,8 +556,17 @@
                  delante es saberla; elegirla entre cuatro solo es reconocerla. -->
             <div id="escritura" class="hidden max-w-xs mx-auto space-y-3">
                 <p class="text-center text-sm font-bold text-indigo-800"><span aria-hidden="true">✍️</span> <span id="escritura-aviso">Esta ya te salió bien: ahora escríbela.</span></p>
+                <p class="text-center"><button type="button" id="btn-letra" onclick="cambiarLetra()" class="text-sm font-bold text-indigo-800 underline"></button></p>
                 <output id="escrito" aria-label="Tu respuesta" class="block min-h-16 bg-white border-4 border-indigo-300 rounded-2xl text-center text-4xl font-bold text-gray-800 py-2 tabular-nums"></output>
-                <div role="group" aria-label="Teclado de números" class="grid grid-cols-3 gap-2">
+                <div id="pizarra-juego-caja" class="hidden space-y-2">
+                    <canvas id="pizarra-juego" width="480" height="200" aria-label="Recuadro para escribir la respuesta con el dedo" aria-describedby="pizarra-juego-ayuda" class="pizarra block w-full bg-white border-4 border-dashed border-indigo-300 rounded-2xl"></canvas>
+                    <p id="pizarra-juego-ayuda" class="text-center text-sm font-bold text-gray-700" aria-live="polite">Escribe la respuesta con el dedo.</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" id="pizarra-juego-borrar" onclick="borrarPizarraJuego()" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-lg font-bold rounded-2xl shadow-md text-gray-800"><span aria-hidden="true">🧽</span> Borrar</button>
+                        <button type="button" id="pizarra-juego-listo" onclick="responderConDedo()" class="btn-tecla bg-green-700 hover:bg-green-800 disabled:opacity-50 active:scale-95 py-3 text-xl font-bold rounded-2xl shadow-md text-white"><span aria-hidden="true">✓</span> Listo</button>
+                    </div>
+                </div>
+                <div id="teclado-juego" role="group" aria-label="Teclado de números" class="grid grid-cols-3 gap-2">
                     <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="1" onclick="teclear(1)">1</button>
                     <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="2" onclick="teclear(2)">2</button>
                     <button type="button" class="btn-tecla bg-white hover:bg-indigo-50 border-4 border-indigo-200 active:scale-95 disabled:opacity-50 py-3 text-3xl font-bold rounded-2xl shadow-md text-gray-800 transition duration-150" data-digito="3" onclick="teclear(3)">3</button>
@@ -995,7 +1004,7 @@
         // semanas de práctica de su hermano.
         const PREFIJO = "jardin:";
         const GLOBALES = new Set(["ajustes", "perfiles", "perfil"]);
-        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura"];
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra"];
         let perfilActual = "p1";
 
         const almacen = {
@@ -1590,6 +1599,7 @@
             cargarDescubiertas();
             otros = limpiarOtros(almacen.leer("otros"));
             cargarAventura();
+            cargarLetra();
             actualizarEstrellas();
             aplicarMundo();
             document.getElementById("display-name").innerText =
@@ -2403,7 +2413,11 @@
                     continuar();
                     return;
                 }
-                if (!espera && modoEscrito) {
+                if (!espera && modoEscrito && letra.modo === "dedo") {
+                    if (evento.key === "Backspace") { evento.preventDefault(); borrarPizarraJuego(); return; }
+                    if (evento.key === "Enter" && evento.target.tagName !== "BUTTON") { evento.preventDefault(); responderConDedo(); return; }
+                }
+                if (!espera && modoEscrito && letra.modo !== "dedo") {
                     if (/^[0-9]$/.test(evento.key)) {
                         evento.preventDefault();
                         teclear(Number(evento.key));
@@ -3975,6 +3989,8 @@
             document.getElementById("opciones").classList.toggle("hidden", modoEscrito);
             document.getElementById("escritura").classList.toggle("hidden", !modoEscrito);
             escrito = "";
+            pintarLetra();
+            if (modoEscrito && letra.modo === "dedo") pizarraJuego.borrar();
             mostrarEscrito();
             document.querySelectorAll("#escritura .btn-tecla").forEach((t) => { t.disabled = false; });
             actualizarListo();
@@ -4496,6 +4512,61 @@
         function responderEscrito() {
             if (!modoEscrito || espera || escrito === "") return;
             evaluar(Number(escrito), null);
+        }
+
+        // --- ESCRIBIR CON EL DEDO, TAMBIÉN EN EL JUEGO ---
+        // Al responder escribiendo se puede usar el teclado de la pantalla o
+        // escribir con el dedo, como en la Aventura. Cada jugador elige y se
+        // recuerda («letra», en su jardín). Lo leído se ve en la caja y solo
+        // cuenta al tocar «Listo»: una mala lectura no es un error.
+        let letra = { modo: "teclas" };
+
+        function cargarLetra() {
+            let g = null;
+            try { g = JSON.parse(almacen.leer("letra") || "null"); } catch (e) { g = null; }
+            letra = { modo: g && g.modo === "dedo" ? "dedo" : "teclas" };
+        }
+
+        function guardarLetra() {
+            almacen.guardar("letra", JSON.stringify(letra));
+        }
+
+        const pizarraJuego = crearPizarra("pizarra-juego", {
+            ayudaId: "pizarra-juego-ayuda", boton: "«Listo»", maxCifras: 2,
+            puede: () => modoEscrito && !espera,
+            alLeer: (texto) => {
+                if (!modoEscrito || espera) return;
+                escrito = texto;
+                mostrarEscrito();
+                actualizarListo();
+            },
+        });
+
+        function pintarLetra() {
+            const dedo = letra.modo === "dedo";
+            document.getElementById("teclado-juego").classList.toggle("hidden", dedo);
+            document.getElementById("pizarra-juego-caja").classList.toggle("hidden", !dedo);
+            document.getElementById("btn-letra").textContent = dedo ? "🔢 Mejor con teclas" : "✍️ Mejor con el dedo";
+            if (dedo) pizarraJuego.preparar();
+        }
+
+        function cambiarLetra() {
+            if (espera) return;
+            letra.modo = letra.modo === "dedo" ? "teclas" : "dedo";
+            guardarLetra();
+            pintarLetra();
+            pizarraJuego.borrar();
+            escrito = "";
+            mostrarEscrito();
+            actualizarListo();
+        }
+
+        function borrarPizarraJuego() { pizarraJuego.borrar(); }
+
+        function responderConDedo() {
+            if (!modoEscrito || espera) return;
+            pizarraJuego.ahora(escrito);
+            responderEscrito();
         }
 
         /**
@@ -5440,81 +5511,104 @@
             return Number(cifras.join(""));
         }
 
-        // --- La pizarra ---
-        const pizarra = { trazos: [], actual: null, espera: null };
+        // --- La pizarra: un recuadro para escribir con el dedo ---
+        // La usan la Aventura y el juego (al responder escribiendo). Cada una
+        // dice qué hacer con lo leído (`alLeer`) y cuándo se puede escribir.
+        const TEXTO_PIZARRA = "Escribe la respuesta con el dedo.";
 
-        function prepararPizarra() {
-            const lienzo = document.getElementById("pizarra");
-            if (lienzo.dataset.lista) return;
-            lienzo.dataset.lista = "1";
-            const punto = (ev) => {
-                const r = lienzo.getBoundingClientRect();
-                return { x: ((ev.clientX - r.left) / r.width) * lienzo.width, y: ((ev.clientY - r.top) / r.height) * lienzo.height };
+        function crearPizarra(id, { ayudaId, boton, alLeer, puede = () => true, maxCifras = 3 }) {
+            const p = { trazos: [], actual: null, espera: null };
+            const lienzo = () => document.getElementById(id);
+            const ayuda = (texto) => { document.getElementById(ayudaId).textContent = texto; };
+
+            p.dibujar = () => {
+                const l = lienzo();
+                const c = l.getContext("2d");
+                c.clearRect(0, 0, l.width, l.height);
+                c.lineWidth = 9;
+                c.lineCap = "round";
+                c.lineJoin = "round";
+                c.strokeStyle = "#312e81";
+                for (const t of p.trazos) {
+                    c.beginPath();
+                    t.forEach((q, i) => (i ? c.lineTo(q.x, q.y) : c.moveTo(q.x, q.y)));
+                    if (t.length === 1) c.lineTo(t[0].x + 0.1, t[0].y);
+                    c.stroke();
+                }
             };
-            lienzo.addEventListener("pointerdown", (ev) => {
-                ev.preventDefault();
-                lienzo.setPointerCapture?.(ev.pointerId);
-                clearTimeout(pizarra.espera);
-                pizarra.actual = [punto(ev)];
-                pizarra.trazos.push(pizarra.actual);
-                dibujarPizarra();
-            });
-            lienzo.addEventListener("pointermove", (ev) => {
-                if (!pizarra.actual) return;
-                ev.preventDefault();
-                pizarra.actual.push(punto(ev));
-                dibujarPizarra();
-            });
-            const soltar = () => {
-                if (!pizarra.actual) return;
-                pizarra.actual = null;
-                // Al dejar de escribir un momento, se reconoce.
-                clearTimeout(pizarra.espera);
-                pizarra.espera = setTimeout(leerPizarra, 450);
+
+            p.leer = () => {
+                const n = reconocerNumero(p.trazos);
+                const largo = n !== null && String(n).length > maxCifras;
+                const texto = n === null || largo ? "" : String(n);
+                alLeer(texto);
+                ayuda(largo ? `Son demasiadas cifras: bórralo y escribe un número de ${maxCifras === 2 ? "dos cifras" : "tres cifras"} como mucho.`
+                    : texto === "" ? TEXTO_PIZARRA
+                    : `¿Escribiste ${texto}? Toca ${boton}. Si no, bórralo.`);
             };
-            lienzo.addEventListener("pointerup", soltar);
-            lienzo.addEventListener("pointercancel", soltar);
-            lienzo.addEventListener("pointerleave", soltar);
+
+            p.borrar = () => {
+                clearTimeout(p.espera);
+                p.trazos = [];
+                p.actual = null;
+                p.dibujar();
+                alLeer("");
+                ayuda(TEXTO_PIZARRA);
+            };
+
+            p.preparar = () => {
+                const l = lienzo();
+                if (l.dataset.lista) return;
+                l.dataset.lista = "1";
+                const punto = (ev) => {
+                    const r = l.getBoundingClientRect();
+                    return { x: ((ev.clientX - r.left) / r.width) * l.width, y: ((ev.clientY - r.top) / r.height) * l.height };
+                };
+                l.addEventListener("pointerdown", (ev) => {
+                    ev.preventDefault();
+                    if (!puede()) return;
+                    l.setPointerCapture?.(ev.pointerId);
+                    clearTimeout(p.espera);
+                    p.actual = [punto(ev)];
+                    p.trazos.push(p.actual);
+                    p.dibujar();
+                });
+                l.addEventListener("pointermove", (ev) => {
+                    if (!p.actual) return;
+                    ev.preventDefault();
+                    p.actual.push(punto(ev));
+                    p.dibujar();
+                });
+                const soltar = () => {
+                    if (!p.actual) return;
+                    p.actual = null;
+                    // Al dejar de escribir un momento, se reconoce.
+                    clearTimeout(p.espera);
+                    p.espera = setTimeout(p.leer, 450);
+                };
+                l.addEventListener("pointerup", soltar);
+                l.addEventListener("pointercancel", soltar);
+                l.addEventListener("pointerleave", soltar);
+            };
+
+            /** Lo escrito, leyéndolo ya si aún no se había leído. */
+            p.ahora = (actual) => {
+                clearTimeout(p.espera);
+                if (p.trazos.length && actual === "") p.leer();
+            };
+            return p;
         }
 
-        function dibujarPizarra() {
-            const lienzo = document.getElementById("pizarra");
-            const c = lienzo.getContext("2d");
-            c.clearRect(0, 0, lienzo.width, lienzo.height);
-            c.lineWidth = 9;
-            c.lineCap = "round";
-            c.lineJoin = "round";
-            c.strokeStyle = "#312e81";
-            for (const t of pizarra.trazos) {
-                c.beginPath();
-                t.forEach((p, i) => (i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y)));
-                if (t.length === 1) c.lineTo(t[0].x + 0.1, t[0].y);
-                c.stroke();
-            }
-        }
-
-        function leerPizarra() {
-            const n = reconocerNumero(pizarra.trazos);
-            aventura.escrito = n === null ? "" : String(n);
-            pintarEscritoAventura();
-            document.getElementById("pizarra-ayuda").textContent = n === null
-                ? "Escribe la respuesta con el dedo."
-                : `¿Escribiste ${n}? Toca «¡Lanzar!». Si no, bórralo.`;
-        }
-
-        function borrarPizarra() {
-            clearTimeout(pizarra.espera);
-            pizarra.trazos = [];
-            pizarra.actual = null;
-            dibujarPizarra();
-            aventura.escrito = "";
-            pintarEscritoAventura();
-            document.getElementById("pizarra-ayuda").textContent = "Escribe la respuesta con el dedo.";
-        }
+        // La de la Aventura.
+        const pizarra = crearPizarra("pizarra", {
+            ayudaId: "pizarra-ayuda", boton: "«¡Lanzar!»",
+            alLeer: (texto) => { aventura.escrito = texto; pintarEscritoAventura(); },
+        });
+        function prepararPizarra() { pizarra.preparar(); }
+        function borrarPizarra() { pizarra.borrar(); }
 
         function lanzarPizarra() {
-            clearTimeout(pizarra.espera);
-            if (pizarra.trazos.length && aventura.escrito === "") leerPizarra();
+            pizarra.ahora(aventura.escrito);
             if (aventura.escrito === "") return;
             responderAventura(Number(aventura.escrito));
             borrarPizarra();
