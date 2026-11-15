@@ -1386,11 +1386,23 @@
         // si se cambia de app. Ocho compases que se repiten: melodía en escala
         // pentatónica (nunca suena «mal»), bajo y un acorde suave por compás.
         const VOLUMEN_MUSICA = 0.05;
-        const PENTATONICA = [0, 2, 4, 7, 9];
+        // Cada pieza: escala (semitonos desde la base), acordes (uno por compás,
+        // en semitonos desde la base) y ocho compases de melodía en grados de
+        // su escala (0 = la base; 5 = la base una octava arriba, si la escala
+        // tiene 5 notas). «pulso»: cada cuántas corcheas suena el bajo.
+        const MAYOR_PENTA = [0, 2, 4, 7, 9];
+        const MENOR_PENTA = [0, 3, 5, 7, 10];
+        const LIDIA = [0, 2, 4, 6, 7, 9, 11];   // la cuarta subida suena «espacial»
+        // Acordes por su grado: mayúscula, mayor; minúscula, menor (y «m» en los de tono menor).
+        const AC = {
+            I: [0, 4, 7], ii: [2, 5, 9], II: [2, 6, 9], iii: [4, 7, 11], IV: [5, 9, 12], V: [7, 11, 14], vi: [9, 12, 16],
+            im: [0, 3, 7], ivm: [5, 8, 12], VIm: [8, 12, 15], VIIm: [10, 14, 17], Vm: [7, 11, 14],
+        };
         const PIEZAS = {
+            // Fuera de la Aventura: tranquila.
             jardin: {
-                tempo: 84, base: 60, onda: "sine", bajo: "triangle", pulso: 2,
-                acordes: [0, 9, 5, 7, 0, 9, 7, 0],
+                tempo: 84, base: 60, escala: MAYOR_PENTA, onda: "sine", bajo: "triangle", pulso: 2,
+                acordes: [AC.I, AC.vi, AC.IV, AC.V, AC.I, AC.vi, AC.V, AC.I],
                 melodia: [
                     [2, null, 3, null, 4, 3, 2, null], [1, null, 2, null, 0, null, null, null],
                     [2, null, 3, null, 4, 5, 4, null], [3, null, null, null, null, null, null, null],
@@ -1398,9 +1410,10 @@
                     [1, 2, 3, null, 2, null, 1, null], [0, null, null, null, null, null, null, null],
                 ],
             },
-            aventura: {
-                tempo: 116, base: 62, onda: "triangle", bajo: "triangle", pulso: 1,
-                acordes: [0, 7, 9, 5, 0, 7, 9, 5],
+            // 1. El huerto de los brócolis: alegre.
+            brocolis: {
+                tempo: 116, base: 62, escala: MAYOR_PENTA, onda: "triangle", bajo: "triangle", pulso: 1,
+                acordes: [AC.I, AC.V, AC.vi, AC.IV, AC.I, AC.V, AC.vi, AC.IV],
                 melodia: [
                     [3, null, 3, 4, 5, null, 4, 3], [4, null, 3, null, 1, null, null, null],
                     [2, null, 3, 2, 3, null, 4, null], [3, null, null, 2, 1, null, null, null],
@@ -1408,11 +1421,72 @@
                     [3, 4, 5, null, 4, 3, 2, null], [0, null, 2, null, 0, null, null, null],
                 ],
             },
+            // 2. El bosque de los monstruos: saltarina, con el bajo marcado.
+            monstruos: {
+                tempo: 104, base: 55, escala: MAYOR_PENTA, onda: "triangle", bajo: "square", pulso: 2,
+                acordes: [AC.I, AC.IV, AC.V, AC.I, AC.vi, AC.IV, AC.V, AC.I],
+                melodia: [
+                    [0, 0, 2, null, 0, 0, 3, null], [2, null, 1, null, 0, null, null, null],
+                    [3, 3, 4, null, 3, 3, 5, null], [4, null, 3, null, 2, null, null, null],
+                    [5, null, 4, 3, 4, null, 3, 2], [3, null, 2, 1, 2, null, null, null],
+                    [0, 0, 2, null, 3, null, 4, null], [5, null, 0, null, 0, null, null, null],
+                ],
+            },
+            // 3. El castillo de los fantasmas: misteriosa, en menor y sin prisa.
+            fantasmas: {
+                tempo: 92, base: 57, escala: MENOR_PENTA, onda: "sine", bajo: "triangle", pulso: 4,
+                acordes: [AC.im, AC.VIm, AC.ivm, AC.Vm, AC.im, AC.VIm, AC.VIIm, AC.im],
+                melodia: [
+                    [5, null, null, 4, 3, null, null, null], [2, null, 3, null, 1, null, null, null],
+                    [5, null, null, 6, 7, null, 6, null], [5, null, null, null, 4, null, null, null],
+                    [3, null, 4, null, 5, null, 3, null], [2, null, null, 1, 0, null, null, null],
+                    [1, null, 2, null, 4, null, 3, null], [0, null, null, null, null, null, null, null],
+                ],
+            },
+            // 4. La noche de los zombis: menor y apurada.
+            zombis: {
+                tempo: 124, base: 52, escala: MENOR_PENTA, onda: "triangle", bajo: "square", pulso: 1,
+                acordes: [AC.im, AC.VIm, AC.VIIm, AC.im, AC.im, AC.ivm, AC.Vm, AC.im],
+                melodia: [
+                    [0, null, 0, 1, 2, null, 1, 0], [3, null, 2, null, 1, null, null, null],
+                    [0, null, 0, 1, 2, null, 3, null], [4, null, 3, null, 2, null, null, null],
+                    [5, null, 4, 5, 6, null, 5, 4], [3, null, 4, null, 2, null, null, null],
+                    [1, 2, 3, null, 2, 1, 0, null], [0, null, null, -1, 0, null, null, null],
+                ],
+            },
+            // 5. El espacio de los aliens: notas largas y una escala que suena rara.
+            aliens: {
+                tempo: 100, base: 60, escala: LIDIA, onda: "square", bajo: "sine", pulso: 4,
+                acordes: [AC.I, AC.II, AC.I, AC.II, AC.iii, AC.II, AC.I, AC.I],
+                melodia: [
+                    [7, null, 4, null, 3, null, 4, null], [6, null, null, null, 4, null, null, null],
+                    [7, null, 9, null, 8, null, 7, null], [6, null, null, 4, 3, null, null, null],
+                    [2, null, 3, null, 4, null, 6, null], [7, null, null, null, 9, null, null, null],
+                    [8, null, 7, null, 6, null, 4, null], [7, null, null, null, null, null, null, null],
+                ],
+            },
+            // 6. El mar de las criaturas: lenta, que se mece como las olas.
+            mar: {
+                tempo: 76, base: 65, escala: MAYOR_PENTA, onda: "sine", bajo: "sine", pulso: 4,
+                acordes: [AC.I, AC.vi, AC.IV, AC.V, AC.I, AC.vi, AC.IV, AC.I],
+                melodia: [
+                    [2, null, 3, 4, 3, null, 2, null], [1, null, null, 2, 0, null, null, null],
+                    [3, null, 4, 5, 4, null, 3, null], [2, null, null, null, null, null, null, null],
+                    [4, null, 5, 6, 5, null, 4, null], [3, null, null, 2, 1, null, null, null],
+                    [2, null, 1, null, 0, null, 1, null], [0, null, null, null, null, null, null, null],
+                ],
+            },
         };
+        // La pieza de cada mundo de la Aventura, en su orden.
+        const MUSICA_DE_MUNDO = ["brocolis", "monstruos", "fantasmas", "zombis", "aliens", "mar"];
         const musica = { pieza: "jardin", salida: null, siguiente: 0, paso: 0, temporizador: null };
 
         const midiAHz = (m) => 440 * 2 ** ((m - 69) / 12);
-        const notaPentatonica = (base, grado) => base + PENTATONICA[((grado % 5) + 5) % 5] + 12 * Math.floor(grado / 5);
+        /** La nota de un grado de la escala; los grados de más dan la vuelta por octavas. */
+        const notaDeGrado = (p, grado) => {
+            const n = p.escala.length;
+            return p.base + p.escala[((grado % n) + n) % n] + 12 * Math.floor(grado / n);
+        };
 
         function ambienteMusical(nombre) {
             if (musica.pieza === nombre && musica.temporizador) return;
@@ -1458,17 +1532,14 @@
 
         function tocarPaso(p, paso, t, corchea) {
             const compas = Math.floor(paso / 8), dentro = paso % 8;
-            const raiz = p.acordes[compas];
+            const acorde = p.acordes[compas];
             const grado = p.melodia[compas][dentro];
-            if (grado !== null) notaMusica(notaPentatonica(p.base, grado), t, corchea * 1.7, p.onda, 0.5);
+            if (grado !== null) notaMusica(notaDeGrado(p, grado), t, corchea * 1.7, p.onda, p.onda === "square" ? 0.22 : 0.5);
             if (dentro % p.pulso === 0) {
                 const octava = p.pulso === 1 && dentro % 2 ? 12 : 0;
-                notaMusica(p.base - 24 + raiz + octava, t, corchea * p.pulso * 0.9, p.bajo, p.pulso === 1 ? 0.28 : 0.4);
+                notaMusica(p.base - 24 + acorde[0] + octava, t, corchea * p.pulso * 0.9, p.bajo, p.bajo === "square" ? 0.18 : p.pulso === 1 ? 0.28 : 0.4);
             }
-            if (dentro === 0) {
-                const tercera = raiz === 9 ? 3 : 4;   // el sexto grado, menor
-                for (const i of [0, tercera, 7]) notaMusica(p.base - 12 + raiz + i, t, corchea * 8, "sine", 0.1);
-            }
+            if (dentro === 0) for (const i of acorde) notaMusica(p.base - 12 + i, t, corchea * 8, "sine", 0.1);
         }
 
         function notaMusica(midi, t, dur, onda, vol) {
@@ -2470,7 +2541,7 @@
             aplicarMundo();
             entrarPantalla(document.getElementById(id));
             window.scrollTo(0, 0);
-            ambienteMusical(id === "screen-aventura-juego" ? "aventura" : "jardin");
+            ambienteMusical(id === "screen-aventura-juego" ? MUSICA_DE_MUNDO[aventura.mundo] : "jardin");
             const destino = document.querySelector(`#${id} [data-foco]`);
             if (destino) {
                 destino.setAttribute("tabindex", "-1");
