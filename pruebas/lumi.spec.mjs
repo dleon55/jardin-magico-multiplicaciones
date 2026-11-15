@@ -19,8 +19,8 @@ test("la bienvenida tiene a Lumi, decorativa para el lector de pantalla", async 
 test("cada copia de Lumi tiene su propio recorte (sin ids repetidos)", async ({ page }) => {
   await page.goto("./");
   const ids = await page.$$eval(".lumi-caja clipPath", (cs) => cs.map((c) => c.id));
-  expect(ids.length).toBe(3);
-  expect(new Set(ids).size).toBe(3);
+  expect(ids.length).toBe(4);
+  expect(new Set(ids).size).toBe(4);
   const usados = await page.$$eval(".lumi-caja [clip-path]", (es) => es.map((e) => e.getAttribute("clip-path")));
   expect(usados).toEqual(ids.map((id) => `url(#${id})`));
 });

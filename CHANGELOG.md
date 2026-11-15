@@ -9,6 +9,17 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Bienvenida guiada** (#76, tarea #58): la primera vez, en lugar de un
+  formulario, Lumi guía en cinco pasos cortos:
+  1. se presenta;
+  2. pide el nombre;
+  3. pide el mundo;
+  4. pide el personaje;
+  5. propone una práctica con 2 × 3 en puntos.
+
+  Al terminar, lleva a descubrir la tabla del 2. Dice cada paso en voz alta y
+  se puede saltar. No sale a quien ya jugó en el dispositivo. Cabe en el
+  teléfono, en vertical y acostado.
 - **Celebraciones** (#75, tarea #49): cada logro tiene su momento, de 600 ms
   o menos y sin retrasar la siguiente pregunta:
   - al acertar, el botón salta y las estrellas brincan;

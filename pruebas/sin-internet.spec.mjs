@@ -23,7 +23,7 @@ test("tras la primera visita, se juega sin conexión", async ({ page, context })
   await context.setOffline(true);
   await page.reload();
 
-  await expect(page.locator("h1")).toContainText("El Jardín Mágico");
+  await expect(page.locator("#screen-welcome h1")).toContainText("El Jardín Mágico");
   const fuente = await page.evaluate(() => document.fonts.check("16px 'Fredoka One'"));
   expect(fuente, "la fuente también está guardada").toBe(true);
 

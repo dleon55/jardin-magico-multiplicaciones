@@ -12,6 +12,20 @@ issues) y la [guía de estilo visual](docs/ESTILO.md) que sigue el arte nuevo.
 
 Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 
+**La primera vez**, Lumi guía al niño, una cosa por pantalla:
+1. se presenta;
+2. le pide su nombre (si quiere);
+3. le pide que elija mundo;
+4. le pide que elija personaje;
+5. le enseña a responder con 2 × 3, dibujado como 2 filas de 3 puntos (hay
+   que dar con la respuesta, y si falla, Lumi lo anima);
+6. lo lleva a descubrir la tabla del 2, de donde a la primera pregunta hay un
+   toque.
+
+Lumi dice cada paso en voz alta. La guía se puede saltar, y en un dispositivo
+que ya la vio, o que ya tiene jardines, no vuelve a salir. Cabe sin
+desplazarse en el teléfono, en vertical y acostado.
+
 **Lumi**, una semilla mágica que acaba de brotar, acompaña al niño. Es la
 mascota del juego, un dibujo original, y cambia de cara según lo que pasa:
 - en la bienvenida saluda, y se duerme si nadie toca nada en 20 s;
