@@ -61,6 +61,18 @@ mismo.
   dos enemigos más. Nunca hay dos enemigos en pantalla con la misma
   respuesta.
 
+  Héroes y enemigos están dibujados para el juego, en SVG según la
+  [guía de estilo](docs/ESTILO.md), no con emojis, así que se ven igual en
+  cualquier teléfono:
+  - el héroe respira, alza la varita al acertar y pone cara de golpe cuando
+    un enemigo llega;
+  - cada mundo tiene su enemigo (brócoli, monstruo de un ojo, fantasma,
+    zombi, alien y pulpito), que camina balanceándose;
+  - el jefe es el mismo enemigo, más grande, con corona y cejas fruncidas;
+  - al vencer a un enemigo sale un «pof» de estrellas.
+
+  Una operación larga entra lo justo para leerse entera.
+
   **🐢 Sin prisa** (en el mapa, por jugador): para quien se frustra o
   necesita pensar. Los enemigos van a la mitad de velocidad, salen de dos en
   dos como mucho y se paran antes de llegar al héroe, en fila, esperando la

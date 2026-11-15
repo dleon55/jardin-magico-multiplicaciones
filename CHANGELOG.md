@@ -9,6 +9,20 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Héroes y enemigos dibujados** (#77, tareas #53 y #54): los 8 héroes y
+  los 6 enemigos de la Aventura son SVG propios, según la guía de estilo,
+  en lugar de emojis:
+  - el héroe respira, alza la varita al acertar y pone cara de golpe;
+  - los enemigos caminan;
+  - el jefe lleva corona y cejas fruncidas;
+  - al vencer sale un «pof» de estrellas.
+
+  El mismo dibujo está en la ficha para elegir héroe, en el mapa de mundos
+  y en la imagen para compartir el puntaje. El héroe guardado de antes se
+  reconoce igual.
+
+  Arreglo de paso: en el teléfono, una operación larga («1/5 de 35») entraba
+  cortada por la orilla; ahora entra entera.
 - **Bienvenida guiada** (#76, tarea #58): la primera vez, en lugar de un
   formulario, Lumi guía en cinco pasos cortos:
   1. se presenta;

@@ -390,13 +390,30 @@
         .arena[data-mundo="5"] { background: linear-gradient(#67e8f9 0%, #0891b2 60%, #164e63 100%); }
         .decor { position: absolute; font-size: 2rem; opacity: 0.9; pointer-events: none; }
         .heroe { position: absolute; left: 50%; bottom: 0.75rem; transform: translateX(-50%); font-size: 3.5rem; line-height: 1; filter: drop-shadow(0 4px 4px rgba(0,0,0,.25)); }
-        .heroe .varita { position: absolute; right: -0.6rem; top: 0.2rem; font-size: 1.6rem; }
+        /* Arte propio de la Aventura: se mide en em, así los tamaños de
+           teléfono y de pantalla acostada (font-size) le siguen sirviendo. */
+        .heroe > svg { display: block; width: 1.35em; height: 1.35em; overflow: visible; }
+        .enemigo .cara > svg { display: block; width: 1.3em; height: 1.4em; overflow: visible; }
+        .arte [data-e] { display: none; }
+        .arte[data-estado="quieto"] [data-e~="quieto"], .arte[data-estado="lanzando"] [data-e~="lanzando"],
+        .arte[data-estado="golpeado"] [data-e~="golpeado"], .arte:not([data-estado]) [data-e~="quieto"] { display: inline; }
+        .heroe-arte .brazo-varita { transform-origin: 68px 74px; transition: transform 0.15s ease-out; }
+        .heroe-arte[data-estado="lanzando"] .brazo-varita { transform: rotate(-40deg); }
+        /* Quieto, el héroe respira; los enemigos caminan balanceándose. */
+        .heroe-arte { transform-origin: 50% 95%; animation: lumi-respira 3.2s ease-in-out infinite; }
+        .enemigo .cara > svg { transform-origin: 50% 95%; animation: anda 0.55s ease-in-out infinite alternate; }
+        .enemigo.esperando .cara > svg { animation-duration: 1.2s; }
+        @keyframes anda { from { transform: rotate(-5deg) translateY(0); } to { transform: rotate(5deg) translateY(-4%); } }
+        /* Al vencer a un enemigo: un «pof» de estrellas donde estaba. */
+        .pof { position: absolute; width: 4rem; height: 4rem; transform: translate(-50%, -10%); pointer-events: none; animation: pof 0.45s ease-out forwards; }
+        @keyframes pof { from { transform: translate(-50%, -10%) scale(0.4); opacity: 1; } to { transform: translate(-50%, -10%) scale(1.3); opacity: 0; } }
+        .elegir-heroe .ficha svg { width: 2.6rem; height: 2.6rem; overflow: visible; }
+        .titulo-mundo-arte svg { width: 2.2rem; height: 2.2rem; overflow: visible; display: inline-block; vertical-align: middle; }
         .heroe.golpeado { animation: golpe 0.4s ease; }
         @keyframes golpe { 0%,100% { transform: translateX(-50%); } 25% { transform: translateX(-62%); } 75% { transform: translateX(-38%); } }
         .enemigo { position: absolute; transform: translate(-50%, 0); display: flex; flex-direction: column; align-items: center; gap: 0.15rem; transition: opacity .25s, transform .25s; }
         .enemigo .cara { font-size: 2.6rem; line-height: 1; filter: drop-shadow(0 3px 3px rgba(0,0,0,.3)); }
         .enemigo.jefe .cara { font-size: 4.5rem; }
-        .enemigo .corona { font-size: 1.6rem; line-height: 1; margin-bottom: -0.6rem; position: relative; z-index: 1; }
         .enemigo .op { background: #fff; color: #111827; font-weight: 800; font-size: 1.1rem; padding: 0.1rem 0.5rem; border-radius: 0.75rem; border: 3px solid #4338ca; white-space: nowrap; box-shadow: 0 2px 0 rgba(0,0,0,.2); }
         .enemigo.objetivo .op { border-color: #dc2626; background: #fef9c3; }
         .enemigo .vida { height: 0.4rem; width: 4rem; background: #fecaca; border-radius: 1rem; overflow: hidden; }
@@ -1279,7 +1296,7 @@
             </div>
             <div id="arena" class="arena" data-mundo="0">
                 <div id="arena-decor" aria-hidden="true"></div>
-                <div id="heroe" class="heroe" aria-hidden="true"><span id="heroe-cara">🐱</span><span class="varita">✨</span></div>
+                <div id="heroe" class="heroe" aria-hidden="true"></div>
                 <div id="arena-fin" class="hidden absolute inset-0 bg-white/90 flex flex-col items-center justify-center gap-3 text-center p-4 z-10">
                     <p id="fin-titulo" class="bubble-font text-3xl text-indigo-900"></p>
                     <p id="fin-estrellas" class="text-4xl text-amber-600 tracking-widest"></p>
@@ -5997,6 +6014,154 @@
         // no mide la memoria como «escrita en 6 segundos». Sí se guarda el
         // avance de cada jugador: estrellas, mejor puntaje por nivel y hasta
         // dónde llegó. Y se puede compartir una imagen con el puntaje.
+        // --- ARTE DE LA AVENTURA (docs/ESTILO.md) ---
+        //
+        // Héroes y enemigos dibujados en SVG propio, en lugar de emojis que
+        // cambian con cada teléfono. Cada personaje se arma con piezas comunes
+        // (cuerpo, cabeza, ojos, varita) y sus rasgos propios: así los 8 héroes
+        // y los 6 enemigos se ven del mismo juego y pesan poco. El emoji sigue
+        // siendo el nombre del héroe guardado: no hay nada que migrar.
+        const TRAZO = 'stroke="var(--contorno)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
+        const RASGOS_HEROE = {
+            "🐱": { cuerpo: "#fbbf77", oscuro: "#d9822b", panza: "#fff3e0", orejas: "gato", interior: "#f9a8d4", bigotes: true },
+            "🐶": { cuerpo: "#ecd2ad", oscuro: "#9a6b3c", panza: "#fffaf0", orejas: "perro", hocico: "#fffaf0" },
+            "🐰": { cuerpo: "#f1f5f9", oscuro: "#cbd5e1", panza: "#ffffff", orejas: "conejo", interior: "#f9a8d4" },
+            "🦊": { cuerpo: "#fb923c", oscuro: "#c2410c", panza: "#fff7ed", orejas: "zorro", interior: "#fff7ed", hocico: "#fff7ed" },
+            "🐼": { cuerpo: "#ffffff", oscuro: "#3f3f46", panza: "#ffffff", orejas: "redondas", parches: true },
+            "🐸": { cuerpo: "#86efac", oscuro: "#16a34a", panza: "#ecfccb", orejas: null, ojosArriba: true },
+            "🐯": { cuerpo: "#fdba74", oscuro: "#c2410c", panza: "#fff7ed", orejas: "redondas", rayas: true, hocico: "#fff7ed" },
+            "🐨": { cuerpo: "#cbd5e1", oscuro: "#64748b", panza: "#f1f5f9", orejas: "koala", interior: "#f1f5f9", narizGrande: true },
+        };
+
+        function orejasHeroe(r) {
+            const o = r.oscuro, c = r.cuerpo, i = r.interior;
+            switch (r.orejas) {
+                case "gato": return `<path d="M30 34 L28 14 L45 25 Z" fill="${c}" ${TRAZO}/><path d="M70 34 L72 14 L55 25 Z" fill="${c}" ${TRAZO}/><path d="M32 29 L31 19 L40 25 Z" fill="${i}"/><path d="M68 29 L69 19 L60 25 Z" fill="${i}"/>`;
+                case "zorro": return `<path d="M29 36 L24 10 L46 24 Z" fill="${c}" ${TRAZO}/><path d="M71 36 L76 10 L54 24 Z" fill="${c}" ${TRAZO}/><path d="M26 18 L24 10 L32 15 Z" fill="${o}"/><path d="M74 18 L76 10 L68 15 Z" fill="${o}"/><path d="M31 30 L29 19 L39 25 Z" fill="${i}"/><path d="M69 30 L71 19 L61 25 Z" fill="${i}"/>`;
+                case "conejo": return `<ellipse cx="38" cy="14" rx="7" ry="17" fill="${c}" transform="rotate(-10 38 14)" ${TRAZO}/><ellipse cx="62" cy="14" rx="7" ry="17" fill="${c}" transform="rotate(10 62 14)" ${TRAZO}/><ellipse cx="38" cy="15" rx="3.2" ry="11" fill="${i}" transform="rotate(-10 38 15)"/><ellipse cx="62" cy="15" rx="3.2" ry="11" fill="${i}" transform="rotate(10 62 15)"/>`;
+                case "perro": return `<ellipse cx="26" cy="46" rx="8" ry="15" fill="${o}" transform="rotate(18 26 46)" ${TRAZO}/><ellipse cx="74" cy="46" rx="8" ry="15" fill="${o}" transform="rotate(-18 74 46)" ${TRAZO}/>`;
+                case "redondas": return `<circle cx="31" cy="25" r="8" fill="${r.parches ? o : c}" ${TRAZO}/><circle cx="69" cy="25" r="8" fill="${r.parches ? o : c}" ${TRAZO}/>`;
+                case "koala": return `<circle cx="27" cy="30" r="12" fill="${c}" ${TRAZO}/><circle cx="73" cy="30" r="12" fill="${c}" ${TRAZO}/><circle cx="28" cy="31" r="6" fill="${i}"/><circle cx="72" cy="31" r="6" fill="${i}"/>`;
+                default: return "";
+            }
+        }
+
+        /** Un héroe de la Aventura: quieto, lanzando (varita arriba) o golpeado. */
+        function svgHeroe(emoji) {
+            const r = RASGOS_HEROE[emoji] || RASGOS_HEROE["🐱"];
+            const ojosY = r.ojosArriba ? 30 : 44;
+            const ojos = r.ojosArriba
+                ? `<circle cx="38" cy="28" r="9" fill="${r.cuerpo}" ${TRAZO}/><circle cx="62" cy="28" r="9" fill="${r.cuerpo}" ${TRAZO}/><circle cx="38" cy="28" r="5.5" fill="#fff"/><circle cx="62" cy="28" r="5.5" fill="#fff"/>`
+                : "";
+            return `<svg class="arte heroe-arte" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <ellipse cx="50" cy="95" rx="22" ry="3.5" fill="var(--sombra-arte)"/>
+          ${orejasHeroe(r)}
+          <ellipse cx="40" cy="91" rx="7" ry="4.5" fill="${r.oscuro}" ${TRAZO}/><ellipse cx="60" cy="91" rx="7" ry="4.5" fill="${r.oscuro}" ${TRAZO}/>
+          <ellipse cx="31" cy="76" rx="5" ry="7" fill="${r.cuerpo}" transform="rotate(25 31 76)" ${TRAZO}/>
+          <ellipse cx="50" cy="78" rx="19" ry="15" fill="${r.cuerpo}" ${TRAZO}/>
+          <ellipse cx="50" cy="81" rx="11" ry="8.5" fill="${r.panza}"/>
+          ${ojos}
+          <circle cx="50" cy="45" r="24" fill="${r.cuerpo}" ${TRAZO}/>
+          ${r.ojosArriba ? `<path d="M29 40 Q50 34 71 40" fill="none" stroke="${r.cuerpo}" stroke-width="5"/>` : ""}
+          <ellipse cx="39" cy="35" rx="6" ry="3.5" fill="var(--brillo)" transform="rotate(-30 39 35)"/>
+          ${r.parches ? `<ellipse cx="40" cy="${ojosY}" rx="7" ry="8.5" fill="${r.oscuro}" transform="rotate(20 40 ${ojosY})"/><ellipse cx="60" cy="${ojosY}" rx="7" ry="8.5" fill="${r.oscuro}" transform="rotate(-20 60 ${ojosY})"/>` : ""}
+          ${r.rayas ? `<g fill="none" stroke="${r.oscuro}" stroke-width="3" stroke-linecap="round"><path d="M50 22 L50 30"/><path d="M42 23 L44 30"/><path d="M58 23 L56 30"/><path d="M27 44 L33 45"/><path d="M73 44 L67 45"/></g>` : ""}
+          ${r.hocico ? `<ellipse cx="50" cy="55" rx="11" ry="8" fill="${r.hocico}"/>` : ""}
+          ${r.parches ? `<g data-e="quieto lanzando" fill="#fff"><circle cx="41" cy="${ojosY}" r="5.6"/><circle cx="59" cy="${ojosY}" r="5.6"/></g>` : ""}
+          <g data-e="quieto lanzando" fill="var(--contorno)">
+            <ellipse cx="${r.ojosArriba ? 38 : 41}" cy="${ojosY - (r.ojosArriba ? 2 : 0)}" rx="3.4" ry="4.4"/><ellipse cx="${r.ojosArriba ? 62 : 59}" cy="${ojosY - (r.ojosArriba ? 2 : 0)}" rx="3.4" ry="4.4"/>
+            <circle cx="${r.ojosArriba ? 39.3 : 42.3}" cy="${ojosY - (r.ojosArriba ? 4 : 2)}" r="1.3" fill="#fff"/><circle cx="${r.ojosArriba ? 63.3 : 60.3}" cy="${ojosY - (r.ojosArriba ? 4 : 2)}" r="1.3" fill="#fff"/>
+          </g>
+          <g data-e="golpeado" fill="none" stroke="${r.parches ? "#fff" : "var(--contorno)"}" stroke-width="2.8" stroke-linecap="round">
+            <path d="M${r.ojosArriba ? 34 : 37} ${ojosY - 4} L${r.ojosArriba ? 41 : 44} ${ojosY} L${r.ojosArriba ? 34 : 37} ${ojosY + 3}"/><path d="M${r.ojosArriba ? 66 : 63} ${ojosY - 4} L${r.ojosArriba ? 59 : 56} ${ojosY} L${r.ojosArriba ? 66 : 63} ${ojosY + 3}"/>
+          </g>
+          <ellipse cx="33" cy="54" rx="5" ry="3" fill="var(--mejilla)"/><ellipse cx="67" cy="54" rx="5" ry="3" fill="var(--mejilla)"/>
+          ${r.narizGrande ? `<ellipse cx="50" cy="51" rx="5.5" ry="7" fill="#3f3f46"/>` : `<path d="M47 49.5 Q50 48.5 53 49.5 Q51.5 53 50 53 Q48.5 53 47 49.5 Z" fill="var(--contorno)" stroke="var(--contorno)" stroke-width="1.5" stroke-linejoin="round"/>`}
+          <path data-e="quieto lanzando" d="M${r.ojosArriba ? 40 : 45} ${r.narizGrande ? 60 : 56} Q50 ${r.narizGrande ? 64 : 61} ${r.ojosArriba ? 60 : 55} ${r.narizGrande ? 60 : 56}" fill="none" stroke="var(--contorno)" stroke-width="2.5" stroke-linecap="round"/>
+          <ellipse data-e="golpeado" cx="50" cy="${r.narizGrande ? 62 : 58}" rx="3" ry="3.5" fill="#9f1239" stroke="var(--contorno)" stroke-width="2"/>
+          ${r.bigotes ? `<g stroke="var(--contorno)" stroke-width="1.5" stroke-linecap="round"><path d="M36 52 L26 50"/><path d="M36 55 L26 56"/><path d="M64 52 L74 50"/><path d="M64 55 L74 56"/></g>` : ""}
+          <g class="brazo-varita">
+            <path d="M70 70 L86 50" stroke="var(--contorno)" stroke-width="6" stroke-linecap="round"/>
+            <path d="M70 70 L86 50" stroke="#a855f7" stroke-width="3" stroke-linecap="round"/>
+            <path d="M87 41 L89.5 46.5 L95 48.5 L89.5 50.5 L87 56 L84.5 50.5 L79 48.5 L84.5 46.5 Z" fill="var(--sol)" stroke="var(--contorno)" stroke-width="1.8" stroke-linejoin="round"/>
+            <ellipse cx="69" cy="74" rx="5" ry="7" fill="${r.cuerpo}" transform="rotate(-35 69 74)" ${TRAZO}/>
+          </g>
+        </svg>`;
+        }
+
+        /** Corona de jefe, encima del enemigo. */
+        const CORONA_JEFE = `<g transform="translate(30 -6) scale(0.4)"><path d="M5 40 L5 12 L25 28 L50 4 L75 28 L95 12 L95 40 Z" fill="var(--sol)" ${TRAZO} stroke-width="6"/><circle cx="50" cy="26" r="6" fill="#f43f5e" stroke="var(--contorno)" stroke-width="4"/></g>`;
+        const CEJAS_JEFE = (y) => `<g fill="none" stroke="var(--contorno)" stroke-width="3" stroke-linecap="round"><path d="M35 ${y - 2} L45 ${y + 2}"/><path d="M65 ${y - 2} L55 ${y + 2}"/></g>`;
+        const ojosSimples = (y, sep = 9, rx = 4, ry = 5) => `<g fill="var(--contorno)"><ellipse cx="${50 - sep}" cy="${y}" rx="${rx}" ry="${ry}"/><ellipse cx="${50 + sep}" cy="${y}" rx="${rx}" ry="${ry}"/><circle cx="${51.5 - sep}" cy="${y - 2}" r="1.4" fill="#fff"/><circle cx="${51.5 + sep}" cy="${y - 2}" r="1.4" fill="#fff"/></g>`;
+        const sonrisa = (y, ancho = 6) => `<path d="M${50 - ancho} ${y} Q50 ${y + 5} ${50 + ancho} ${y}" fill="none" stroke="var(--contorno)" stroke-width="2.5" stroke-linecap="round"/>`;
+
+        // Un enemigo por mundo de la Aventura: simpáticos, no de miedo.
+        const ARTE_ENEMIGO = [
+            // Brócoli: ramilletes arriba, tallo con cara.
+            (jefe) => `<ellipse cx="50" cy="95" rx="20" ry="3" fill="var(--sombra-arte)"/>
+          <path d="M36 50 L36 84 Q36 92 44 92 L56 92 Q64 92 64 84 L64 50 Z" fill="#bbf7d0" ${TRAZO}/>
+          <g fill="#22c55e" ${TRAZO}><circle cx="32" cy="40" r="13"/><circle cx="68" cy="40" r="13"/><circle cx="42" cy="28" r="14"/><circle cx="60" cy="27" r="14"/><circle cx="50" cy="42" r="13"/></g>
+          <g fill="#16a34a"><circle cx="38" cy="25" r="3"/><circle cx="62" cy="23" r="3"/><circle cx="28" cy="40" r="2.5"/><circle cx="72" cy="38" r="2.5"/></g>
+          ${ojosSimples(64, 7, 3.5, 4.5)}${sonrisa(75, 5)}${jefe ? CEJAS_JEFE(57) : ""}
+          <ellipse cx="42" cy="70" rx="3.5" ry="2" fill="var(--mejilla)"/><ellipse cx="58" cy="70" rx="3.5" ry="2" fill="var(--mejilla)"/>`,
+            // Monstruo: bolita morada de un ojo, cuernitos romos.
+            (jefe) => `<ellipse cx="50" cy="95" rx="24" ry="3.5" fill="var(--sombra-arte)"/>
+          <path d="M33 30 L28 14 L42 24 Z" fill="#fde68a" ${TRAZO}/><path d="M67 30 L72 14 L58 24 Z" fill="#fde68a" ${TRAZO}/>
+          <ellipse cx="38" cy="90" rx="7" ry="4.5" fill="#7c3aed" ${TRAZO}/><ellipse cx="62" cy="90" rx="7" ry="4.5" fill="#7c3aed" ${TRAZO}/>
+          <path d="M22 60 Q22 24 50 24 Q78 24 78 60 Q78 88 50 88 Q22 88 22 60 Z" fill="#a78bfa" ${TRAZO}/>
+          <ellipse cx="38" cy="36" rx="7" ry="4" fill="var(--brillo)" transform="rotate(-30 38 36)"/>
+          <circle cx="50" cy="50" r="12" fill="#fff" ${TRAZO}/><circle cx="51" cy="51" r="6" fill="var(--contorno)"/><circle cx="53" cy="48.5" r="2" fill="#fff"/>
+          <path d="M38 70 Q50 80 62 70" fill="#7f1d1d" ${TRAZO} stroke-width="2.5"/><path d="M45 72 L47 77 L49 73" fill="#fff" stroke="var(--contorno)" stroke-width="1.5" stroke-linejoin="round"/>
+          ${jefe ? `<g fill="none" stroke="var(--contorno)" stroke-width="3" stroke-linecap="round"><path d="M38 36 L48 40"/><path d="M62 36 L52 40"/></g>` : ""}`,
+            // Fantasma: sábana con olas abajo, sonrojado.
+            (jefe) => `<ellipse cx="50" cy="96" rx="18" ry="3" fill="var(--sombra-arte)"/>
+          <path d="M24 86 L24 48 Q24 18 50 18 Q76 18 76 48 L76 86 Q70 80 63 87 Q56 80 50 87 Q44 80 37 87 Q30 80 24 86 Z" fill="#f8fafc" ${TRAZO}/>
+          <path d="M18 56 Q14 64 24 66" fill="#f8fafc" ${TRAZO}/><path d="M82 56 Q86 64 76 66" fill="#f8fafc" ${TRAZO}/>
+          <ellipse cx="38" cy="32" rx="7" ry="4" fill="#e0e7ff" transform="rotate(-30 38 32)"/>
+          ${ojosSimples(47, 9, 4.5, 6)}
+          <ellipse cx="50" cy="62" rx="4" ry="5" fill="var(--contorno)"/>
+          <ellipse cx="35" cy="56" rx="5" ry="3" fill="var(--mejilla)"/><ellipse cx="65" cy="56" rx="5" ry="3" fill="var(--mejilla)"/>${jefe ? CEJAS_JEFE(38) : ""}`,
+            // Zombi: verdecito, despeinado, con un parche y los brazos al frente.
+            (jefe) => `<ellipse cx="50" cy="95" rx="20" ry="3" fill="var(--sombra-arte)"/>
+          <path d="M34 66 L34 86 Q34 92 40 92 L60 92 Q66 92 66 86 L66 66 Z" fill="#60a5fa" ${TRAZO}/>
+          <path d="M40 86 L44 80 L48 86 L52 80 L56 86 L60 80" fill="none" stroke="var(--contorno)" stroke-width="2" stroke-linejoin="round"/>
+          <ellipse cx="22" cy="66" rx="10" ry="5" fill="#a3e635" ${TRAZO}/><ellipse cx="78" cy="66" rx="10" ry="5" fill="#a3e635" ${TRAZO}/>
+          <circle cx="50" cy="42" r="24" fill="#bef264" ${TRAZO}/>
+          <path d="M28 34 Q32 18 44 20 Q46 12 54 18 Q64 14 70 26 Q74 30 72 36 Q64 26 54 28 Q44 24 34 34 Z" fill="#4b5563" ${TRAZO} stroke-width="2.5"/>
+          <path d="M58 30 L68 30 M60 27 L60 33 M64 27 L64 33" stroke="var(--contorno)" stroke-width="1.8" stroke-linecap="round"/>
+          <g fill="var(--contorno)"><circle cx="41" cy="44" r="5"/><circle cx="42.5" cy="42.5" r="1.5" fill="#fff"/></g>
+          <circle cx="59" cy="44" r="6.5" fill="#fff" ${TRAZO} stroke-width="2.5"/><circle cx="59" cy="45" r="2.8" fill="var(--contorno)"/>
+          <path d="M42 56 Q50 60 58 55" fill="none" stroke="var(--contorno)" stroke-width="2.5" stroke-linecap="round"/><path d="M48 58 L49 61 L51 58.5" fill="#fff" stroke="var(--contorno)" stroke-width="1.3"/>
+          ${jefe ? CEJAS_JEFE(36) : ""}`,
+            // Alien: cabezón, ojos grandes y antenas.
+            (jefe) => `<ellipse cx="50" cy="95" rx="18" ry="3" fill="var(--sombra-arte)"/>
+          <path d="M38 22 L32 8" stroke="var(--contorno)" stroke-width="3" stroke-linecap="round"/><path d="M62 22 L68 8" stroke="var(--contorno)" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="32" cy="8" r="4.5" fill="#f472b6" ${TRAZO} stroke-width="2.5"/><circle cx="68" cy="8" r="4.5" fill="#f472b6" ${TRAZO} stroke-width="2.5"/>
+          <path d="M40 70 L40 86 Q40 92 46 92 L54 92 Q60 92 60 86 L60 70 Z" fill="#34d399" ${TRAZO}/>
+          <path d="M20 42 Q20 18 50 18 Q80 18 80 42 Q80 72 50 74 Q20 72 20 42 Z" fill="#6ee7b7" ${TRAZO}/>
+          <ellipse cx="36" cy="28" rx="7" ry="4" fill="var(--brillo)" transform="rotate(-30 36 28)"/>
+          <ellipse cx="38" cy="45" rx="8" ry="11" fill="var(--contorno)" transform="rotate(-25 38 45)"/><ellipse cx="62" cy="45" rx="8" ry="11" fill="var(--contorno)" transform="rotate(25 62 45)"/>
+          <circle cx="36" cy="41" r="2.5" fill="#fff"/><circle cx="60" cy="41" r="2.5" fill="#fff"/>
+          ${sonrisa(62, 5)}${jefe ? CEJAS_JEFE(30) : ""}`,
+            // Pulpito del mar: cabeza redonda, manchas y tentáculos enrollados.
+            (jefe) => `<ellipse cx="50" cy="95" rx="24" ry="3" fill="var(--sombra-arte)"/>
+          <g fill="#f472b6" ${TRAZO}>
+            <path d="M28 66 Q16 80 24 90 Q30 92 30 86 Q26 80 36 72 Z"/><path d="M72 66 Q84 80 76 90 Q70 92 70 86 Q74 80 64 72 Z"/>
+            <path d="M40 70 Q36 84 42 92 Q48 92 46 86 Q44 80 48 72 Z"/><path d="M60 70 Q64 84 58 92 Q52 92 54 86 Q56 80 52 72 Z"/>
+          </g>
+          <path d="M22 50 Q22 18 50 18 Q78 18 78 50 Q78 74 50 74 Q22 74 22 50 Z" fill="#f9a8d4" ${TRAZO}/>
+          <ellipse cx="37" cy="30" rx="7" ry="4" fill="var(--brillo)" transform="rotate(-30 37 30)"/>
+          <g fill="#ec4899"><circle cx="62" cy="28" r="3.5"/><circle cx="70" cy="38" r="2.5"/><circle cx="30" cy="40" r="2.5"/></g>
+          ${ojosSimples(48, 10, 4, 5)}${sonrisa(60, 6)}
+          <ellipse cx="34" cy="56" rx="5" ry="3" fill="var(--mejilla)"/><ellipse cx="66" cy="56" rx="5" ry="3" fill="var(--mejilla)"/>${jefe ? CEJAS_JEFE(39) : ""}`,
+        ];
+
+        /** El enemigo del mundo `m`; el jefe lleva corona y cejas fruncidas. */
+        function svgEnemigo(m, jefe = false) {
+            const dibujo = (ARTE_ENEMIGO[m] || ARTE_ENEMIGO[0])(jefe);
+            return `<svg class="arte enemigo-arte" viewBox="0 -8 100 108" aria-hidden="true" focusable="false">${dibujo}${jefe ? CORONA_JEFE : ""}</svg>`;
+        }
+
         const HEROES = [
             { emoji: "🐱", nombre: "gatito" }, { emoji: "🐶", nombre: "perrito" }, { emoji: "🐰", nombre: "conejito" },
             { emoji: "🦊", nombre: "zorrito" }, { emoji: "🐼", nombre: "panda" }, { emoji: "🐸", nombre: "ranita" },
@@ -6090,7 +6255,7 @@
             document.getElementById("aventura-resumen").textContent =
                 `Puntaje: ${puntajeAventura()} · Estrellas: ${estrellasAventura()} de ${AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO * 3} · Vas en el mundo ${m + 1}`;
             pintarFichas(document.querySelector("#screen-aventura .elegir-heroe"),
-                HEROES.map((h) => ({ valor: h.emoji, emoji: h.emoji, texto: { visible: false, valor: h.nombre } })), g.heroe);
+                HEROES.map((h) => ({ valor: h.emoji, emoji: svgHeroe(h.emoji), texto: { visible: false, valor: h.nombre } })), g.heroe);
             document.querySelectorAll('#screen-aventura input[name="heroe"]').forEach((i) => {
                 i.addEventListener("change", () => { aventuraGuardada.heroe = i.value; guardarAventura(); });
             });
@@ -6103,7 +6268,7 @@
                 li.dataset.mundo = String(mi);
                 const titulo = document.createElement("h3");
                 titulo.className = "font-bold text-indigo-900 flex items-center gap-2";
-                titulo.innerHTML = `<span aria-hidden="true" class="text-2xl">${abierto ? mundo.enemigo : "🔒"}</span>`;
+                titulo.innerHTML = `<span aria-hidden="true" class="text-2xl titulo-mundo-arte">${abierto ? svgEnemigo(mi) : "🔒"}</span>`;
                 const t = document.createElement("span");
                 t.textContent = `${mi + 1}. ${mundo.nombre}`;
                 titulo.appendChild(t);
@@ -6211,7 +6376,8 @@
             document.getElementById("arena-fin").classList.add("hidden");
             document.getElementById("aventura-entrada").classList.remove("hidden");
             pintarDecor(mi);
-            document.getElementById("heroe-cara").textContent = aventuraGuardada.heroe;
+            document.getElementById("heroe").innerHTML = svgHeroe(aventuraGuardada.heroe);
+            estadoHeroe("quieto");
             document.getElementById("nivel-titulo").textContent = `${AVENTURA_MUNDOS[mi].nombre} · ${nombreNivel(n)}${c.sinPrisa ? " · 🐢 Sin prisa" : ""}`;
             construirTecladoAventura();
             pintarModoAventura();
@@ -6307,11 +6473,19 @@
             el.className = `enemigo${esJefe ? " jefe" : ""}`;
             el.dataset.id = String(e.id);
             el.setAttribute("aria-hidden", "true");
-            el.innerHTML = `${esJefe ? '<span class="vida"><span style="width:100%"></span></span>' : ""}<span class="op"></span>${esJefe ? '<span class="corona">👑</span>' : ""}<span class="cara"></span>`;
-            el.querySelector(".cara").textContent = AVENTURA_MUNDOS[aventura.mundo].enemigo;
+            el.innerHTML = `${esJefe ? '<span class="vida"><span style="width:100%"></span></span>' : ""}<span class="op"></span><span class="cara"></span>`;
+            el.querySelector(".cara").innerHTML = svgEnemigo(aventura.mundo, esJefe);
             el.querySelector(".op").textContent = op.texto;
             e.el = el;
-            document.getElementById("arena").appendChild(el);
+            const arena = document.getElementById("arena");
+            arena.appendChild(el);
+            // Una operación larga («1/5 de 35») es más ancha que el enemigo: si
+            // entra pegado a la orilla, se corta y no se lee. Entra lo justo
+            // para que se vea entera.
+            if (arena.clientWidth > 0) {
+                const medio = Math.min(0.4, el.offsetWidth / 2 / arena.clientWidth + 0.01);
+                if (Math.abs(e.x - 0.5) > 0.5 - medio) e.x = e.lado === "izq" ? medio : 1 - medio;
+            }
             aventura.enemigos.push(e);
             colocarEnemigo(e);
             aventura.hastaAparecer = (aventura.config.cruce / 2.6) * 1000;
@@ -6357,6 +6531,7 @@
             heroe.classList.remove("golpeado");
             void heroe.offsetWidth;
             heroe.classList.add("golpeado");
+            estadoHeroe("golpeado", 600);
             playIncorrectSound();
             pintarMarcador();
             if (aventura.corazones <= 0) terminarNivel(false);
@@ -6366,6 +6541,7 @@
             aventura.enemigos = aventura.enemigos.filter((x) => x !== e);
             if (vencido) {
                 e.el.classList.add("vencido");
+                pof(e);
                 setTimeout(() => e.el.remove(), 260);
             } else {
                 e.el.remove();
@@ -6389,6 +6565,7 @@
                 return false;
             }
             const e = candidatos.reduce((m, x) => (Math.abs(x.x - 0.5) < Math.abs(m.x - 0.5) ? x : m));
+            estadoHeroe("lanzando", 350);
             lanzarRayo(e);
             aventura.racha++;
             // Más puntos si estaba lejos (se respondió rápido) y por racha.
@@ -6419,6 +6596,31 @@
 
         function mensajeAventura(texto) {
             document.getElementById("aventura-mensaje").textContent = texto;
+        }
+
+        let vueltaHeroe = null;
+        /** Cambia la cara y la pose del héroe; con `ms`, vuelve a «quieto» después. */
+        function estadoHeroe(estado, ms = 0) {
+            const svg = document.querySelector("#heroe > svg");
+            if (!svg) return;
+            clearTimeout(vueltaHeroe);
+            svg.dataset.estado = estado;
+            if (ms > 0) vueltaHeroe = setTimeout(() => { svg.dataset.estado = "quieto"; }, ms);
+        }
+
+        /** Estrellas que se abren donde estaba el enemigo vencido. */
+        function pof(e) {
+            if (calmaEfectiva()) return;
+            const arena = document.getElementById("arena");
+            const p = document.createElement("span");
+            p.className = "pof";
+            p.setAttribute("aria-hidden", "true");
+            p.style.left = e.el.style.left;
+            p.style.top = e.el.style.top;
+            p.innerHTML = `<svg viewBox="0 0 100 100" width="100%" height="100%">${[0, 72, 144, 216, 288].map((g) =>
+                `<path transform="rotate(${g} 50 50) translate(50 14)" d="M0 -9 L2.6 -2.6 L9 0 L2.6 2.6 L0 9 L-2.6 2.6 L-9 0 L-2.6 -2.6 Z" fill="var(--sol)" stroke="var(--contorno)" stroke-width="2"/>`).join("")}<circle cx="50" cy="50" r="14" fill="#fff" opacity=".8"/></svg>`;
+            arena.appendChild(p);
+            setTimeout(() => p.remove(), 500);
         }
 
         function lanzarRayo(e) {
@@ -6951,8 +7153,28 @@
         }
 
         // --- Compartir el puntaje como imagen ---
+        /**
+         * Un dibujo SVG del juego como imagen suelta, para pintarla en un
+         * lienzo: fuera de la página no hay variables CSS, así que se cambian
+         * por sus valores.
+         */
+        function imagenDeArte(svg, estado = "quieto") {
+            const raiz = getComputedStyle(document.documentElement);
+            // Sin la hoja de estilos se verían todas las caras a la vez: se
+            // dejan solo las piezas del estado pedido.
+            const doc = new DOMParser().parseFromString(svg.replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" '), "image/svg+xml");
+            doc.querySelectorAll("[data-e]").forEach((n) => { if (!n.dataset.e.split(" ").includes(estado)) n.remove(); });
+            const suelto = new XMLSerializer().serializeToString(doc.documentElement).replace(/var\((--[\w-]+)\)/g, (_, v) => raiz.getPropertyValue(v).trim() || "#000");
+            return new Promise((ok) => {
+                const img = new Image();
+                img.onload = () => ok(img);
+                img.onerror = () => ok(null);
+                img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(suelto)}`;
+            });
+        }
+
         /** Dibuja la tarjeta del jugador en un lienzo de 1080 × 1080. */
-        function dibujarTarjetaPuntaje() {
+        async function dibujarTarjetaPuntaje() {
             const lienzo = document.createElement("canvas");
             lienzo.width = 1080;
             lienzo.height = 1080;
@@ -6970,8 +7192,8 @@
             c.fillStyle = "#312e81";
             c.font = "bold 58px 'Fredoka One', sans-serif";
             c.fillText("La Aventura del Jardín Mágico", 540, 190);
-            c.font = "260px sans-serif";
-            c.fillText(aventuraGuardada.heroe, 540, 480);
+            const heroe = await imagenDeArte(svgHeroe(aventuraGuardada.heroe));
+            if (heroe) c.drawImage(heroe, 540 - 150, 215, 300, 300);
             const g = aventuraGuardada;
             const m = Math.floor(g.alcanzado / NIVELES_POR_MUNDO);
             c.font = "bold 70px 'Fredoka One', sans-serif";
@@ -6981,7 +7203,7 @@
             c.font = "bold 96px 'Fredoka One', sans-serif";
             c.fillText(`${puntajeAventura()} puntos`, 540, 730);
             c.font = "48px 'Quicksand', sans-serif";
-            c.fillText(`★ ${estrellasAventura()} estrellas · Mundo ${m + 1}: ${AVENTURA_MUNDOS[m].enemigo}`, 540, 820);
+            c.fillText(`★ ${estrellasAventura()} estrellas · Mundo ${m + 1}: ${AVENTURA_MUNDOS[m].plural}`, 540, 820);
             c.fillStyle = "#4b5563";
             c.font = "36px 'Quicksand', sans-serif";
             c.fillText(fechaLarga(hoy()), 540, 900);
@@ -6991,7 +7213,7 @@
 
         async function compartirPuntaje() {
             const aviso = document.getElementById("aviso-compartir");
-            const lienzo = dibujarTarjetaPuntaje();
+            const lienzo = await dibujarTarjetaPuntaje();
             const blob = await new Promise((ok) => lienzo.toBlob(ok, "image/png"));
             if (!blob) { aviso.textContent = "No se pudo crear la imagen en este dispositivo."; return; }
             const nombre = `aventura-${(playerName || "jugador").normalize("NFD").replace(/[^\w]+/g, "-").toLowerCase()}-${hoy()}.png`;
