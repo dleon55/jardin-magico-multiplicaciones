@@ -404,7 +404,7 @@ plantas nuevas, cuándo sale y cuándo no), la copia de seguridad (guardar y
 recuperar en otro dispositivo, confirmar, archivos dañados o de otra versión,
 aviso en iPad), los mundos (elegir, cambiar sin
 borrar, lo que crece en cada uno, lo guardado de antes, contraste en cada
-fondo), la presentación (paisaje de cada mundo, fundidos, relieve y onda, y que
+fondo), la usabilidad (nada tapa a nada, la respuesta junto a las opciones, el nivel de la aventura cabe en el teléfono, textos que no se contradicen), la presentación (paisaje de cada mundo, fundidos, relieve y onda, y que
 «menos movimiento» lo apague), los perfiles y la vista para
 adultos (cada quien lo suyo, cambiar sin borrar, borrar solo uno, lo que
 más falla, días de práctica, lo de antes de los perfiles), el jardín (parejas, bancales y riego), las
