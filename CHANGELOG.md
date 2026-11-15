@@ -9,6 +9,11 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Plantas dibujadas** (#80, tarea #57): las 54 plantas de «Mi jardín» son
+  dibujos. El estado se distingue por la forma: semilla, brote, capullo,
+  florecida y marchita. Lo florecido es propio de cada mundo, con un color
+  por tabla. Lo que cambió desde la última visita se anima (crece, se
+  marchita o revive), y en la partida cada acierto deja un capullo.
 - **Iconos propios** (#79, tarea #56): la interfaz usa 28 iconos SVG
   propios, según la guía de estilo, en lugar de emojis que cambian con cada
   teléfono. Por ejemplo: volver, ajustes, estrellas, corazones, ayuda,

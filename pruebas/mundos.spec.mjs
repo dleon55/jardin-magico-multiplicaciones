@@ -35,9 +35,11 @@ test("elegir la selva de dinosaurios cambia el ambiente, el personaje y lo que c
   await ponerIntentos(page, "3x4", flor);
   await ponerIntentos(page, "5x6", [rapida("2026-11-02")]);
   await page.click("#screen-selector >> text=Mi jardín");
-  await expect(page.locator('[data-planta="3x4"]')).toContainText("🐊");          // la flora de la tabla del 3
+  // Lo florecido es el dibujo del mundo, con el color de la tabla del 3.
+  await expect(page.locator('[data-planta="3x4"] svg.planta-arte')).toHaveAttribute("data-mundo", "dinos");
+  await expect(page.locator('[data-planta="3x4"] svg.planta-arte')).toHaveAttribute("data-tabla", "3");
   await expect(page.locator('[data-planta="3x4"]')).toContainText("dinosaurio, te la sabes");
-  await expect(page.locator('[data-planta="5x6"]')).toContainText("🥚");          // lo «casi» es un huevo
+  await expect(page.locator('[data-planta="5x6"] svg.planta-arte')).toHaveAttribute("data-estado", "casi");
   await expect(page.locator("#screen-jardin .sim-flor")).toHaveText("🦕");
   const brota = await page.evaluate(() => Array.from({ length: 30 }, () => algoQueCrece()));
   const selva = await page.evaluate(() => MUNDOS.dinos.crecen);
@@ -110,7 +112,7 @@ test("cada mundo tiene una cosa por tabla y emojis que existen en tabletas vieja
   }
 });
 
-for (const [mundo, nombre, flor3, casi] of [["espacio", "Espacio", "⭐", "🌙"], ["mar", "Fondo del mar", "🐡", "🐚"], ["granja", "Granja", "🐖", "🐣"]]) {
+for (const [mundo, nombre] of [["espacio", "Espacio", "⭐", "🌙"], ["mar", "Fondo del mar", "🐡", "🐚"], ["granja", "Granja", "🐖", "🐣"]]) {
   test(`el mundo «${nombre}» tiene su fondo, lo que crece y lo «casi»`, async ({ page }) => {
     await page.goto("./");
     await crear(page, "Eli", { mundo });
@@ -118,8 +120,9 @@ for (const [mundo, nombre, flor3, casi] of [["espacio", "Espacio", "⭐", "🌙"
     await ponerIntentos(page, "3x4", flor);
     await ponerIntentos(page, "5x6", [rapida("2026-11-02")]);
     await page.click("#screen-selector >> text=Mi jardín");
-    await expect(page.locator('[data-planta="3x4"]')).toContainText(flor3);
-    await expect(page.locator('[data-planta="5x6"]')).toContainText(casi);
+    await expect(page.locator('[data-planta="3x4"] svg.planta-arte')).toHaveAttribute("data-mundo", mundo);
+    await expect(page.locator('[data-planta="3x4"] svg.planta-arte')).toHaveAttribute("data-estado", "florecida");
+    await expect(page.locator('[data-planta="5x6"] svg.planta-arte')).toHaveAttribute("data-estado", "casi");
     await page.click("#screen-jardin button:has-text('Menú')");
     await page.click("#screen-selector >> text=Cambiar de jugador");
     await expect(page.locator(".btn-perfil")).toContainText(nombre);
