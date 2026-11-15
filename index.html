@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Jardín Mágico de las Multiplicaciones</title>
     <meta name="description" content="Practica las tablas de multiplicar haciendo crecer un jardín. Funciona sin internet.">
-    <meta name="theme-color" content="#db2777">
+    <meta name="theme-color" content="#047857">
 
     <!-- Instalable en la pantalla de inicio de una tablet o un teléfono. -->
     <link rel="manifest" href="manifest.webmanifest">
@@ -121,6 +121,55 @@
         @keyframes flotar { to { transform: translateY(-2.5rem); opacity: 0; } }
         .reduce-motion .heroe.golpeado, .reduce-motion .puntos-flotan { animation: none; }
 
+        /* --- PRESENTACIÓN ---
+           Fondo ilustrado por mundo (colinas y adornos que flotan despacio),
+           entrada suave de cada pantalla, botones con relieve que se hunden al
+           tocarlos y una onda en el punto del toque. Todo el movimiento se
+           apaga con «Menos movimiento» o si el sistema lo pide: el juego se
+           ve igual de completo, solo quieto. */
+        main { z-index: 1; }
+        body { --colina1: #dcfce7; --colina2: #bbf7d0; }
+        body[data-mundo="huerto"] { --colina1: #bbf7d0; --colina2: #86efac; }
+        body[data-mundo="bosque"] { --colina1: #a7f3d0; --colina2: #6ee7b7; }
+        body[data-mundo="dinos"] { --colina1: #d9f99d; --colina2: #bef264; }
+        body[data-mundo="desierto"] { --colina1: #fde68a; --colina2: #fcd34d; }
+        body[data-mundo="espacio"] { --colina1: #c7d2fe; --colina2: #a5b4fc; }
+        body[data-mundo="mar"] { --colina1: #a5f3fc; --colina2: #67e8f9; }
+        body[data-mundo="granja"] { --colina1: #d9f99d; --colina2: #fde68a; }
+        body[data-mundo="flores"] { --colina1: #fbcfe8; --colina2: #bbf7d0; }
+        #fondo { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        #fondo .colinas { position: absolute; left: -10%; right: -10%; bottom: 0; height: 30vh;
+            background:
+                radial-gradient(60% 100% at 25% 100%, var(--colina2) 69.5%, transparent 70%),
+                radial-gradient(55% 90% at 80% 100%, var(--colina1) 69.5%, transparent 70%);
+            transition: background 0.6s ease; }
+        #fondo .adorno { position: absolute; line-height: 1; opacity: 0.45; filter: saturate(0.9); }
+        @keyframes deriva { 0%, 100% { transform: translate(0, 0) rotate(-4deg); } 50% { transform: translate(6px, -12px) rotate(4deg); } }
+        @keyframes entrar { from { opacity: 0; transform: translateY(14px) scale(0.985); } to { opacity: 1; transform: none; } }
+        @keyframes onda { from { transform: translate(-50%, -50%) scale(0); opacity: 0.22; } to { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
+        @media (prefers-reduced-motion: no-preference) {
+            html:not(.calma) #fondo .adorno { animation: deriva 9s ease-in-out infinite; }
+            html:not(.calma) .entrando { animation: entrar 0.38s cubic-bezier(0.22, 1, 0.36, 1) both; }
+            html:not(.calma) .entrando .escalonar > * { animation: entrar 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: calc(min(var(--i, 0), 8) * 0.04s); }
+            html:not(.calma) main button { transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease; }
+        }
+        /* Relieve: los botones con sombra parecen teclas que se hunden. */
+        main button.shadow-sm, main button.shadow-md, main button.shadow-lg, main button.shadow-xl {
+            box-shadow: 0 4px 0 rgb(15 23 42 / 0.16), 0 10px 18px -8px rgb(15 23 42 / 0.25);
+        }
+        main button:is(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl):active:not(:disabled) {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 rgb(15 23 42 / 0.16), 0 3px 6px -3px rgb(15 23 42 / 0.25);
+        }
+        @media (hover: hover) and (pointer: fine) {
+            main button:is(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl):hover:not(:disabled):not(:active) { transform: translateY(-2px); filter: brightness(1.04); }
+        }
+        .ficha span.cara:active { transform: scale(0.96); }
+        .con-onda { position: relative; overflow: hidden; }
+        /* Del color del texto: clara en los botones de color, oscura en los blancos. */
+        .onda { position: absolute; border-radius: 9999px; background: currentColor; pointer-events: none;
+            animation: onda 0.5s ease-out forwards; }
+
         .bubble-font {
             font-family: 'Fredoka One', 'Quicksand', system-ui, sans-serif;
         }
@@ -235,6 +284,8 @@
          pointer-events y posición van TAMBIÉN en línea, no solo como clases: si
          la hoja de estilos no carga, el lienzo quedaba encima de los botones y
          se quedaba con todos los clics. El juego era imposible de usar. -->
+    <div id="fondo" aria-hidden="true" style="position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden"><div class="colinas"></div></div>
+
     <canvas id="magicCanvas" aria-hidden="true"
             style="position:fixed; inset:0; pointer-events:none; z-index:50"
             class="fixed inset-0 pointer-events-none z-50"></canvas>
@@ -374,7 +425,7 @@
                 </script>
             </div>
             
-            <div id="grid-tablas-container" class="grid grid-cols-3 gap-3 md:gap-4 max-w-lg mx-auto">
+            <div id="grid-tablas-container" class="escalonar grid grid-cols-3 gap-3 md:gap-4 max-w-lg mx-auto">
                 <!-- Los botones se insertarán dinámicamente aquí -->
             </div>
 
@@ -724,7 +775,7 @@
                 <legend class="block text-gray-700 font-bold text-center w-full mb-1">Tu héroe</legend>
                 <div class="elegir-heroe grid grid-cols-4 sm:grid-cols-8 gap-1" data-nombre="heroe"></div>
             </fieldset>
-            <ol id="aventura-mundos" class="space-y-3" aria-label="Mundos de la aventura"></ol>
+            <ol id="aventura-mundos" class="escalonar space-y-3" aria-label="Mundos de la aventura"></ol>
             <div class="text-center">
                 <button type="button" id="btn-compartir" onclick="compartirPuntaje()" class="bubble-font bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-700 hover:to-fuchsia-700 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition">
                     <span aria-hidden="true">📤</span> Compartir mi puntaje
@@ -1551,11 +1602,75 @@
             // En la bienvenida aún no se sabe quién juega: fondo neutro.
             if (pantallaActual === "screen-welcome") delete document.body.dataset.mundo;
             else document.body.dataset.mundo = perfilEnUso().mundo;
+            pintarFondo(pantallaActual === "screen-welcome" ? null : perfilEnUso().mundo);
             document.getElementById("display-personaje").textContent = perfilEnUso().emoji;
             document.querySelectorAll(".sim-flor").forEach((e) => { e.textContent = m.flor; });
             document.querySelectorAll(".sim-capullo").forEach((e) => { e.textContent = m.capullo; });
             document.querySelectorAll(".sim-mundo").forEach((e) => { e.textContent = m.emoji; });
         }
+
+        // --- PRESENTACIÓN: fondo, entrada de pantallas y onda al tocar ---
+        const ADORNOS_NEUTROS = ["🌱", "☀️", "🌳", "🍃", "⭐", "☁️", "🌻", "🦋"];
+        // Dónde va cada adorno (en % de la pantalla) y su tamaño (rem): en los
+        // bordes, que es lo que queda a la vista alrededor de la tarjeta.
+        const SITIOS_ADORNO = [[4, 6, 3.2], [88, 4, 3.6], [2, 38, 2.6], [92, 34, 2.8], [6, 66, 3], [90, 62, 3.4], [16, 88, 2.6], [78, 90, 2.8]];
+
+        function adornosDe(clave) {
+            if (!clave || !MUNDOS[clave]) return ADORNOS_NEUTROS;
+            const cielo = clave === "espacio" ? ["🌙", "⭐"] : clave === "mar" ? ["☀️", "🌊"] : ["☀️", "☁️"];
+            return [cielo[0], cielo[1], ...MUNDOS[clave].flora.slice(0, 6)];
+        }
+
+        /** Pinta los adornos del fondo; solo si cambió el mundo. */
+        function pintarFondo(clave) {
+            const fondo = document.getElementById("fondo");
+            const marca = clave || "neutro";
+            if (fondo.dataset.mundo === marca) return;
+            fondo.dataset.mundo = marca;
+            fondo.querySelectorAll(".adorno").forEach((a) => a.remove());
+            adornosDe(clave).forEach((emoji, i) => {
+                const [x, y, tam] = SITIOS_ADORNO[i];
+                const a = document.createElement("span");
+                a.className = "adorno";
+                a.textContent = emoji;
+                a.style.left = `${x}%`;
+                a.style.top = `${y}%`;
+                a.style.fontSize = `${tam}rem`;
+                a.style.animationDelay = `${-i * 1.3}s`;
+                fondo.appendChild(a);
+            });
+        }
+
+        /** La pantalla que aparece entra con un fundido corto (sin movimiento en calma). */
+        function entrarPantalla(el) {
+            if (!el) return;
+            el.classList.remove("entrando");
+            // Lo escalonado entra uno tras otro, cada uno según su orden.
+            el.querySelectorAll(".escalonar").forEach((caja) =>
+                [...caja.children].forEach((h, i) => h.style.setProperty("--i", String(i))));
+            void el.offsetWidth;   // reinicia la animación si se vuelve a la misma pantalla
+            el.classList.add("entrando");
+        }
+        document.addEventListener("animationend", (ev) => {
+            if (ev.animationName === "entrar" && ev.target.classList.contains("entrando")) ev.target.classList.remove("entrando");
+        });
+
+        /** Una onda desde el punto donde se tocó el botón. */
+        document.addEventListener("pointerdown", (ev) => {
+            const boton = ev.target.closest?.("main button");
+            if (!boton || boton.disabled || calmaEfectiva() || movimientoReducido.matches) return;
+            const posicion = getComputedStyle(boton).position;
+            if (posicion !== "static" && posicion !== "relative") return;
+            const r = boton.getBoundingClientRect();
+            const lado = Math.hypot(r.width, r.height) * 2;
+            const onda = document.createElement("span");
+            onda.className = "onda";
+            onda.setAttribute("aria-hidden", "true");
+            Object.assign(onda.style, { width: `${lado}px`, height: `${lado}px`, left: `${ev.clientX - r.left}px`, top: `${ev.clientY - r.top}px` });
+            boton.classList.add("con-onda");
+            boton.appendChild(onda);
+            setTimeout(() => onda.remove(), 550);
+        });
 
         /**
          * Pinta las fichas de mundo y personaje en un contenedor. `elegido`
@@ -2141,6 +2256,7 @@
             if (id !== "screen-aventura-juego") detenerAventura();   // el nivel no sigue de fondo
             pantallaActual = id;
             aplicarMundo();
+            entrarPantalla(document.getElementById(id));
             const destino = document.querySelector(`#${id} [data-foco]`);
             if (destino) {
                 destino.setAttribute("tabindex", "-1");
