@@ -12,6 +12,20 @@ issues) y la [guía de estilo visual](docs/ESTILO.md) que sigue el arte nuevo.
 
 Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 
+**Lumi**, una semilla mágica que acaba de brotar, acompaña al niño. Es la
+mascota del juego, un dibujo original, y cambia de cara según lo que pasa:
+- en la bienvenida saluda, y se duerme si nadie toca nada en 20 s;
+- en la partida, junto a las estrellas:
+  - celebra cada acierto;
+  - se sorprende cuando una multiplicación florece;
+  - tras un fallo anima («¡casi!»), nunca se pone triste;
+  - piensa mientras la ayuda está abierta;
+- en la victoria, celebra.
+
+Respira y parpadea; con «Menos movimiento» se queda quieta y solo cambia de
+cara. Es decorativa para el lector de pantalla, porque el texto ya dice lo
+mismo.
+
 - **🐾 La Aventura.** Un animalito con su varita (gatito, perrito, conejito,
   zorrito, panda, ranita, tigrito o koala) contra enemigos que entran por los
   bordes de la pantalla y avanzan hacia él, cada uno con una operación. Al

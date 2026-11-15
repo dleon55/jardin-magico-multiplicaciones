@@ -9,6 +9,22 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Lumi, la mascota** (#74, tarea #52 del plan): una semilla mágica dibujada
+  a mano en SVG, según la guía de estilo, con seis caras:
+  - contenta;
+  - pensando;
+  - animando;
+  - celebrando;
+  - sorprendida;
+  - durmiendo.
+
+  Lumi aparece en tres lugares:
+  - **la bienvenida:** reemplaza 🌱☀️ y se duerme si nadie toca;
+  - **la barra de la partida:** celebra el acierto, se sorprende al florecer, anima tras un fallo y piensa con la ayuda abierta;
+  - **la victoria:** reemplaza 👑🌻👑 y celebra.
+
+  No ocupa espacio nuevo, así que la partida sigue cabiendo en un teléfono de
+  360 × 640.
 - **Plan de evolución y guía de estilo** (#73): `docs/PLAN.md` ordena lo que
   sigue en tres hitos (#45 calidad que se ve y se oye, #46 un solo camino y
   mejor enseñanza, #47 plataforma), con 25 tareas en issues. `docs/ESTILO.md`
