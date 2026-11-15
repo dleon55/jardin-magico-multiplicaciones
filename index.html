@@ -183,6 +183,8 @@
             background: #ecfccb;
         }
         .planta .dibujo svg { display: block; width: 2.7rem; height: 2.5rem; overflow: visible; transform-origin: 50% 90%; }
+        .leyenda-planta { display: inline-block; vertical-align: middle; }
+        .leyenda-planta svg { display: block; width: 1.9rem; height: 1.8rem; overflow: visible; }
         .planta-partida svg { display: block; width: 2.6rem; height: 2.4rem; overflow: visible; }
         .flor-florecida .planta-partida svg { width: 3.2rem; height: 3rem; }
         /* Lo que cambió desde la última visita: crece, se marchita o revive al regarlo. */
@@ -1227,11 +1229,12 @@
                 </button>
             </div>
             <ul class="flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm text-gray-700" aria-label="Cómo crece cada planta">
-                <li><span aria-hidden="true">🟫</span> Por sembrar</li>
-                <li><span aria-hidden="true">🌱</span> Brote: practicando</li>
-                <li><span class="sim-capullo" aria-hidden="true">🌷</span> Casi</li>
-                <li><span class="sim-flor" aria-hidden="true">🌸</span> Te la sabes</li>
-                <li><span aria-hidden="true">🥀</span> Marchita: riégala repasándola</li>
+                <!-- La leyenda usa los mismos dibujos que las plantas (ver mostrarJardin). -->
+                <li><span class="leyenda-planta" data-leyenda="nuevo"></span> Por sembrar</li>
+                <li><span class="leyenda-planta" data-leyenda="practica"></span> Brote: practicando</li>
+                <li><span class="leyenda-planta" data-leyenda="casi"></span> Casi</li>
+                <li><span class="leyenda-planta" data-leyenda="florecida"></span> Te la sabes</li>
+                <li><span class="leyenda-planta" data-leyenda="marchita"></span> Marchita: riégala repasándola</li>
             </ul>
             <section aria-labelledby="amigos-titulo" class="bg-sky-50 border-2 border-sky-200 rounded-2xl px-3 py-2 text-center">
                 <h3 id="amigos-titulo" class="text-sm font-bold text-sky-900">Tus amigos del jardín</h3>
@@ -4331,6 +4334,10 @@
             }
 
             almacen.guardar("vistos", JSON.stringify(ahora));
+            // La leyenda, con los dibujos del mundo de quien juega.
+            document.querySelectorAll("#screen-jardin [data-leyenda]").forEach((l) => {
+                l.innerHTML = svgPlanta(l.dataset.leyenda, perfilEnUso().mundo, 1);
+            });
             const cuenta = cuentaPorEstado();
             const total = plantas().length;
             document.getElementById("jardin-resumen").innerText = `${cuenta.florecida} de ${total} flores`;

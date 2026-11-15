@@ -48,6 +48,16 @@ test("las 54 plantas de «Mi jardín» son dibujos, sin emojis, y dicen su estad
   await expect(page.locator('[data-planta="7x8"] .sr-only')).toContainText("te la sabes");
 });
 
+test("la leyenda del jardín usa los mismos dibujos, sin emojis", async ({ page }) => {
+  await alMenu(page);
+  await abrirJardin(page);
+  const leyenda = page.locator("#screen-jardin [data-leyenda] svg.planta-arte");
+  await expect(leyenda).toHaveCount(5);
+  expect(await leyenda.evaluateAll((s) => s.map((x) => x.dataset.estado))).toEqual(["nuevo", "practica", "casi", "florecida", "marchita"]);
+  const texto = await page.locator('#screen-jardin ul[aria-label="Cómo crece cada planta"]').textContent();
+  expect(EMOJI.test(texto)).toBe(false);
+});
+
 test("la primera vez nada se anima; después, lo que creció desde la última visita crece", async ({ page }) => {
   await alMenu(page);
   await ponerIntentos(page, "3x4", [elegida("2026-11-01")]);

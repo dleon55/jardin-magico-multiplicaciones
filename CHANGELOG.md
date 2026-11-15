@@ -9,6 +9,9 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-15
 
+- **Leyenda de «Mi jardín» con dibujos** (#82): la leyenda de los estados
+  muestra los mismos dibujos que las plantas, con lo florecido del mundo de
+  quien juega; antes quedaban los emojis viejos.
 - **Sonidos por capas** (#81, tarea #50): los pitidos de un tono se cambian
   por efectos de tres capas (ataque, cuerpo y brillo), todos de la escala
   pentatónica de do, como la música, y con el volumen igualado. Hay uno para

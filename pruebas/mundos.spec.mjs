@@ -40,7 +40,8 @@ test("elegir la selva de dinosaurios cambia el ambiente, el personaje y lo que c
   await expect(page.locator('[data-planta="3x4"] svg.planta-arte')).toHaveAttribute("data-tabla", "3");
   await expect(page.locator('[data-planta="3x4"]')).toContainText("dinosaurio, te la sabes");
   await expect(page.locator('[data-planta="5x6"] svg.planta-arte')).toHaveAttribute("data-estado", "casi");
-  await expect(page.locator("#screen-jardin .sim-flor")).toHaveText("🦕");
+  // La leyenda dibuja lo florecido del mundo, como las plantas.
+  await expect(page.locator('#screen-jardin [data-leyenda="florecida"] svg.planta-arte')).toHaveAttribute("data-mundo", "dinos");
   const brota = await page.evaluate(() => Array.from({ length: 30 }, () => algoQueCrece()));
   const selva = await page.evaluate(() => MUNDOS.dinos.crecen);
   expect(brota.every((e) => selva.includes(e))).toBe(true);
