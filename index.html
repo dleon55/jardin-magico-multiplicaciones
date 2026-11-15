@@ -351,6 +351,15 @@
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="musica" aria-pressed="true">
                     <span><span aria-hidden="true">🎶</span> Música</span><span class="estado font-bold">Sí</span>
                 </button>
+                <!-- Volumen de la música: de 0 a 10; 5 es el de antes. -->
+                <div class="px-3 py-1 space-y-1">
+                    <label for="volumen-musica" class="flex justify-between text-sm font-bold text-gray-700">
+                        <span><span aria-hidden="true">🔉</span> Volumen de la música</span>
+                        <span id="volumen-musica-valor" aria-hidden="true">5</span>
+                    </label>
+                    <input type="range" id="volumen-musica" min="0" max="10" step="1" value="5"
+                           class="w-full accent-green-700" style="touch-action: pan-y">
+                </div>
                 <!-- Tres posiciones: cada toque pasa a la siguiente. Sin aria-pressed:
                      no es un interruptor, y el nombre accesible ya incluye el valor. -->
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 rounded-xl border hover:bg-sky-50" data-ajuste="velocidad">
@@ -1285,7 +1294,7 @@
         // al sistema operativo (y a sus cambios); true o false, lo que se eligió
         // aquí. Si se guardara el valor derivado del sistema, cambiar la voz
         // congelaría "calma" para siempre.
-        const ajustes = { voz: true, efectos: true, musica: true, velocidad: "normal", calma: null };
+        const ajustes = { voz: true, efectos: true, musica: true, volumenMusica: 5, velocidad: "normal", calma: null };
 
         // Velocidades de la voz, en el orden en que las recorre el botón. Más de
         // 1,2 y en español los números se atropellan ("siete por ocho, cincuenta
@@ -1311,10 +1320,16 @@
                 Object.assign(ajustes, guardados);
             } catch (e) { /* ajustes corruptos: se quedan los de serie */ }
             if (!(ajustes.velocidad in VELOCIDADES)) ajustes.velocidad = "normal";
+            const v = Number(ajustes.volumenMusica);
+            ajustes.volumenMusica = Number.isInteger(v) && v >= 0 && v <= 10 ? v : 5;
         }
 
         function aplicarAjustes() {
             document.documentElement.classList.toggle("calma", calmaEfectiva());
+            const deslizador = document.getElementById("volumen-musica");
+            deslizador.value = String(ajustes.volumenMusica);
+            deslizador.setAttribute("aria-valuetext", ajustes.volumenMusica === 0 ? "0 de 10, en silencio" : `${ajustes.volumenMusica} de 10`);
+            document.getElementById("volumen-musica-valor").textContent = String(ajustes.volumenMusica);
             document.querySelectorAll(".ajuste").forEach((boton) => {
                 const nombre = boton.dataset.ajuste;
                 if (nombre === "velocidad") {
@@ -1351,6 +1366,16 @@
             }
         }
 
+        function cambiarVolumenMusica(valor) {
+            if (!Number.isInteger(valor) || valor < 0 || valor > 10) return;
+            ajustes.volumenMusica = valor;
+            almacen.guardar("ajustes", JSON.stringify(ajustes));
+            aplicarAjustes();
+            if (musica.salida) musica.salida.gain.value = volumenMusica();
+            // Subirlo con la música apagada la enciende: es lo que se espera.
+            if (valor > 0 && !ajustes.musica) cambiarAjuste("musica");
+        }
+
         /** El mundo del jardín en uso. */
         function mundo() {
             const p = perfiles.find((x) => x.id === perfilActual);
@@ -1385,7 +1410,9 @@
         // con más ritmo. Va bajita, baja más mientras habla la voz, y se calla
         // si se cambia de app. Ocho compases que se repiten: melodía en escala
         // pentatónica (nunca suena «mal»), bajo y un acorde suave por compás.
-        const VOLUMEN_MUSICA = 0.05;
+        // Ganancia de la música según el ajuste (0 a 10): 5, el de serie, da 0,05.
+        const VOLUMEN_MAXIMO_MUSICA = 0.1;
+        const volumenMusica = () => (VOLUMEN_MAXIMO_MUSICA * ajustes.volumenMusica) / 10;
         // Cada pieza: escala (semitonos desde la base), acordes (uno por compás,
         // en semitonos desde la base) y ocho compases de melodía en grados de
         // su escala (0 = la base; 5 = la base una octava arriba, si la escala
@@ -1502,7 +1529,7 @@
                     musica.salida = audioCtx.createGain();
                     musica.salida.connect(audioCtx.destination);
                 }
-                musica.salida.gain.value = VOLUMEN_MUSICA;
+                musica.salida.gain.value = volumenMusica();
                 musica.siguiente = audioCtx.currentTime + 0.15;
                 musica.paso = 0;
                 musica.temporizador = setInterval(programarMusica, 100);
@@ -1520,7 +1547,7 @@
             const p = PIEZAS[musica.pieza];
             const corchea = 60 / p.tempo / 2;
             const hablando = "speechSynthesis" in window && Boolean(window.speechSynthesis.speaking);
-            musica.salida.gain.value = VOLUMEN_MUSICA * (hablando ? 0.3 : 1);
+            musica.salida.gain.value = volumenMusica() * (hablando ? 0.3 : 1);
             // Si el reloj se adelantó (pestaña en pausa), se retoma desde ahora.
             if (musica.siguiente < audioCtx.currentTime) musica.siguiente = audioCtx.currentTime + 0.05;
             while (musica.siguiente < audioCtx.currentTime + 0.35) {
@@ -1703,6 +1730,8 @@
             movimientoReducido.addEventListener("change", aplicarAjustes);
             document.querySelectorAll(".ajuste").forEach((boton) =>
                 boton.addEventListener("click", () => cambiarAjuste(boton.dataset.ajuste)));
+            // El volumen se oye al momento, mientras se desliza.
+            document.getElementById("volumen-musica").addEventListener("input", (ev) => cambiarVolumenMusica(Number(ev.target.value)));
 
             elegirVoz();
             // Si en 3 s el navegador no ha entregado ninguna voz, no la va a

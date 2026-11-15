@@ -163,6 +163,51 @@ test("al pasar de mundo cambia la música, y cada nivel suena con la de su mundo
   expect(r).toEqual(["brocolis", "monstruos", "fantasmas", "zombis", "aliens", "mar"]);
 });
 
+test("el volumen de la música se ajusta de 0 a 10, se oye al momento y se recuerda", async ({ page }) => {
+  await alMenu(page);
+  await page.evaluate(() => startTable(2));
+  await expect.poll(() => page.evaluate(() => musica.salida !== null)).toBe(true);
+  await page.evaluate(() => backToSelector());
+  await page.click("#ajustes summary");
+  const deslizador = page.locator("#volumen-musica");
+  await expect(deslizador).toHaveValue("5");                                   // el de serie, el de antes
+  await expect(deslizador).toHaveAttribute("aria-valuetext", "5 de 10");
+  expect(await page.evaluate(() => musica.salida.gain.value)).toBeCloseTo(0.05, 3);
+  await deslizador.fill("9");
+  await expect(page.locator("#volumen-musica-valor")).toHaveText("9");
+  expect(await page.evaluate(() => musica.salida.gain.value)).toBeCloseTo(0.09, 3);
+  expect(await page.evaluate(() => JSON.parse(almacen.leer("ajustes")).volumenMusica)).toBe(9);
+  await deslizador.fill("0");
+  await expect(deslizador).toHaveAttribute("aria-valuetext", "0 de 10, en silencio");
+  expect(await page.evaluate(() => musica.salida.gain.value)).toBe(0);
+  // Con la voz, baja en proporción a lo elegido.
+  await deslizador.fill("10");
+  const conVoz = await page.evaluate(() => {
+    Object.defineProperty(window.speechSynthesis, "speaking", { configurable: true, get: () => true });
+    programarMusica();
+    return musica.salida.gain.value;
+  });
+  expect(conVoz).toBeCloseTo(0.03, 3);
+  await page.reload();
+  await expect(page.locator("#volumen-musica")).toHaveValue("10");
+});
+
+test("subir el volumen con la música apagada la enciende; lo guardado raro vuelve al de serie", async ({ page }) => {
+  await alMenu(page);
+  await page.evaluate(() => { startTable(2); cambiarAjuste("musica"); });
+  expect(await page.evaluate(() => [ajustes.musica, musica.temporizador])).toEqual([false, null]);
+  await page.evaluate(() => cambiarVolumenMusica(6));
+  expect(await page.evaluate(() => [ajustes.musica, musica.temporizador !== null])).toEqual([true, true]);
+  for (const raro of [42, -1, "fuerte", 2.5]) {
+    const v = await page.evaluate((x) => {
+      almacen.guardar("ajustes", JSON.stringify({ volumenMusica: x }));
+      cargarAjustes();
+      return ajustes.volumenMusica;
+    }, raro);
+    expect(v).toBe(5);
+  }
+});
+
 test.describe("en el teléfono", () => {
   test.use({ viewport: { width: 390, height: 664 }, isMobile: true, hasTouch: true });
 

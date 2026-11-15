@@ -329,7 +329,7 @@ Con teclado (en una tableta estos atajos no se muestran):
 | `Espacio` | Otra fila, al descubrir una tabla |
 | `Esc` | Volver al menú, desde el juego, el mapa, el jardín, el vivero o al descubrir una tabla; desde la vista para adultos, volver a donde se estaba |
 
-En **Ajustes** se pueden apagar por separado la voz, los sonidos y la música, elegir la
+En **Ajustes** se pueden apagar por separado la voz, los sonidos y la música, ajustar el volumen de la música (de 0 a 10; se oye al momento), elegir la
 velocidad de la voz (despacio, normal o rápida) y activar «menos movimiento».
 Este último se enciende solo si el dispositivo ya lo pide, y apaga los
 fundidos de entrada, la onda de los botones y los adornos que flotan.
