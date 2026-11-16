@@ -9,6 +9,12 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-16
 
+- **Dividir con lo que sobra** (#93, tarea #71, primer tema nuevo de la
+  Fase 3): «17 ÷ 5 = 3, y sobran 2».
+  - Se elige entre cuatro respuestas, y las falsas son los errores típicos.
+  - Al fallar, se explica cuál fue el error.
+  - La ayuda dibuja las filas del divisor y lo que sobra aparte.
+  - Queda en la vista para adultos y en el informe.
 - **Mi camino** (#92, cierra el Hito 2 #46): un solo camino de 15 tramos
   une las tablas del jardín y los mundos de la Aventura.
   - Cada mundo se abre al saberse sus tablas (arbolito o más) y, como
