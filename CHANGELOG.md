@@ -9,6 +9,29 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-16
 
+- **La ayuda se toca** (#88, tarea #63): con las multiplicaciones, el
+  rectángulo de la ayuda deja de ser solo para mirar.
+  - Se ponen y se quitan filas, de 1 a 10.
+  - Tocar una fila parte el rectángulo ahí (7 × 8 = 5 × 8 + 2 × 8), cada
+    parte de un color. «Partir» corta después de la quinta fila y «Juntar»
+    lo deshace.
+  - Al girarlo, filas y columnas se cambian también en un rectángulo ya
+    tocado.
+  - El total se escribe y se dice al momento: «6 × 8 = 48». El de la
+    pregunta sale como «?», así que la ayuda no da la respuesta; partida, da
+    cada parte para sumarlas.
+  - Con teclado, sobre el rectángulo, se usan las flechas, y el lector de
+    pantalla oye el total.
+  - Acostado en el teléfono, el rectángulo va al lado del texto para que
+    quepa entero.
+
+  Al dividir, en los retos y en las fracciones, el dibujo sigue siendo solo
+  para mirar.
+
+  De paso, la prueba «los paisajes pesan poco» medía la página entera contra
+  un tope fijo y fallaba con cualquier cambio ajeno. Ahora mide solo el
+  código de los paisajes (unos 15 KB, con un tope de 30). Además, hay una
+  alarma aparte si la página pasa de 600 KB.
 - **¿Qué tablas ya sabes?** (#86, tarea #61): en un jardín nuevo, «Seguir»
   propone un diagnóstico corto y opcional. Son dos preguntas por tabla, se
   para al fallar dos seguidas y nunca pasa de 16. Lo que ya sabe se siembra

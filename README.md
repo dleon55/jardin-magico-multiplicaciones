@@ -248,6 +248,13 @@ mismo.
 - **La ayuda dibuja la multiplicación como un rectángulo** de filas × columnas,
   con huecos cada 5 para contar de 5 en 5. Al girarlo se ve que 9 × 7 y 7 × 9
   son los mismos puntos.
+- **El rectángulo de la ayuda se toca**, como el material de clase. Al
+  multiplicar se pueden poner y quitar filas, y tocar una fila parte el
+  rectángulo ahí: 7 × 8 se ve como 5 × 8 + 2 × 8, cada parte de un color.
+  El total se escribe y se dice al momento, salvo el de la pregunta misma,
+  que sale como «?» para que no regale la respuesta. Partido, da cada parte
+  y quien juega las suma. Con teclado, sobre el rectángulo: las flechas
+  arriba y abajo quitan y ponen filas, y las de los lados mueven el corte.
 - **La ayuda parte de lo que ya sabes.** Si quien juega domina una vecina
   (florecida o «casi») de la que le preguntan, la ayuda empieza por ahí:
   «Desde lo que ya sabes: 7 × 7 = 49. Entonces 7 × 8 es 7 × 7 y una vez más
@@ -476,6 +483,8 @@ Con teclado (en una tableta estos atajos no se muestran):
 | `1`–`4` | Elegir respuesta, cuando hay opciones |
 | `0`–`9`, `Retroceso`, `Enter` | Escribir la respuesta, borrar y mandarla, cuando se escribe |
 | `H` | Abrir o cerrar la ayuda |
+| `↑` `↓` | Quitar o poner una fila, con el foco en el rectángulo de la ayuda |
+| `←` `→` | Mover el corte del rectángulo de la ayuda |
 | `Enter` o `Espacio` | Seguir a la siguiente pregunta |
 | `Espacio` | Otra fila, al descubrir una tabla |
 | `Esc` | Volver al menú, desde el juego, el mapa, el jardín, el vivero o al descubrir una tabla; desde la vista para adultos, volver a donde se estaba |
@@ -570,7 +579,7 @@ mano.
 
 Las pruebas (`pruebas/`) cubren el aprendizaje (orden, repasos y opciones), la
 respuesta escrita (teclado, tiempo, ayuda y florecer), la didáctica
-(rectángulo de ayuda, trucos, pistas desde lo que ya se sabe, tablas del 1 al 9, estados del mapa y lo
+(rectángulo de ayuda y cada gesto para tocarlo, trucos, pistas desde lo que ya se sabe, tablas del 1 al 9, estados del mapa y lo
 guardado por la versión anterior), la aventura (retos por mundo, vencer, corazones, operación que vuelve, jefe, sin prisa (velocidad, esperan en fila, sin perder corazones, sin premio por rapidez, lo que se recuerda),
 niveles que se abren, elegir, escribir con el dedo y cuánto acierta el reconocedor, compartir la imagen, lo guardado), escribir con el dedo
 también en el juego (leer, «Listo», borrar, tope de dos cifras, lo que se recuerda), aprender la letra (cuánto mejora
