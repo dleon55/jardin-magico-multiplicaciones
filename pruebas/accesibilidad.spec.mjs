@@ -96,6 +96,26 @@ test("ayuda tocada: con una fila menos y partida", async ({ page }) => {
   await auditar(page, "la ayuda tocada");
 });
 
+test("estatus de las tablas: victoria que lo celebra, jardín y mapa", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  const sembrar = (n, dias) => page.evaluate(([n, dias]) => {
+    const dia = (k) => new Date(Date.parse(hoy()) - k * 86400000).toISOString().slice(0, 10);
+    for (let b = 1; b <= 10; b++) hechos[claveHecho(n, b)] = Array.from({ length: dias }, (_, i) => ({ d: dia(dias - 1 - i), m: "e", ok: 1, ms: 2000 }));
+  }, [n, dias]);
+  await page.evaluate(() => { startTable("mix"); cancelarEspera(); });
+  await sembrar(4, 1);
+  await sembrar(3, 2);
+  await sembrar(2, 3);
+  await page.evaluate(() => endGameSuccess());
+  await expect(page.locator("#victoria-estatus")).toBeVisible();
+  await auditar(page, "la victoria con estatus");
+  await page.evaluate(() => mostrarJardin());
+  await auditar(page, "el jardín con estatus");
+  await page.evaluate(() => mostrarMapa());
+  await auditar(page, "el mapa con estatus");
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
