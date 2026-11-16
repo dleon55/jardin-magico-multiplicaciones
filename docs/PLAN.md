@@ -13,14 +13,14 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | Hito | Issue | Avance | Estado |
 |------|-------|--------|--------|
 | 1 · Calidad que se ve y se oye | [#45](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/45) | **10 de 11** | Casi cerrado: falta la voz grabada, que depende del titular |
-| 2 · Un solo camino y mejor enseñanza | [#46](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/46) | **4 de 7** (+1 parcial) | En curso |
-| 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | **0 de 7** | Esperando la decisión del titular (#66); lo que no necesita servidor puede empezar |
+| 2 · Un solo camino y mejor enseñanza | [#46](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/46) | **7 de 7** | **Cerrado** el 16 de noviembre |
+| 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | Lo que no necesita servidor, avanzado | Primer tema nuevo y turnos locales hechos; guía de pruebas y opciones de plataforma escritas. Lo demás espera la decisión del titular (#66) |
 
 **Cifras al día:**
-- 14 PRs fusionados desde que empezó el plan (#73 a #86), cada uno verificado en el sitio publicado.
-- La compuerta de calidad (`npm run comprobar`) tiene **911 pruebas en verde**, en escritorio y tableta.
+- 23 PRs fusionados desde que empezó el plan (#73 a #95), cada uno verificado en el sitio publicado.
+- La compuerta de calidad (`npm run comprobar`) tiene **1057 pruebas en verde**, en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
-- `index.html` pesa 507 KB, sin dependencias externas, y funciona sin internet.
+- `index.html` pesa 569 KB, sin dependencias externas, y funciona sin internet. **Se acerca a la alarma de 600 KB**: ver pendientes.
 
 ## Objetivos cumplidos
 
@@ -40,14 +40,27 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | F1.9 Sonidos por capas | #50 | #81 | Un efecto por momento, en la escala de la música, con volumen igualado |
 | F1.11 Voz grabada | #51 | — | **Pendiente del titular** |
 
-### Hito 2 · Un solo camino y mejor enseñanza
+### Hito 2 · Un solo camino y mejor enseñanza (cerrado)
 
 | Tarea | Issue | PR | Qué quedó |
 |-------|-------|----|-----------|
-| F2.1 Seguir | #59 | #83 | Un botón propone lo que toca: regar, terminar la tabla, descubrir otra, repasar o un reto |
+| F2.1 Seguir | #59 | #83 | Un botón propone lo que toca: regar, el mundo recién abierto, terminar la tabla, descubrir otra, repasar o un reto |
 | F2.2 Una moneda y una meta | #60 | #84 | La estrella, solo para la moneda; meta de hoy: acertar 10 |
-| F2.4 Confusiones típicas | #62 | #85 | Reconoce cuatro patrones de error, los nombra y practica juntos los que se cruzan |
+| F2.4 Confusiones típicas | #62 | #85, #91 | Reconoce cuatro patrones de error, los nombra y practica juntos los que se cruzan |
 | F2.3 Diagnóstico inicial | #61 | #86 | «¿Qué tablas ya sabes?»: siembra como «casi» lo que ya sabe y «Seguir» empieza por lo que falta |
+| F2.5 Ayuda manipulable | #63 | #88 | Poner y quitar filas, partir con un toque (7 × 8 = 5 × 8 + 2 × 8), girar; flechas y total en voz, sin dar la respuesta |
+| F2.6 Estatus por soltura | #64 | #89 | Semilla, arbolito, árbol y árbol con frutos por tabla, en el mapa y el jardín; respeta «Sin prisa»; se celebra al subir |
+| F2.7 Informe imprimible | #65 | #91 | Una hoja carta para adultos, con una idea concreta para casa; se imprime o guarda como PDF, sin servidor |
+| Camino jardín + Aventura | #46 | #92 | «Mi camino»: 15 tramos; cada mundo se abre al saberse sus tablas; nadie pierde lo jugado |
+
+### Hito 3 · Plataforma (lo que no necesita servidor)
+
+| Tarea | Issue | PR | Qué quedó |
+|-------|-------|----|-----------|
+| F3.1 Opciones de plataforma | #66 | #90 | [`DECISION-PLATAFORMA.md`](DECISION-PLATAFORMA.md): cuatro opciones con costo, riesgo y recomendación. **Falta la decisión del titular** |
+| F3.6 Guía de pruebas con niños | #72 | #90 | [`PRUEBAS-CON-NINOS.md`](PRUEBAS-CON-NINOS.md): permiso, ocho tareas, hoja de registro, de la observación al issue. **Las sesiones son del titular** |
+| F3.5 Primer tema nuevo: división con residuo | #71 | #93 | «17 ÷ 5 = 3, y sobran 2», con errores típicos explicados, ayuda visual y registro para adultos |
+| F3.4 Turnos en el mismo aparato | #70 | #94 | «En equipo»: dos o tres niños se turnan; cada respuesta crece en el jardín de quien contesta; meta común, sin comparar |
 
 **Calidad que se mantuvo en todo el camino:**
 - accesibilidad WCAG 2.1 AA medida con axe en cada pantalla nueva;
@@ -62,31 +75,27 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
 | # | Tarea | Issue | Depende de | Notas |
 |---|-------|-------|------------|-------|
-| 1 | F2.5 Ayuda manipulable | [#63](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/63) | — | **En curso** (PR #88): filas, partir con un toque, girar, flechas y total en voz |
-| 2 | F2.6 Estatus por soltura | [#64](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/64) | F1.7 ✅ | Debe respetar «Sin prisa» |
-| 3 | F2.7 Informe imprimible | [#65](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/65) | F2.4 ✅ | Usa las confusiones y la meta |
-| 4 | Camino que une jardín y Aventura | #46 (criterio pendiente) | F2.1 ✅, F2.6 | Parcial: «Seguir» ya propone la Aventura al final; falta el mapa de tramos que se abren con lo aprendido |
-| 5 | F3.5 Primer tema nuevo: división con residuo | [#71](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/71) | Hito 2 | No necesita servidor |
-| 6 | F3.4 Turnos en el mismo dispositivo | [#70](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/70) | — | La parte sin servidor |
-| 7 | F3.6 Guía de observación para pruebas con niños | [#72](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/72) | — | El documento; las pruebas las hace el titular |
-| 8 | F3.1 Documento con opciones de plataforma | [#66](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/66) | — | Claude prepara opciones, costos y riesgos; **decide el titular** |
-| 9 | F1.11 Guion de voz | [#51](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/51) | Sí del titular | 40 a 60 frases con nombre de archivo |
+| 1 | Separar el arte y los datos de `index.html` en archivos | (nuevo) | — | La página pesa 569 KB y la alarma de la compuerta salta a 600 KB. El service worker ya guarda archivos aparte, así que sigue sin internet |
+| 2 | F3.5 Más temas: múltiplos y divisores; perímetro y área (enlaza con el rectángulo); decimales y dinero; porcentajes sencillos | [#71](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/71) | 1 | Un PR por tema, con el mismo método que la división con residuo |
+| 3 | Salón por archivos (opción B de la plataforma) | #66 | **Decisión del titular** | Solo si elige A + B: la docente junta los archivos de su salón en su aparato |
+| 4 | F1.11 Guion de voz | [#51](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/51) | Sí del titular | 40 a 60 frases con nombre de archivo |
+| 5 | Convertir en issues los hallazgos de las pruebas con niños | #72 | Las sesiones del titular | Con la plantilla de la guía |
 
 ### Del titular (no los puede hacer Claude)
-- [ ] **Decidir la plataforma** (#66): servidor sí o no, costo, quién lo mantiene y datos de menores. Bloquea F3.2, F3.3, F3.4 en línea, las métricas de F3.6 y F3.7.
+- [ ] **Decidir la plataforma** (#66): A, B, C o D, con el documento delante. Bloquea cuentas, salón en vivo, retos en línea, métricas y privacidad.
+- [ ] **Probar con niños** (#72): 3 a 5 niños de 8 a 11 años, con la guía.
 - [ ] **Voz grabada** (#51): quién graba y con qué permiso de uso.
-- [ ] **Probar con niños** (#72): 3 a 5 niños de 8 a 11 años, en teléfono y tableta.
 - [ ] **Probar en un teléfono modesto** la Aventura con 3 enemigos.
 - [ ] **Probar en iPad y con lector de pantalla real** (VoiceOver o TalkBack).
 - [ ] **Escuchar las muestras de sonido** (#50).
 - [ ] **Revisar legalmente el aviso de privacidad** (#67), cuando se redacte.
-- [ ] **Borrar las ramas fusionadas** (unas 55) y activar «Automatically delete head branches»: Claude no tiene permiso para borrar ramas.
+- [ ] **Borrar las ramas fusionadas** (más de 60) y activar «Automatically delete head branches»: Claude no tiene permiso para borrar ramas.
 
 ## Cronograma
 
-Son estimaciones. El ritmo del Hito 1 y lo que va del 2 fue de 3 a 4 tareas
-por día de trabajo, cada una con su PR verificado. Lo que depende del titular
-no tiene fecha propia: se indica qué queda bloqueado mientras tanto.
+Son estimaciones. El ritmo hasta ahora fue de 3 a 4 tareas por día de
+trabajo, cada una con su PR verificado. Lo que depende del titular no tiene
+fecha propia: se indica qué queda bloqueado mientras tanto.
 
 ```mermaid
 gantt
@@ -95,66 +104,64 @@ gantt
     axisFormat  %d %b
     section Hito 1
     Arte, mascota, sonido, bienvenida (10 tareas)  :done,    h1, 2026-11-15, 2d
-    Voz grabada (titular)                          :         h1v, after h2c, 7d
+    Voz grabada (titular)                          :         h1v, 2026-11-23, 7d
     section Hito 2
-    Seguir, moneda, confusiones, diagnóstico       :done,    h2a, 2026-11-16, 1d
-    Ayuda manipulable                              :active,  h2b, 2026-11-16, 1d
-    Estatus por soltura e informe imprimible       :         h2c, after h2b, 2d
-    Camino que une jardín y Aventura               :         h2d, after h2c, 2d
+    Las 7 tareas y el camino                       :done,    h2, 2026-11-16, 1d
     section Hito 3 sin servidor
-    División con residuo (primer tema)             :         h3a, after h2d, 3d
-    Turnos en el mismo dispositivo                 :         h3b, after h3a, 2d
-    Guía de pruebas con niños y opciones de plataforma :     h3c, after h2d, 2d
-    Pruebas con niños (titular)                    :         h3n, after h3c, 14d
+    Opciones de plataforma y guía de pruebas       :done,    h3a, 2026-11-16, 1d
+    División con residuo y turnos                  :done,    h3b, 2026-11-16, 1d
+    Separar arte y datos en archivos               :         h3s, 2026-11-17, 1d
+    Más temas (múltiplos, área, decimales, %)      :         h3t, after h3s, 6d
+    Pruebas con niños (titular)                    :         h3n, 2026-11-17, 14d
     section Hito 3 con servidor (si se decide)
-    Decisión de plataforma (titular)               :crit,    h3d, after h3c, 7d
-    Cuentas y sincronización                       :         h3e, after h3d, 7d
-    Modo salón                                     :         h3f, after h3e, 7d
+    Decisión de plataforma (titular)               :crit,    h3d, 2026-11-17, 10d
+    Salón por archivos (opción B)                  :         h3b2, after h3d, 5d
+    Cuentas y sincronización (opción C)            :         h3e, after h3d, 7d
     Aviso de privacidad y métricas                 :         h3g, after h3e, 5d
 ```
 
 | Semana | Claude | Titular |
 |--------|--------|---------|
-| 16 al 22 de noviembre | Cerrar el Hito 2: ayuda manipulable, estatus, informe y camino | Probar en el teléfono lo nuevo |
-| 23 al 29 de noviembre | División con residuo, turnos en un dispositivo, guía de pruebas, documento de plataforma | Decidir la voz; empezar pruebas con niños |
-| 30 de noviembre al 13 de diciembre | Ajustes por lo que salga de las pruebas con niños; más temas (decimales y dinero) | **Decidir la plataforma** |
-| Desde el 14 de diciembre | Si hay servidor: cuentas, salón, privacidad y métricas. Si no: más temas de la SEP | Revisión legal del aviso de privacidad |
+| 16 al 22 de noviembre | Separar arte y datos; múltiplos y divisores; perímetro y área | Probar lo nuevo en el teléfono; empezar a leer el documento de plataforma |
+| 23 al 29 de noviembre | Decimales y dinero; porcentajes; ajustes | **Decidir la plataforma**; decidir la voz; empezar pruebas con niños |
+| 30 de noviembre al 13 de diciembre | Lo que salga de las pruebas con niños; salón por archivos si se elige B | Terminar las pruebas con niños |
+| Desde el 14 de diciembre | Si se elige C: cuentas, salón en vivo, privacidad y métricas | Revisión legal del aviso de privacidad |
 
 ## Dependencias
 
 ```mermaid
 graph LR
-    F17[F1.7 Plantas ✅] --> F26[F2.6 Estatus]
-    F24[F2.4 Confusiones ✅] --> F27[F2.7 Informe]
-    F21[F2.1 Seguir ✅] --> CAM[Camino jardín + Aventura]
-    F26 --> CAM
-    H2[Hito 2] --> F35[F3.5 Más temas]
+    H2[Hito 2 ✅] --> F35[F3.5 Más temas]
+    SEP[Separar arte y datos] --> F35
     T1{{Titular: plataforma}} --> F31[F3.1 Decisión]
+    DOC[DECISION-PLATAFORMA.md ✅] --> F31
+    F31 --> B[Salón por archivos]
     F31 --> F32[F3.2 Cuentas]
-    F31 --> F33[F3.3 Salón]
+    F32 --> F33[F3.3 Salón en vivo]
     F31 --> F34[F3.4 Retos en línea]
     F31 --> F36[F3.6 Métricas]
     F31 --> F37[F3.7 Privacidad]
-    F32 --> F33
+    T3{{Titular: niños}} --> HALL[Hallazgos → issues]
+    GUIA[PRUEBAS-CON-NINOS.md ✅] --> HALL
     T2{{Titular: voz}} --> F111[F1.11 Voz grabada]
-    T3{{Titular: niños}} --> F36P[F3.6 Pruebas con niños]
 ```
 
 ## Riesgos y mitigaciones
 
 | Riesgo | Prob. | Impacto | Mitigación | Estado |
 |--------|-------|---------|------------|--------|
-| La Fase 3 se queda sin decisión de plataforma | Alta | Alto | F3.1 prepara opciones concretas con costo; mientras, avanza lo que no necesita servidor (más temas, turnos locales) | Abierto |
-| No se prueba con niños reales y se decide a ciegas | Media | Alto | Guía de observación corta (F3.6); cada hallazgo se vuelve un issue | Abierto |
+| La Fase 3 se queda sin decisión de plataforma | Alta | Alto | Documento de opciones con costo y recomendación (#90); mientras, avanza lo que no necesita servidor (ya: división con residuo y turnos) | Abierto: espera al titular |
+| No se prueba con niños reales y se decide a ciegas | Media | Alto | Guía de observación lista (#90); cada hallazgo se vuelve un issue | Abierto: espera al titular |
 | La página se vuelve pesada o lenta en teléfonos modestos | Media | Medio | Arte generado con piezas reutilizables (15 KB de paisajes, 28 iconos en un solo juego de símbolos); animaciones solo con `transform`; prueba de peso | Mitigado; falta medir en un teléfono real |
 | Romper el progreso guardado de los niños | Baja | Alto | Migraciones probadas en cada cambio de datos (misiones → meta, héroe guardado, «vistos») | Mitigado |
 | Pruebas que no prueban nada (pasan aunque el código esté roto) | Media | Alto | Comprobación de mutaciones en cada PR. Ya destapó aserciones negativas que esperaban algo que desaparece solo; se corrigieron | Mitigado |
-| Pruebas que dependen de la fecha real | Media | Medio | Fechas relativas a hoy en las pruebas nuevas; el cambio de día del 16 de noviembre destapó dos y se corrigieron | Mitigado |
-| Un solo archivo de más de 500 KB es difícil de mantener | Media | Medio | Secciones con comentarios; si pasa de unos 700 KB, separar el arte y los datos en archivos (el service worker ya los guardaría sin internet) | Vigilado |
+| Pruebas que dependen de la fecha real o del azar | Media | Medio | Fechas relativas a hoy; datos fijos donde importa. Una prueba fallaba solo cuando salía 3 × 1 y se corrigió (#91) | Mitigado |
+| Un solo archivo grande es difícil de mantener y pesa en teléfonos modestos | **Alta** | Medio | Una prueba de la compuerta avisa a los 600 KB. Hoy pesa 569 KB: separar el arte y los datos en archivos es el siguiente paso (el service worker los guarda para usar sin internet) | **Próximo a actuar** |
 | Sin presupuesto de GitHub Actions: la compuerta depende de correrla en local | Alta | Medio | `npm run comprobar` antes de cada fusión, sin excepción; el resultado se escribe en cada PR | Mitigado |
 | Arte desigual o que se parezca a otro juego | Baja | Medio | Guía de estilo con reglas medibles; todo dibujado desde cero | Mitigado |
 | Datos de menores (LFPDPPP) si se añade servidor | Media | Alto | Hoy no sale nada del dispositivo. Con servidor: datos mínimos, alias, consentimiento y derechos ARCO (F3.7), revisión legal del titular | Abierto |
-| Ramas fusionadas acumuladas (unas 55) | Alta | Bajo | Script de limpieza listo; el titular las borra o activa el borrado automático | Abierto |
+| Ramas fusionadas acumuladas (más de 60) | Alta | Bajo | Script de limpieza listo; el titular las borra o activa el borrado automático | Abierto |
+| Un mundo cerrado de la Aventura frustra a quien quería jugar | Media | Medio | El primer mundo está abierto desde el primer día; lo ya jugado nunca se cierra; el cierre dice qué tabla falta | Mitigado; confirmar en pruebas con niños |
 
 ## Cómo se trabaja cada tarea
 
