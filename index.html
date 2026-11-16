@@ -208,6 +208,11 @@
         .planta .dibujo svg { display: block; width: 2.7rem; height: 2.5rem; overflow: visible; transform-origin: 50% 90%; }
         .leyenda-planta { display: inline-block; vertical-align: middle; }
         .leyenda-planta svg { display: block; width: 1.9rem; height: 1.8rem; overflow: visible; }
+        /* Estatus de cada tabla: una forma por estatus, no solo un color. */
+        .estatus-dibujo { display: inline-block; vertical-align: middle; flex: none; }
+        .estatus-dibujo svg { display: block; width: 1.75rem; height: 1.75rem; }
+        .mapa-fila .estatus-dibujo svg { width: 1.1rem; height: 1.1rem; }
+        .victoria-estatus .estatus-dibujo svg { width: 3rem; height: 3rem; }
         .planta-partida svg { display: block; width: 2.6rem; height: 2.4rem; overflow: visible; }
         .flor-florecida .planta-partida svg { width: 3.2rem; height: 3rem; }
         /* Lo que cambió desde la última visita: crece, se marchita o revive al regarlo. */
@@ -1266,6 +1271,7 @@
             </div>
 
             <p id="victoria-aprendido" class="text-green-800 font-bold text-lg max-w-md mx-auto"></p>
+            <p id="victoria-estatus" class="victoria-estatus hidden flex items-center justify-center gap-3 bg-lime-50 border-2 border-lime-300 text-green-900 font-bold rounded-2xl px-4 py-2 max-w-md mx-auto"></p>
             <p id="victoria-estrellas" class="text-amber-900 font-bold max-w-md mx-auto"></p>
             <p id="victoria-mision" class="hidden bg-sky-50 border-2 border-sky-200 text-sky-900 font-bold rounded-2xl px-4 py-2 max-w-md mx-auto"></p>
 
@@ -1319,6 +1325,11 @@
                 <li><span class="leyenda-planta" data-leyenda="florecida"></span> Te la sabes</li>
                 <li><span class="leyenda-planta" data-leyenda="marchita"></span> Marchita: riégala repasándola</li>
             </ul>
+            <section aria-labelledby="estatus-titulo" class="bg-lime-50 border-2 border-lime-200 rounded-2xl px-3 py-2 text-center space-y-1">
+                <h3 id="estatus-titulo" class="text-sm font-bold text-green-900">Cómo crece cada tabla</h3>
+                <ul id="estatus-leyenda" class="flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm text-gray-700"></ul>
+                <p id="estatus-explica" class="text-xs text-gray-700 max-w-md mx-auto"></p>
+            </section>
             <section aria-labelledby="amigos-titulo" class="bg-sky-50 border-2 border-sky-200 rounded-2xl px-3 py-2 text-center">
                 <h3 id="amigos-titulo" class="text-sm font-bold text-sky-900">Tus amigos del jardín</h3>
                 <ul id="jardin-amigos" class="flex flex-wrap justify-center gap-2 text-3xl"></ul>
@@ -1411,7 +1422,7 @@
                         class="sin-prisa inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 border-emerald-300 bg-white font-bold text-emerald-900 shadow-sm">
                     <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-calma"/></svg> Sin prisa: <span class="estado">No</span>
                 </button>
-                <p id="sin-prisa-texto" class="text-sm text-gray-700">Los enemigos van despacio y se quedan esperando tu respuesta: nadie te quita corazones por tardar.</p>
+                <p id="sin-prisa-texto" class="text-sm text-gray-700">Los enemigos van despacio y se quedan esperando tu respuesta: nadie te quita corazones por tardar. Y tus tablas crecen sin contar el tiempo.</p>
             </div>
             <ol id="aventura-mundos" class="escalonar space-y-3" aria-label="Mundos de la aventura"></ol>
             <div class="text-center">
@@ -1638,7 +1649,7 @@
         // Lo que es de cada jardín y viaja en la copia de seguridad. «vistos»:
         // el estado de cada planta la última vez que se abrió «Mi jardín», para
         // animar lo que cambió desde entonces (también al pasar a otro equipo).
-        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico"];
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico", "estatus"];
         let perfilActual = "p1";
 
         const almacen = {
@@ -2589,6 +2600,7 @@
             ultimoHecho = "";
             bolsa = []; // la de otra tabla no sirve: se llena al pedir la primera
             florecidasAlEmpezar = clavesEnEstado("florecida");
+            anotarEstatus();
             marchitasAlEmpezar = new Set([...florecidasAlEmpezar].filter((k) => {
                 const [a, b] = k.split("x").map(Number);
                 return estaMarchita(a, b);
@@ -4171,6 +4183,117 @@
             return estadoHecho(a, b) === "florecida" && diasDesde(intentosDe(a, b).at(-1).d) >= RIEGO_DIAS;
         }
 
+        // --- ESTATUS DE CADA TABLA (issue #64) ---
+        //
+        // Además de cada planta, la tabla entera crece por soltura, siempre
+        // contra uno mismo y nunca contra otros. Cuenta cada una de sus diez
+        // multiplicaciones:
+        //   semilla           ya se jugó alguna;
+        //   arbolito          todas, al menos «casi» (se saben);
+        //   árbol             todas escritas con soltura en 2 días distintos
+        //                     desde su último fallo: la tabla entera florecida;
+        //   árbol con frutos  todas en 3 días distintos, y ninguna lleva
+        //                     RIEGO_DIAS sin repasarse.
+        // Soltura es escribir bien en RAPIDO_MS o menos. Con «Sin prisa» no
+        // cuenta el tiempo: basta con escribir bien. (Se llama «arbolito», no
+        // «brote», porque en el jardín «brote» es la planta que se practica.)
+        const ESTATUS = ["semilla", "arbolito", "arbol", "frutos"];
+        const NOMBRE_ESTATUS = { semilla: "semilla", arbolito: "arbolito", arbol: "árbol", frutos: "árbol con frutos" };
+        const DIAS_ESTATUS = { arbol: 2, frutos: 3 };
+
+        function sinPrisaActiva() {
+            return aventuraGuardada.sinPrisa === true;
+        }
+
+        /** Días distintos con la respuesta escrita bien (y rápido, salvo «Sin prisa») desde el último fallo. */
+        function diasConSoltura(a, b, sinPrisa = sinPrisaActiva()) {
+            const lista = intentosDe(a, b);
+            const desdeFallo = lista.slice(lista.map((i) => i.ok).lastIndexOf(0) + 1);
+            const sueltas = desdeFallo.filter((i) => sinPrisa ? Boolean(i.ok) && i.m === "e" : esRapida(i));
+            return new Set(sueltas.map((i) => i.d).filter(Boolean)).size;
+        }
+
+        /** El estatus de la tabla n, o null si aún no se jugó ninguna de sus multiplicaciones. */
+        function estatusTabla(n, sinPrisa = sinPrisaActiva()) {
+            const bs = Array.from({ length: MULTIPLICADORES }, (_, i) => i + 1);
+            if (bs.every((b) => intentosDe(n, b).length === 0)) return null;
+            const dias = bs.map((b) => diasConSoltura(n, b, sinPrisa));
+            const fresca = bs.every((b) => diasDesde(intentosDe(n, b).at(-1)?.d) < RIEGO_DIAS);
+            if (fresca && dias.every((d) => d >= DIAS_ESTATUS.frutos)) return "frutos";
+            if (dias.every((d) => d >= DIAS_ESTATUS.arbol)) return "arbol";
+            const sabe = (b) => ["casi", "florecida"].includes(estadoHecho(n, b)) || dias[b - 1] >= 1;
+            return bs.every(sabe) ? "arbolito" : "semilla";
+        }
+
+        /** Dibujo de cada estatus: semilla en la tierra, arbolito, árbol y árbol con frutos. */
+        function svgEstatus(estatus) {
+            const tierra = '<path d="M3 29 Q16 21 29 29 Z" fill="#92400e"/>';
+            const tronco = '<path d="M14.5 29 L15 17 L17 17 L17.5 29 Z" fill="#78350f"/>';
+            const copa = '<circle cx="16" cy="12" r="9" fill="#15803d"/><circle cx="12" cy="10" r="3" fill="#22c55e" opacity=".7"/>';
+            const dibujos = {
+                semilla: `${tierra}<ellipse cx="16" cy="22" rx="3.6" ry="5" fill="#713f12" transform="rotate(-20 16 22)"/><path d="M15 19 Q16 17 17.5 18" stroke="#fde68a" stroke-width="1.2" fill="none"/>`,
+                arbolito: `${tierra}<path d="M16 26 V14" stroke="#15803d" stroke-width="2.4" stroke-linecap="round"/>` +
+                    '<path d="M16 17 Q9 16 8 9 Q15 9 16 17 Z" fill="#22c55e"/><path d="M16 14 Q23 13 24 6 Q17 6 16 14 Z" fill="#16a34a"/>',
+                arbol: `${tierra}${tronco}${copa}`,
+                frutos: `${tierra}${tronco}${copa}<circle cx="11" cy="15" r="2.3" fill="#dc2626"/><circle cx="20" cy="9" r="2.3" fill="#dc2626"/><circle cx="19" cy="16" r="2.3" fill="#dc2626"/>`,
+            };
+            return `<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false" data-estatus="${estatus}">${dibujos[estatus]}</svg>`;
+        }
+
+        function dibujoEstatus(estatus) {
+            return `<span class="estatus-dibujo">${svgEstatus(estatus)}</span>`;
+        }
+
+        /**
+         * Tras una partida: las tablas que llegaron a un estatus mayor que el
+         * mejor que ya tuvieron. Se guarda el mejor, así que bajar (un fallo)
+         * y volver a subir no se celebra dos veces. La semilla no se celebra:
+         * es solo haber empezado.
+         */
+        function subidasDeEstatus() {
+            const mejores = mejoresEstatus();
+            const subidas = [];
+            for (let n = 1; n <= TABLAS; n++) {
+                const ahora = estatusTabla(n);
+                const nivel = ESTATUS.indexOf(ahora);
+                if (nivel > (mejores[n] ?? -1)) {
+                    if (nivel >= 1 && mejores[n] !== undefined) subidas.push({ tabla: n, estatus: ahora });
+                    mejores[n] = nivel;
+                }
+            }
+            almacen.guardar("estatus", JSON.stringify(mejores));
+            return subidas;
+        }
+
+        function mejoresEstatus() {
+            let g = null;
+            try { g = JSON.parse(almacen.leer("estatus") || "null"); } catch (e) { g = null; }
+            const limpio = {};
+            if (g && typeof g === "object") {
+                for (const [n, v] of Object.entries(g)) {
+                    if (Number(n) >= 1 && Number(n) <= TABLAS && Number.isInteger(v) && v >= -1 && v < ESTATUS.length) limpio[n] = v;   // -1: sin jugar
+                }
+            }
+            return limpio;
+        }
+
+        /** Al empezar una partida, lo de antes queda anotado: así se ve qué subió en ella. */
+        function anotarEstatus() {
+            const mejores = mejoresEstatus();
+            for (let n = 1; n <= TABLAS; n++) {
+                if (mejores[n] === undefined) mejores[n] = Math.max(-1, ESTATUS.indexOf(estatusTabla(n)));
+            }
+            almacen.guardar("estatus", JSON.stringify(mejores));
+        }
+
+        /** «¡Tu tabla del 7 ya es un árbol!» o «¡Crecieron tus tablas: la del 2 ya es un arbolito y la del 5 ya es un árbol!». */
+        function textoSubidas(subidas) {
+            const un = (estatus) => `un ${NOMBRE_ESTATUS[estatus]}`;
+            if (subidas.length === 1) return `¡Tu tabla del ${subidas[0].tabla} ya es ${un(subidas[0].estatus)}!`;
+            const partes = subidas.map(({ tabla, estatus }) => `la del ${tabla} ya es ${un(estatus)}`);
+            return `¡Crecieron tus tablas: ${partes.slice(0, -1).join(", ")} y ${partes.at(-1)}!`;
+        }
+
         /**
          * Cómo se pregunta: eligiendo mientras se aprende, escribiendo en cuanto
          * ya salió bien. Lo nuevo y lo recién fallado van con opciones, que
@@ -4409,7 +4532,10 @@
                 const titulo = document.createElement("h3");
                 titulo.id = `bancal-${a}`;
                 titulo.className = "text-sm font-bold text-green-900 mb-1 flex items-center justify-between gap-2";
-                titulo.innerHTML = `<button type="button" class="enlace-tactil hover:underline">Tabla del ${a}</button>` +
+                const estatus = estatusTabla(a);
+                bancal.dataset.estatus = estatus || "";
+                titulo.innerHTML = `<span class="flex items-center gap-1">${estatus ? dibujoEstatus(estatus) : ""}<button type="button" class="enlace-tactil hover:underline">Tabla del ${a}</button>` +
+                    (estatus ? `<span class="estatus-nombre text-xs font-semibold text-green-800">${NOMBRE_ESTATUS[estatus][0].toUpperCase()}${NOMBRE_ESTATUS[estatus].slice(1)}</span>` : "") + "</span>" +
                     `<button type="button" class="descubrir-bancal enlace-tactil text-sm font-semibold text-indigo-800 hover:underline"><span aria-hidden="true">🔍</span> Ver la tabla del ${a}</button>`;
                 const [practicar, ver] = titulo.querySelectorAll("button");
                 practicar.onclick = () => startTable(a);
@@ -4437,6 +4563,7 @@
             }
 
             almacen.guardar("vistos", JSON.stringify(ahora));
+            pintarLeyendaEstatus();
             // La leyenda, con los dibujos del mundo de quien juega.
             document.querySelectorAll("#screen-jardin [data-leyenda]").forEach((l) => {
                 l.innerHTML = svgPlanta(l.dataset.leyenda, perfilEnUso().mundo, 1);
@@ -4452,6 +4579,16 @@
             pintarAmigos();
             actualizarBotonesFalta();
             mostrarPantalla("screen-jardin");
+        }
+
+        /** La leyenda de los estatus, con lo que pide cada uno (sin tiempo, con «Sin prisa»). */
+        function pintarLeyendaEstatus() {
+            const nombres = { semilla: "Semilla: la empezaste", arbolito: "Arbolito: te la sabes", arbol: "Árbol: toda florecida", frutos: "Árbol con frutos" };
+            document.getElementById("estatus-leyenda").innerHTML = ESTATUS
+                .map((e) => `<li class="flex items-center gap-1">${dibujoEstatus(e)} ${nombres[e]}</li>`).join("");
+            document.getElementById("estatus-explica").innerText = sinPrisaActiva()
+                ? "Juegas «Sin prisa»: no cuenta el tiempo. La tabla es árbol cuando escribes bien todas sus multiplicaciones en dos días distintos, y da frutos en tres días, si no dejas de repasarla."
+                : "La tabla es árbol cuando escribes rápido todas sus multiplicaciones en dos días distintos, y da frutos en tres días, si no dejas de repasarla. Con «Sin prisa», en la Aventura, no cuenta el tiempo.";
         }
 
         // --- ESTRELLAS QUE SE GASTAN: EL VIVERO MÁGICO (Fase 3) ---
@@ -4747,7 +4884,11 @@
                 th.scope = "row";
                 // En pantallas estrechas solo se ve el número: con "Tabla del" la
                 // cuadrícula no cabe en un teléfono. El lector oye el nombre entero.
-                th.innerHTML = `<button type="button" class="mapa-fila text-sm font-bold text-green-800 bg-green-50 border border-green-200 rounded-lg hover:underline px-1 whitespace-nowrap"><span class="sr-only sm:not-sr-only">Tabla del </span>${a}</button>`;
+                const estatus = estatusTabla(a);
+                th.dataset.estatus = estatus || "";
+                th.innerHTML = `<button type="button" class="mapa-fila inline-flex flex-col items-center justify-center leading-none text-sm font-bold text-green-800 bg-green-50 border border-green-200 rounded-lg hover:underline px-1 whitespace-nowrap">` +
+                    `<span><span class="sr-only sm:not-sr-only">Tabla del </span>${a}</span>` +
+                    (estatus ? `${dibujoEstatus(estatus)}<span class="sr-only">, ${NOMBRE_ESTATUS[estatus]}</span>` : "") + "</button>";
                 th.querySelector("button").onclick = () => startTable(a);
                 fila.appendChild(th);
                 for (let b = 1; b <= MULTIPLICADORES; b++) {
@@ -6741,6 +6882,17 @@
                 : fraseDeLoAprendido();
             document.getElementById("victoria-aprendido").innerText = aprendido;
 
+            // Si una tabla subió de estatus en esta partida, se celebra aparte.
+            const subidas = subidasDeEstatus();
+            const avisoEstatus = document.getElementById("victoria-estatus");
+            avisoEstatus.classList.toggle("hidden", subidas.length === 0);
+            const fraseEstatus = subidas.length ? textoSubidas(subidas) : "";
+            if (subidas.length) {
+                const mayor = subidas.reduce((m, x) => ESTATUS.indexOf(x.estatus) > ESTATUS.indexOf(m.estatus) ? x : m);
+                avisoEstatus.innerHTML = `${dibujoEstatus(mayor.estatus)}<span></span>`;
+                avisoEstatus.querySelector("span:last-child").textContent = fraseEstatus;
+            } else avisoEstatus.replaceChildren();
+
             // La misión se revisa ANTES de contar las estrellas, para que su
             // premio entre en la cuenta de esta partida.
             // Si la meta de hoy se cumplió en esta partida, la victoria lo recuerda.
@@ -6758,10 +6910,15 @@
 
             mostrarPantalla("screen-victory");
             celebrar(document.getElementById("estrellas-victoria"), "aparecen");
+            if (subidas.length) {
+                celebrar(avisoEstatus, "aparecen");
+                setTimeout(() => sonar("nivel"), 700);
+            }
 
             const logro = currentTable === "falta" ? "Has repasado lo que te faltaba" : `Has completado ${tableName}`;
             speak(`¡Increíble${playerName ? `, ${playerName}` : ""}! ${logro}. ${textoParaVoz(aprendido)}` +
-                (metaEnEstaPartida ? " ¡Y cumpliste la meta de hoy!" : ""));
+                (metaEnEstaPartida ? " ¡Y cumpliste la meta de hoy!" : "") +
+                (fraseEstatus ? ` ${fraseEstatus}` : ""));
         }
 
 

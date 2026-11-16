@@ -9,6 +9,15 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-16
 
+- **Cada tabla crece por soltura** (#89, tarea #64): semilla, arbolito,
+  árbol y árbol con frutos, con un dibujo distinto para cada uno, junto al
+  número en el mapa y en cada bancal del jardín.
+  - Sube con respuestas escritas con soltura en días distintos: 2 para el
+    árbol y 3, con repaso reciente, para los frutos.
+  - Con «Sin prisa» no cuenta el tiempo.
+  - Al llegar a un estatus nuevo, la victoria lo celebra y lo dice. Lo que
+    ya se tenía antes de esta versión no se celebra de golpe.
+  - El jardín explica cómo se sube.
 - **La ayuda se toca** (#88, tarea #63): con las multiplicaciones, el
   rectángulo de la ayuda deja de ser solo para mirar.
   - Se ponen y se quitan filas, de 1 a 10.

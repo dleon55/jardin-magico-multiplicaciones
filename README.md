@@ -318,6 +318,24 @@ mismo.
   Arriba están la cuenta de flores, una barra de progreso y un consejo de qué
   hacer ahora; tocar un bancal abre esa tabla. El menú dice cuántas flores hay
   y la pantalla de victoria lleva al jardín.
+- **Cada tabla crece por soltura**, siempre contra uno mismo, nunca contra
+  otros. Su estatus se ve junto al número en el mapa y en cada bancal del
+  jardín, con un dibujo distinto para cada uno:
+
+  | Estatus | Cuándo (en sus diez multiplicaciones) |
+  | --- | --- |
+  | Semilla | Se jugó alguna |
+  | Arbolito | Todas al menos en «casi»: se la sabe |
+  | Árbol | Todas escritas con soltura en 2 días distintos desde su último fallo: la tabla entera florecida |
+  | Árbol con frutos | Todas en 3 días distintos, y ninguna lleva 14 días sin repasarse |
+
+  Soltura es escribir bien en 6 segundos o menos. **Con «Sin prisa»** (el
+  ajuste de la Aventura) no cuenta el tiempo: basta con escribir bien,
+  aunque elegir entre opciones no alcanza. Al subir a un estatus que la
+  tabla nunca había tenido, la victoria lo celebra y lo dice («¡Tu tabla del
+  7 ya es un árbol!»). Bajar por un fallo y volver a subir no se celebra dos
+  veces. Se llama «arbolito» y no «brote» porque en el jardín «brote» es la
+  planta que se está practicando.
 - **Regar: lo que no se repasa se marchita.** Una flor que lleva 14 días o más
   sin salir se marchita. No se pierde (sigue contando como florecida), pero
   entra en «lo que me falta» para repasarla, y al acertarla revive. Repasar
