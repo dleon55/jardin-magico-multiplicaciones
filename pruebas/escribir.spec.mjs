@@ -56,9 +56,16 @@ test("escrita mal: dice lo que se escribió y la correcta, y vuelve más tarde c
   await tablaQueSeEscribe(page);
   const { a, b, producto } = await preguntaActual(page);
   await escribir(page, producto + 1);
+  // Se congela el paso automático a la siguiente: con la máquina cargada, el
+  // aviso se borraba antes de que la prueba alcanzara a leerlo. «Siguiente»
+  // sigue funcionando.
+  await page.evaluate(() => { if (espera) clearTimeout(espera.temporizador); });
   await expect(page.locator("#escrito")).toContainText("✗");
   await expect(page.locator("#escrito")).toHaveCSS("background-color", "rgb(254, 226, 226)");
-  await expect(page.locator("#game-feedback")).toContainText(`Escribiste ${producto + 1}. ${a} × ${b} = ${producto}`);
+  // Entre las dos frases puede ir el nombre de una confusión (con 3 × 1, 4 es
+  // «sumaste»): por eso se miran por separado. Antes fallaba cuando salía 3 × 1.
+  await expect(page.locator("#game-feedback")).toContainText(`Escribiste ${producto + 1}.`);
+  await expect(page.locator("#game-feedback")).toContainText(`${a} × ${b} = ${producto}`);
   // Vuelve a los 2 turnos, y como la última fue un fallo, con opciones: primero se reaprende.
   for (let i = 0; i < 2; i++) { await siguiente(page); if (i === 0) await responder(page, true); }
   expect(await preguntaActual(page)).toMatchObject({ a, b });

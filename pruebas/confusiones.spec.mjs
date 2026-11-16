@@ -32,10 +32,13 @@ test("reconoce las cuatro confusiones típicas, en los dos sentidos", async ({ p
   const r = await page.evaluate(() => ({
     vecina: confusionDe(6, 8, 42), alReves: confusionDe(8, 6, 42), suma: confusionDe(6, 8, 14),
     cifras: confusionDe(7, 9, 36), tabla: confusionDe(6, 8, 30), nada: confusionDe(6, 8, 49), bien: confusionDe(6, 8, 48),
+    // Con un 1, 3 + 1 = 4 = 4 × 1: se nombra la suma, no «la de al lado».
+    conUno: confusionDe(3, 1, 4), unoPrimero: confusionDe(1, 7, 8), unoVecina: confusionDe(3, 1, 6),
   }));
   expect(r).toEqual({
     vecina: { tipo: "vecina", con: [6, 7] }, alReves: { tipo: "vecina", con: [6, 7] }, suma: { tipo: "suma" },
     cifras: { tipo: "cifras" }, tabla: { tipo: "tabla", con: [6, 5] }, nada: null, bien: null,
+    conUno: { tipo: "suma" }, unoPrimero: { tipo: "suma" }, unoVecina: { tipo: "vecina", con: [3, 2] },
   });
 });
 

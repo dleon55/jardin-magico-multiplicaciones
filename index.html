@@ -213,6 +213,31 @@
         .estatus-dibujo svg { display: block; width: 1.75rem; height: 1.75rem; }
         .mapa-fila .estatus-dibujo svg { width: 1.1rem; height: 1.1rem; }
         .victoria-estatus .estatus-dibujo svg { width: 3rem; height: 3rem; }
+
+        /* INFORME PARA IMPRIMIR (issue #65): una hoja carta. En pantalla no se
+           ve; al imprimir desde «Para las personas adultas» es lo único que
+           sale. Imprimir cualquier otra pantalla (Ctrl+P) sigue igual. */
+        #informe { display: none; }
+        .informe { color: #111827; font-size: 10.5pt; line-height: 1.35; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .informe h1 { font-size: 16pt; font-weight: 800; color: #14532d; margin: 0; }
+        .informe h2 { font-size: 11.5pt; font-weight: 800; color: #14532d; margin: 0.55rem 0 0.15rem; border-bottom: 1.5px solid #bbf7d0; padding-bottom: 0.1rem; }
+        .informe p { margin: 0.15rem 0; }
+        .informe .informe-quien { font-size: 11pt; color: #374151; }
+        .informe table { border-collapse: collapse; width: 100%; margin-top: 0.2rem; }
+        .informe th, .informe td { border: 1px solid #d1d5db; padding: 0.12rem 0.4rem; text-align: left; vertical-align: middle; }
+        .informe th { background: #f0fdf4; font-weight: 700; }
+        .informe .estatus-dibujo svg { width: 1.1rem; height: 1.1rem; display: inline-block; vertical-align: middle; margin-right: 0.25rem; }
+        .informe .informe-dias { display: flex; gap: 3px; margin-top: 0.2rem; }
+        .informe .informe-dias span { width: 1.15rem; height: 1.15rem; border: 1px solid #9ca3af; border-radius: 3px; font-size: 8pt; display: flex; align-items: center; justify-content: center; }
+        .informe .informe-dias .si { background: #16a34a; border-color: #16a34a; color: #fff; }
+        .informe .informe-sugerencia { background: #fefce8; border: 1.5px solid #fde047; border-radius: 8px; padding: 0.35rem 0.6rem; margin-top: 0.5rem; }
+        .informe footer { margin-top: 0.6rem; font-size: 8.5pt; color: #4b5563; }
+        @media print {
+            @page { size: letter; margin: 1.3cm 1.5cm; }
+            body.imprimiendo { display: block !important; min-height: 0 !important; padding: 0 !important; background: #fff !important; }
+            body.imprimiendo > *:not(#informe) { display: none !important; }
+            body.imprimiendo #informe { display: block; }
+        }
         .planta-partida svg { display: block; width: 2.6rem; height: 2.4rem; overflow: visible; }
         .flor-florecida .planta-partida svg { width: 3.2rem; height: 3rem; }
         /* Lo que cambió desde la última visita: crece, se marchita o revive al regarlo. */
@@ -1623,6 +1648,9 @@
 
     </main>
 
+    <!-- Informe para imprimir: se llena desde «Para las personas adultas». -->
+    <article id="informe" class="informe" aria-hidden="true"></article>
+
     <!-- Script del Juego -->
     <script>
         // --- ALMACENAMIENTO ---
@@ -2893,6 +2921,175 @@
             return h;
         }
 
+        // --- INFORME PARA IMPRIMIR (issue #65) ---
+        //
+        // Una hoja carta para madres, padres y docentes, que se imprime o se
+        // guarda como PDF con el diálogo del navegador: sin servidor y solo
+        // con lo que ya está guardado en este dispositivo.
+        function imprimirInforme(id) {
+            const perfil = perfiles.find((p) => p.id === id);
+            if (!perfil) return;
+            document.getElementById("informe").replaceChildren(...armarInforme(perfil));
+            document.body.classList.add("imprimiendo");
+            window.print();
+        }
+        window.addEventListener("afterprint", () => document.body.classList.remove("imprimiendo"));
+
+        function armarInforme(perfil) {
+            const h = intentosDePerfil(perfil.id);
+            const o = otrosDePerfil(perfil.id);
+            const av = aventuraDePerfil(perfil.id);
+            const el = (tag, texto, clase) => {
+                const e = document.createElement(tag);
+                if (clase) e.className = clase;
+                if (texto !== undefined) e.textContent = texto;
+                return e;
+            };
+            const seccion = (titulo, ...hijos) => {
+                const s = el("section");
+                s.append(el("h2", titulo), ...hijos);
+                return s;
+            };
+
+            const cabecera = el("header");
+            const fecha = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
+                .format(new Date(`${hoy()}T00:00:00Z`));
+            cabecera.append(el("h1", "Informe del Jardín Mágico de las Multiplicaciones"),
+                el("p", `${nombreDe(perfil)} · ${fecha}`, "informe-quien"));
+
+            // Las tablas: estatus y cuántas sabe de memoria.
+            const datos = conIntentos(h, () => ({
+                cuenta: cuentaPorEstado(),
+                cuesta: loQueCuesta(h),
+                filas: Array.from({ length: TABLAS }, (_, i) => {
+                    const n = i + 1;
+                    return {
+                        n,
+                        estatus: estatusTabla(n, av.sinPrisa === true),
+                        flores: Array.from({ length: MULTIPLICADORES }, (_, j) => estadoHecho(n, j + 1)).filter((e) => e === "florecida").length,
+                    };
+                }),
+            }));
+            const tabla = el("table", undefined, "informe-tablas");
+            const cab = tabla.createTHead().insertRow();
+            ["Tabla", "Cómo va", "De memoria"].forEach((t) => { const th = el("th", t); th.scope = "col"; cab.appendChild(th); });
+            const cuerpo = tabla.createTBody();
+            for (const f of datos.filas) {
+                const fila = cuerpo.insertRow();
+                fila.dataset.tabla = String(f.n);
+                fila.insertCell().textContent = `Del ${f.n}`;
+                const como = fila.insertCell();
+                if (f.estatus) {
+                    como.innerHTML = dibujoEstatus(f.estatus);
+                    como.append(EXPLICA_ESTATUS[f.estatus]);
+                } else como.textContent = "Sin jugar";
+                fila.insertCell().textContent = `${f.flores} de ${MULTIPLICADORES}`;
+            }
+            const dominadas = datos.filas.filter((f) => f.estatus === "arbol" || f.estatus === "frutos").map((f) => `la del ${f.n}`);
+            const total = plantas().length;
+            const tablas = seccion("Cómo va con las tablas",
+                el("p", `Se sabe de memoria ${datos.cuenta.florecida} de las ${total} multiplicaciones distintas (7 × 8 y 8 × 7 cuentan como una). ` +
+                    `Casi: ${datos.cuenta.casi}. Practicando: ${datos.cuenta.practica}.`),
+                el("p", dominadas.length
+                    ? `Tablas dominadas (enteras de memoria): ${dominadas.length === 1 ? dominadas[0] : `${dominadas.slice(0, -1).join(", ")} y ${dominadas.at(-1)}`}.`
+                    : "Todavía no domina ninguna tabla entera de memoria."),
+                tabla);
+
+            // Lo que le cuesta y las confusiones.
+            const confusiones = confusionesFrecuentes(h);
+            const cuestaTexto = Object.keys(h).length === 0 ? "Aún no ha jugado a multiplicar."
+                : datos.cuesta.length === 0 ? "Por ahora, nada en especial."
+                : datos.cuesta.map((x) => `${x.a} × ${x.b}`).join(", ") + " (son las que más ha fallado últimamente).";
+            const cuesta = seccion("Lo que le cuesta",
+                el("p", cuestaTexto),
+                el("p", confusiones.length
+                    ? `Se le cruzan: ${confusiones.map(([n, v]) => `${n} (${v} veces)`).join("; ")}.`
+                    : "No se le confunden multiplicaciones de forma repetida."));
+
+            // Cuándo practica.
+            const dias = diasDePractica(h, o);
+            const hoyMs = Date.parse(`${hoy()}T00:00:00Z`);
+            const ultimos = Array.from({ length: DIAS_VISTOS }, (_, i) => new Date(hoyMs - (DIAS_VISTOS - 1 - i) * 86400000).toISOString().slice(0, 10));
+            const practicados = ultimos.filter((d) => dias.has(d)).length;
+            let metas = 0;
+            try { metas = (JSON.parse(almacen.leerDe(perfil.id, "misiones") || "{}").dias || []).length; } catch (e) { metas = 0; }
+            const calendario = el("div", undefined, "informe-dias");
+            ultimos.forEach((d) => {
+                const c = el("span", dias.has(d) ? "✓" : "", dias.has(d) ? "si" : "");
+                c.title = fechaLarga(d);
+                calendario.appendChild(c);
+            });
+            const ultimoDia = [...dias].sort().at(-1);
+            const practica = seccion("Cuándo practica",
+                el("p", `Practicó ${practicados} de los últimos ${DIAS_VISTOS} días` + (ultimoDia ? ` (el último, el ${fechaLarga(ultimoDia)}).` : ".") +
+                    ` Cumplió la meta del día (acertar ${META_DIARIA}) ${metas} ${metas === 1 ? "vez" : "veces"}.`),
+                calendario);
+
+            const piezas = [cabecera, tablas, cuesta, practica];
+
+            // Fracciones, retos y Aventura, si jugó.
+            const otrosP = [];
+            for (const [prefijo, nombre] of [["fraccion:", "Fracciones"], ["logica:", "Retos de lógica"]]) {
+                const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
+                if (filas.length === 0) continue;
+                otrosP.push(el("p", `${nombre}: ${filas.map((f) => `${f.nombre}, ${f.bien} de ${f.de} bien`).join("; ")}.` +
+                    (dificil ? ` Le cuesta más: ${dificil.nombre}.` : "")));
+            }
+            if (puntajeAventura(av) > 0) {
+                const m = Math.floor(av.alcanzado / NIVELES_POR_MUNDO);
+                otrosP.push(el("p", `La Aventura: va en el mundo ${m + 1} de ${AVENTURA_MUNDOS.length}.` + (av.sinPrisa ? " Juega «sin prisa»." : "")));
+            }
+            if (otrosP.length) piezas.push(seccion("Fracciones, retos y Aventura", ...otrosP));
+
+            const idea = el("section", undefined, "informe-sugerencia");
+            idea.append(el("h2", "Una idea para casa"), el("p", sugerenciaParaCasa({ h, cuesta: datos.cuesta, confusiones, practicados, filas: datos.filas })));
+            piezas.push(idea);
+
+            piezas.push(el("footer", "Este informe se hizo en este dispositivo con lo que el juego guarda en él. No se envió nada por internet. " +
+                "Cuenta solo lo jugado aquí: si también juega en otro aparato, ese avance no aparece."));
+            return piezas;
+        }
+
+        const EXPLICA_ESTATUS = {
+            semilla: "Semilla: la empezó",
+            arbolito: "Arbolito: se la sabe",
+            arbol: "Árbol: entera de memoria",
+            frutos: "Árbol con frutos: de memoria y repasada",
+        };
+
+        /** Una sola sugerencia, concreta, según lo que más ayudaría ahora. */
+        function sugerenciaParaCasa({ h, cuesta, confusiones, practicados, filas }) {
+            if (Object.keys(h).length === 0) {
+                return "Siéntense juntos la primera vez: elijan la tabla del 2 y dejen que el juego la enseñe con «Descubre la tabla».";
+            }
+            const cruce = confusiones.map(([n]) => n.match(/^(\d+) × (\d+) con (\d+) × (\d+)$/)).find(Boolean);
+            if (cruce) {
+                const [, a, b, c, d] = cruce.map(Number);
+                return `Se le cruzan ${a} × ${b} y ${c} × ${d}. Díganlas juntos en voz alta, una tras otra, en un momento tranquilo ` +
+                    `(en el coche, al poner la mesa): «${a} por ${b}, ${a * b}; ${c} por ${d}, ${c * d}». Unos días bastan.`;
+            }
+            const nombres = confusiones.map(([n]) => n);
+            if (nombres.includes("sumar en lugar de multiplicar")) {
+                return "A veces suma en lugar de multiplicar. Cuando pase, pregúntele «¿cuántas veces?»: 6 × 8 es 6 veces 8. Contar grupos de cosas reales (6 platos con 8 uvas) ayuda a verlo.";
+            }
+            if (nombres.includes("escribir las cifras al revés")) {
+                return "A veces escribe las cifras al revés (63 en lugar de 36). Pídale que diga la respuesta en voz alta antes de escribirla.";
+            }
+            if (cuesta.length) {
+                const { a, b } = cuesta[0];
+                const desde = b > 1 ? ` Si no le sale, que la piense desde una que sí sepa: ${a} × ${b - 1}, y sumar ${a} más.` : "";
+                return `Lo que más le cuesta ahora es ${a} × ${b}. Pregúntesela una vez al día durante una semana, sin prisa.${desde}`;
+            }
+            if (practicados < 4) {
+                return "Cinco minutos casi todos los días rinden más que una hora el fin de semana. Busquen un momento fijo, por ejemplo después de comer.";
+            }
+            const casi = filas.find((f) => f.estatus === "arbolito");
+            if (casi) {
+                return `Ya se sabe la tabla del ${casi.n}. Para que sea de memoria, que la escriba en el juego otro día: crece a árbol cuando le sale con soltura en dos días distintos.`;
+            }
+            return "Va muy bien. Pídale que le «enseñe» a usted su tabla favorita: explicar lo aprendido es de lo que mejor lo fija.";
+        }
+
         /** Corre `fn` como si `h` fueran los intentos del jardín en uso. */
         function conIntentos(h, fn) {
             const antes = hechos;
@@ -3350,6 +3547,13 @@
                     piezas.push(parrafo("adulto-consejo text-sm text-amber-900",
                         `Para repasar: «Practicar lo que me falta» empieza justo ${porDonde}.`));
                 }
+
+                const informe = document.createElement("button");
+                informe.type = "button";
+                informe.className = "btn-informe min-h-11 bg-green-700 hover:bg-green-800 text-white font-bold px-4 py-2 rounded-lg";
+                informe.textContent = "Imprimir o guardar el informe";
+                informe.onclick = () => imprimirInforme(perfil.id);
+                piezas.push(informe);
 
                 // Borrar pide confirmar: no se puede deshacer.
                 const borrar = document.createElement("div");
@@ -6378,6 +6582,9 @@
         //   tabla: otra de la misma tabla (6 × 8 → 30, que es 6 × 5).
         function confusionDe(a, b, r) {
             if (!Number.isInteger(r) || r === a * b) return null;
+            // Con un 1, sumar y la de al lado dan lo mismo (3 + 1 = 4 × 1): lo
+            // probable es que haya sumado, así que eso va primero.
+            if ((a === 1 || b === 1) && r === a + b) return { tipo: "suma" };
             for (const [x, y] of [[a, b], [b, a]]) {
                 for (const d of [-1, 1]) {
                     const k = y + d;
