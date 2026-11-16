@@ -22,6 +22,19 @@ el niño no tenga que decidir:
 4. repasar lo que está casi, para que florezca;
 5. con todo florecido, la Aventura o un reto de lógica.
 
+En un jardín nuevo, «Seguir» propone primero **¿Qué tablas ya sabes?**, un
+diagnóstico corto y opcional:
+- pregunta dos multiplicaciones por tabla (entre ×3 y ×9), de la más fácil a la
+  más difícil, con cuatro opciones y «No la sé»;
+- no dice si cada una estuvo bien: es para saber, no un examen;
+- se para al fallar dos tablas seguidas y nunca pasa de 16 preguntas.
+
+Lo que ya sabe se siembra como «casi», no como florecido: florecer sigue
+pidiendo escribirla rápido otro día. «Seguir» empieza entonces por la primera
+tabla que falta («¡Ya sabes la del 2, la del 3 y la del 5!»). Lo que no sabe
+queda nuevo, para descubrirlo desde el principio. Se puede saltar, y no se
+vuelve a proponer.
+
 Todo lo demás sigue abajo, en «Juego libre: elige tú».
 
 **La primera vez**, Lumi guía al niño, una cosa por pantalla:
