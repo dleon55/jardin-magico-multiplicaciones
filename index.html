@@ -1104,6 +1104,10 @@
                     <span><span aria-hidden="true">🧺</span> Dividir con lo que sobra</span>
                     <span class="text-xs subtitulo font-semibold">17 entre 5: 3, y sobran 2</span>
                 </button>
+                <button type="button" id="btn-equipo" onclick="mostrarEquipo()" class="col-span-2 bubble-font bg-gradient-to-r from-rose-200 to-pink-200 hover:from-rose-300 hover:to-pink-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                    <span><span aria-hidden="true">👫</span> En equipo</span>
+                    <span class="text-xs subtitulo font-semibold">Se turnan en este aparato, y entre todos riegan 10 plantas</span>
+                </button>
                 <button type="button" onclick="mostrarFracciones()" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🍕</span> Fracciones</span>
                     <span class="text-xs subtitulo font-semibold">De un número, iguales, comparar y sumar</span>
@@ -1165,6 +1169,8 @@
                  otro en vertical, y lado a lado con el teléfono acostado. -->
             <div id="partida-pregunta" class="grupo-partida space-y-6">
             <!-- Cómo funciona el repaso: equivocarse no castiga, hace volver -->
+            <!-- En equipo: de quién es el turno y cuánto llevan entre todos. -->
+            <p id="turno-equipo" aria-live="polite" class="hidden bg-rose-50 border-2 border-rose-200 text-rose-900 rounded-xl px-3 py-1 text-center font-bold"></p>
             <!-- Solo hasta la primera respuesta: después ya se sabe, y en cada
                  pregunta ocupaba sitio y empujaba las opciones hacia abajo. -->
             <div id="aviso-repaso" class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-4 py-2 text-xs md:text-sm text-center font-semibold">
@@ -1642,6 +1648,37 @@
                 <p id="aviso-copia" role="status" aria-live="polite" class="min-h-5 text-sm font-bold text-green-800"></p>
             </section>
             <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Las flores miden la memoria de las tablas; las fracciones y los retos de lógica se muestran aparte. Dividir y los problemas cortos no se registran.</p>
+        </div>
+
+        <!-- ================= EN EQUIPO ================= -->
+        <!-- Dos o tres niños se turnan en el mismo aparato. Cada respuesta crece
+             en el jardín de quien la contesta; la meta es común. Sin mensajes
+             entre niños y sin comparar quién acertó más. -->
+        <div id="screen-equipo" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-2xl text-rose-800">Jugar en equipo</h2>
+                <p class="text-gray-700 text-sm max-w-md mx-auto">Se turnan en este aparato. Cada respuesta crece en el jardín de quien la contesta, y entre todos riegan 10 plantas.</p>
+            </div>
+            <fieldset class="max-w-md mx-auto space-y-2">
+                <legend class="block text-gray-800 font-bold text-center w-full mb-1">¿Quiénes juegan? (dos o tres)</legend>
+                <div id="equipo-jugadores" class="flex flex-wrap justify-center gap-2"></div>
+            </fieldset>
+            <form id="equipo-nuevo" class="max-w-md mx-auto flex flex-wrap items-end justify-center gap-2" onsubmit="return anadirCompanero(event)">
+                <label class="flex flex-col text-sm font-bold text-gray-800">¿Falta alguien? Su nombre:
+                    <input id="equipo-nombre" type="text" maxlength="20" autocomplete="off" class="mt-1 px-3 py-2 min-h-11 rounded-xl border-2 border-rose-300 font-bold text-gray-900">
+                </label>
+                <button type="submit" class="min-h-11 bg-white hover:bg-rose-50 border-2 border-rose-300 text-rose-900 font-bold px-4 py-2 rounded-xl">Añadir</button>
+            </form>
+            <fieldset class="max-w-md mx-auto">
+                <legend class="block text-gray-800 font-bold text-center w-full mb-1">¿Qué practican?</legend>
+                <div id="equipo-tablas" class="grid grid-cols-5 gap-2"></div>
+            </fieldset>
+            <p id="equipo-aviso" role="status" class="text-center font-bold text-rose-900 min-h-6"></p>
         </div>
 
         <!-- ================= EL CAMINO ================= -->
@@ -2663,6 +2700,7 @@
         // --- SISTEMA DE INICIO DE PARTIDA ---
         function startTable(table) {
             initAudio();
+            pintarTurno();
             document.getElementById("aviso-repaso").classList.remove("hidden");
             currentTable = table;
             score = 0;
@@ -2710,6 +2748,7 @@
         function backToSelector() {
             cancelarEspera();
             callarVoz();
+            terminarEquipo();
             mostrarPantalla("screen-selector");
             document.getElementById("global-stars").innerText = globalStars;
         }
@@ -3644,7 +3683,7 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-camino", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
+        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-camino", "screen-equipo", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
         let pantallaActual = "screen-welcome";
 
         // --- LUMI, LA MASCOTA ---
@@ -4014,7 +4053,7 @@
                 return;
             }
 
-            if (["screen-mapa", "screen-camino", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura"].includes(pantallaActual) && evento.key === "Escape") {
+            if (["screen-mapa", "screen-camino", "screen-equipo", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura"].includes(pantallaActual) && evento.key === "Escape") {
                 evento.preventDefault();
                 backToSelector();
                 return;
@@ -5839,6 +5878,8 @@
                 btn.removeAttribute("aria-label");
             });
 
+            if (equipo) pasarTurno();
+
             // Primero mira si toca repasar algo fallado; si no, saca de la bolsa.
             repasoActual = tomarRepasoPendiente();
             let hechoSacado = null;
@@ -5923,7 +5964,7 @@
             textoPregunta.classList.toggle("text-3xl", !chica);
             textoPregunta.classList.toggle("md:text-4xl", !chica);
 
-            speak(pregunta.voz);
+            speak(equipo ? `Turno de ${playerName || "quien sigue"}. ${pregunta.voz}` : pregunta.voz);
 
             // Un reto trae sus opciones, y su texto puede no ser el valor
             // («6 × 7» vale 42).
@@ -7244,7 +7285,8 @@
             document.getElementById("victoria-aprendido").innerText = aprendido;
 
             // Si una tabla subió de estatus en esta partida, se celebra aparte.
-            const subidas = subidasDeEstatus();
+            // En equipo no: cada quien lo verá en su próxima partida.
+            const subidas = equipo ? [] : subidasDeEstatus();
             const avisoEstatus = document.getElementById("victoria-estatus");
             avisoEstatus.classList.toggle("hidden", subidas.length === 0);
             const fraseEstatus = subidas.length ? textoSubidas(subidas) : "";
@@ -7269,6 +7311,14 @@
             const textoEstrellas = `Ganaste ${ganadas} ${ganadas === 1 ? "estrella" : "estrellas"} en esta partida.${meta}`;
             document.getElementById("victoria-estrellas").innerText = `⭐ ${textoEstrellas}`;
 
+            if (equipo) {
+                // Lo del equipo: la meta común, sin contar quién acertó más.
+                document.getElementById("victory-player-name").innerText = `, ${nombresEquipo()}`;
+                document.getElementById("victoria-aprendido").innerText =
+                    `Entre todos acertaron ${score}. Cada respuesta creció en el jardín de quien la contestó.`;
+                document.getElementById("victoria-estrellas").innerText = "⭐ Cada quien se lleva las estrellas de sus aciertos a su jardín.";
+                avisoMision.classList.add("hidden");
+            }
             mostrarPantalla("screen-victory");
             celebrar(document.getElementById("estrellas-victoria"), "aparecen");
             if (subidas.length) {
@@ -7277,6 +7327,11 @@
             }
 
             const logro = currentTable === "falta" ? "Has repasado lo que te faltaba" : `Has completado ${tableName}`;
+            if (equipo) {
+                speak(`¡Lo lograron juntos, ${nombresEquipo()}! Entre todos acertaron ${score}.`);
+                terminarEquipo();
+                return;
+            }
             speak(`¡Increíble${playerName ? `, ${playerName}` : ""}! ${logro}. ${textoParaVoz(aprendido)}` +
                 (metaEnEstaPartida ? " ¡Y cumpliste la meta de hoy!" : "") +
                 (fraseEstatus ? ` ${fraseEstatus}` : ""));
@@ -7559,6 +7614,113 @@
 
         const estrellasAventura = (g = aventuraGuardada) => Object.values(g.estrellas).reduce((a, b) => a + b, 0);
         const nombreNivel = (n) => (n === NIVELES_POR_MUNDO - 1 ? "Jefe" : `Nivel ${n + 1}`);
+
+        // --- EN EQUIPO (issue #70) ---
+        //
+        // Dos o tres niños se turnan en el mismo aparato, sin servidor. En
+        // cada pregunta se carga el jardín de quien tiene el turno: lo que
+        // contesta crece en su jardín, con sus estrellas y su meta de hoy. La
+        // meta del equipo es común (10 aciertos entre todos), no se compara a
+        // nadie y no hay mensajes entre niños. Al terminar o salir, vuelve el
+        // jardín de quien abrió el modo.
+        const MAX_EQUIPO = 3;
+        let equipo = null;   // { ids, turno, original }
+
+        function mostrarEquipo() {
+            cancelarEspera();
+            callarVoz();
+            document.getElementById("equipo-aviso").textContent = "";
+            pintarEquipo([perfilActual]);
+            mostrarPantalla("screen-equipo");
+        }
+
+        function pintarEquipo(marcados) {
+            const caja = document.getElementById("equipo-jugadores");
+            caja.replaceChildren(...perfiles.filter((p) => p.iniciado).map((p) => {
+                const label = document.createElement("label");
+                label.className = "jugador-equipo flex items-center gap-2 min-h-11 px-3 py-1 rounded-full border-2 border-rose-200 bg-white font-bold text-gray-900 cursor-pointer has-[:checked]:bg-rose-100 has-[:checked]:border-rose-500";
+                const caja = document.createElement("input");
+                caja.type = "checkbox";
+                caja.value = p.id;
+                caja.checked = marcados.includes(p.id);
+                caja.className = "w-5 h-5 accent-rose-600";
+                const nombre = document.createElement("span");
+                nombre.textContent = `${p.emoji} ${nombreDe(p)}`;
+                label.append(caja, nombre);
+                return label;
+            }));
+            const tablas = document.getElementById("equipo-tablas");
+            tablas.replaceChildren(...[...ORDEN_TABLAS.filter((n) => n !== 1).sort((x, y) => x - y), "mix"].map((t) => {
+                const b = document.createElement("button");
+                b.type = "button";
+                b.dataset.tabla = String(t);
+                b.className = `btn-tabla-equipo min-h-11 rounded-xl border-2 border-rose-300 bg-white hover:bg-rose-50 font-bold text-rose-900 ${t === "mix" ? "col-span-2" : ""}`;
+                b.textContent = t === "mix" ? "Todas" : `Del ${t}`;
+                b.setAttribute("aria-label", t === "mix" ? "Todas las tablas mezcladas" : `Tabla del ${t}`);
+                b.onclick = () => empezarEquipo(t);
+                return b;
+            }));
+        }
+
+        function elegidosEquipo() {
+            return [...document.querySelectorAll("#equipo-jugadores input:checked")].map((c) => c.value);
+        }
+
+        /** Añade a quien falta: si ya tiene jardín, lo marca; si no, se lo crea. */
+        function anadirCompanero(evento) {
+            evento?.preventDefault();
+            const campo = document.getElementById("equipo-nombre");
+            const nombre = campo.value.trim().slice(0, 20);
+            if (!nombre) return false;
+            const marcados = elegidosEquipo();
+            const igual = (x, y) => x.toLocaleLowerCase("es") === y.toLocaleLowerCase("es");
+            const perfil = perfiles.find((p) => p.iniciado && igual(p.nombre, nombre)) || nuevoPerfil(nombre, true);
+            guardarPerfiles();
+            campo.value = "";
+            pintarEquipo([...marcados, perfil.id]);
+            document.getElementById("equipo-aviso").textContent = `${nombre} se une al equipo.`;
+            return false;
+        }
+
+        function empezarEquipo(tabla) {
+            const ids = elegidosEquipo();
+            const aviso = document.getElementById("equipo-aviso");
+            if (ids.length < 2) { aviso.textContent = "Elijan al menos a dos para jugar en equipo."; return; }
+            if (ids.length > MAX_EQUIPO) { aviso.textContent = `Como mucho ${MAX_EQUIPO}: así a nadie le toca esperar demasiado.`; return; }
+            // Empieza quien abrió el modo; los demás, en el orden de la lista.
+            ids.sort((x, y) => (y === perfilActual) - (x === perfilActual));
+            equipo = { ids, turno: -1, original: perfilActual };
+            startTable(tabla);
+        }
+
+        /** Antes de cada pregunta: le toca al siguiente, con su jardín. */
+        function pasarTurno() {
+            equipo.turno = (equipo.turno + 1) % equipo.ids.length;
+            usarPerfil(equipo.ids[equipo.turno]);
+            pintarTurno();
+        }
+
+        function pintarTurno() {
+            const banda = document.getElementById("turno-equipo");
+            banda.classList.toggle("hidden", !equipo);
+            if (!equipo) { banda.textContent = ""; return; }
+            const p = perfilEnUso();
+            banda.textContent = `Turno de ${p.emoji} ${nombreDe(p)} · Entre todos: ${score} de ${targetScore}`;
+        }
+
+        function nombresEquipo() {
+            const nombres = equipo.ids.map((id) => nombreDe(perfiles.find((p) => p.id === id)));
+            return `${nombres.slice(0, -1).join(", ")} y ${nombres.at(-1)}`;
+        }
+
+        /** Al terminar o salir: vuelve el jardín de quien abrió el modo. */
+        function terminarEquipo() {
+            if (!equipo) return;
+            const original = equipo.original;
+            equipo = null;
+            pintarTurno();
+            if (perfiles.some((p) => p.id === original)) usarPerfil(original);
+        }
 
         // --- EL CAMINO (issue #46) ---
         //
