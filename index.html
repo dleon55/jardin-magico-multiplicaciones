@@ -230,6 +230,9 @@
         button.tramo-caja { min-height: 2.75rem; cursor: pointer; }
         button.tramo-caja:hover { filter: brightness(0.97); }
 
+        /* Opciones con texto («3, sobran 2»): no caben con la letra de un número. */
+        #opciones.opciones-largas .btn-option { font-size: 1.2rem; line-height: 1.2; padding: 0.75rem 0.5rem; }
+
         /* INFORME PARA IMPRIMIR (issue #65): una hoja carta. En pantalla no se
            ve; al imprimir desde «Para las personas adultas» es lo único que
            sale. Imprimir cualquier otra pantalla (Ctrl+P) sigue igual. */
@@ -1097,6 +1100,10 @@
                     <span><span aria-hidden="true">🧩</span> Retos de lógica</span>
                     <span class="text-xs subtitulo font-semibold">Pensar con las tablas</span>
                 </button>
+                <button type="button" id="btn-residuo" onclick="startTable('residuo')" class="col-span-2 bubble-font bg-gradient-to-r from-cyan-200 to-teal-200 hover:from-cyan-300 hover:to-teal-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                    <span><span aria-hidden="true">🧺</span> Dividir con lo que sobra</span>
+                    <span class="text-xs subtitulo font-semibold">17 entre 5: 3, y sobran 2</span>
+                </button>
                 <button type="button" onclick="mostrarFracciones()" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🍕</span> Fracciones</span>
                     <span class="text-xs subtitulo font-semibold">De un número, iguales, comparar y sumar</span>
@@ -1890,7 +1897,7 @@
         const TABLAS = 9;
         const MULTIPLICADORES = 10;
         let playerName = "";   // vacío = sin nombre: se habla del jardín, no de la persona
-        let currentTable = 1; // 1-9, "mix", "falta", "div", "problemas", "logica" o "fracciones"
+        let currentTable = 1; // 1-9, "mix", "falta", "div", "residuo", "problemas", "logica" o "fracciones"
         let globalStars = 0;
         let score = 0; // Aciertos actuales conseguidos
         let targetScore = 10; // Meta FIJA de aciertos: los fallos ya no la mueven
@@ -1919,7 +1926,7 @@
         // numA y numB siguen siendo los dos factores de la multiplicación que
         // hay debajo, también al dividir (56 ÷ 8 = 7: numA 8, numB 7).
         let pregunta = null;
-        let aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0 };
+        let aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0 };
         let rachaPartida = 0;   // aciertos seguidos en esta partida (celebraciones)
         let metaEnEstaPartida = false;   // ¿se cumplió la meta de hoy durante esta partida?
         // --- AJUSTES ---
@@ -2672,7 +2679,7 @@
             }));
             hechosDeLaPartida = new Set();
             estrellasAlEmpezar = globalStars;
-            aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0 };
+            aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0 };
             rachaPartida = 0;
             metaEnEstaPartida = false;
             callarGloboLumi();
@@ -3066,7 +3073,7 @@
 
             // Fracciones, retos y Aventura, si jugó.
             const otrosP = [];
-            for (const [prefijo, nombre] of [["fraccion:", "Fracciones"], ["logica:", "Retos de lógica"]]) {
+            for (const [prefijo, nombre] of [["fraccion:", "Fracciones"], ["logica:", "Retos de lógica"], ["residuo:", "División con residuo"]]) {
                 const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
                 if (filas.length === 0) continue;
                 otrosP.push(el("p", `${nombre}: ${filas.map((f) => `${f.nombre}, ${f.bien} de ${f.de} bien`).join("; ")}.` +
@@ -3076,7 +3083,7 @@
                 const m = Math.floor(av.alcanzado / NIVELES_POR_MUNDO);
                 otrosP.push(el("p", `La Aventura: va en el mundo ${m + 1} de ${AVENTURA_MUNDOS.length}.` + (av.sinPrisa ? " Juega «sin prisa»." : "")));
             }
-            if (otrosP.length) piezas.push(seccion("Fracciones, retos y Aventura", ...otrosP));
+            if (otrosP.length) piezas.push(seccion("Fracciones, retos, división y Aventura", ...otrosP));
 
             const idea = el("section", undefined, "informe-sugerencia");
             idea.append(el("h2", "Una idea para casa"), el("p", sugerenciaParaCasa({ h, cuesta: datos.cuesta, confusiones, practicados, filas: datos.filas })));
@@ -3397,6 +3404,7 @@
             "fraccion:sumar": "sumar y restar", "fraccion:sumarDistinto": "sumar con distinto número de abajo",
             "logica:mayor": "¿cuál da más?", "logica:misterio": "el número misterioso", "logica:sigue": "¿qué número falta?",
             "logica:partir": "partir una multiplicación", "logica:intruso": "el intruso",
+            "residuo:dividir": "dividir con lo que sobra",
         };
         // El botón de «🍕 Fracciones» que practica esa clase sola.
         const BOTON_CLASE_FRACCION = { "fraccion:de": "De un número", "fraccion:equivalente": "Equivalentes",
@@ -3429,6 +3437,7 @@
         /** La clase de la pregunta en curso, si es de fracciones o un reto. */
         function claseOtro(p) {
             if (p?.tipo === "fraccion") return `fraccion:${p.clase || p.reto?.clase || "de"}`;
+            if (p?.tipo === "residuo") return "residuo:dividir";
             if (p?.tipo === "logica") return `logica:${p.clase}`;
             return null;
         }
@@ -3568,7 +3577,7 @@
                     caja.appendChild(olvidar);
                     piezas.push(caja);
                 }
-                for (const [prefijo, nombre, clase] of [["fraccion:", "Fracciones", "adulto-fracciones"], ["logica:", "Retos de lógica", "adulto-retos"]]) {
+                for (const [prefijo, nombre, clase] of [["fraccion:", "Fracciones", "adulto-fracciones"], ["logica:", "Retos de lógica", "adulto-retos"], ["residuo:", "División con residuo", "adulto-residuo"]]) {
                     const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
                     if (filas.length === 0) continue;
                     let texto = `${nombre} (sus últimas respuestas): ${filas.map((f) => `${f.nombre} ${f.bien} de ${f.de}`).join(", ")}.`;
@@ -5161,6 +5170,8 @@
                 bolsa = bolsaDeProblemas();
             } else if (currentTable === "logica") {
                 bolsa = bolsaDeRetos();
+            } else if (currentTable === "residuo") {
+                bolsa = bolsaDeResiduos();
             } else if (currentTable === "fracciones") {
                 bolsa = bolsaDeFracciones();
             } else {
@@ -5311,6 +5322,66 @@
             const casi = barajar([2, 3, 4, 5, 6, 7, 8, 9].flatMap((k) => [n * k + 1, n * k - 1, n * k + 2, n * k - 2]))
                 .find((x) => x > 1 && x % n !== 0 && !dentro.includes(x));
             return { clase, n, dentro, intruso: casi };
+        }
+
+        // --- DIVIDIR CON LO QUE SOBRA (issue #71) ---
+        //
+        // 17 ÷ 5 = 3 y sobran 2. El primer tema nuevo después de las tablas,
+        // con el mismo método: ayuda visual (filas de 5 y lo que sobra aparte),
+        // errores típicos como opciones falsas, repaso de lo fallado y registro
+        // en la vista para adultos. Siempre se elige: la respuesta son dos
+        // números. Una opción vale cociente × 100 + residuo.
+        const valorResiduo = (q, r) => q * 100 + r;
+        const textoResiduo = (q, r) => `${q}, ${r === 1 ? "sobra 1" : `sobran ${r}`}`;
+
+        /** Diez divisiones con residuo, distintas; con pocas tablas sabidas, divisores del 2 al 5. */
+        function bolsaDeResiduos() {
+            const [lo, hi] = parejasConocidas().length >= MIN_CONOCIDAS ? [2, 9] : [2, 5];
+            const vistas = new Set();
+            const lista = [];
+            while (lista.length < 10) {
+                const d = entre(lo, hi), q = entre(2, 9), r = entre(1, d - 1);
+                const D = d * q + r;
+                if (vistas.has(`${D}/${d}`)) continue;
+                vistas.add(`${D}/${d}`);
+                lista.push({ a: d, b: q, reto: { D, d, q, r } });
+            }
+            return lista;
+        }
+
+        /**
+         * Las opciones falsas son los errores típicos, cada uno con su
+         * explicación:
+         *   sobra demasiado  una fila menos: q − 1 y sobran r + d (no cabe);
+         *   al revés         el cociente y lo que sobra cambiados;
+         *   olvidó lo que sobra  q y sobran 0;
+         *   contó mal        q y sobran r ± 1.
+         */
+        function armarResiduo(reto) {
+            const { D, d, q, r } = reto;
+            const falsas = [];
+            const anadir = (fq, fr, porQue) => {
+                if (fq < 0 || fr < 0 || (fq === q && fr === r) || falsas.some((f) => f.q === fq && f.r === fr)) return;
+                falsas.push({ q: fq, r: fr, porQue });
+            };
+            if (q >= 2) anadir(q - 1, r + d, `Con ${q - 1} sobrarían ${r + d}, y en ${r + d} cabe otro ${d}: lo que sobra siempre es menos que ${d}.`);
+            if (r !== q) anadir(r, q, `Cambiaste las dos partes: ${q} es cuántas veces cabe el ${d}, y ${r} lo que sobra.`);
+            anadir(q, 0, `Sí sobra algo: ${d} × ${q} = ${d * q}, y de ${d * q} a ${D} faltan ${r}.`);
+            anadir(q, r + 1, `Casi: de ${d * q} a ${D} hay ${r}, no ${r + 1}.`);
+            if (r >= 2) anadir(q, r - 1, `Casi: de ${d * q} a ${D} hay ${r}, no ${r - 1}.`);
+            anadir(q + 1, r, `${d} × ${q + 1} = ${d * (q + 1)}, que se pasa de ${D}.`);
+            const tres = falsas.slice(0, 3);
+            const opciones = barajar([{ q, r }, ...tres]).map((o) => ({ valor: valorResiduo(o.q, o.r), etiqueta: textoResiduo(o.q, o.r) }));
+            return {
+                tipo: "residuo", reto, a: d, b: q,
+                respuesta: valorResiduo(q, r),
+                texto: `${D} ÷ ${d}`,
+                voz: `¿Cuánto es ${D} entre ${d}, y cuánto sobra?`,
+                opciones,
+                porQue: Object.fromEntries(tres.map((f) => [valorResiduo(f.q, f.r), f.porQue])),
+                pista: `Busca en la tabla del ${d} el número más grande que no se pase de ${D}. Lo que falta para llegar a ${D} es lo que sobra.`,
+                explicacion: `${D} ÷ ${d} = ${q} y ${r === 1 ? "sobra 1" : `sobran ${r}`}, porque ${d} × ${q} = ${d * q} y de ${d * q} a ${D} ${r === 1 ? "falta 1" : `faltan ${r}`}.`,
+            };
         }
 
         /** Diez retos: dos de cada clase. Con pocas tablas sabidas, del 2 al 5. */
@@ -5715,6 +5786,7 @@
                 };
             }
             if (currentTable === "fracciones" && h.reto) return armarFraccion(h.reto);
+            if (currentTable === "residuo" && h.reto) return armarResiduo(h.reto);
             if (currentTable === "logica" && h.reto) {
                 return { ...armarReto(h.reto), a, b };
             }
@@ -5791,6 +5863,7 @@
             // dibuja su rectángulo con ellos).
             if (pregunta.tipo === "logica") [numA, numB] = numerosDelReto(pregunta.reto);
             if (pregunta.tipo === "fraccion") [numA, numB] = numerosDeFraccion(pregunta.reto);
+            if (pregunta.tipo === "residuo") [numA, numB] = [pregunta.reto.d, pregunta.reto.q];
             correctAnswer = pregunta.respuesta;
             ayudaGirada = false;
             ayudaRect = null;
@@ -5802,7 +5875,9 @@
             // respuesta que se pueda escribir (¿cuál da más?).
             modoEscrito = pregunta.tipo === "mult"
                 ? seEscribe(numA, numB)
-                : pregunta.tipo !== "logica" && !pregunta.tiras && !repasoActual && estadoHecho(numA, numB) === "florecida";
+                : pregunta.tipo !== "logica" && pregunta.tipo !== "residuo" && !pregunta.tiras && !repasoActual && estadoHecho(numA, numB) === "florecida";
+            // «3, sobran 2» no cabe con la letra grande de un número.
+            document.getElementById("opciones").classList.toggle("opciones-largas", pregunta.tipo === "residuo");
             document.getElementById("escritura-aviso").innerText = pregunta.tipo === "mult"
                 ? "Esta ya te salió bien: ahora escríbela."
                 : "Esta multiplicación ya te la sabes: escribe la respuesta.";
@@ -5906,8 +5981,13 @@
         function generateHelpVisual() {
             // En los retos, el rectángulo solo ayuda a partir una multiplicación.
             const sinDibujo = pregunta?.tipo === "logica" && pregunta.clase !== "partir";
-            document.getElementById("btn-girar").classList.toggle("hidden", pregunta?.tipo === "logica" || pregunta?.tipo === "fraccion");
+            document.getElementById("btn-girar").classList.toggle("hidden", ["logica", "fraccion", "residuo"].includes(pregunta?.tipo));
             pintarControlesAyuda(false);   // los dibujos de retos y fracciones no se tocan
+            if (pregunta?.tipo === "residuo") {
+                pintarControlesAyuda(false);
+                dibujarResiduo();
+                return;
+            }
             if (pregunta?.tipo === "fraccion") {
                 if (pregunta.tiras) dibujarTiras(pregunta.tiras);
                 else dibujarFraccion();
@@ -6159,6 +6239,30 @@
                 caja.appendChild(fila);
             });
             document.getElementById("help-visual-container").replaceChildren(caja);
+        }
+
+        /**
+         * D puntos en filas de d: las filas completas son el cociente, y lo
+         * que no llena una fila, en naranja, es lo que sobra.
+         */
+        function dibujarResiduo() {
+            const { D, d, q, r } = pregunta.reto;
+            document.getElementById("help-truco").innerText = pistaPara().texto;
+            document.getElementById("help-explain").innerText =
+                `${D} puntos en filas de ${d}. ¿Cuántas filas completas salen? Los que no llenan una fila, en naranja, son los que sobran.`;
+            const rejilla = document.createElement("div");
+            rejilla.className = "inline-grid gap-1 bg-white border-2 border-indigo-100 rounded-xl p-3";
+            rejilla.style.gridTemplateColumns = `repeat(${d}, auto)`;
+            rejilla.setAttribute("aria-hidden", "true");
+            for (let i = 0; i < D; i++) {
+                const f = Math.floor(i / d);
+                const sobra = f >= q;
+                const punto = document.createElement("span");
+                punto.className = `punto block w-3 h-3 md:w-4 md:h-4 rounded-full ${sobra ? "bg-orange-600 punto-sobra" : f % 2 ? "bg-sky-600" : "bg-indigo-500"}`;
+                if (f > 0) punto.style.marginTop = sobra ? "0.6rem" : "0.15rem";
+                rejilla.appendChild(punto);
+            }
+            document.getElementById("help-visual-container").replaceChildren(rejilla);
         }
 
         function dibujarFraccion() {
@@ -6586,7 +6690,7 @@
          * la respuesta.
          */
         function pistaPara() {
-            if (pregunta?.tipo === "logica" || pregunta?.tipo === "fraccion") return { texto: pregunta.pista, voz: textoParaVoz(pregunta.pista) };
+            if (["logica", "fraccion", "residuo"].includes(pregunta?.tipo)) return { texto: pregunta.pista, voz: textoParaVoz(pregunta.pista) };
             if (!pregunta || pregunta.tipo === "mult") {
                 const truco = trucoPara(numA, numB);
                 const puente = puenteDesdeLoSabido(numA, numB);
@@ -6986,7 +7090,7 @@
                 }
 
                 score++;
-                aciertosPorOp[pregunta.tipo === "logica" ? "L" : pregunta.tipo === "fraccion" ? "F" : seDivide() ? "÷" : "×"]++;
+                aciertosPorOp[pregunta.tipo === "logica" ? "L" : pregunta.tipo === "fraccion" ? "F" : pregunta.tipo === "residuo" ? "R" : seDivide() ? "÷" : "×"]++;
                 ganarEstrellas(1 + (florecio ? BONO_FLOR : 0));
                 updateHUD();
                 celebrar(document.getElementById("pastilla-estrellas"), "celebra-brinca");
@@ -7033,9 +7137,10 @@
 
                 // Si hay una vecina que ya se sabe, el puente para recordarla.
                 const puente = multiplica ? puenteDesdeLoSabido(numA, numB, true) : null;
+                const porQue = pregunta.porQue?.[Number(chosenVal)];
                 const explicacion = multiplica
                     ? `${pregunta.explicacion}.${puente ? ` Para recordarla: ${puente.texto.replace("Desde lo que ya sabes: ", "")}` : ""}`
-                    : pregunta.explicacion;
+                    : porQue ? `${porQue} ${pregunta.explicacion}` : pregunta.explicacion;
                 // Si el fallo es una confusión típica, se dice cuál; si ya se
                 // repitió, la que se cruza sale enseguida y luego esta otra vez:
                 // las dos juntas, para que no se vuelvan a cruzar.
@@ -7067,7 +7172,7 @@
 
         /** Lo que hace falta guardar en la cola para repetir la misma pregunta. */
         function extraDeRepaso() {
-            if (pregunta.tipo === "logica" || pregunta.tipo === "fraccion") return { reto: pregunta.reto };
+            if (["logica", "fraccion", "residuo"].includes(pregunta.tipo)) return { reto: pregunta.reto };
             return pregunta.tipo === "problema" ? { op: pregunta.op, t: pregunta.t } : {};
         }
 
@@ -7128,11 +7233,12 @@
                 : currentTable === "div" ? "La División del Jardín"
                 : currentTable === "problemas" ? "Los Problemas del Jardín"
                 : currentTable === "logica" ? "Los Retos de Lógica"
+                : currentTable === "residuo" ? "Dividir con lo que Sobra"
                 : currentTable === "fracciones" ? (claseFracciones === "mezcla" ? "Las Fracciones del Jardín" : `Fracciones: ${NOMBRE_CLASE_FRACCION[claseFracciones]}`)
                 : `La Tabla del ${currentTable}`;
             document.getElementById("victory-table-name").innerText = tableName;
 
-            const aprendido = ["div", "problemas", "logica", "fracciones"].includes(currentTable)
+            const aprendido = ["div", "residuo", "problemas", "logica", "fracciones"].includes(currentTable)
                 ? fraseDeLoResuelto()
                 : fraseDeLoAprendido();
             document.getElementById("victoria-aprendido").innerText = aprendido;
@@ -7193,6 +7299,10 @@
                     comparar: "Para comparar, pásalas al mismo número de abajo.",
                 }[pregunta?.clase] || "Para sacar 3/4 de un número, se divide entre 4 y se multiplica por 3.";
                 return `Resolviste ${n} ${n === 1 ? "fracción" : "fracciones"}. ${idea}`;
+            }
+            if (currentTable === "residuo") {
+                const n = aciertosPorOp["R"];
+                return `Resolviste ${n} ${n === 1 ? "división" : "divisiones"} con residuo. Lo que sobra siempre es menos que el número entre el que divides: si no, cabría otra vez.`;
             }
             if (currentTable === "logica") {
                 const n = aciertosPorOp["L"];

@@ -397,6 +397,21 @@ mismo.
   decidir qué operación hace falta: la pista y la explicación la nombran
   («Es una división: 24 ÷ 4 = 6»). El problema se escribe encima del girasol y
   la voz lo lee. Uno fallado vuelve con la misma historia.
+- **🧺 Dividir con lo que sobra** (el primer tema nuevo de la Fase 3, #71).
+  Pregunta «17 ÷ 5» y se elige entre cuatro respuestas como «3, sobran 2».
+  - **Las falsas son los errores típicos:**
+    - una fila de menos («2, sobran 7»: en 7 cabe otro 5);
+    - las dos partes al revés («2, sobran 3»);
+    - olvidar lo que sobra («3, sobran 0»);
+    - contar mal lo que sobra.
+  - **Al fallar se explica el error elegido**, y después la cuenta («porque
+    5 × 3 = 15 y de 15 a 17 faltan 2»).
+  - **La ayuda** dibuja los puntos en filas del divisor. Las filas completas
+    son el cociente, y lo que sobra va aparte, en naranja.
+  - Diez divisiones distintas por partida, siempre con algo que sobra.
+    Con pocas tablas sabidas, el divisor va del 2 al 5.
+  - Lo fallado vuelve. No cuenta para el mapa ni el jardín, pero queda en la
+    vista para adultos y en el informe.
 - **🧩 Retos de lógica.** Las mismas tablas, pidiendo pensar y no solo
   recordar. Cada partida trae 10 retos, dos de cada clase:
 

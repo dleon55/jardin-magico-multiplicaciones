@@ -116,7 +116,7 @@ test("sin jugar: lo dice claro y sugiere empezar juntos", async ({ page }) => {
   await expect(informe).toContainText("Aún no ha jugado a multiplicar.");
   await expect(informe).toContainText("Todavía no domina ninguna tabla entera de memoria.");
   await expect(informe.locator("tbody tr").first()).toContainText("Sin jugar");
-  await expect(informe).not.toContainText("Fracciones, retos y Aventura");
+  await expect(informe).not.toContainText("Fracciones, retos, división y Aventura");
   await expect(informe.locator(".informe-sugerencia")).toContainText("Siéntense juntos la primera vez");
 });
 
