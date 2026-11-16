@@ -117,7 +117,7 @@ test("ganar un nivel: estrellas, récord, se abre el siguiente y se recuerda", a
   await page.click(".btn-perfil");
   await page.click("#screen-selector >> text=La Aventura");
   await expect(page.locator('.btn-nivel[data-nivel="0-1"]')).toBeEnabled();
-  await expect(page.locator("#aventura-resumen")).toContainText(`Puntaje: ${pts} · Estrellas: 3 de 72`);
+  await expect(page.locator("#aventura-resumen")).toContainText(`Puntaje: ${pts} · Estrellas de nivel: 3 de 72`);
   await expect(page.locator("#aventura-menu-resumen")).toHaveCount(1);
 });
 

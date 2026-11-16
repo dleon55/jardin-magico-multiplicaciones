@@ -304,15 +304,21 @@ mismo.
   adornos, de la mariposa (10 ⭐, alcanza con la primera partida) al dragón y
   el unicornio (180 ⭐). Lo comprado vive para siempre en «Mi jardín» y acompaña cada
   partida. Las estrellas premian sobre todo aprender: 1 por acierto, **5 cuando
-  una multiplicación florece** y 10 por la misión del día. El menú dice
-  cuántas faltan para lo siguiente.
-- **Misión del día.** Una meta corta, distinta cada día y con 10 ⭐ de premio:
-  terminar una partida, escribir bien 5 respuestas, ganar el reto de las tablas
-  mezcladas o ganar una partida de repaso. Se elige una vez al día y solo entre
-  las que se pueden cumplir (no pide escribir 5 si aún no hay 5 que se
-  escriban). El menú muestra los últimos 7 días y los días seguidos; **faltar
-  un día no quita nada**: las estrellas, los amigos y los días cumplidos se
-  quedan, solo la racha vuelve a empezar.
+  una multiplicación florece**, 10 por la meta de hoy y de 1 a 3 por cada
+  nivel de la Aventura. Es **la única moneda** del juego: la estrella solo se
+  usa para ella. Los aciertos de la partida llevan el icono de «listo» y los
+  puntos de la Aventura, el de la chispa. El menú dice cuántas faltan para lo
+  siguiente.
+- **La meta de hoy.** Siempre la misma: acertar 10 respuestas en el día, en lo
+  que se quiera (tablas, retos, fracciones o venciendo en la Aventura), con 10
+  estrellas de premio.
+  - Antes era una misión distinta cada día, con su propia regla que había que
+    leer.
+  - El menú dice cuánto se lleva («3 de 10») y muestra los últimos 7 días y los
+    días seguidos.
+  - Al cumplirla, Lumi lo dice y la victoria lo recuerda.
+  - **Faltar un día no quita nada**: las estrellas, los amigos y los días
+    cumplidos se quedan; solo la racha vuelve a empezar.
 - **➗ Dividir: la multiplicación al revés.** Pregunta «56 ÷ 8». Las divisiones
   salen de las multiplicaciones que ya se saben («casi» o florecidas), en los
   dos sentidos (56 ÷ 8 y 56 ÷ 7). Mientras se sepan menos de 6, se divide entre
@@ -396,8 +402,8 @@ mismo.
 - **Dividir, los problemas, los retos de lógica y las fracciones no cuentan para el mapa ni el jardín.** Esos miden
   si la multiplicación se sabe de memoria, escrita en 6 segundos; una división
   hecha con el truco o un problema que primero hay que leer tardan más y no
-  deben marchitar ni florecer nada. Sí dan estrellas y cuentan para la misión
-  «termina una partida». Se responde escribiendo solo si la multiplicación de
+  deben marchitar ni florecer nada. Sí dan estrellas y sus aciertos cuentan para
+  la meta de hoy. Se responde escribiendo solo si la multiplicación de
   debajo ya floreció; si no, eligiendo.
 
 - **Varios niños en el mismo dispositivo.** Cada quien tiene su jardín:
@@ -553,8 +559,8 @@ fondo), el teléfono acostado (lado a lado en 667 × 375 y 640 × 360, sin nada 
 «menos movimiento» lo apague), los perfiles y la vista para
 adultos (cada quien lo suyo, cambiar sin borrar, borrar solo uno, lo que
 más falla, días de práctica, lo de antes de los perfiles), el jardín (parejas, bancales y riego), las
-estrellas y la misión del día (vivero, bono por florecer, misión que se elige
-una vez y premia una sola vez, días seguidos), dividir y los problemas
+estrellas y la meta de hoy (vivero, bono por florecer, meta de 10 aciertos que
+premia una sola vez, días seguidos), dividir y los problemas
 cortos (de dónde salen, opciones, ayuda, repaso y que no tocan el mapa), los
 retos de lógica (cada clase, cien retos al azar bien calculados, repaso,
 ayuda, victoria), las fracciones (errores típicos como opciones, nombres en

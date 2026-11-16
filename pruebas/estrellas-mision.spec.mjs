@@ -1,4 +1,5 @@
-// Fase 3: las estrellas se gastan en el vivero, y cada día hay una misión.
+// Fase 3: las estrellas se gastan en el vivero, y cada día hay una meta
+// (acertar 10; antes, una misión que cambiaba cada día).
 // Las dos dan una razón para volver mañana, que es cuando de verdad se
 // aprende: florecer exige acertar rápido en dos días distintos.
 import { test, expect } from "@playwright/test";
@@ -25,7 +26,7 @@ async function preparar(page, { estrellas = null, compras = null, misiones = nul
 }
 
 /** Una misión de hoy ya elegida, para que no dependa del día de la semana. */
-const mision = (tipo, extra = {}) => ({ hoy: { d: HOY, tipo, cuenta: 0, cumplida: false, ...extra }, dias: [] });
+const mision = (tipo = "meta", extra = {}) => ({ hoy: { d: HOY, tipo, cuenta: 0, cumplida: false, ...extra }, dias: [] });
 
 test.describe("las estrellas se gastan en el vivero", () => {
   test("con estrellas suficientes se compra: se descuenta y se queda para siempre en el jardín", async ({ page }) => {
@@ -95,9 +96,9 @@ test.describe("las estrellas se gastan en el vivero", () => {
   });
 });
 
-test.describe("misión del día", () => {
-  test("se cumple al ganar una partida: da 10 estrellas y la victoria lo dice", async ({ page }) => {
-    await preparar(page, { estrellas: 0, misiones: mision("partida") });
+test.describe("la meta de hoy: acertar 10", () => {
+  test("se cumple con el décimo acierto del día: da 10 estrellas y la victoria lo dice", async ({ page }) => {
+    await preparar(page, { estrellas: 0, misiones: mision("meta") });
     await entrarATabla(page, 2);
     for (let i = 0; i < 10; i++) {
       await responder(page, true);
@@ -105,87 +106,63 @@ test.describe("misión del día", () => {
     }
     await expect(page.locator("#screen-victory")).toBeVisible();
     await expect(page.locator("#victoria-mision")).toBeVisible();
-    await expect(page.locator("#victoria-mision")).toContainText("¡Misión de hoy cumplida!");
-    // 10 aciertos + 10 de la misión; con 20, ya alcanza para la mariposa.
+    await expect(page.locator("#victoria-mision")).toContainText("¡Meta de hoy cumplida!");
+    // 10 aciertos + 10 de la meta; con 20, ya alcanza para la mariposa.
     await expect(page.locator("#victoria-estrellas")).toContainText("Ganaste 20 estrellas en esta partida");
     await expect(page.locator("#victoria-estrellas")).toContainText("¡Ya te alcanza para la mariposa en el Vivero!");
 
     await page.click("text=Sigue Cultivando");
-    await expect(page.locator("#mision-texto")).toContainText("✓ ¡Misión cumplida!");
+    await expect(page.locator("#mision-texto")).toContainText("✓ ¡Meta de hoy cumplida!");
     await expect(page.locator(`#mision-semana [data-dia="${HOY}"]`)).toHaveAttribute("data-cumplida", "si");
   });
 
-  test("«escribe bien 5» cuenta de una en una y premia una sola vez", async ({ page }) => {
-    await preparar(page, { estrellas: 0, misiones: mision("escribir") });
+  test("cada acierto cuenta de uno en uno y el premio se da una sola vez", async ({ page }) => {
+    await preparar(page, { estrellas: 0, misiones: mision("meta") });
     await page.goto("./");
     const r = await page.evaluate(() => {
       const vueltas = [];
-      for (let i = 0; i < 6; i++) vueltas.push(avanzarMision("escrita"));
+      for (let i = 0; i < 11; i++) vueltas.push(avanzarMision("acierto"));
       return { vueltas, estrellas: globalStars, dias: misiones.dias, cuenta: misiones.hoy.cuenta };
     });
-    expect(r).toEqual({ vueltas: [false, false, false, false, true, false], estrellas: 10, dias: [HOY], cuenta: 5 });
+    expect(r).toEqual({ vueltas: [...Array(9).fill(false), true, false], estrellas: 10, dias: [HOY], cuenta: 10 });
   });
 
-  test("el reto del arcoíris y el repaso solo se cumplen con su propia partida", async ({ page }) => {
-    await preparar(page, { misiones: mision("arcoiris") });
+  test("en el menú dice cuánto lleva, en palabras claras", async ({ page }) => {
+    await preparar(page, { misiones: mision("meta", { cuenta: 3 }) });
     await page.goto("./");
-    expect(await page.evaluate(() => [avanzarMision("escrita"), avanzarMision("partida", 3), avanzarMision("partida", "mix")]))
-      .toEqual([false, false, true]);
-    expect(await page.evaluate(() => {
-      misiones.hoy = { d: hoy(), tipo: "falta", cuenta: 0, cumplida: false };
-      return [avanzarMision("partida", "mix"), avanzarMision("partida", "falta")];
-    })).toEqual([false, true]);
+    await page.click("#screen-welcome button");
+    await expect(page.locator("#mision-titulo")).toContainText("Meta de hoy");
+    await expect(page.locator("#mision-texto")).toHaveText("Acierta 10 respuestas hoy, en lo que quieras (3 de 10). Premio: 10 estrellas.");
+    await expect(page.locator("#mision-progreso")).toHaveAttribute("aria-valuenow", "3");
   });
 
-  test("se elige una vez al día y no cambia aunque cambie lo pendiente", async ({ page }) => {
-    await preparar(page);
+  test("cuentan los aciertos de cualquier juego, también vencer en la Aventura; terminar una partida no suma", async ({ page }) => {
+    await preparar(page, { misiones: mision("meta") });
     await page.goto("./");
-    const r = await page.evaluate(() => {
-      const primera = misionDeHoy().tipo;
-      registrarIntento(7, 8, false);   // ahora sí hay algo que repasar
-      registrarIntento(6, 9, true);
-      return [primera, misionDeHoy().tipo, JSON.parse(localStorage.getItem("jardin:p1:misiones")).hoy.d];
-    });
-    expect(r[1]).toBe(r[0]);
-    expect(r[2]).toBe(HOY);
+    await page.click("#screen-welcome button:has-text('Comenzar')");
+    expect(await page.evaluate(() => [avanzarMision("partida"), avanzarMision("escrita"), misiones.hoy.cuenta])).toEqual([false, false, 0]);
+    await page.click("#screen-selector >> text=La Aventura");
+    await page.evaluate(() => { aventura.manual = true; });
+    await page.click('.btn-nivel[data-nivel="0-0"]');
+    await page.evaluate(() => responderAventura(enemigoObjetivo().op.respuesta));
+    expect(await page.evaluate(() => misiones.hoy.cuenta)).toBe(1);
   });
 
-  test("solo propone lo que se puede cumplir hoy", async ({ page }) => {
-    await preparar(page);
+  test("la misión de antes se vuelve la meta: si ya estaba cumplida hoy, la meta también", async ({ page }) => {
+    await preparar(page, { misiones: { hoy: { d: HOY, tipo: "partida", cuenta: 1, cumplida: true }, dias: [HOY] } });
     await page.goto("./");
-    // Sin nada jugado no hay 5 multiplicaciones que se escriban ni nada que
-    // repasar: en una semana entera solo salen la partida y el arcoíris.
-    const vacio = await page.evaluate(() => {
-      const tipos = [];
-      for (let k = 0; k < 8; k++) {
-        const d = new Date(Date.parse("2026-11-01") + k * 86400000).toISOString().slice(0, 10);
-        hoy = () => d;   // un día distinto en cada vuelta
-        misiones.hoy = null;
-        tipos.push(misionDeHoy().tipo);
-      }
-      return [...new Set(tipos)].sort();
-    });
-    expect(vacio).toEqual(["arcoiris", "partida"]);
-
-    // Con 5 que ya se escriben y algo pendiente, aparecen las cuatro.
-    const lleno = await page.evaluate(() => {
-      [[2, 3], [2, 4], [2, 5], [3, 3], [3, 4]].forEach(([a, b]) => registrarIntento(a, b, true));
-      registrarIntento(7, 8, false);
-      const tipos = [];
-      for (let k = 0; k < 4; k++) {
-        const d = new Date(Date.parse("2026-11-01") + k * 86400000).toISOString().slice(0, 10);
-        hoy = () => d;
-        misiones.hoy = null;
-        tipos.push(misionDeHoy().tipo);
-      }
-      return [...new Set(tipos)].sort();
-    });
-    expect(lleno).toEqual(["arcoiris", "escribir", "falta", "partida"]);
+    expect(await page.evaluate(() => { const m = misionDeHoy(); return [m.tipo, m.cumplida, m.cuenta]; })).toEqual(["meta", true, 10]);
   });
 
-  test("al día siguiente hay misión nueva, y la de ayer se queda en el calendario", async ({ page }) => {
+  test("una misión de antes, a medias, conserva lo que llevaba", async ({ page }) => {
+    await preparar(page, { misiones: mision("escribir", { cuenta: 3 }) });
+    await page.goto("./");
+    expect(await page.evaluate(() => { const m = misionDeHoy(); return [m.tipo, m.cumplida, m.cuenta]; })).toEqual(["meta", false, 3]);
+  });
+
+  test("al día siguiente la meta empieza en cero, y la de ayer se queda en el calendario", async ({ page }) => {
     const ayer = fechaMenos(HOY, 1);
-    await preparar(page, { misiones: { hoy: { d: ayer, tipo: "partida", cuenta: 1, cumplida: true }, dias: [ayer] } });
+    await preparar(page, { misiones: { hoy: { d: ayer, tipo: "meta", cuenta: 10, cumplida: true }, dias: [ayer] } });
     await page.goto("./");
     await page.click("#screen-welcome button");
     expect(await page.evaluate(() => [misiones.hoy.d, misiones.hoy.cumplida, misiones.hoy.cuenta])).toEqual([HOY, false, 0]);
@@ -195,14 +172,14 @@ test.describe("misión del día", () => {
 });
 
 test.describe("días seguidos", () => {
-  test("la racha sigue viva hoy aunque la misión de hoy esté pendiente", async ({ page }) => {
+  test("la racha sigue viva hoy aunque la meta de hoy esté pendiente", async ({ page }) => {
     const dias = [3, 2, 1].map((n) => fechaMenos(HOY, n));
     await preparar(page, { misiones: { ...mision("partida"), dias } });
     await page.goto("./");
     await page.click("#screen-welcome button");
     await expect(page.locator("#mision-racha")).toHaveText("🔥 3 días seguidos");
     await expect(page.locator('#mision-semana [data-cumplida="si"]')).toHaveCount(3);
-    expect(await page.evaluate(() => { avanzarMision("partida", 2); return rachaActual(); })).toBe(4);
+    expect(await page.evaluate(() => { for (let i = 0; i < 10; i++) avanzarMision("acierto"); return rachaActual(); })).toBe(4);
   });
 
   test("faltar un día vuelve a empezar la racha, pero no quita lo ganado", async ({ page }) => {
@@ -263,7 +240,7 @@ test.describe("accesibilidad de lo nuevo", () => {
     await page.click("#screen-welcome button");
     await page.click("text=Mi jardín");
     await auditar(page, "el jardín con amigos");
-    await page.evaluate(() => { currentTable = 2; estrellasAlEmpezar = 0; endGameSuccess(); });
+    await page.evaluate(() => { currentTable = 2; estrellasAlEmpezar = 0; metaEnEstaPartida = true; endGameSuccess(); });
     await expect(page.locator("#victoria-mision")).toBeVisible();
     await auditar(page, "la victoria con la misión");
   });

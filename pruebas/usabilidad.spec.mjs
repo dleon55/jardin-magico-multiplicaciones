@@ -138,7 +138,7 @@ test("la cabecera del menú es del niño; lo de las personas adultas va aparte, 
 test("la semana de la misión se entiende: leyenda, «Hoy» y días vacíos sin marcas raras", async ({ page }) => {
   await alMenu(page);
   // La marca es el icono de «listo»; el lector de pantalla oye «marca».
-  await expect(page.locator("#mision-leyenda")).toHaveText(/Tu semana: cada\s*marca\s*es un día con la misión cumplida\./);
+  await expect(page.locator("#mision-leyenda")).toHaveText(/Tu semana: cada\s*marca\s*es un día con la meta cumplida\./);
   await expect(page.locator('#mision-leyenda svg.icono use[href="#i-listo"]')).toHaveCount(1);
   const dias = page.locator("#mision-semana li");
   await expect(dias).toHaveCount(7);
@@ -149,7 +149,7 @@ test("la semana de la misión se entiende: leyenda, «Hoy» y días vacíos sin 
   // Al cumplirla, el de hoy lleva ✓ y el lector de pantalla lo dice.
   await page.evaluate(() => { misiones.dias.push(hoy()); actualizarMision(); });
   await expect(dias.last().locator("span").nth(1)).toHaveText("✓");
-  await expect(dias.last().locator(".sr-only")).toHaveText("hoy: misión cumplida");
+  await expect(dias.last().locator(".sr-only")).toHaveText("hoy: meta cumplida");
 });
 
 test("al pasar el ratón, los botones no se mueven (antes temblaban si el puntero quedaba en el borde)", async ({ page }, testInfo) => {
