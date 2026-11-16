@@ -12,6 +12,18 @@ issues) y la [guía de estilo visual](docs/ESTILO.md) que sigue el arte nuevo.
 
 Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 
+**Seguir.** En el menú, un botón grande con Lumi propone lo que toca, para que
+el niño no tenga que decidir:
+1. regar lo que se marchita;
+2. terminar la tabla empezada, hasta que cada multiplicación haya salido bien
+   la última vez («Te faltan 4 por aprender»);
+3. descubrir la siguiente tabla, de la más fácil a la más difícil: 2, 5, 3, 4,
+   9, 6, 7, 8 y 1;
+4. repasar lo que está casi, para que florezca;
+5. con todo florecido, la Aventura o un reto de lógica.
+
+Todo lo demás sigue abajo, en «Juego libre: elige tú».
+
 **La primera vez**, Lumi guía al niño, una cosa por pantalla:
 1. se presenta;
 2. le pide su nombre (si quiere);

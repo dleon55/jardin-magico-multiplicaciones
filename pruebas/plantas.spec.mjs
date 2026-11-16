@@ -60,12 +60,14 @@ test("la leyenda del jardín usa los mismos dibujos, sin emojis", async ({ page 
 
 test("la primera vez nada se anima; después, lo que creció desde la última visita crece", async ({ page }) => {
   await alMenu(page);
-  await ponerIntentos(page, "3x4", [elegida("2026-11-01")]);
+  // Fechas relativas a hoy: con fechas fijas, la planta acaba marchita con los días.
+  const [antier, ayer, hoyMismo] = await page.evaluate(() => [fechaMenos(hoy(), 2), fechaMenos(hoy(), 1), hoy()]);
+  await ponerIntentos(page, "3x4", [elegida(antier)]);
   await abrirJardin(page);
   await expect(page.locator("[class*='cambia-']")).toHaveCount(0);
   // Ahora 3 × 4 pasa de brote a florecida.
   await page.click("#screen-jardin button:has-text('Menú')");
-  await ponerIntentos(page, "3x4", [rapida("2026-11-01"), rapida("2026-11-02")]);
+  await ponerIntentos(page, "3x4", [rapida(ayer), rapida(hoyMismo)]);
   await abrirJardin(page);
   await expect(page.locator('[data-planta="3x4"]')).toHaveClass(/cambia-crece/);
   await expect(page.locator("[class*='cambia-']")).toHaveCount(1);
@@ -107,10 +109,11 @@ test.describe("con movimiento", () => {
   test("la que creció crece en 600 ms; con «Menos movimiento», quieta", async ({ page }) => {
     await page.goto("./");
     await page.evaluate(() => saveNameAndGo());
-    await ponerIntentos(page, "2x5", [elegida("2026-11-01")]);
+    const [antier, ayer, hoyMismo] = await page.evaluate(() => [fechaMenos(hoy(), 2), fechaMenos(hoy(), 1), hoy()]);
+    await ponerIntentos(page, "2x5", [elegida(antier)]);
     await page.evaluate(() => mostrarJardin());
     await page.evaluate(() => backToSelector());
-    await ponerIntentos(page, "2x5", [rapida("2026-11-01"), rapida("2026-11-02")]);
+    await ponerIntentos(page, "2x5", [rapida(ayer), rapida(hoyMismo)]);
     await page.evaluate(() => mostrarJardin());
     const svg = page.locator('[data-planta="2x5"] .dibujo svg');
     expect(await svg.evaluate((s) => [getComputedStyle(s).animationName, parseFloat(getComputedStyle(s).animationDuration)])).toEqual(["planta-crece", 0.6]);
