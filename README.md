@@ -15,12 +15,28 @@ Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 **Seguir.** En el menú, un botón grande con Lumi propone lo que toca, para que
 el niño no tenga que decidir:
 1. regar lo que se marchita;
-2. terminar la tabla empezada, hasta que cada multiplicación haya salido bien
+2. el mundo de la Aventura que lo aprendido acaba de abrir (ver «Mi camino»),
+   hasta jugarlo una vez, para que un jefe difícil no detenga lo demás;
+3. terminar la tabla empezada, hasta que cada multiplicación haya salido bien
    la última vez («Te faltan 4 por aprender»);
-3. descubrir la siguiente tabla, de la más fácil a la más difícil: 2, 5, 3, 4,
+4. descubrir la siguiente tabla, de la más fácil a la más difícil: 2, 5, 3, 4,
    9, 6, 7, 8 y 1;
-4. repasar lo que está casi, para que florezca;
-5. con todo florecido, la Aventura o un reto de lógica.
+5. repasar lo que está casi, para que florezca;
+6. con todo florecido, la Aventura o un reto de lógica.
+
+**Mi camino.** Un solo camino une el jardín y la Aventura, en 15 tramos:
+la del 2 y la del 5, el mundo de los brócolis, la del 3, 4, 9 y 6, el de los
+monstruos, la del 7 y 8, el de los fantasmas, la del 1 y los mundos de todas
+las tablas, de dividir y de fracciones.
+- Una tabla queda hecha cuando se la sabe (arbolito o más).
+- Cada mundo se abre al saberse sus tablas y, como siempre, al vencer al jefe
+  del anterior. El primero está abierto desde el primer día. Dividir y
+  fracciones piden las ocho tablas.
+- Un mundo cerrado dice qué falta («Se abre cuando sepas la del 4 y la del
+  6»), en el camino y en la Aventura.
+- Lo ya jugado de un mundo nunca se cierra: nadie pierde su avance.
+- El menú dice cuántos tramos van y cuál toca, y tocar un tramo abierto lleva
+  a su tabla o a la Aventura.
 
 En un jardín nuevo, «Seguir» propone primero **¿Qué tablas ya sabes?**, un
 diagnóstico corto y opcional:

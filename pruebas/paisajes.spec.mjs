@@ -44,7 +44,7 @@ test("cada arena de la Aventura tiene su paisaje, sin emojis, detrás del héroe
   await page.goto("./");
   await page.click("#screen-welcome button:has-text('Comenzar')");
   await page.click("#screen-selector >> text=La Aventura");
-  await page.evaluate(() => { aventura.manual = true; aventuraGuardada.alcanzado = 23; mostrarAventura(); });
+  await page.evaluate(() => { aventura.manual = true; for (let n = 1; n <= 9; n++) for (let b = 1; b <= 10; b++) hechos[claveHecho(n, b)] = [{ d: "", m: "o", ok: 1, ms: null }, { d: "", m: "o", ok: 1, ms: null }]; aventuraGuardada.alcanzado = 23; mostrarAventura(); });   // sabidas: abre los mundos (#46)
   const dibujos = await page.evaluate(() => AVENTURA_MUNDOS.map((_, m) => svgPaisajeArena(m)));
   expect(new Set(dibujos).size).toBe(6);
   for (const m of [0, 2, 5]) {

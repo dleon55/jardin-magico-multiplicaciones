@@ -214,6 +214,22 @@
         .mapa-fila .estatus-dibujo svg { width: 1.1rem; height: 1.1rem; }
         .victoria-estatus .estatus-dibujo svg { width: 3rem; height: 3rem; }
 
+        /* EL CAMINO (issue #46): tramos en zigzag sobre una línea punteada. */
+        #camino-tramos { position: relative; max-width: 26rem; margin: 0 auto; padding: 0.25rem 0; }
+        #camino-tramos::before { content: ""; position: absolute; left: 50%; top: 1rem; bottom: 1rem; border-left: 4px dashed #86efac; transform: translateX(-2px); }
+        .tramo { position: relative; display: flex; width: 100%; margin: 0.35rem 0; }
+        .tramo:nth-child(even) { justify-content: flex-end; }
+        .tramo > .tramo-caja { width: calc(50% + 1.5rem); display: flex; align-items: center; gap: 0.5rem; background: #fff; border: 2px solid #bbf7d0; border-radius: 1rem; padding: 0.4rem 0.6rem; text-align: left; }
+        .tramo:nth-child(odd) > .tramo-caja { flex-direction: row-reverse; text-align: right; }
+        .tramo-hecho > .tramo-caja { background: #f0fdf4; border-color: #4ade80; }
+        .tramo-cerrado > .tramo-caja { background: #f3f4f6; border-color: #d1d5db; color: #374151; }
+        .tramo-actual > .tramo-caja { border-color: #0f766e; box-shadow: 0 0 0 3px #99f6e4; }
+        .tramo-dibujo { flex: none; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; }
+        .tramo-dibujo svg { width: 2.5rem; height: 2.5rem; }
+        .tramo-dibujo .icono { width: 1.6rem; height: 1.6rem; }
+        button.tramo-caja { min-height: 2.75rem; cursor: pointer; }
+        button.tramo-caja:hover { filter: brightness(0.97); }
+
         /* INFORME PARA IMPRIMIR (issue #65): una hoja carta. En pantalla no se
            ve; al imprimir desde «Para las personas adultas» es lo único que
            sale. Imprimir cualquier otra pantalla (Ctrl+P) sigue igual. */
@@ -1092,6 +1108,10 @@
                 <button type="button" onclick="startTable('falta')" class="btn-falta hidden w-full bubble-font bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3">
                     <span aria-hidden="true">🎯</span> Practicar lo que me falta (<span class="cuenta-falta">0</span>)
                 </button>
+                <button type="button" id="btn-camino" onclick="mostrarCamino()" class="w-full bubble-font bg-gradient-to-r from-teal-50 to-green-100 hover:from-teal-100 hover:to-green-200 border-2 border-teal-400 text-teal-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3 flex flex-col items-center gap-1">
+                    <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-mapa"/></svg> Mi camino</span>
+                    <span id="camino-menu-resumen" class="text-xs subtitulo font-semibold"></span>
+                </button>
                 <button onclick="mostrarJardin()" class="w-full bubble-font bg-gradient-to-r from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 border-2 border-green-400 text-green-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3">
                     <span class="sim-mundo" aria-hidden="true">🌱</span> Mi jardín (<span class="cuenta-flores">0</span> de 54 flores)
                 </button>
@@ -1615,6 +1635,23 @@
                 <p id="aviso-copia" role="status" aria-live="polite" class="min-h-5 text-sm font-bold text-green-800"></p>
             </section>
             <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Las flores miden la memoria de las tablas; las fracciones y los retos de lógica se muestran aparte. Dividir y los problemas cortos no se registran.</p>
+        </div>
+
+        <!-- ================= EL CAMINO ================= -->
+        <!-- Un solo camino que une las tablas del jardín y los mundos de la
+             Aventura: cada mundo se abre al saberse sus tablas. -->
+        <div id="screen-camino" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-2xl text-green-700">Tu camino</h2>
+                <p id="camino-resumen" class="text-gray-700 font-bold"></p>
+                <p class="text-gray-600 text-sm max-w-md mx-auto">Aprende las tablas en el jardín y se abren los mundos de la Aventura. Una tabla está lista cuando te la sabes (arbolito o más).</p>
+            </div>
+            <ol id="camino-tramos" aria-label="Los tramos del camino"></ol>
         </div>
 
         <!-- ================= PANTALLA 5: MAPA DE HECHOS ================= -->
@@ -3598,7 +3635,7 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
+        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-camino", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
         let pantallaActual = "screen-welcome";
 
         // --- LUMI, LA MASCOTA ---
@@ -3968,7 +4005,7 @@
                 return;
             }
 
-            if (["screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura"].includes(pantallaActual) && evento.key === "Escape") {
+            if (["screen-mapa", "screen-camino", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura"].includes(pantallaActual) && evento.key === "Escape") {
                 evento.preventDefault();
                 backToSelector();
                 return;
@@ -6219,6 +6256,17 @@
         function siguientePaso() {
             const marchitas = plantas().filter(({ a, b }) => estaMarchita(a, b)).length;
             if (marchitas > 0) return { tipo: "falta", que: "Regar tu jardín", detalle: marchitas === 1 ? "Una flor se marchita: repásala y revivirá." : `${marchitas} flores se marchitan: repásalas y revivirán.`, cara: "animando" };
+            // El camino: si lo aprendido acaba de abrir un mundo de la Aventura,
+            // va primero (antes que la tabla empezada: con las plantas
+            // compartidas, la siguiente tabla ya cuenta como empezada). Un mundo se propone hasta que
+            // se juega una vez; después «Seguir» vuelve a las tablas, para que
+            // un jefe difícil no detenga lo demás (el camino lo sigue mostrando).
+            const tramo = CAMINO.find((t) => estadoTramo(t).estado === "abierto" && !(t.mundo !== undefined && yaJugoMundo(t.mundo)));
+            if (tramo?.mundo !== undefined) {
+                const m = AVENTURA_MUNDOS[tramo.mundo];
+                return { tipo: "aventura", mundo: tramo.mundo, que: `La Aventura: ${m.nombre}`,
+                    detalle: tramo.mundo === 0 ? `¡A vencer a los ${m.plural} con lo que sabes!` : `¡Ya sabes sus tablas! Se abrió el mundo de los ${m.plural}.`, cara: "celebrando" };
+            }
             const enCurso = ORDEN_TABLAS.find((n) => tablaYaJugada(n) && faltanEnTabla(n) > 0);
             if (enCurso) {
                 const f = faltanEnTabla(enCurso);
@@ -7402,6 +7450,127 @@
         const estrellasAventura = (g = aventuraGuardada) => Object.values(g.estrellas).reduce((a, b) => a + b, 0);
         const nombreNivel = (n) => (n === NIVELES_POR_MUNDO - 1 ? "Jefe" : `Nivel ${n + 1}`);
 
+        // --- EL CAMINO (issue #46) ---
+        //
+        // Un solo camino une el jardín y la Aventura: las tablas en el orden en
+        // que se aprenden y, después de las suyas, cada mundo. Un mundo se abre
+        // al saberse sus tablas (arbolito o más) y, como siempre, al vencer al
+        // jefe del anterior. El primero está abierto desde el principio, para
+        // probar la Aventura el primer día. Lo ya jugado de un mundo nunca se
+        // cierra: nadie pierde su avance.
+        const CAMINO = [
+            { tabla: 2 }, { tabla: 5 }, { mundo: 0 },
+            { tabla: 3 }, { tabla: 4 }, { tabla: 9 }, { tabla: 6 }, { mundo: 1 },
+            { tabla: 7 }, { tabla: 8 }, { mundo: 2 },
+            { tabla: 1 }, { mundo: 3 }, { mundo: 4 }, { mundo: 5 },
+        ];
+
+        function tablaSabida(n) {
+            return ESTATUS.indexOf(estatusTabla(n)) >= ESTATUS.indexOf("arbolito");
+        }
+
+        /** Las tablas que pide un mundo: las suyas; dividir y fracciones, todas. */
+        function tablasDelMundo(mi) {
+            if (mi === 0) return [];
+            return AVENTURA_MUNDOS[mi].tablas || [2, 3, 4, 5, 6, 7, 8, 9];
+        }
+
+        function yaJugoMundo(mi) {
+            return Object.keys(aventuraGuardada.estrellas).some((k) => k.startsWith(`${mi}-`));
+        }
+
+        /** Las tablas que faltan para abrir el mundo (vacío si ya se puede). */
+        function faltanParaMundo(mi) {
+            if (yaJugoMundo(mi)) return [];
+            return tablasDelMundo(mi).filter((n) => n <= TABLAS && !tablaSabida(n));
+        }
+
+        function nivelDisponible(mi, n) {
+            return indiceNivel(mi, n) <= aventuraGuardada.alcanzado && faltanParaMundo(mi).length === 0;
+        }
+
+        // (listaTablas, la del diagnóstico: «la del 3, la del 4 y la del 6».)
+
+        /** Cómo está un tramo: hecho, abierto o cerrado (con el motivo). */
+        function estadoTramo(t) {
+            if (t.tabla) {
+                return tablaSabida(t.tabla) ? { estado: "hecho", texto: "¡Te la sabes!" }
+                    : { estado: "abierto", texto: tablaYaJugada(t.tabla) ? "Practícala hasta sabértela" : "Nueva: descúbrela" };
+            }
+            const mi = t.mundo;
+            const jefe = (aventuraGuardada.estrellas[claveNivel(mi, NIVELES_POR_MUNDO - 1)] || 0) > 0;
+            if (jefe) return { estado: "hecho", texto: "¡Venciste al jefe!" };
+            const faltan = faltanParaMundo(mi);
+            if (faltan.length) return { estado: "cerrado", texto: `Se abre cuando sepas ${listaTablas(faltan)}` };
+            if (indiceNivel(mi, 0) > aventuraGuardada.alcanzado) return { estado: "cerrado", texto: `Se abre al vencer al jefe del mundo ${mi}` };
+            return { estado: "abierto", texto: "¡Abierto! Ve a la Aventura" };
+        }
+
+        /** El primer tramo sin hacer que se puede jugar, o null si todo está hecho. */
+        function tramoActual() {
+            return CAMINO.find((t) => estadoTramo(t).estado === "abierto") || null;
+        }
+
+        function nombreTramo(t) {
+            return t.tabla ? `Tabla del ${t.tabla}` : `Mundo ${t.mundo + 1}: ${AVENTURA_MUNDOS[t.mundo].nombre}`;
+        }
+
+        function mostrarCamino() {
+            cancelarEspera();
+            callarVoz();
+            pintarCamino();
+            mostrarPantalla("screen-camino");
+        }
+
+        function pintarCamino() {
+            const actual = tramoActual();
+            const hechos = CAMINO.filter((t) => estadoTramo(t).estado === "hecho").length;
+            document.getElementById("camino-resumen").textContent = hechos === CAMINO.length
+                ? `¡Recorriste el camino entero: ${hechos} de ${CAMINO.length} tramos!`
+                : `Llevas ${hechos} de ${CAMINO.length} tramos.`;
+            const lista = document.getElementById("camino-tramos");
+            lista.replaceChildren(...CAMINO.map((t) => {
+                const { estado, texto } = estadoTramo(t);
+                const li = document.createElement("li");
+                const esActual = t === actual;
+                li.className = `tramo tramo-${estado}${esActual ? " tramo-actual" : ""}`;
+                li.dataset.tramo = t.tabla ? `tabla-${t.tabla}` : `mundo-${t.mundo}`;
+                li.dataset.estado = estado;
+                const caja = document.createElement(estado === "cerrado" ? "div" : "button");
+                caja.className = "tramo-caja";
+                if (estado !== "cerrado") {
+                    caja.type = "button";
+                    caja.onclick = () => t.tabla ? elegirTabla(t.tabla) : mostrarAventura();
+                }
+                const dibujo = document.createElement("span");
+                dibujo.className = "tramo-dibujo";
+                dibujo.setAttribute("aria-hidden", "true");
+                dibujo.innerHTML = t.tabla
+                    ? svgEstatus(estatusTabla(t.tabla) || "semilla")
+                    : estado === "cerrado" ? icono("candado") : svgEnemigo(t.mundo);
+                const textos = document.createElement("span");
+                textos.className = "flex-1 min-w-0";
+                const nombre = document.createElement("span");
+                nombre.className = "block font-bold text-sm text-green-900";
+                nombre.textContent = nombreTramo(t);
+                const detalle = document.createElement("span");
+                detalle.className = "tramo-texto block text-xs text-gray-700";
+                detalle.textContent = esActual ? `Te toca. ${texto}` : texto;
+                textos.append(nombre, detalle);
+                caja.append(dibujo, textos);
+                li.appendChild(caja);
+                return li;
+            }));
+        }
+
+        function actualizarResumenCamino() {
+            const el = document.getElementById("camino-menu-resumen");
+            if (!el) return;
+            const hechos = CAMINO.filter((t) => estadoTramo(t).estado === "hecho").length;
+            const actual = tramoActual();
+            el.textContent = actual ? `${hechos} de ${CAMINO.length} tramos · Ahora: ${nombreTramo(actual)}` : `${hechos} de ${CAMINO.length} tramos`;
+        }
+
         function mostrarAventura() {
             cancelarEspera();
             callarVoz();
@@ -7424,7 +7593,8 @@
             const lista = document.getElementById("aventura-mundos");
             lista.replaceChildren(...AVENTURA_MUNDOS.map((mundo, mi) => {
                 const li = document.createElement("li");
-                const abierto = indiceNivel(mi, 0) <= g.alcanzado;
+                const abierto = nivelDisponible(mi, 0);
+                const faltan = faltanParaMundo(mi);
                 li.className = `mundo-aventura rounded-2xl border-2 p-3 ${abierto ? "bg-white border-indigo-200" : "bg-gray-100 border-gray-200"}`;
                 li.dataset.mundo = String(mi);
                 const titulo = document.createElement("h3");
@@ -7435,13 +7605,15 @@
                 titulo.appendChild(t);
                 const retos = document.createElement("p");
                 retos.className = "text-sm text-gray-700";
-                retos.textContent = abierto ? mundo.retos : `${mundo.retos} · Se abre al vencer al jefe del mundo ${mi}`;
+                retos.textContent = abierto ? mundo.retos
+                    : faltan.length ? `${mundo.retos} · Se abre cuando sepas ${listaTablas(faltan)} en el jardín`
+                    : `${mundo.retos} · Se abre al vencer al jefe del mundo ${mi}`;
                 const niveles = document.createElement("div");
                 niveles.className = "grid grid-cols-4 gap-2 mt-2";
                 for (let n = 0; n < NIVELES_POR_MUNDO; n++) {
                     const b = document.createElement("button");
                     b.type = "button";
-                    const disponible = indiceNivel(mi, n) <= g.alcanzado;
+                    const disponible = nivelDisponible(mi, n);
                     const est = g.estrellas[claveNivel(mi, n)] || 0;
                     b.disabled = !disponible;
                     b.dataset.nivel = claveNivel(mi, n);
@@ -7459,6 +7631,7 @@
         }
 
         function actualizarResumenMenuAventura() {
+            actualizarResumenCamino();
             const el = document.getElementById("aventura-menu-resumen");
             if (!el) return;
             const pts = puntajeAventura();
@@ -7521,7 +7694,7 @@
         }
 
         function empezarNivel(mi, n) {
-            if (indiceNivel(mi, n) > aventuraGuardada.alcanzado) return;
+            if (!nivelDisponible(mi, n)) return;
             initAudio();
             detenerAventura();
             const c = configNivel(mi, n);

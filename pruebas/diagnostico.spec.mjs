@@ -51,6 +51,10 @@ test("quien sabe todas: 16 preguntas, todo sembrado como «casi», y sigue con l
   const estados = await page.evaluate(() => [1, 2, 9].map((a) => [1, 5, 10].map((b) => estadoHecho(a, b))).flat());
   expect(new Set(estados)).toEqual(new Set(["casi"]));   // nada florecido: eso pide escribir rápido otro día
   await page.click("#diag-seguir");
+  // Con la del 2 y la del 5 sabidas, el camino (#46) abre el primer mundo de
+  // la Aventura; jugado una vez, sigue con lo que falta.
+  await expect(page.locator("#seguir-que")).toHaveText("La Aventura: El huerto de los brócolis");
+  await page.evaluate(() => { aventuraGuardada.estrellas["0-0"] = 1; guardarAventura(); pintarSeguir(); });
   await expect(page.locator("#seguir-que")).toHaveText("Que florezca lo que falta");
 });
 
@@ -78,6 +82,8 @@ test("quien sabe la mitad (2, 5 y 3): se para al fallar la del 4 y la del 9, y s
   expect(await page.evaluate(() => [estadoHecho(1, 7), estadoHecho(5, 7), estadoHecho(4, 2), estadoHecho(4, 4), estadoHecho(9, 9)]))
     .toEqual(["casi", "casi", "casi", "nuevo", "nuevo"]);
   await page.click("#diag-seguir");
+  await expect(page.locator("#seguir-que")).toHaveText("La Aventura: El huerto de los brócolis");   // el camino (#46)
+  await page.evaluate(() => { aventuraGuardada.estrellas["0-0"] = 1; guardarAventura(); pintarSeguir(); });
   await expect(page.locator("#seguir-que")).toHaveText("Tabla del 4");
 });
 
