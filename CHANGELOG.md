@@ -9,6 +9,16 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-16
 
+- **Una sola moneda y la meta de hoy** (#84, tarea #60):
+  - la estrella es solo la moneda que se gasta en el vivero, y se gana en todos
+    los juegos, también en la Aventura;
+  - los aciertos de la partida llevan el icono de «listo» y los puntos de la
+    Aventura, el de la chispa (antes, los tres usaban la estrella);
+  - la misión que cambiaba cada día pasa a ser una sola meta: acertar 10
+    respuestas hoy, en lo que se quiera. Lumi la celebra.
+
+  Se conservan la semana y la racha, y una misión ya cumplida hoy cuenta como
+  meta cumplida. La vista para adultos explica cómo se ganan las estrellas.
 - **Seguir: un solo camino** (#83, tarea #59 de la Fase 2): un botón grande
   en el menú, con Lumi, propone lo que toca, en este orden:
   1. regar lo marchito;

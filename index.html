@@ -926,7 +926,7 @@
                  la pena volver mañana. Faltar un día no quita nada de lo ganado. -->
             <section id="mision" aria-labelledby="mision-titulo" class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-3 max-w-lg mx-auto space-y-2">
                 <div class="flex flex-wrap items-center justify-between gap-2">
-                    <h3 id="mision-titulo" class="bubble-font text-lg text-sky-900"><span aria-hidden="true">☀️</span> Misión de hoy</h3>
+                    <h3 id="mision-titulo" class="bubble-font text-lg text-sky-900"><span aria-hidden="true">☀️</span> Meta de hoy</h3>
                     <p id="mision-racha" class="text-sm font-bold text-amber-900"></p>
                 </div>
                 <p id="mision-texto" class="text-gray-800 font-bold"></p>
@@ -934,8 +934,8 @@
                      class="w-full h-3 bg-white border border-sky-200 rounded-full overflow-hidden">
                     <div id="mision-barra" class="h-full bg-gradient-to-r from-sky-400 to-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
-                <p id="mision-leyenda" class="text-xs text-gray-700">Tu semana: cada <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-listo"/></svg><span class="sr-only">marca</span> es un día con la misión cumplida.</p>
-                <ol id="mision-semana" class="flex justify-between gap-1 text-xs" aria-label="Misiones de los últimos 7 días"></ol>
+                <p id="mision-leyenda" class="text-xs text-gray-700">Tu semana: cada <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-listo"/></svg><span class="sr-only">marca</span> es un día con la meta cumplida.</p>
+                <ol id="mision-semana" class="flex justify-between gap-1 text-xs" aria-label="Metas de los últimos 7 días"></ol>
             </section>
 
             <h2 id="juego-libre" class="text-center text-sm font-bold uppercase tracking-wider text-gray-600 border-t-2 border-dashed border-green-200 pt-3">Juego libre: elige tú</h2>
@@ -1044,8 +1044,10 @@
                     <span id="globo-lumi" class="globo-lumi hidden" aria-hidden="true"></span>
                 </span>
                 <!-- Estrellas de este nivel -->
-                <div id="pastilla-estrellas" class="relative flex items-center gap-1 bg-yellow-100 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
-                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-estrella"/></svg>
+                <!-- Los aciertos de la partida, con el icono de «listo»: la estrella
+                     es solo para las estrellas que se gastan en el vivero. -->
+                <div id="pastilla-estrellas" class="relative flex items-center gap-1 bg-emerald-100 text-emerald-900 px-3 py-1 rounded-full text-sm font-bold">
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-listo"/></svg>
                     <span class="sr-only">Aciertos:</span>
                     <span id="current-stars">0</span><span aria-hidden="true">/</span><span class="sr-only">de</span><span id="target-stars">10</span>
                 </div>
@@ -1282,7 +1284,7 @@
             <div class="text-center space-y-1">
                 <h2 data-foco class="bubble-font text-2xl text-amber-800">Vivero mágico</h2>
                 <p class="text-gray-800 font-bold text-lg">Tienes <span class="cuenta-estrellas bubble-font">0</span> <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-estrella"/></svg><span class="sr-only">estrellas</span></p>
-                <p class="text-gray-700 text-sm max-w-md mx-auto">Ganas 1 estrella por cada acierto, 5 cuando una multiplicación florece y 10 por la misión del día. Lo que compres vive para siempre en tu jardín.</p>
+                <p class="text-gray-700 text-sm max-w-md mx-auto">Ganas 1 estrella por cada acierto, 5 cuando una multiplicación florece y 10 al cumplir la meta de hoy. Lo que compres vive para siempre en tu jardín.</p>
             </div>
             <ul id="vivero-lista" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></ul>
             <p id="vivero-aviso" role="status" aria-live="polite" class="min-h-6 text-center font-bold text-green-800"></p>
@@ -1370,7 +1372,7 @@
                 <h2 data-foco id="nivel-titulo" class="bubble-font text-lg text-indigo-900"></h2>
                 <div class="flex items-center gap-3 font-bold">
                     <span id="nivel-corazones" class="text-xl" role="img"></span>
-                    <span class="bg-yellow-100 text-yellow-900 px-3 py-1 rounded-full"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-estrella"/></svg> <span class="sr-only">Puntos:</span> <span id="nivel-puntos">0</span></span>
+                    <span class="bg-indigo-100 text-indigo-900 px-3 py-1 rounded-full"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-lanzar"/></svg> <span class="sr-only">Puntos:</span> <span id="nivel-puntos">0</span></span>
                 </div>
             </div>
             <div id="arena" class="arena" data-mundo="0">
@@ -1784,6 +1786,7 @@
         let pregunta = null;
         let aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0 };
         let rachaPartida = 0;   // aciertos seguidos en esta partida (celebraciones)
+        let metaEnEstaPartida = false;   // ¿se cumplió la meta de hoy durante esta partida?
         // --- AJUSTES ---
         //
         // Antes había un solo botón para todo el sonido. En un aula hace falta
@@ -2535,6 +2538,7 @@
             estrellasAlEmpezar = globalStars;
             aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0 };
             rachaPartida = 0;
+            metaEnEstaPartida = false;
             callarGloboLumi();
 
             // Los amigos comprados en el vivero acompañan la partida: se ven
@@ -3223,7 +3227,15 @@
                     semana.appendChild(li);
                 });
 
-                const piezas = [titulo, resumen, cuestaP, diasP, semana];
+                // Una sola moneda: las estrellas. Se dice cómo se ganan y la meta.
+                const estrellasP = Number(almacen.leerDe(perfil.id, "estrellas")) || 0;
+                let metas = 0;
+                try { metas = (JSON.parse(almacen.leerDe(perfil.id, "misiones") || "{}").dias || []).length; } catch (e) { metas = 0; }
+                const monedaP = parrafo("adulto-estrellas text-gray-800",
+                    `Estrellas: ${Math.max(0, estrellasP)}. Se consiguen 1 por acierto, 5 cuando una multiplicación florece, ` +
+                    `${BONO_MISION} por la meta de hoy (acertar ${META_DIARIA} en un día) y de 1 a 3 por nivel de la Aventura; ` +
+                    `se gastan en el vivero. Metas cumplidas: ${metas} ${metas === 1 ? "día" : "días"}.`);
+                const piezas = [titulo, resumen, cuestaP, diasP, semana, monedaP];
                 const av = aventuraDePerfil(perfil.id);
                 if (puntajeAventura(av) > 0) {
                     const m = Math.floor(av.alcanzado / NIVELES_POR_MUNDO);
@@ -4517,29 +4529,21 @@
 
         // --- MISIÓN DEL DÍA (Fase 3) ---
         //
-        // Una meta corta y distinta cada día (unos 3-5 minutos), con 10 estrellas
-        // de premio. Da una razón para volver mañana, que es cuando de verdad se
-        // aprende: florecer exige acertar rápido en dos días distintos.
-        //
-        // La misión se elige UNA VEZ al día y se guarda: si cambiara a media
-        // tarde (por ejemplo, porque ya no queda nada pendiente), sería
-        // confuso y parecería un truco. Solo se elige lo que se puede cumplir
-        // hoy: «escribe 5» exige tener al menos 5 multiplicaciones que ya se
-        // escriben, y «lo que me falta» exige que falte algo.
+        // LA META DE HOY. Antes había cuatro misiones que rotaban («termina una
+        // partida», «escribe 5», «gana el reto del arcoíris», «el repaso»):
+        // cada día una regla distinta que había que leer y entender. Ahora es
+        // una sola, clara y siempre igual: acertar 10 respuestas en el día, en
+        // lo que se quiera (tablas, retos, fracciones o la Aventura). Son unos
+        // minutos, y da una razón para volver mañana, que es cuando de verdad
+        // se aprende: florecer exige acertar rápido en dos días distintos.
         //
         // Los días seguidos se cuentan, pero faltar un día NO quita nada: las
         // estrellas, los amigos y el total de días cumplidos se quedan. Solo la
         // racha vuelve a empezar. Una racha de hoy pendiente sigue viva hasta
-        // que acabe el día.
-        const MISIONES = {
-            partida: { texto: "Termina una partida de cualquier tabla", meta: 1 },
-            escribir: { texto: "Escribe bien 5 respuestas", meta: 5 },
-            // Sin repetir el nombre exacto de los botones: así nadie (ni una
-            // persona ni una prueba) confunde el texto de la misión con el botón.
-            arcoiris: { texto: "Gana el reto 🌈 de las tablas mezcladas", meta: 1 },
-            falta: { texto: "Gana una partida de repaso 🎯 con lo que te falta", meta: 1 },
-        };
-        const ORDEN_MISIONES = ["partida", "escribir", "falta", "arcoiris"];
+        // que acabe el día. Se guarda donde se guardaban las misiones: la semana
+        // y la racha de antes se conservan.
+        const META_DIARIA = 10;
+        const MISIONES = { meta: { texto: `Acierta ${META_DIARIA} respuestas hoy, en lo que quieras`, meta: META_DIARIA } };
         let misiones = { hoy: null, dias: [] };   // hoy: { d, tipo, cuenta, cumplida }
 
         function cargarMisiones() {
@@ -4547,8 +4551,15 @@
                 const g = JSON.parse(almacen.leer("misiones") || "{}") || {};
                 const fecha = /^\d{4}-\d{2}-\d{2}$/;
                 misiones = {
-                    hoy: g.hoy && fecha.test(g.hoy.d) && MISIONES[g.hoy.tipo]
-                        ? { ...g.hoy, cuenta: Number.isFinite(g.hoy.cuenta) && g.hoy.cuenta >= 0 ? g.hoy.cuenta : 0, cumplida: g.hoy.cumplida === true }
+                    // Una misión vieja (de otro tipo) se vuelve la meta: si ya se
+                    // había cumplido hoy, la meta de hoy también queda cumplida.
+                    hoy: g.hoy && fecha.test(g.hoy.d)
+                        ? { d: g.hoy.d, tipo: "meta",
+                            cuenta: g.hoy.cumplida === true ? META_DIARIA
+                                // «escribe 5» contaba respuestas: lo que llevaba vale. Las
+                                // demás misiones contaban partidas, que no se comparan.
+                                : ["meta", "escribir"].includes(g.hoy.tipo) && Number.isFinite(g.hoy.cuenta) && g.hoy.cuenta >= 0 ? Math.min(g.hoy.cuenta, META_DIARIA) : 0,
+                            cumplida: g.hoy.cumplida === true }
                         : null,
                     dias: Array.isArray(g.dias) ? [...new Set(g.dias.filter((d) => fecha.test(d)))].sort() : [],
                 };
@@ -4561,41 +4572,26 @@
             almacen.guardar("misiones", JSON.stringify(misiones));
         }
 
-        function misionPosible(tipo) {
-            if (tipo === "escribir") return plantas().filter(({ a, b }) => seEscribe(a, b)).length >= 5;
-            if (tipo === "falta") return hechosQueFaltan().length > 0;
-            return true;
-        }
-
-        /** La misión de hoy: se elige una vez, rotando por día, y se guarda. */
+        /** La meta de hoy; un día nuevo empieza en cero. */
         function misionDeHoy() {
             const d = hoy();
             if (!misiones.hoy || misiones.hoy.d !== d) {
-                const numeroDia = Math.round(Date.parse(d) / 86400000);
-                const tipo = [0, 1, 2, 3]
-                    .map((k) => ORDEN_MISIONES[(numeroDia + k) % ORDEN_MISIONES.length])
-                    .find(misionPosible) || "partida";
-                misiones.hoy = { d, tipo, cuenta: 0, cumplida: false };
+                const cumplida = misiones.dias.includes(d);
+                misiones.hoy = { d, tipo: "meta", cuenta: cumplida ? META_DIARIA : 0, cumplida };
                 guardarMisiones();
             }
             return misiones.hoy;
         }
 
         /**
-         * Suma a la misión de hoy. `evento`: "escrita" (respuesta escrita bien)
-         * o "partida" (con la tabla que se terminó). Devuelve true solo en el
-         * momento en que la misión se cumple: el premio se da una sola vez.
+         * Suma un acierto a la meta de hoy (de cualquier juego). Devuelve true
+         * solo en el momento en que se cumple: el premio se da una sola vez.
          */
-        function avanzarMision(evento, tabla = null) {
+        function avanzarMision(evento) {
             const m = misionDeHoy();
-            if (m.cumplida) return false;
-            const cuenta = (m.tipo === "escribir" && evento === "escrita")
-                || (m.tipo === "partida" && evento === "partida")
-                || (m.tipo === "arcoiris" && evento === "partida" && tabla === "mix")
-                || (m.tipo === "falta" && evento === "partida" && tabla === "falta");
-            if (!cuenta) return false;
-            m.cuenta = Math.min(m.cuenta + 1, MISIONES[m.tipo].meta);
-            if (m.cuenta >= MISIONES[m.tipo].meta) {
+            if (m.cumplida || evento !== "acierto") return false;
+            m.cuenta = Math.min(m.cuenta + 1, META_DIARIA);
+            if (m.cuenta >= META_DIARIA) {
                 m.cumplida = true;
                 if (!misiones.dias.includes(m.d)) misiones.dias.push(m.d);
                 misiones.dias.sort();
@@ -4624,8 +4620,8 @@
             const m = misionDeHoy();
             const def = MISIONES[m.tipo];
             document.getElementById("mision-texto").textContent = m.cumplida
-                ? `✓ ¡Misión cumplida! Ganaste ${BONO_MISION} ⭐. Mañana habrá otra.`
-                : `${def.texto}${def.meta > 1 ? ` (${m.cuenta} de ${def.meta})` : ""}. Premio: ${BONO_MISION} ⭐`;
+                ? `✓ ¡Meta de hoy cumplida! Ganaste ${BONO_MISION} estrellas. Mañana, otra.`
+                : `${def.texto} (${m.cuenta} de ${def.meta}). Premio: ${BONO_MISION} estrellas.`;
             const barra = document.getElementById("mision-progreso");
             barra.setAttribute("aria-valuemax", String(def.meta));
             barra.setAttribute("aria-valuenow", String(m.cuenta));
@@ -4655,7 +4651,7 @@
                 const letra = k === 0 ? "Hoy" : nombreDia.format(new Date(Date.parse(d)));
                 li.innerHTML = `<span aria-hidden="true" class="font-bold ${k === 0 ? "text-sky-800" : "text-gray-700"}">${letra}</span>` +
                     `<span aria-hidden="true" class="w-7 h-7 rounded-full flex items-center justify-center font-bold ${hecho ? "bg-emerald-200 text-emerald-900" : "bg-white border border-sky-200"} ${k === 0 ? "ring-2 ring-sky-500" : ""}">${hecho ? "✓" : ""}</span>` +
-                    `<span class="sr-only">${quien}: ${hecho ? "misión cumplida" : "sin misión"}</span>`;
+                    `<span class="sr-only">${quien}: ${hecho ? "meta cumplida" : "sin meta"}</span>`;
                 semana.appendChild(li);
             }
         }
@@ -6128,8 +6124,10 @@
                 const bono = florecio ? ` +${BONO_FLOR} ⭐` : "";
                 // «Escribe bien 5 respuestas» se cumple a mitad de partida: se
                 // dice en el momento, no se espera a la victoria.
-                const misionCumplida = modoEscrito && avanzarMision("escrita");
-                const avisoMision = misionCumplida ? ` ☀️ ¡Misión de hoy cumplida! +${BONO_MISION} ⭐` : "";
+                // Cada acierto, de lo que sea, suma a la meta de hoy; se dice en el momento.
+                const misionCumplida = avanzarMision("acierto");
+                if (misionCumplida) metaEnEstaPartida = true;
+                const avisoMision = misionCumplida ? ` ☀️ ¡Meta de hoy cumplida! +${BONO_MISION} estrellas.` : "";
 
                 feedback.innerText = `${rFrase}  ${pregunta.explicacion}${consejo}${bono}${avisoMision}${fraseRacha ? ` ${fraseRacha}` : ""}`;
                 feedback.classList.add("text-green-800", "scale-110");
@@ -6142,7 +6140,10 @@
                     : multiplica
                         ? `${rFrase} ${numA} por ${numB}, ${correctAnswer}.`
                         : `${rFrase} ${textoParaVoz(pregunta.explicacion)}`);
-                if (misionCumplida) speak("¡Misión de hoy cumplida!");
+                if (misionCumplida) {
+                    speak("¡Meta de hoy cumplida!");
+                    if (!fraseRacha) decirLumi("¡Meta de hoy!");
+                }
                 sproutFlower(florecio);
 
                 // Si era un repaso, se programa UNA segunda vuelta más tarde:
@@ -6298,10 +6299,10 @@
 
             // La misión se revisa ANTES de contar las estrellas, para que su
             // premio entre en la cuenta de esta partida.
-            const misionCumplida = avanzarMision("partida", currentTable);
+            // Si la meta de hoy se cumplió en esta partida, la victoria lo recuerda.
             const avisoMision = document.getElementById("victoria-mision");
-            avisoMision.classList.toggle("hidden", !misionCumplida);
-            avisoMision.innerText = misionCumplida ? `☀️ ¡Misión de hoy cumplida! Ganaste ${BONO_MISION} estrellas más.` : "";
+            avisoMision.classList.toggle("hidden", !metaEnEstaPartida);
+            avisoMision.innerText = metaEnEstaPartida ? `☀️ ¡Meta de hoy cumplida! Ganaste ${BONO_MISION} estrellas más.` : "";
 
             const ganadas = globalStars - estrellasAlEmpezar;
             const antojo = siguienteAntojo();
@@ -6316,7 +6317,7 @@
 
             const logro = currentTable === "falta" ? "Has repasado lo que te faltaba" : `Has completado ${tableName}`;
             speak(`¡Increíble${playerName ? `, ${playerName}` : ""}! ${logro}. ${textoParaVoz(aprendido)}` +
-                (misionCumplida ? " ¡Y cumpliste la misión de hoy!" : ""));
+                (metaEnEstaPartida ? " ¡Y cumpliste la meta de hoy!" : ""));
         }
 
 
@@ -6605,7 +6606,7 @@
             const g = aventuraGuardada;
             const m = Math.floor(g.alcanzado / NIVELES_POR_MUNDO);
             document.getElementById("aventura-resumen").textContent =
-                `Puntaje: ${puntajeAventura()} · Estrellas: ${estrellasAventura()} de ${AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO * 3} · Vas en el mundo ${m + 1}`;
+                `Puntaje: ${puntajeAventura()} · Estrellas de nivel: ${estrellasAventura()} de ${AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO * 3} · Vas en el mundo ${m + 1}. Cada estrella que ganas va a tus estrellas del vivero.`;
             pintarFichas(document.querySelector("#screen-aventura .elegir-heroe"),
                 HEROES.map((h) => ({ valor: h.emoji, emoji: svgHeroe(h.emoji), texto: { visible: false, valor: h.nombre } })), g.heroe);
             document.querySelectorAll('#screen-aventura input[name="heroe"]').forEach((i) => {
@@ -6920,6 +6921,7 @@
             flotarPuntos(e, pts);
             // Vencer suena a «pof»; el último golpe al jefe, a fanfarria.
             sonar(e.jefe && e.vida <= 1 ? "jefe" : "vencer");
+            const metaCumplida = avanzarMision("acierto");   // vencer también es acertar
             if (e.jefe && e.vida > 1) {
                 e.vida--;
                 e.op = operacionAventura(aventura.mundo);
@@ -6931,7 +6933,8 @@
             } else {
                 quitarEnemigo(e, true);
             }
-            mensajeAventura(e.jefe && aventura.enemigos.includes(e) ? `¡Golpe al jefe! Le quedan ${e.vida}.` : "¡Bien!");
+            mensajeAventura(metaCumplida ? `☀️ ¡Meta de hoy cumplida! +${BONO_MISION} estrellas.`
+                : e.jefe && aventura.enemigos.includes(e) ? `¡Golpe al jefe! Le quedan ${e.vida}.` : "¡Bien!");
             pintarMarcador();
             marcarObjetivo();
             if (aventura.enemigos.length === 0 && aventura.porSalir <= 0 && aventura.pendientes.length === 0) terminarNivel(true);
@@ -7469,7 +7472,6 @@
                 g.alcanzado = Math.max(g.alcanzado, Math.min(total - 1, indiceNivel(mi, n) + 1));
                 guardarAventura();
                 ganarEstrellas(est);
-                avanzarMision("partida", "aventura");
             }
             const ultimo = indiceNivel(mi, n) === AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO - 1;
             document.getElementById("fin-titulo").textContent = !gano ? "¡Casi!"
