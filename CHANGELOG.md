@@ -9,6 +9,21 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-16
 
+- **Informe para imprimir** (#91, tarea #65): en la vista para adultos,
+  cada jardín tiene «Imprimir o guardar el informe». Es una hoja carta con:
+  - cómo va cada tabla, cuáles domina, lo que le cuesta y lo que se le
+    cruza;
+  - los días de práctica y la meta;
+  - fracciones, retos y Aventura;
+  - una idea concreta para casa.
+
+  Se imprime o se guarda como PDF desde el navegador, sin servidor y solo
+  con lo que ya está en el aparato.
+
+  De paso, se corrigió un detalle de las confusiones (#85). Con un factor 1,
+  sumar y «la de al lado» dan el mismo número: 3 + 1 = 4 = 4 × 1. Ahora se
+  nombra la suma, que es lo probable. Una prueba de la respuesta escrita
+  fallaba cada vez que salía 3 × 1 por esa frase intercalada; se corrigió.
 - **Cada tabla crece por soltura** (#89, tarea #64): semilla, arbolito,
   árbol y árbol con frutos, con un dibujo distinto para cada uno, junto al
   número en el mapa y en cada bancal del jardín.

@@ -477,6 +477,21 @@ mismo.
   «Practicar lo que me falta» empieza justo por ahí. Desde ahí se borra un
   jardín, con confirmación, y solo ese. Todo sale de lo que el juego ya
   guarda y no se envía a ningún lado.
+- **Informe para imprimir** (en la vista para adultos, un botón por jardín).
+  «Imprimir o guardar el informe» arma una hoja carta para madres, padres y
+  docentes y abre el diálogo de imprimir del navegador, que también la guarda
+  como PDF. La hoja trae:
+  - cómo va cada tabla (estatus y cuántas sabe de memoria) y cuáles domina;
+  - lo que más le cuesta y lo que se le cruza;
+  - qué días practicó de las últimas dos semanas y cuántas veces cumplió la
+    meta del día;
+  - fracciones, retos y Aventura, si jugó;
+  - **una sola idea concreta para casa**, según lo que más ayudaría ahora
+    (decir juntas en voz alta las dos que se le cruzan, la que más le
+    cuesta, practicar poco cada día…).
+
+  Sale solo de lo guardado en el aparato, sin servidor. En pantalla no se
+  ve, e imprimir cualquier otra pantalla sigue igual.
 - **🛟 Cuidar el progreso** (en la vista para adultos). Lo guardado vive solo
   en el navegador del dispositivo, así que:
   - «💾 Guardar una copia» descarga un archivo con todos los jardines, y
