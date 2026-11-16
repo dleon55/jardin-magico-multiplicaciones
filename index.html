@@ -373,6 +373,14 @@
             #screen-game.hidden { display: none; }
             #screen-game > * { margin-top: 0 !important; }
             #screen-game > div:first-child, #screen-game > #help-panel, #screen-game > div:last-child { grid-column: 1 / -1; }
+            /* La ayuda, acostada: el rectángulo a la derecha y lo que se lee y
+               se toca a la izquierda, para verla entera sin desplazarse. */
+            #help-panel { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 0.75rem; row-gap: 0.4rem; align-items: center; padding: 0.6rem; }
+            #help-panel.hidden { display: none; }
+            #help-panel > * { grid-column: 1; margin-top: 0 !important; }
+            #help-panel > #help-visual-container { grid-column: 2; grid-row: 1 / span 4; }
+            #help-truco, #help-explain { font-size: 0.8rem; line-height: 1.25; }
+            #help-truco { padding: 0.3rem 0.5rem; }
             #screen-game > div:first-child { padding: 0.25rem 0.5rem; }
             .grupo-partida > * + * { margin-top: 0.5rem !important; }
             #aviso-repaso { font-size: 0.7rem; padding: 0.25rem 0.5rem; line-height: 1.2; }
@@ -1208,10 +1216,18 @@
             <div id="help-panel" class="hidden bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 transition duration-300 space-y-3">
                 <p id="help-truco" class="bg-white border border-indigo-200 rounded-xl px-3 py-2 text-indigo-900 text-center text-sm md:text-base"></p>
                 <p id="help-explain" class="text-indigo-800 text-center font-bold text-sm md:text-base"></p>
-                <div id="help-visual-container" aria-hidden="true" class="flex justify-center"></div>
-                <div class="text-center">
+                <p id="ayuda-total" aria-live="polite" class="hidden text-center font-black text-indigo-900 text-lg md:text-xl"></p>
+                <div id="help-visual-container" class="flex justify-center"></div>
+                <div id="ayuda-controles" class="flex flex-wrap justify-center gap-2">
+                    <button type="button" id="btn-quitar-fila" onclick="cambiarFilasAyuda(-1)" class="btn-ayuda min-h-11 bg-white hover:bg-indigo-100 border-2 border-indigo-200 text-indigo-800 font-bold px-4 py-1 rounded-full text-sm transition">
+                        <span aria-hidden="true">−</span> Quitar fila
+                    </button>
+                    <button type="button" id="btn-poner-fila" onclick="cambiarFilasAyuda(1)" class="btn-ayuda min-h-11 bg-white hover:bg-indigo-100 border-2 border-indigo-200 text-indigo-800 font-bold px-4 py-1 rounded-full text-sm transition">
+                        <span aria-hidden="true">+</span> Poner fila
+                    </button>
+                    <button type="button" id="btn-partir" onclick="alternarCorteAyuda()" class="btn-ayuda min-h-11 bg-white hover:bg-indigo-100 border-2 border-indigo-200 text-indigo-800 font-bold px-4 py-1 rounded-full text-sm transition">Partir</button>
                     <button type="button" id="btn-girar" onclick="girarAyuda()" class="min-h-11 bg-white hover:bg-indigo-100 border-2 border-indigo-200 text-indigo-800 font-bold px-4 py-1 rounded-full text-sm transition">
-                        <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-girar"/></svg> Girar el rectángulo
+                        <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-girar"/></svg> Girar
                     </button>
                 </div>
             </div>
@@ -5395,6 +5411,7 @@
             if (pregunta.tipo === "fraccion") [numA, numB] = numerosDeFraccion(pregunta.reto);
             correctAnswer = pregunta.respuesta;
             ayudaGirada = false;
+            ayudaRect = null;
 
             // Al dividir o en un problema se escribe solo si la multiplicación
             // de debajo ya floreció: entonces lo nuevo es solo darle la vuelta.
@@ -5508,6 +5525,7 @@
             // En los retos, el rectángulo solo ayuda a partir una multiplicación.
             const sinDibujo = pregunta?.tipo === "logica" && pregunta.clase !== "partir";
             document.getElementById("btn-girar").classList.toggle("hidden", pregunta?.tipo === "logica" || pregunta?.tipo === "fraccion");
+            pintarControlesAyuda(false);   // los dibujos de retos y fracciones no se tocan
             if (pregunta?.tipo === "fraccion") {
                 if (pregunta.tiras) dibujarTiras(pregunta.tiras);
                 else dibujarFraccion();
@@ -5519,8 +5537,12 @@
                 document.getElementById("help-visual-container").replaceChildren();
                 return;
             }
-            const filas = ayudaGirada ? numB : numA;
-            const columnas = ayudaGirada ? numA : numB;
+            const manipulable = ayudaManipulable();
+            if (!manipulable) ayudaRect = null;
+            const rect = manipulable ? rectAyuda() : { filas: ayudaGirada ? numB : numA, columnas: ayudaGirada ? numA : numB, corte: 0 };
+            const { filas, columnas, corte } = rect;
+            const deLaPregunta = esRectDeLaPregunta(rect);
+            pintarControlesAyuda(manipulable, rect);
 
             document.getElementById("help-truco").innerText = pistaPara().texto;
             // Al dividir, el rectángulo es el mismo, pero lo que se busca es
@@ -5532,9 +5554,11 @@
                 ? (ayudaGirada
                     ? `Girado: ${total} puntos en filas de ${numA}. ¿Cuántas filas hay? Es la misma respuesta.`
                     : `${total} puntos repartidos en ${numA} filas iguales. ¿Cuántos hay en cada fila?`)
+                : manipulable && (!deLaPregunta || corte)
+                    ? textoAyudaTocada(rect)
                 : ayudaGirada
                     ? `Girado: ${filas} filas de ${columnas}. ¡Son los mismos puntos! ${numA} × ${numB} da lo mismo que ${numB} × ${numA}.`
-                    : `${numA} × ${numB}: ${filas} filas de ${columnas} puntos. Cuéntalos fila a fila.`;
+                    : `${numA} × ${numB}: ${filas} filas de ${columnas} puntos. Cuéntalos fila a fila.${manipulable ? " Toca una fila para partirlo." : ""}`;
 
             const rejilla = document.createElement("div");
             rejilla.className = "inline-grid gap-1 bg-white border-2 border-indigo-100 rounded-xl p-3";
@@ -5543,15 +5567,171 @@
                 for (let c = 0; c < columnas; c++) {
                     const punto = document.createElement("span");
                     // Filas de dos colores alternos, para no perderse al contar.
-                    punto.className = `punto block w-3 h-3 md:w-4 md:h-4 rounded-full ${f % 2 ? "bg-orange-600" : "bg-indigo-500"}`;
+                    // Partido, cada parte de un color: se ven los dos rectángulos.
+                    const color = corte ? (f < corte ? "bg-indigo-500" : "bg-orange-600") : (f % 2 ? "bg-orange-600" : "bg-indigo-500");
+                    punto.className = `punto block w-3 h-3 md:w-4 md:h-4 rounded-full ${color}`;
+                    punto.dataset.fila = String(f);
                     // Un hueco cada 5 columnas y cada 5 filas: contar de 5 en 5.
                     if (c > 0 && c % 5 === 0) punto.style.marginLeft = "0.5rem";
-                    if (f > 0 && f % 5 === 0) punto.style.marginTop = "0.5rem";
+                    if (corte && f === corte) {
+                        punto.classList.add("tras-corte");
+                        punto.style.marginTop = "1rem";
+                    } else if (!corte && f > 0 && f % 5 === 0) punto.style.marginTop = "0.5rem";
                     rejilla.appendChild(punto);
                 }
             }
+            if (manipulable) hacerTocable(rejilla, rect);
+            else rejilla.setAttribute("aria-hidden", "true");
+            document.getElementById("ayuda-total").innerText = manipulable ? totalAyuda(rect) : "";
             const contenedor = document.getElementById("help-visual-container");
             contenedor.replaceChildren(rejilla);
+        }
+
+        // --- AYUDA QUE SE TOCA (issue #63) ---
+        //
+        // Como con material concreto: se ponen y quitan filas, se parte el
+        // rectángulo en dos (7 × 8 = 5 × 8 + 2 × 8) tocando una fila, y se
+        // gira. El total se escribe y se dice al momento. El de la pregunta
+        // misma, no: sale «?» y lo cuenta el niño; si no, la ayuda daría la
+        // respuesta. Partida, sí da cada parte: sumarlas es lo que se aprende.
+        //
+        // Con teclado, sobre el rectángulo: flecha arriba quita una fila,
+        // abajo la pone, y izquierda o derecha mueven el corte.
+        const MAX_FILAS_AYUDA = 10;
+        let ayudaRect = null;   // { filas, columnas, corte }: corte = filas de la parte de arriba; 0, sin partir
+
+        /** Solo multiplicar: al dividir, lo que se busca es otra cosa, y los retos traen su dibujo. */
+        function ayudaManipulable() {
+            return Boolean(pregunta) && !seDivide() && (pregunta.tipo === "mult" || pregunta.tipo === "problema");
+        }
+
+        function rectAyuda() {
+            if (!ayudaRect) ayudaRect = { filas: ayudaGirada ? numB : numA, columnas: ayudaGirada ? numA : numB, corte: 0 };
+            return ayudaRect;
+        }
+
+        function esRectDeLaPregunta({ filas, columnas }) {
+            return (filas === numA && columnas === numB) || (filas === numB && columnas === numA);
+        }
+
+        /** Lo que dice el total: «6 × 8 = 48», «7 × 8 = ?» o «5 × 8 + 2 × 8 = 40 + 16 = ?». */
+        function totalAyuda(rect) {
+            const { filas, columnas, corte } = rect;
+            const todo = esRectDeLaPregunta(rect) ? "?" : String(filas * columnas);
+            if (!corte) return `${filas} × ${columnas} = ${todo}`;
+            const abajo = filas - corte;
+            return `${corte} × ${columnas} + ${abajo} × ${columnas} = ${corte * columnas} + ${abajo * columnas} = ${todo}`;
+        }
+
+        /** Lo mismo, para decirlo: «5 por 8 es 40, y 2 por 8 es 16. Súmalos…». */
+        function vozTotalAyuda(rect) {
+            const { filas, columnas, corte } = rect;
+            const deLaPregunta = esRectDeLaPregunta(rect);
+            if (!corte) return deLaPregunta ? `${filas} filas de ${columnas}. Cuéntalos.` : `${filas} por ${columnas} es ${filas * columnas}.`;
+            const abajo = filas - corte;
+            return `${corte} por ${columnas} es ${corte * columnas}, y ${abajo} por ${columnas} es ${abajo * columnas}. ` +
+                (deLaPregunta ? "Súmalos y sabrás cuánto es todo junto." : `Todo junto, ${filas * columnas}.`);
+        }
+
+        /** Las filas que hay que poner o quitar para volver a la pregunta. */
+        function textoAyudaTocada(rect) {
+            const { filas, columnas, corte } = rect;
+            const meta = columnas === numB ? numA : numB;
+            if (esRectDeLaPregunta(rect)) {
+                return `Partido en dos: ${corte} ${corte === 1 ? "fila" : "filas"} de ${columnas} y ${filas - corte} ${filas - corte === 1 ? "fila" : "filas"} de ${columnas}. Suma las dos partes.`;
+            }
+            const falta = meta - filas;
+            const n = Math.abs(falta);
+            return `Ahora hay ${filas} ${filas === 1 ? "fila" : "filas"} de ${columnas}. ${falta > 0 ? "Pon" : "Quita"} ${n} ${n === 1 ? "fila" : "filas"} y vuelves a ${numA} × ${numB}.`;
+        }
+
+        function pintarControlesAyuda(manipulable, rect) {
+            document.getElementById("ayuda-total").classList.toggle("hidden", !manipulable);
+            document.querySelectorAll("#ayuda-controles .btn-ayuda").forEach((b) => b.classList.toggle("hidden", !manipulable));
+            if (!manipulable) return;
+            document.getElementById("btn-quitar-fila").disabled = rect.filas <= 1;
+            document.getElementById("btn-poner-fila").disabled = rect.filas >= MAX_FILAS_AYUDA;
+            const partir = document.getElementById("btn-partir");
+            partir.textContent = rect.corte ? "Juntar" : "Partir";
+            partir.disabled = rect.filas < 2;
+        }
+
+        /** El rectángulo se toca (una fila: partir ahí) y se maneja con flechas. */
+        function hacerTocable(rejilla, rect) {
+            rejilla.id = "ayuda-rect";
+            rejilla.tabIndex = 0;
+            rejilla.setAttribute("role", "group");
+            rejilla.setAttribute("aria-label", `Rectángulo de ${rect.filas} filas de ${rect.columnas}. ` +
+                "Flecha arriba quita una fila y flecha abajo la pone; izquierda y derecha mueven el corte.");
+            rejilla.classList.add("cursor-pointer", "touch-manipulation");
+            rejilla.addEventListener("click", (e) => {
+                const f = filaTocada(rejilla, e);
+                if (f === null) return;
+                const r = rectAyuda();
+                partirAyuda(r.corte === f + 1 ? 0 : f + 1);
+            });
+            rejilla.addEventListener("keydown", (e) => {
+                const r = rectAyuda();
+                const acciones = {
+                    ArrowUp: () => cambiarFilasAyuda(-1),
+                    ArrowDown: () => cambiarFilasAyuda(1),
+                    ArrowLeft: () => partirAyuda(Math.max(0, r.corte - 1)),
+                    ArrowRight: () => partirAyuda(Math.min(r.filas - 1, r.corte + 1)),
+                };
+                if (!acciones[e.key]) return;
+                e.preventDefault();
+                acciones[e.key]();
+            });
+        }
+
+        /** La fila más cercana al dedo: los puntos son chicos para atinarles. */
+        function filaTocada(rejilla, e) {
+            const directa = e.target.closest?.(".punto");
+            if (directa) return Number(directa.dataset.fila);
+            let mejor = null;
+            let distancia = Infinity;
+            rejilla.querySelectorAll(".punto").forEach((p) => {
+                const caja = p.getBoundingClientRect();
+                const d = Math.abs(caja.top + caja.height / 2 - e.clientY);
+                if (d < distancia) { distancia = d; mejor = Number(p.dataset.fila); }
+            });
+            return mejor;
+        }
+
+        /** Vuelve a dibujar tras tocarla, sin perder el foco, y dice el total. */
+        function repintarAyuda() {
+            const conFoco = document.activeElement?.id === "ayuda-rect";
+            generateHelpVisual();
+            if (conFoco) document.getElementById("ayuda-rect")?.focus();
+            callarVoz();
+            speak(vozTotalAyuda(rectAyuda()));
+        }
+
+        function cambiarFilasAyuda(d) {
+            if (!ayudaManipulable()) return;
+            const r = rectAyuda();
+            const filas = Math.min(MAX_FILAS_AYUDA, Math.max(1, r.filas + d));
+            if (filas === r.filas) return;
+            r.filas = filas;
+            if (r.corte >= filas) r.corte = 0;
+            sonar("toque");
+            repintarAyuda();
+        }
+
+        function partirAyuda(corte) {
+            if (!ayudaManipulable()) return;
+            const r = rectAyuda();
+            const nuevo = corte > 0 && corte < r.filas ? corte : 0;
+            if (nuevo === r.corte) return;
+            r.corte = nuevo;
+            sonar("toque");
+            repintarAyuda();
+        }
+
+        /** «Partir» corta tras la quinta fila (o por la mitad); «Juntar» lo deshace. */
+        function alternarCorteAyuda() {
+            const r = rectAyuda();
+            partirAyuda(r.corte ? 0 : (r.filas > 5 ? 5 : Math.floor(r.filas / 2)));
         }
 
         /** m/d de d·k: d filas de k puntos; las m primeras, en verde. */
@@ -5574,6 +5754,7 @@
                     : "Todas las tiras miden lo mismo. ¿Cuál tiene más verde?";
             const caja = document.createElement("div");
             caja.className = "bg-white border-2 border-indigo-100 rounded-xl p-3 space-y-2 w-full max-w-sm";
+            caja.setAttribute("aria-hidden", "true");
             tiras.forEach(([m, d], i) => {
                 const fila = document.createElement("div");
                 // En equivalentes, la primera es la de la pregunta: separada.
@@ -5607,6 +5788,7 @@
             const rejilla = document.createElement("div");
             rejilla.className = "inline-grid gap-1 bg-white border-2 border-indigo-100 rounded-xl p-3";
             rejilla.style.gridTemplateColumns = `repeat(${k}, auto)`;
+            rejilla.setAttribute("aria-hidden", "true");
             for (let f = 0; f < d; f++) {
                 for (let c = 0; c < k; c++) {
                     const punto = document.createElement("span");
@@ -5623,6 +5805,7 @@
 
         function girarAyuda() {
             ayudaGirada = !ayudaGirada;
+            if (ayudaRect) ayudaRect = { filas: ayudaRect.columnas, columnas: ayudaRect.filas, corte: 0 };
             generateHelpVisual();
         }
 

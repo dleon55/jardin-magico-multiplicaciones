@@ -87,6 +87,15 @@ test("ayuda girada", async ({ page }) => {
   await auditar(page, "la ayuda girada");
 });
 
+test("ayuda tocada: con una fila menos y partida", async ({ page }) => {
+  await entrarATabla(page, 7);
+  await page.click("#btn-help");
+  await page.click("#btn-quitar-fila");
+  await page.click("#btn-partir");
+  await page.focus("#ayuda-rect");
+  await auditar(page, "la ayuda tocada");
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");

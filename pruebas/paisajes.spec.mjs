@@ -1,7 +1,7 @@
 // Paisajes (issue #55): el fondo de cada mundo del jardín y la arena de cada
 // mundo de la Aventura son dibujos SVG por capas, no degradados con emojis.
 import { test, expect } from "@playwright/test";
-import { stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 
 const EMOJI = /\p{Extended_Pictographic}/u;
 const MUNDOS_JARDIN = ["huerto", "bosque", "dinos", "espacio", "mar", "granja", "desierto", "flores"];
@@ -65,10 +65,22 @@ test("cada arena de la Aventura tiene su paisaje, sin emojis, detrás del héroe
   }
 });
 
-test("los paisajes pesan poco: la página crece menos de 30 KB por ellos", async () => {
-  // Antes de los paisajes, index.html pesaba unos 444 KB.
+test("los paisajes pesan poco: su código ocupa menos de 30 KB", async () => {
+  // Antes se medía la página entera contra un tope fijo, y cualquier cambio
+  // ajeno a los paisajes la hacía fallar. Ahora se mide solo su sección.
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  const desde = html.indexOf("// --- PAISAJES");
+  const hasta = html.indexOf("// --- PRESENTACIÓN: fondo");
+  expect(desde).toBeGreaterThan(0);
+  expect(hasta).toBeGreaterThan(desde);
+  expect(Buffer.byteLength(html.slice(desde, hasta))).toBeLessThan(30000);
+});
+
+test("la página entera no pasa de 600 KB", async () => {
+  // Una alarma, no una meta: el plan (docs/PLAN.md, riesgos) prevé separar
+  // el arte y los datos en archivos si index.html se acerca a 700 KB.
   const { size } = await stat(new URL("../index.html", import.meta.url));
-  expect(size).toBeLessThan(444000 + 30000 + 40000);   // margen para el resto de la Fase 1
+  expect(size).toBeLessThan(600000);
 });
 
 test.describe("con movimiento", () => {
