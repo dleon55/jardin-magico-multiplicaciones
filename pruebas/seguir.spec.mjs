@@ -5,10 +5,12 @@ import { test, expect } from "@playwright/test";
 
 const ORDEN = [2, 5, 3, 4, 9, 6, 7, 8, 1];
 
+/** Al menú, con el diagnóstico inicial ya saltado (ese caso está en diagnostico.spec.mjs). */
 async function alMenu(page) {
   await page.goto("./");
   await page.fill("#player-name", "Ana");
   await page.click("#screen-welcome button:has-text('Comenzar')");
+  await page.evaluate(() => { almacen.guardar("diagnostico", "saltado"); mostrarPantalla("screen-selector"); });
 }
 
 /** Deja guardada la tabla `n` según `estado`: "bien" (todo acertado la última vez), "florecida" o "a medias". */
@@ -27,7 +29,7 @@ const refrescar = (page) => page.evaluate(() => mostrarPantalla("screen-selector
 const que = (page) => page.locator("#seguir-que").textContent();
 const detalle = (page) => page.locator("#seguir-detalle").textContent();
 
-test("un jardín nuevo empieza por descubrir la tabla del 2", async ({ page }) => {
+test("tras saltar el diagnóstico, un jardín nuevo empieza por descubrir la tabla del 2", async ({ page }) => {
   await alMenu(page);
   expect(await que(page)).toBe("Tabla del 2");
   expect(await detalle(page)).toContain("Nueva");

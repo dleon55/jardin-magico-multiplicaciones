@@ -9,6 +9,11 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-16
 
+- **¿Qué tablas ya sabes?** (#86, tarea #61): en un jardín nuevo, «Seguir»
+  propone un diagnóstico corto y opcional. Son dos preguntas por tabla, se
+  para al fallar dos seguidas y nunca pasa de 16. Lo que ya sabe se siembra
+  como «casi», así no empieza por la del 2 quien ya se la sabe. Se puede
+  saltar.
 - **Confusiones típicas** (#85, tarea #62): al fallar, el juego reconoce si
   fue la de al lado («Diste 42, que es 6 × 7»), una suma en lugar de una
   multiplicación, las cifras al revés u otra de la misma tabla, y lo dice

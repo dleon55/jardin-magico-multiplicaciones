@@ -151,6 +151,26 @@
             #guia-respuesta { grid-column: 1 / 3; min-height: 1.5rem; font-size: 1rem; }
         }
 
+        /* El diagnóstico cabe en el teléfono: Lumi y el título más chicos;
+           acostado, Lumi se esconde y las opciones van en una fila. */
+        @media (max-width: 640px) {
+            #screen-diagnostico { padding-top: 0; }
+            #screen-diagnostico > * + * { margin-top: 0.5rem !important; }
+            #screen-diagnostico .lumi-seguir { width: 2.75rem; height: 2.75rem; }
+            #diag-titulo { font-size: 1.5rem; }
+            #diag-pregunta > p { font-size: 0.9rem; }
+            #diag-op { font-size: 2.5rem; }
+            #diag-opciones button { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        }
+        @media (orientation: landscape) and (max-height: 520px) {
+            #screen-diagnostico > * + * { margin-top: 0.4rem !important; }
+            #screen-diagnostico .lumi-seguir, #diag-pregunta > p { display: none; }
+            #diag-titulo { font-size: 1.4rem; }
+            #diag-op { font-size: 2.2rem; }
+            #diag-opciones { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            #diag-opciones button { padding-top: 0.35rem; padding-bottom: 0.35rem; font-size: 1.5rem; }
+        }
+
         /* La pregunta de práctica de la bienvenida guiada: 2 filas de 3. */
         .puntos-practica { display: grid; grid-template-columns: repeat(3, 2.2rem); gap: 0.5rem; width: max-content; padding: 0.6rem; background: var(--papel); border: 3px solid var(--hoja-clara); border-radius: 1rem; }
         .puntos-practica span { width: 2.2rem; height: 2.2rem; border-radius: 50%; background: #f4c27a; border: 3px solid var(--contorno); }
@@ -884,6 +904,29 @@
         </div>
 
 
+        <!-- ================= DIAGNÓSTICO: ¿QUÉ TABLAS YA SABES? =================
+             Unas preguntas cortas, sin presión, para no empezar por la del 2 a
+             quien ya se la sabe. Se puede saltar. -->
+        <div id="screen-diagnostico" class="hidden text-center space-y-4 py-2">
+            <div class="flex justify-between items-center gap-2">
+                <p id="diag-progreso" class="text-sm font-bold text-gray-700"></p>
+                <button type="button" id="diag-saltar" onclick="saltarDiagnostico()" class="enlace-tactil text-sm font-bold text-gray-700 underline hover:text-green-800">Saltar</button>
+            </div>
+            <span id="lumi-diag" class="lumi-caja lumi-seguir" data-lumi="pensando"></span>
+            <h1 id="diag-titulo" data-foco class="bubble-font text-3xl text-sky-800 leading-tight">¿Qué tablas ya sabes?</h1>
+            <section id="diag-pregunta" class="space-y-3 max-w-md mx-auto">
+                <p class="text-gray-700">Responde sin prisa. Si no la sabes, toca «No la sé»: así sé por dónde empezar.</p>
+                <div id="diag-op" class="bubble-font text-5xl text-gray-900" aria-live="polite"></div>
+                <div id="diag-opciones" role="group" aria-label="Elige la respuesta" class="grid grid-cols-2 gap-3"></div>
+                <button type="button" id="diag-nose" onclick="responderDiagnostico(null)" class="w-full min-h-11 bg-white hover:bg-gray-50 border-2 border-gray-300 rounded-2xl py-2 font-bold text-gray-700">No la sé</button>
+            </section>
+            <section id="diag-resultado" class="hidden space-y-3 max-w-md mx-auto">
+                <p id="diag-resumen" class="text-lg font-bold text-green-900"></p>
+                <p id="diag-detalle" class="text-gray-700"></p>
+                <button type="button" id="diag-seguir" onclick="terminarDiagnostico()" class="w-full bubble-font bg-green-700 hover:bg-green-800 text-white text-xl px-8 py-3 rounded-2xl shadow-lg">¡Vamos!</button>
+            </section>
+        </div>
+
         <!-- ================= PANTALLA 2: SELECCIÓN DE TABLA ================= -->
         <div id="screen-selector" class="hidden space-y-6">
             <!-- Encabezado: quién juega y sus estrellas, y lo que el niño puede
@@ -1579,7 +1622,7 @@
         // Lo que es de cada jardín y viaja en la copia de seguridad. «vistos»:
         // el estado de cada planta la última vez que se abrió «Mi jardín», para
         // animar lo que cambió desde entonces (también al pasar a otro equipo).
-        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos"];
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico"];
         let perfilActual = "p1";
 
         const almacen = {
@@ -3323,7 +3366,7 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
+        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
         let pantallaActual = "screen-welcome";
 
         // --- LUMI, LA MASCOTA ---
@@ -5653,6 +5696,10 @@
                 const f = faltanEnTabla(enCurso);
                 return { tipo: "tabla", tabla: enCurso, que: `Tabla del ${enCurso}`, detalle: f === 1 ? "Te falta una por aprender." : `Te faltan ${f} por aprender.`, cara: "contenta" };
             }
+            // Un jardín sin nada jugado: antes de la del 2, averiguar qué ya sabe.
+            if (ORDEN_TABLAS.every((n) => !tablaYaJugada(n)) && !almacen.leer("diagnostico")) {
+                return { tipo: "diagnostico", que: "¿Qué tablas ya sabes?", detalle: "Unas preguntas cortas, para no empezar por lo que ya sabes.", cara: "pensando" };
+            }
             const nueva = ORDEN_TABLAS.find((n) => !tablaYaJugada(n));
             if (nueva) return { tipo: "tabla", tabla: nueva, que: `Tabla del ${nueva}`, detalle: "Nueva: vamos a descubrirla.", cara: "sorprendida" };
             const casi = hechosQueFaltan().length;
@@ -5679,7 +5726,139 @@
             if (p.tipo === "tabla") elegirTabla(p.tabla);
             else if (p.tipo === "falta") startTable("falta");
             else if (p.tipo === "aventura") mostrarAventura();
+            else if (p.tipo === "diagnostico") empezarDiagnostico();
             else startTable("logica");
+        }
+
+        // --- DIAGNÓSTICO INICIAL ---
+        //
+        // Dos multiplicaciones por tabla, de la más fácil a la más difícil (sin
+        // la del 1, que no pide memoria). Una tabla «se sabe» si las dos salen
+        // bien. Al fallar dos tablas seguidas se para: las siguientes son más
+        // difíciles. Nunca pasa de 16 preguntas. Lo que ya se sabe se siembra
+        // como «casi» (no florecido: florecer sigue pidiendo escribirla rápido
+        // en dos días distintos), así «Seguir» empieza por la primera que falta.
+        const TABLAS_DIAGNOSTICO = [2, 5, 3, 4, 9, 6, 7, 8];
+        const PREGUNTAS_POR_TABLA = 2;
+        let diag = null;
+
+        /** Opciones para a × b: la correcta y errores típicos (vecinas y la suma). */
+        function opcionesDiagnostico(a, b) {
+            const p = a * b;
+            const falsas = [a * (b + 1), a * (b - 1), (a + 1) * b, a + b, (a - 1) * b, p + 10]
+                .filter((x, i, l) => x > 0 && x !== p && l.indexOf(x) === i).slice(0, 3);
+            return barajar([p, ...falsas]);
+        }
+
+        function empezarDiagnostico() {
+            initAudio();
+            // De cada tabla, dos multiplicaciones distintas entre ×3 y ×9: las
+            // de ×1, ×2 y ×10 se adivinan sin saber la tabla.
+            const preguntas = TABLAS_DIAGNOSTICO.map((a) => ({ a, bs: barajar([3, 4, 5, 6, 7, 8, 9]).slice(0, PREGUNTAS_POR_TABLA) }));
+            diag = { preguntas, tabla: 0, dentro: 0, bien: 0, hechas: 0, sabidas: [], fallidasSeguidas: 0 };
+            document.getElementById("diag-pregunta").classList.remove("hidden");
+            document.getElementById("diag-resultado").classList.add("hidden");
+            document.getElementById("diag-saltar").classList.remove("invisible");
+            mostrarPantalla("screen-diagnostico");
+            pintarPreguntaDiagnostico();
+            speak("¿Qué tablas ya sabes? Responde sin prisa.");
+        }
+
+        function pintarPreguntaDiagnostico() {
+            const { a, bs } = diag.preguntas[diag.tabla];
+            const b = bs[diag.dentro];
+            diag.actual = { a, b };
+            document.getElementById("diag-progreso").textContent = `Pregunta ${diag.hechas + 1}`;
+            document.getElementById("diag-op").textContent = `${a} × ${b}`;
+            const caja = document.getElementById("diag-opciones");
+            caja.replaceChildren(...opcionesDiagnostico(a, b).map((v) => {
+                const boton = document.createElement("button");
+                boton.type = "button";
+                boton.className = "btn-diag min-h-11 bg-white hover:bg-sky-50 border-4 border-sky-200 rounded-2xl py-3 text-3xl font-bold text-gray-800 shadow-md";
+                boton.dataset.valor = String(v);
+                boton.textContent = String(v);
+                boton.onclick = () => responderDiagnostico(v);
+                return boton;
+            }));
+            lumi("lumi-diag", "pensando");
+        }
+
+        /** Una respuesta (null = «No la sé»). Sin decir si estuvo bien: es para saber, no un examen. */
+        function responderDiagnostico(valor) {
+            if (!diag || !diag.actual) return;
+            const { a, b } = diag.actual;
+            const bien = valor === a * b;
+            // No se guarda cada respuesta: una tabla que no sabe quedaría como
+            // «ya jugada» y se saltaría «Descubre la tabla». Al final solo se
+            // siembra lo que sabe; lo demás sigue nuevo.
+            diag.hechas++;
+            if (bien) diag.bien++;
+            diag.dentro++;
+            if (diag.dentro >= PREGUNTAS_POR_TABLA) {
+                if (diag.bien === PREGUNTAS_POR_TABLA) { diag.sabidas.push(a); diag.fallidasSeguidas = 0; }
+                else diag.fallidasSeguidas++;
+                diag.tabla++;
+                diag.dentro = 0;
+                diag.bien = 0;
+            }
+            const fin = diag.fallidasSeguidas >= 2 || diag.tabla >= diag.preguntas.length;
+            if (fin) mostrarResultadoDiagnostico();
+            else pintarPreguntaDiagnostico();
+        }
+
+        /** Siembra como «casi» las tablas que ya sabe (y la del 1, si sabe la del 2). */
+        function sembrarSabidas(sabidas) {
+            const tablas = sabidas.includes(2) ? [1, ...sabidas] : sabidas;
+            for (const a of tablas) {
+                for (let b = 1; b <= MULTIPLICADORES; b++) {
+                    // Dos aciertos seguidos: «casi». Solo si no estaba ya mejor.
+                    if (["florecida", "casi"].includes(estadoHecho(a, b))) continue;
+                    registrarIntento(a, b, true, { modo: "o" });
+                    registrarIntento(a, b, true, { modo: "o" });
+                }
+            }
+        }
+
+        const listaTablas = (ts) => ts.length === 1 ? `la del ${ts[0]}`
+            : `${ts.slice(0, -1).map((t) => `la del ${t}`).join(", ")} y la del ${ts.at(-1)}`;
+
+        function mostrarResultadoDiagnostico() {
+            const sabidas = [...diag.sabidas].sort((x, y) => x - y);
+            sembrarSabidas(diag.sabidas);
+            almacen.guardar("diagnostico", hoy());
+            diag.actual = null;
+            document.getElementById("diag-pregunta").classList.add("hidden");
+            document.getElementById("diag-resultado").classList.remove("hidden");
+            document.getElementById("diag-saltar").classList.add("invisible");   // ya terminó: no hay qué saltar (invisible: «enlace-tactil» le gana a «hidden»)
+            document.getElementById("diag-progreso").textContent = `${diag.hechas} preguntas`;
+            const resumen = sabidas.length
+                ? `¡Ya sabes ${listaTablas(sabidas)}!`
+                : "¡Empezamos desde el principio!";
+            const detalle = sabidas.length
+                ? "Las sembré en tu jardín como «casi»: florecerán cuando las escribas rápido otro día. Ahora vamos por lo que falta."
+                : "Así cada tabla es nueva: vamos a descubrir la del 2.";
+            document.getElementById("diag-resumen").textContent = resumen;
+            document.getElementById("diag-detalle").textContent = detalle;
+            lumi("lumi-diag", sabidas.length ? "celebrando" : "contenta");
+            if (sabidas.length) sonar("florecer");
+            callarVoz();
+            speak(`${resumen} ${detalle}`);
+            const titulo = document.getElementById("diag-titulo");
+            titulo.setAttribute("tabindex", "-1");
+            titulo.focus({ preventScroll: true });
+        }
+
+        /** Saltar: no pregunta nada y no vuelve a proponerlo. */
+        function saltarDiagnostico() {
+            almacen.guardar("diagnostico", "saltado");
+            diag = null;
+            callarVoz();
+            backToSelector();
+        }
+
+        function terminarDiagnostico() {
+            diag = null;
+            backToSelector();
         }
 
         function elegirTabla(n) {
