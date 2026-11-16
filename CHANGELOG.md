@@ -7,6 +7,19 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-16
+
+- **Seguir: un solo camino** (#83, tarea #59 de la Fase 2): un botón grande
+  en el menú, con Lumi, propone lo que toca, en este orden:
+  1. regar lo marchito;
+  2. terminar la tabla empezada;
+  3. descubrir la siguiente (2, 5, 3, 4, 9, 6, 7, 8 y 1);
+  4. repasar lo casi;
+  5. la Aventura o un reto.
+
+  El resto del menú queda abajo, como «Juego libre». En el teléfono se ve sin
+  desplazarse, en vertical y acostado.
+
 ## 2026-11-15
 
 - **Leyenda de «Mi jardín» con dibujos** (#82): la leyenda de los estados

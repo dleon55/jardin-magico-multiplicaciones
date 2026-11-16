@@ -155,6 +155,9 @@
         .puntos-practica { display: grid; grid-template-columns: repeat(3, 2.2rem); gap: 0.5rem; width: max-content; padding: 0.6rem; background: var(--papel); border: 3px solid var(--hoja-clara); border-radius: 1rem; }
         .puntos-practica span { width: 2.2rem; height: 2.2rem; border-radius: 50%; background: #f4c27a; border: 3px solid var(--contorno); }
 
+        .lumi-seguir { width: 3.5rem; height: 3.5rem; }
+        .icono-seguir { width: 2rem; height: 2rem; }
+
         .lumi-bienvenida { width: 7rem; height: 7rem; }
         .lumi-victoria { width: 8rem; height: 8rem; }
         .lumi-partida { width: 2.75rem; height: 2.75rem; }
@@ -339,8 +342,10 @@
             #screen-selector { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 0.75rem; row-gap: 0.75rem; align-items: stretch; }
             #screen-selector.hidden { display: none; }
             #screen-selector > * { grid-column: 1 / -1; margin-top: 0 !important; }
-            #screen-selector > #cabecera-menu { grid-column: 1; margin-right: 0; }
-            #screen-selector > #mision { grid-column: 2; max-width: none; margin-right: 3.25rem; }
+            #screen-selector > #cabecera-menu { grid-column: 1; grid-row: 1 / span 2; margin-right: 0; }
+            /* «Seguir» arriba a la derecha, a la vista sin desplazarse; la misión, debajo. */
+            #screen-selector > #seguir { grid-column: 2; grid-row: 1; max-width: none; padding-right: 3.25rem; }
+            #screen-selector > #mision { grid-column: 2; grid-row: 2; max-width: none; margin-right: 3.25rem; }
             #grid-tablas-container { grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: none; }
 
             /* La partida, lado a lado. */
@@ -901,6 +906,22 @@
                 </div>
             </div>
 
+            <!-- SEGUIR: el camino principal. Lumi propone lo que toca (regar, seguir
+                 una tabla, descubrir otra, repasar o un reto) y el niño solo toca.
+                 Todo lo demás queda abajo, en «Juego libre». -->
+            <section id="seguir" aria-label="Lo que sigue" class="max-w-lg mx-auto w-full">
+                <button type="button" id="btn-seguir" onclick="seguir()" aria-describedby="seguir-detalle"
+                        class="w-full flex items-center gap-3 text-left bg-gradient-to-r from-green-700 to-teal-700 hover:from-green-800 hover:to-teal-800 text-white rounded-2xl px-3 py-3 shadow-lg">
+                    <span id="lumi-seguir" class="lumi-caja lumi-seguir" data-lumi="contenta"></span>
+                    <span class="flex-1 min-w-0">
+                        <span class="block bubble-font text-2xl leading-tight">Seguir<span class="sr-only">:</span></span>
+                        <span id="seguir-que" class="block bubble-font text-lg leading-tight"></span>
+                        <span id="seguir-detalle" class="block text-sm font-bold text-emerald-50"></span>
+                    </span>
+                    <svg class="icono icono-seguir" aria-hidden="true" focusable="false"><use href="#i-siguiente"/></svg>
+                </button>
+            </section>
+
             <!-- Misión del día: una meta corta y distinta cada día, para que valga
                  la pena volver mañana. Faltar un día no quita nada de lo ganado. -->
             <section id="mision" aria-labelledby="mision-titulo" class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-3 max-w-lg mx-auto space-y-2">
@@ -917,6 +938,7 @@
                 <ol id="mision-semana" class="flex justify-between gap-1 text-xs" aria-label="Misiones de los últimos 7 días"></ol>
             </section>
 
+            <h2 id="juego-libre" class="text-center text-sm font-bold uppercase tracking-wider text-gray-600 border-t-2 border-dashed border-green-200 pt-3">Juego libre: elige tú</h2>
             <div class="text-center">
                 <h3 data-foco class="bubble-font text-2xl text-green-700">¿Qué tabla quieres cultivar hoy?</h3>
                 <p class="text-gray-600 text-sm">Cada tabla completada hará florecer tu jardín mágico. <span class="solo-teclado">Pulsa del 1 al 9 para elegir.</span></p>
@@ -3531,6 +3553,7 @@
             PANTALLAS.forEach((p) => document.getElementById(p).classList.toggle("hidden", p !== id));
             if (id === "screen-welcome") pintarBienvenida();
             if (id === "screen-selector") {
+                pintarSeguir();
                 actualizarResumenMenuAventura();
                 actualizarBotonesFalta();
                 actualizarCuentaFlores();
@@ -5586,6 +5609,74 @@
         }
 
         /** Desde el menú: la primera vez, descubrir; si no, a practicar. */
+        // --- SEGUIR: UN SOLO CAMINO ---
+        //
+        // El menú ofrecía muchas entradas sueltas y un niño no sabía qué hacer
+        // después. «Seguir» elige lo que toca, en este orden:
+        //   1. regar lo que se marchita (si no, se pierde lo aprendido);
+        //   2. terminar la tabla empezada: hasta que cada multiplicación haya
+        //      salido bien la última vez (florecer pide otro día: eso lo hace
+        //      el repaso);
+        //   3. descubrir la siguiente tabla, de la más fácil a la más difícil;
+        //   4. repasar lo «casi», para que florezca;
+        //   5. con todo florecido, la Aventura o un reto de lógica.
+        // Las tablas van de lo fácil a lo difícil: la del 2 y la del 5 (las
+        // del doble y del reloj), luego 3, 4, 9 (con su truco), 6, 7, 8 y la
+        // del 1 al final, que no pide memoria.
+        const ORDEN_TABLAS = [2, 5, 3, 4, 9, 6, 7, 8, 1];
+
+        /**
+         * Cuántas multiplicaciones de la tabla `n` faltan por aprender: las que
+         * nunca se han respondido y las que la última vez salieron mal. Las
+         * demás ya se saben un poco; afianzarlas es cosa del repaso (paso 4).
+         */
+        function faltanEnTabla(n) {
+            let faltan = 0;
+            for (let b = 1; b <= MULTIPLICADORES; b++) {
+                const ultimo = intentosDe(n, b).at(-1);
+                if (!ultimo || !ultimo.ok) faltan++;
+            }
+            return faltan;
+        }
+
+        /** Lo que propone «Seguir»: { tipo, tabla?, que, detalle }. */
+        function siguientePaso() {
+            const marchitas = plantas().filter(({ a, b }) => estaMarchita(a, b)).length;
+            if (marchitas > 0) return { tipo: "falta", que: "Regar tu jardín", detalle: marchitas === 1 ? "Una flor se marchita: repásala y revivirá." : `${marchitas} flores se marchitan: repásalas y revivirán.`, cara: "animando" };
+            const enCurso = ORDEN_TABLAS.find((n) => tablaYaJugada(n) && faltanEnTabla(n) > 0);
+            if (enCurso) {
+                const f = faltanEnTabla(enCurso);
+                return { tipo: "tabla", tabla: enCurso, que: `Tabla del ${enCurso}`, detalle: f === 1 ? "Te falta una por aprender." : `Te faltan ${f} por aprender.`, cara: "contenta" };
+            }
+            const nueva = ORDEN_TABLAS.find((n) => !tablaYaJugada(n));
+            if (nueva) return { tipo: "tabla", tabla: nueva, que: `Tabla del ${nueva}`, detalle: "Nueva: vamos a descubrirla.", cara: "sorprendida" };
+            const casi = hechosQueFaltan().length;
+            if (casi > 0) return { tipo: "falta", que: "Que florezca lo que falta", detalle: casi === 1 ? "Una está casi: escríbela rápido y florecerá." : `${casi} están casi: escríbelas rápido y florecerán.`, cara: "contenta" };
+            const ultimoNivel = AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO - 1;
+            if ((aventuraGuardada.alcanzado ?? 0) < ultimoNivel) return { tipo: "aventura", que: "La Aventura", detalle: "¡Todo tu jardín floreció! Ve por el siguiente nivel.", cara: "celebrando" };
+            return { tipo: "logica", que: "Un reto de lógica", detalle: "¡Todo tu jardín floreció! Pon a prueba tu cabeza.", cara: "celebrando" };
+        }
+
+        /** Pinta el botón «Seguir» con lo que toca. */
+        function pintarSeguir() {
+            const p = siguientePaso();
+            document.getElementById("seguir-que").textContent = p.que;
+            document.getElementById("seguir-detalle").textContent = p.detalle;
+            const boton = document.getElementById("btn-seguir");
+            boton.dataset.tipo = p.tipo;
+            boton.setAttribute("aria-label", `Seguir: ${p.que}`);   // el detalle va como descripción
+            lumi("lumi-seguir", p.cara);
+        }
+
+        /** Hace lo que propone «Seguir». */
+        function seguir() {
+            const p = siguientePaso();
+            if (p.tipo === "tabla") elegirTabla(p.tabla);
+            else if (p.tipo === "falta") startTable("falta");
+            else if (p.tipo === "aventura") mostrarAventura();
+            else startTable("logica");
+        }
+
         function elegirTabla(n) {
             if (!descubiertas.includes(n) && !tablaYaJugada(n)) {
                 mostrarDescubrir(n);

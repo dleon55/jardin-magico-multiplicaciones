@@ -92,6 +92,7 @@ test.describe("con movimiento", () => {
     await page.goto("./");
     await entrar(page);
     const boton = page.locator("#screen-selector button.shadow-md").first();
+    await boton.scrollIntoViewIfNeeded();   // con «Seguir» arriba, puede quedar más abajo
     const caja = await boton.boundingBox();
     await page.evaluate(({ x, y }) => {
       const b = document.elementFromPoint(x, y);

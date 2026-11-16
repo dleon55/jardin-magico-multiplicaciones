@@ -156,6 +156,7 @@ test("al pasar el ratón, los botones no se mueven (antes temblaban si el punter
   test.skip(testInfo.project.name !== "escritorio", "solo con ratón");
   await alMenu(page);
   const boton = page.locator("#grid-tablas-container button").first();
+  await boton.scrollIntoViewIfNeeded();   // con «Seguir» arriba, las tablas quedan más abajo
   const antes = await boton.boundingBox();
   await page.mouse.move(antes.x + antes.width / 2, antes.y + antes.height - 1);   // en el borde de abajo
   await page.waitForTimeout(100);
