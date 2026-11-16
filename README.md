@@ -412,6 +412,17 @@ mismo.
     Con pocas tablas sabidas, el divisor va del 2 al 5.
   - Lo fallado vuelve. No cuenta para el mapa ni el jardín, pero queda en la
     vista para adultos y en el informe.
+- **👫 En equipo** (Fase 3, #70, sin servidor). Dos o tres niños se turnan
+  en el mismo aparato.
+  - Se marcan quiénes juegan, o se añade a quien falta: si ya tiene jardín
+    se marca, y si no, se le crea.
+  - Empieza quien abrió el modo. Antes de cada pregunta, la banda y la voz
+    dicen de quién es el turno, y se carga **su** jardín: lo que contesta
+    crece en él, con sus estrellas y su meta de hoy.
+  - La meta es común: 10 aciertos entre todos. La victoria es del equipo
+    («Entre todos acertaron 10») y no compara quién acertó más.
+  - No hay mensajes entre niños: el único campo es el nombre de quien falta.
+  - Al terminar o al salir, vuelve el jardín de quien abrió el modo.
 - **🧩 Retos de lógica.** Las mismas tablas, pidiendo pensar y no solo
   recordar. Cada partida trae 10 retos, dos de cada clase:
 

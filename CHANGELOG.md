@@ -9,6 +9,12 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-16
 
+- **En equipo** (#94, tarea #70): dos o tres niños se turnan en el mismo
+  aparato, sin servidor.
+  - En cada turno se carga el jardín de quien contesta, así que su
+    progreso, sus estrellas y su meta son suyos.
+  - Entre todos riegan 10 plantas, sin comparar a nadie y sin mensajes
+    entre niños.
 - **Dividir con lo que sobra** (#93, tarea #71, primer tema nuevo de la
   Fase 3): «17 ÷ 5 = 3, y sobran 2».
   - Se elige entre cuatro respuestas, y las falsas son los errores típicos.

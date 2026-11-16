@@ -127,6 +127,20 @@ test("el camino, con tramos hechos, abiertos y cerrados", async ({ page }) => {
   await auditar(page, "el camino");
 });
 
+test("en equipo: la elección de jugadores y la partida con la banda del turno", async ({ page }) => {
+  await page.goto("./");
+  await page.fill("#player-name", "Leo");
+  await page.click("#screen-welcome button");
+  await page.click("#screen-selector >> text=Cambiar de jugador");
+  await page.fill("#player-name", "Ana");
+  await page.click("#screen-welcome button");
+  await page.click("#btn-equipo");
+  await auditar(page, "la elección del equipo");
+  await page.locator("#equipo-jugadores input").evaluateAll((cs) => cs.forEach((c) => { c.checked = true; }));
+  await page.click('#equipo-tablas [data-tabla="3"]');
+  await auditar(page, "la partida en equipo");
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
