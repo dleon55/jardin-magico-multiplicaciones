@@ -183,6 +183,7 @@ test("al pasar de mundo cambia la música, y cada nivel suena con la de su mundo
   await page.evaluate(() => startTable(2));
   await expect.poll(() => page.evaluate(() => musica.temporizador !== null)).toBe(true);
   const r = await page.evaluate(() => {
+    for (let n = 1; n <= 9; n++) for (let b = 1; b <= 10; b++) hechos[claveHecho(n, b)] = [{ d: "", m: "o", ok: 1, ms: null }, { d: "", m: "o", ok: 1, ms: null }];   // sabidas: abre los mundos (#46)
     aventuraGuardada.alcanzado = 23;
     mostrarAventura();
     aventura.manual = true;

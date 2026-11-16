@@ -116,6 +116,17 @@ test("estatus de las tablas: victoria que lo celebra, jardín y mapa", async ({ 
   await auditar(page, "el mapa con estatus");
 });
 
+test("el camino, con tramos hechos, abiertos y cerrados", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.evaluate(() => {
+    for (const n of [2, 5, 3]) for (let b = 1; b <= 10; b++) hechos[claveHecho(n, b)] = [{ d: "", m: "o", ok: 1, ms: null }, { d: "", m: "o", ok: 1, ms: null }];
+    aventuraGuardada.estrellas = { "0-3": 2 }; aventuraGuardada.alcanzado = 4;
+    mostrarCamino();
+  });
+  await auditar(page, "el camino");
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");

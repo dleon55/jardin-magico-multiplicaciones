@@ -9,6 +9,16 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-16
 
+- **Mi camino** (#92, cierra el Hito 2 #46): un solo camino de 15 tramos
+  une las tablas del jardín y los mundos de la Aventura.
+  - Cada mundo se abre al saberse sus tablas (arbolito o más) y, como
+    siempre, al vencer al jefe anterior. El primero está abierto desde el
+    primer día.
+  - «Seguir» propone el mundo recién abierto hasta jugarlo una vez.
+  - Un mundo cerrado dice qué tablas faltan.
+  - Lo ya jugado de un mundo no se cierra: nadie pierde su avance.
+  - Varias pruebas que jugaban mundos avanzados ahora siembran antes sus
+    tablas como sabidas.
 - **Informe para imprimir** (#91, tarea #65): en la vista para adultos,
   cada jardín tiene «Imprimir o guardar el informe». Es una hoja carta con:
   - cómo va cada tabla, cuáles domina, lo que le cuesta y lo que se le

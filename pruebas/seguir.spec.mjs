@@ -94,10 +94,12 @@ test("con todo florecido, la Aventura; y si ya la terminó, un reto de lógica",
   await alMenu(page);
   for (const n of ORDEN) await ponerTabla(page, n, "florecida");
   await refrescar(page);
-  expect(await que(page)).toBe("La Aventura");
+  // El camino (#46) propone el primer mundo que no ha jugado.
+  expect(await que(page)).toBe("La Aventura: El huerto de los brócolis");
   await page.click("#btn-seguir");
   await expect(page.locator("#screen-aventura")).toBeVisible();
-  await page.evaluate(() => { aventuraGuardada.alcanzado = AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO - 1; guardarAventura(); });
+  // Terminada: vencidos todos los jefes.
+  await page.evaluate(() => { aventuraGuardada.alcanzado = AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO - 1; AVENTURA_MUNDOS.forEach((_, m) => { aventuraGuardada.estrellas[`${m}-3`] = 1; }); guardarAventura(); });
   await refrescar(page);
   expect(await que(page)).toBe("Un reto de lógica");
   await page.click("#btn-seguir");

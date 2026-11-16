@@ -15,7 +15,8 @@ async function alMapa(page) {
 
 /** Abre el nivel `m-n` (desbloqueándolo) y hace salir un enemigo. */
 async function nivel(page, m, n) {
-  await page.evaluate(([m, n]) => { aventuraGuardada.alcanzado = m * NIVELES_POR_MUNDO + n; guardarAventura(); mostrarAventura(); }, [m, n]);
+  // Desde el camino (#46), cada mundo se abre también al saberse sus tablas.
+  await page.evaluate(([m, n]) => { for (let n = 1; n <= 9; n++) for (let b = 1; b <= 10; b++) hechos[claveHecho(n, b)] = [{ d: "", m: "o", ok: 1, ms: null }, { d: "", m: "o", ok: 1, ms: null }]; aventuraGuardada.alcanzado = m * NIVELES_POR_MUNDO + n; guardarAventura(); mostrarAventura(); }, [m, n]);
   await page.click(`.btn-nivel[data-nivel="${m}-${n}"]`);
   await page.evaluate(() => { aventura.hastaAparecer = 0; aventuraPaso(16); aventura.hastaAparecer = 1e9; });
 }
@@ -83,7 +84,7 @@ test("cada mundo tiene su enemigo dibujado, y el jefe lleva corona en el dibujo"
     expect(jefe.length).toBeGreaterThan(normal.length);
   }
   // En el mapa, cada mundo abierto muestra a su enemigo.
-  await page.evaluate(() => { aventuraGuardada.alcanzado = 23; mostrarAventura(); });
+  await page.evaluate(() => { for (let n = 1; n <= 9; n++) for (let b = 1; b <= 10; b++) hechos[claveHecho(n, b)] = [{ d: "", m: "o", ok: 1, ms: null }, { d: "", m: "o", ok: 1, ms: null }]; aventuraGuardada.alcanzado = 23; mostrarAventura(); });   // sabidas: abre los mundos (#46)
   await expect(page.locator(".titulo-mundo-arte svg.enemigo-arte")).toHaveCount(6);
 });
 
