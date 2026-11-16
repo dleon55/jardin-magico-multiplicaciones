@@ -58,7 +58,7 @@ test("al cumplir la meta en una partida, Lumi lo dice y el aviso lo repite", asy
   // Ya cumplida: los aciertos siguientes no la vuelven a anunciar ni a premiar.
   const estrellas = await page.evaluate(() => globalStars);
   await responder(page, true);
-  await expect(page.locator("#game-feedback")).not.toContainText("Meta de hoy");
+  expect(await page.locator("#game-feedback").innerText()).not.toContain("Meta de hoy");   // ahora mismo: el aviso se borra solo
   expect(await page.evaluate(() => globalStars)).toBe(estrellas + 1);
 });
 

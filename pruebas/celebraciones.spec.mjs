@@ -28,7 +28,7 @@ async function tablaQueFlorece(page) {
 test("tres aciertos seguidos: Lumi lo dice en su globo y el texto lo repite", async ({ page }) => {
   await entrarATabla(page, 3);
   await responderVarias(page, [true, true]);
-  await expect(globo(page)).toBeHidden();
+  expect(await globo(page).isHidden()).toBe(true);   // ahora mismo: el globo se va solo
   await responder(page, true);
   await expect(globo(page)).toBeVisible();
   await expect(globo(page)).toHaveText("¡Tres seguidas! 🔥");
@@ -38,9 +38,9 @@ test("tres aciertos seguidos: Lumi lo dice en su globo y el texto lo repite", as
 test("un fallo corta la racha: hacen falta otras tres seguidas", async ({ page }) => {
   await entrarATabla(page, 4);
   await responderVarias(page, [true, true, false]);
-  await expect(globo(page)).toBeHidden();
+  expect(await globo(page).isHidden()).toBe(true);   // ahora mismo: el globo se va solo
   await responderVarias(page, [true, true]);
-  await expect(globo(page)).toBeHidden();
+  expect(await globo(page).isHidden()).toBe(true);   // ahora mismo: el globo se va solo
   await responder(page, true);
   await expect(globo(page)).toHaveText("¡Tres seguidas! 🔥");
 });
@@ -78,7 +78,7 @@ test("al florecer: el bono sale de las estrellas y la flor del bancal brilla", a
 test("un acierto que no florece no muestra bono ni flor brillante", async ({ page }) => {
   await entrarATabla(page, 7);
   await responder(page, true);
-  await expect(page.locator("#pastilla-estrellas .bono-flota")).toHaveCount(0);
+  expect(await page.locator("#pastilla-estrellas .bono-flota").count()).toBe(0);   // ahora mismo: el bono se va solo
   await expect(page.locator("#garden-plot .flor-florecida")).toHaveCount(0);
 });
 

@@ -3206,6 +3206,7 @@
                     : cuesta.length === 0 ? "Le cuestan más: nada por ahora."
                     : `Le cuestan más: ${nombreCuesta.join(", ")}.`;
                 const cuestaP = parrafo("adulto-cuesta text-gray-800", cuestaTexto);
+                const confusiones = confusionesFrecuentes(h);
 
                 const practicados = ultimos.filter((d) => dias.has(d)).length;
                 const ultimoDia = [...dias].sort().at(-1);
@@ -3236,6 +3237,11 @@
                     `${BONO_MISION} por la meta de hoy (acertar ${META_DIARIA} en un día) y de 1 a 3 por nivel de la Aventura; ` +
                     `se gastan en el vivero. Metas cumplidas: ${metas} ${metas === 1 ? "día" : "días"}.`);
                 const piezas = [titulo, resumen, cuestaP, diasP, semana, monedaP];
+                if (confusiones.length) {
+                    piezas.splice(3, 0, parrafo("adulto-confusiones text-gray-800",
+                        `Se le cruzan: ${confusiones.map(([n, v]) => `${n} (${v} veces)`).join("; ")}. ` +
+                        "El juego se lo dice al fallar y, si se repite, las pregunta juntas."));
+                }
                 const av = aventuraDePerfil(perfil.id);
                 if (puntajeAventura(av) > 0) {
                     const m = Math.floor(av.alcanzado / NIVELES_POR_MUNDO);
@@ -3975,6 +3981,8 @@
             const limpio = { d, m: i.m === "e" ? "e" : "o", ok: i.ok === 1 || i.ok === true ? 1 : 0,
                 ms: typeof i.ms === "number" && Number.isFinite(i.ms) && i.ms >= 0 ? i.ms : null };
             if (typeof i.t === "number" && Number.isFinite(i.t)) limpio.t = i.t;
+            // La respuesta equivocada, para reconocer confusiones típicas.
+            if (!limpio.ok && Number.isInteger(i.r) && i.r >= 0 && i.r <= 1000) limpio.r = i.r;
             return limpio;
         }
 
@@ -4063,10 +4071,11 @@
             return hechos[claveHecho(a, b)] || [];
         }
 
-        function registrarIntento(a, b, acierto, { modo = "o", ms = null } = {}) {
+        function registrarIntento(a, b, acierto, { modo = "o", ms = null, dada = null } = {}) {
             const clave = claveHecho(a, b);
             hechosDeLaPartida.add(clave);
             const intento = { d: hoy(), t: Date.now(), m: modo, ok: acierto ? 1 : 0, ms: ms === null ? null : Math.round(ms) };
+            if (!acierto && Number.isInteger(dada) && dada >= 0 && dada <= 1000) intento.r = dada;
             hechos[clave] = [...intentosDe(a, b), intento].slice(-MAX_INTENTOS);
             guardarHechos();
         }
@@ -5855,6 +5864,68 @@
         // Antes de responder, el puente no da el resultado: el último paso lo
         // hace quien juega. Después de un fallo, sí, para que lo una a lo que
         // ya sabe.
+        // --- CONFUSIONES TÍPICAS ---
+        //
+        // Un fallo no es un número al azar: casi siempre es una de cuatro
+        // confusiones conocidas. Reconocerla permite decirla con cariño («la de
+        // al lado») y, si se repite, practicar juntas las dos que se cruzan.
+        //   vecina: la de al lado en la tabla (6 × 8 → 42, que es 6 × 7);
+        //   suma: sumar en lugar de multiplicar (6 × 8 → 14);
+        //   cifras: las cifras al revés (7 × 9 → 36);
+        //   tabla: otra de la misma tabla (6 × 8 → 30, que es 6 × 5).
+        function confusionDe(a, b, r) {
+            if (!Number.isInteger(r) || r === a * b) return null;
+            for (const [x, y] of [[a, b], [b, a]]) {
+                for (const d of [-1, 1]) {
+                    const k = y + d;
+                    if (k >= 1 && k <= MULTIPLICADORES && x * k === r) return { tipo: "vecina", con: [x, k] };
+                }
+            }
+            if (r === a + b) return { tipo: "suma" };
+            const p = String(a * b);
+            if (p.length === 2 && p[1] !== "0" && Number(`${p[1]}${p[0]}`) === r) return { tipo: "cifras" };
+            for (const x of [a, b]) {
+                if (x > 1 && r % x === 0 && r / x >= 1 && r / x <= MULTIPLICADORES) return { tipo: "tabla", con: [x, r / x] };
+            }
+            return null;
+        }
+
+        /** Cómo se dice la confusión, sin regañar. */
+        function textoConfusion(a, b, r, c) {
+            if (c.tipo === "vecina") return `Diste ${r}, que es ${c.con[0]} × ${c.con[1]}: la de al lado.`;
+            if (c.tipo === "suma") return `Sumaste: ${a} + ${b} = ${r}. Multiplicar es ${a} veces ${b}.`;
+            if (c.tipo === "cifras") return `Tenías las cifras, pero al revés: es ${a * b}.`;
+            return `${r} es ${c.con[0]} × ${c.con[1]}, de la misma tabla.`;
+        }
+
+        /** Una huella de la confusión, para contar cuántas veces se repite. */
+        const huellaConfusion = (c) => (c.con ? `${c.tipo}:${Math.min(...c.con)}x${Math.max(...c.con)}` : c.tipo);
+
+        /** Cuántas veces este hecho falló con la misma confusión (contando la de ahora). */
+        function vecesConfusion(a, b, c) {
+            const huella = huellaConfusion(c);
+            return intentosDe(a, b).filter((i) => !i.ok && Number.isInteger(i.r))
+                .map((i) => confusionDe(a, b, i.r)).filter((x) => x && huellaConfusion(x) === huella).length;
+        }
+
+        /** Las confusiones más frecuentes de un jardín (para la vista de adultos). */
+        function confusionesFrecuentes(h) {
+            const cuenta = new Map();
+            for (const [k, lista] of Object.entries(h)) {
+                const [a, b] = k.split("x").map(Number);
+                for (const i of lista) {
+                    if (i.ok || !Number.isInteger(i.r)) continue;
+                    const c = confusionDe(a, b, i.r);
+                    if (!c) continue;
+                    const nombre = c.tipo === "suma" ? "sumar en lugar de multiplicar"
+                        : c.tipo === "cifras" ? "escribir las cifras al revés"
+                        : `${a} × ${b} con ${c.con[0]} × ${c.con[1]}`;
+                    cuenta.set(nombre, (cuenta.get(nombre) || 0) + 1);
+                }
+            }
+            return [...cuenta].filter(([, n]) => n >= 2).sort((x, y) => y[1] - x[1]).slice(0, 3);
+        }
+
         function puenteDesdeLoSabido(a, b, conResultado = false) {
             if (estadoHecho(a, b) === "florecida") return null;   // ya se la sabe
             const valida = (x, y) => x >= 1 && y >= 1 && x <= MULTIPLICADORES && y <= MULTIPLICADORES &&
@@ -6086,7 +6157,7 @@
             // «DIVIDIR Y PROBLEMAS CORTOS»).
             const multiplica = pregunta.tipo === "mult";
             const estadoAntes = estadoHecho(numA, numB);
-            if (multiplica) registrarIntento(numA, numB, acierto, { modo: modoEscrito ? "e" : "o", ms });
+            if (multiplica) registrarIntento(numA, numB, acierto, { modo: modoEscrito ? "e" : "o", ms, dada: Number(chosenVal) });
             else if (claseOtro(pregunta)) registrarOtro(claseOtro(pregunta), acierto);
             const florecio = multiplica && estadoAntes !== "florecida" && estadoHecho(numA, numB) === "florecida";
 
@@ -6207,9 +6278,20 @@
                 const explicacion = multiplica
                     ? `${pregunta.explicacion}.${puente ? ` Para recordarla: ${puente.texto.replace("Desde lo que ya sabes: ", "")}` : ""}`
                     : pregunta.explicacion;
+                // Si el fallo es una confusión típica, se dice cuál; si ya se
+                // repitió, la que se cruza sale enseguida y luego esta otra vez:
+                // las dos juntas, para que no se vuelvan a cruzar.
+                const confusion = multiplica ? confusionDe(numA, numB, Number(chosenVal)) : null;
+                let nombreConfusion = confusion ? ` ${textoConfusion(numA, numB, Number(chosenVal), confusion)}` : "";
+                if (confusion && confusion.con && vecesConfusion(numA, numB, confusion) >= 2) {
+                    programarRepaso(confusion.con[0], confusion.con[1], 1, 0, extraDeRepaso());
+                    nombreConfusion += ` Se te cruzan seguido: ahora te pregunto ${confusion.con[0]} × ${confusion.con[1]} y luego otra vez esta.`;
+                } else if (confusion && confusion.tipo === "suma" && vecesConfusion(numA, numB, confusion) >= 2) {
+                    nombreConfusion += " Recuerda: «×» es «veces», no «más».";
+                }
                 const mensajeError = modoEscrito
-                    ? `Escribiste ${chosenVal}. ${explicacion} Te la vuelvo a preguntar en un ratito 🌱`
-                    : `¡Casi! ${explicacion} Te la vuelvo a preguntar en un ratito 🌱`;
+                    ? `Escribiste ${chosenVal}.${nombreConfusion} ${explicacion} Te la vuelvo a preguntar en un ratito 🌱`
+                    : `¡Casi!${nombreConfusion} ${explicacion} Te la vuelvo a preguntar en un ratito 🌱`;
                 feedback.innerText = mensajeError;
                 feedback.classList.add("text-rose-800");
                 // La voz lee el hecho COMPLETO, no solo el consuelo: oír

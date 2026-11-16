@@ -245,6 +245,17 @@ mismo.
   puente se dice con el resultado («…: 49 + 7 = 56»), para unirla a lo que ya
   se sabe. Deducir lo nuevo de lo sabido es de lo que mejor funciona con las
   tablas difíciles.
+- **Las confusiones típicas se reconocen.** Un fallo casi nunca es al azar. Al
+  fallar, el juego dice cuál de estas cuatro confusiones fue, con cariño:
+  - la de al lado: «Diste 42, que es 6 × 7: la de al lado»;
+  - sumar en lugar de multiplicar: «Sumaste: 6 + 8 = 14»;
+  - las cifras al revés;
+  - otra de la misma tabla.
+
+  Si la misma confusión se repite, pregunta enseguida la que se cruza y
+  luego otra vez la original, para compararlas. Si lo que se repite es sumar,
+  recuerda que «×» es «veces». La vista para adultos dice qué se le cruza más,
+  solo si pasó más de una vez.
 - **Cada tabla tiene su truco** (el del 9 es «por 10 y una vez menos»), con los
   números de la pregunta, y la voz lo lee. El último paso lo da quien juega: la
   ayuda no da la respuesta.

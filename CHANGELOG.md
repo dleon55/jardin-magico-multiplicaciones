@@ -9,6 +9,16 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-16
 
+- **Confusiones típicas** (#85, tarea #62): al fallar, el juego reconoce si
+  fue la de al lado («Diste 42, que es 6 × 7»), una suma en lugar de una
+  multiplicación, las cifras al revés u otra de la misma tabla, y lo dice
+  con cariño. Si se repite, pregunta juntas las dos que se cruzan. La vista
+  para adultos muestra las más frecuentes. Ahora se guarda la respuesta
+  equivocada de cada fallo.
+
+  De paso, varias pruebas que miraban algo que desaparece solo (el globo de
+  Lumi, el bono, el «pof» o un aviso) ahora lo miran en el momento, porque
+  esperar a que desapareciera las hacía pasar siempre.
 - **Una sola moneda y la meta de hoy** (#84, tarea #60):
   - la estrella es solo la moneda que se gasta en el vivero, y se gana en todos
     los juegos, también en la Aventura;
