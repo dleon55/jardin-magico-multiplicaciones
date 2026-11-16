@@ -158,6 +158,6 @@ test.describe("con movimiento", () => {
     await nivel(page, 1, 0);
     expect(await page.locator("#arena .enemigo .cara > svg").first().evaluate((s) => parseFloat(getComputedStyle(s).animationDuration))).toBeLessThan(0.01);
     await page.evaluate(() => responderAventura(enemigoObjetivo().op.respuesta));
-    await expect(page.locator("#arena .pof")).toHaveCount(0);
+    expect(await page.locator("#arena .pof").count()).toBe(0);   // ahora mismo: el «pof» se va solo
   });
 });
