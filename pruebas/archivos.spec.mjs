@@ -5,7 +5,7 @@ import { test, expect } from "@playwright/test";
 import { readFile, stat } from "node:fs/promises";
 
 const leer = (ruta) => readFile(new URL(`../${ruta}`, import.meta.url), "utf8");
-const ARCHIVOS_JS = ["js/datos.js", "js/arte.js", "js/sonido.js"];
+const ARCHIVOS_JS = ["js/datos.js", "js/arte.js", "js/sonido.js", "js/multiplos.js"];
 
 test("todo lo que index.html carga del sitio está en la lista del service worker, y existe", async () => {
   const html = await leer("index.html");
@@ -18,10 +18,10 @@ test("todo lo que index.html carga del sitio está en la lista del service worke
   for (const a of [...ARCHIVOS_JS, "juego.css"]) expect(lista).toContain(a);
 });
 
-test("los scripts cargan antes del principal y en orden: datos, arte, sonido", async ({ page }) => {
+test("los scripts cargan antes del principal y en orden: datos, arte, sonido, temas", async ({ page }) => {
   await page.goto("./");
   const orden = await page.evaluate(() => [...document.scripts].map((s) => s.getAttribute("src") || "principal"));
-  expect(orden.slice(-4)).toEqual([...ARCHIVOS_JS, "principal"]);
+  expect(orden.slice(-ARCHIVOS_JS.length - 1)).toEqual([...ARCHIVOS_JS, "principal"]);
   // Y su contenido está disponible para el principal.
   expect(await page.evaluate(() => [typeof MUNDOS, typeof svgHeroe, typeof svgPaisajeJardin, typeof svgPlanta, typeof sonar, typeof trucoPara])).toEqual(["object", "function", "function", "function", "function", "function"]);
 });

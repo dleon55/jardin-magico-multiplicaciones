@@ -412,6 +412,24 @@ mismo.
     Con pocas tablas sabidas, el divisor va del 2 al 5.
   - Lo fallado vuelve. No cuenta para el mapa ni el jardín, pero queda en la
     vista para adultos y en el informe.
+- **🔢 Múltiplos y divisores** (Fase 3, #71). Diez preguntas por partida, de
+  tres clases: «¿Cuál es múltiplo de 6?» (4), «¿Cuál es divisor de 24?» (3)
+  y «¿Qué número está en la tabla del 4 y en la del 6?» (3, la respuesta es
+  el más pequeño común).
+  - **Las falsas son errores típicos, cada uno explicado al fallar:**
+    - un divisor por múltiplo («2 es divisor de 6, no múltiplo»);
+    - un número a uno de la tabla;
+    - uno de otra tabla («27 está en la tabla del 3, pero no en la del 6»);
+    - un múltiplo por divisor («48 es múltiplo de 24, no divisor»);
+    - los que no dan exacto;
+    - uno de una sola tabla;
+    - la suma.
+  - **La ayuda** muestra las tablas como filas de números, sin marcar la
+    respuesta: la tabla pedida, las dos tablas, o una fila por opción
+    contando hasta llegar al número.
+  - Siempre se elige. Lo fallado vuelve, y con pocas tablas sabidas los
+    números van del 2 al 5.
+  - Queda en la vista para adultos y en el informe. Vive en `js/multiplos.js`.
 - **👫 En equipo** (Fase 3, #70, sin servidor). Dos o tres niños se turnan
   en el mismo aparato.
   - Se marcan quiénes juegan, o se añade a quien falta: si ya tiene jardín
@@ -640,6 +658,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/datos.js` | Mundos y personajes, héroes y mundos de la Aventura, trucos por tabla, colores del menú |
 | `js/arte.js` | Paisajes, Lumi, plantas y el arte de la Aventura, en SVG |
 | `js/sonido.js` | Música de fondo, audio sintético y sonidos por capas |
+| `js/multiplos.js` | El tema de múltiplos y divisores |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -714,7 +733,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js` | Datos, arte y sonido (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |
