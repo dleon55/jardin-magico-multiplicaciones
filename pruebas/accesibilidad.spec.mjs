@@ -150,6 +150,15 @@ test("múltiplos y divisores, con la ayuda abierta", async ({ page }) => {
   await auditar(page, "múltiplos y divisores");
 });
 
+test("perímetro y área, con la ayuda abierta", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("#btn-area");
+  await page.evaluate(() => { cancelarEspera(); colaRepaso = []; bolsa = [{ a: 7, b: 4, reto: { clase: "perimetro", a: 7, b: 4, lugar: "un huerto" } }]; nextQuestion(); });
+  await page.click("#btn-help");
+  await auditar(page, "perímetro y área");
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");

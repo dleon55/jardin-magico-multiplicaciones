@@ -9,6 +9,13 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-17
 
+- **Perímetro y área** (#98, tarea #71, tercer tema nuevo): área, perímetro
+  y un lado desde el área, con huertos y patios en metros.
+  - Las falsas son los errores típicos (área por perímetro, sumar lados,
+    olvidar uno, restar en lugar de dividir), cada uno explicado al fallar.
+  - La ayuda dibuja el rectángulo en cuadritos, el mismo de la ayuda de las
+    tablas.
+  - Vive en `js/area.js`.
 - **Múltiplos y divisores** (#97, tarea #71, segundo tema nuevo): «¿Cuál
   es múltiplo de 6?», «¿Cuál es divisor de 24?» y «¿Qué número está en la
   tabla del 4 y en la del 6?».

@@ -430,6 +430,26 @@ mismo.
   - Siempre se elige. Lo fallado vuelve, y con pocas tablas sabidas los
     números van del 2 al 5.
   - Queda en la vista para adultos y en el informe. Vive en `js/multiplos.js`.
+- **📐 Perímetro y área** (Fase 3, #71). Diez preguntas por partida con
+  huertos, corrales y patios, en metros:
+  - 4 de **área:** «Un huerto mide 7 m de largo y 4 m de ancho. ¿Cuál es su
+    área?»;
+  - 3 de **perímetro:** «¿Cuánto mide su orilla?»;
+  - 3 de **un lado desde el área:** «Tiene 28 m² y un lado de 7 m. ¿Cuánto
+    mide el otro?».
+
+  Las falsas son los errores típicos, cada uno explicado al fallar:
+  - confundir área y perímetro;
+  - sumar los lados en lugar de multiplicar;
+  - sumar solo dos lados, u olvidar uno;
+  - contar una fila de más;
+  - restar en lugar de dividir.
+
+  **La ayuda** dibuja el rectángulo en cuadritos de un metro, el mismo
+  rectángulo de la ayuda de las tablas, con la medida de cada lado. En el
+  perímetro, la orilla va en naranja; en «un lado», el que falta lleva «?».
+  Se evitan los rectángulos en que área y perímetro dan lo mismo (4 × 4 y
+  3 × 6), para que la confusión se note. Vive en `js/area.js`.
 - **👫 En equipo** (Fase 3, #70, sin servidor). Dos o tres niños se turnan
   en el mismo aparato.
   - Se marcan quiénes juegan, o se añade a quien falta: si ya tiene jardín
@@ -659,6 +679,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/arte.js` | Paisajes, Lumi, plantas y el arte de la Aventura, en SVG |
 | `js/sonido.js` | Música de fondo, audio sintético y sonidos por capas |
 | `js/multiplos.js` | El tema de múltiplos y divisores |
+| `js/area.js` | El tema de perímetro y área |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -733,7 +754,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |
