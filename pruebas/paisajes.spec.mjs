@@ -68,9 +68,10 @@ test("cada arena de la Aventura tiene su paisaje, sin emojis, detrás del héroe
 test("los paisajes pesan poco: su código ocupa menos de 30 KB", async () => {
   // Antes se medía la página entera contra un tope fijo, y cualquier cambio
   // ajeno a los paisajes la hacía fallar. Ahora se mide solo su sección.
-  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  // Desde que el arte vive en js/arte.js, la sección va hasta la de Lumi.
+  const html = await readFile(new URL("../js/arte.js", import.meta.url), "utf8");
   const desde = html.indexOf("// --- PAISAJES");
-  const hasta = html.indexOf("// --- PRESENTACIÓN: fondo");
+  const hasta = html.indexOf("// --- LUMI, LA MASCOTA");
   expect(desde).toBeGreaterThan(0);
   expect(hasta).toBeGreaterThan(desde);
   expect(Buffer.byteLength(html.slice(desde, hasta))).toBeLessThan(30000);

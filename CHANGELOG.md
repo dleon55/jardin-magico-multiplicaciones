@@ -7,6 +7,20 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-17
+
+- **El juego, en varios archivos** (#96): `index.html` pasa de 569 a 445 KB.
+  - Los estilos propios van a `juego.css`.
+  - El arte (paisajes, Lumi, plantas y Aventura) va a `js/arte.js`.
+  - El sonido va a `js/sonido.js`.
+  - Los datos (mundos, personajes, héroes y mundos de la Aventura, trucos y
+    colores del menú) van a `js/datos.js`.
+  - Todo se guarda para jugar sin internet. Una prueba vigila la lista, el
+    orden de carga, que nada se defina dos veces y que los archivos aparte
+    solo declaren.
+  - Tailwind lee también `js/`.
+  - El juego no cambia.
+
 ## 2026-11-16
 
 - **En equipo** (#94, tarea #70): dos o tres niños se turnan en el mismo
