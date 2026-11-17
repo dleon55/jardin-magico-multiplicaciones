@@ -141,6 +141,15 @@ test("en equipo: la elección de jugadores y la partida con la banda del turno",
   await auditar(page, "la partida en equipo");
 });
 
+test("múltiplos y divisores, con la ayuda abierta", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("#btn-multiplos");
+  await page.evaluate(() => { cancelarEspera(); colaRepaso = []; bolsa = [{ a: 4, b: 1, reto: { clase: "divisor", d: 4, q: 6 } }]; nextQuestion(); });
+  await page.click("#btn-help");
+  await auditar(page, "múltiplos y divisores");
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");

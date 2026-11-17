@@ -9,6 +9,14 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-17
 
+- **Múltiplos y divisores** (#97, tarea #71, segundo tema nuevo): «¿Cuál
+  es múltiplo de 6?», «¿Cuál es divisor de 24?» y «¿Qué número está en la
+  tabla del 4 y en la del 6?».
+  - Las falsas son errores típicos (divisor por múltiplo, a uno de la
+    tabla, otra tabla, la suma…), cada uno explicado al fallar.
+  - La ayuda muestra las tablas como filas de números.
+  - Queda en la vista para adultos y en el informe.
+  - Es el primer tema en su propio archivo, `js/multiplos.js`.
 - **El juego, en varios archivos** (#96): `index.html` pasa de 569 a 445 KB.
   - Los estilos propios van a `juego.css`.
   - El arte (paisajes, Lumi, plantas y Aventura) va a `js/arte.js`.

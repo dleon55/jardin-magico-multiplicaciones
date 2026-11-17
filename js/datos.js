@@ -119,7 +119,7 @@ function trucoPara(a, b) {
  * la respuesta.
  */
 function pistaPara() {
-    if (["logica", "fraccion", "residuo"].includes(pregunta?.tipo)) return { texto: pregunta.pista, voz: textoParaVoz(pregunta.pista) };
+    if (["logica", "fraccion", "residuo", "multiplos"].includes(pregunta?.tipo)) return { texto: pregunta.pista, voz: textoParaVoz(pregunta.pista) };
     if (!pregunta || pregunta.tipo === "mult") {
         const truco = trucoPara(numA, numB);
         const puente = puenteDesdeLoSabido(numA, numB);
