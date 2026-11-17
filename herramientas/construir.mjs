@@ -1,6 +1,6 @@
 // Construye lo que el sitio sirve y que no se escribe a mano:
 //
-//   1. estilos.css   Tailwind compilado a partir de las clases de index.html.
+//   1. estilos.css   Tailwind compilado a partir de las clases de index.html y js/.
 //   2. sw.js         su VERSION, sellada con el hash del contenido.
 //
 // Hay que correrlo tras cambiar index.html, y el CI comprueba que se hizo:
@@ -26,7 +26,7 @@ const ruta = (archivo) => join(RAIZ, archivo);
 // 1. Tailwind
 execFileSync(
   process.platform === "win32" ? "npx.cmd" : "npx",
-  ["tailwindcss", "-i", "estilos/entrada.css", "-o", "estilos.css", "--content", "index.html", "--minify"],
+  ["tailwindcss", "-i", "estilos/entrada.css", "-o", "estilos.css", "--content", "index.html,js/*.js", "--minify"],
   { cwd: RAIZ, stdio: ["ignore", "ignore", "inherit"] }
 );
 console.log("estilos.css compilado");

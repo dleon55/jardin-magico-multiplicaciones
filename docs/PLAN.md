@@ -3,7 +3,7 @@
 El Jardín Mágico de las Multiplicaciones: de un buen juego de tablas a uno de
 calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
-**Actualizado: 16 de noviembre de 2026.**
+**Actualizado: 17 de noviembre de 2026.**
 - El estado del día a día está en el
   [issue de estado #20](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/20).
 - El detalle de cada cambio, con su PR, está en el [CHANGELOG](../CHANGELOG.md).
@@ -17,10 +17,10 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | Lo que no necesita servidor, avanzado | Primer tema nuevo y turnos locales hechos; guía de pruebas y opciones de plataforma escritas. Lo demás espera la decisión del titular (#66) |
 
 **Cifras al día:**
-- 23 PRs fusionados desde que empezó el plan (#73 a #95), cada uno verificado en el sitio publicado.
+- 24 PRs fusionados desde que empezó el plan (#73 a #96), cada uno verificado en el sitio publicado.
 - La compuerta de calidad (`npm run comprobar`) tiene **1057 pruebas en verde**, en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
-- `index.html` pesa 569 KB, sin dependencias externas, y funciona sin internet. **Se acerca a la alarma de 600 KB**: ver pendientes.
+- El juego, en varios archivos desde #96: `index.html` pesa 445 KB (antes 569), más `js/arte.js`, `js/sonido.js`, `js/datos.js` y `juego.css`. Sin dependencias externas, y funciona sin internet.
 
 ## Objetivos cumplidos
 
@@ -75,11 +75,10 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
 | # | Tarea | Issue | Depende de | Notas |
 |---|-------|-------|------------|-------|
-| 1 | Separar el arte y los datos de `index.html` en archivos | (nuevo) | — | La página pesa 569 KB y la alarma de la compuerta salta a 600 KB. El service worker ya guarda archivos aparte, así que sigue sin internet |
-| 2 | F3.5 Más temas: múltiplos y divisores; perímetro y área (enlaza con el rectángulo); decimales y dinero; porcentajes sencillos | [#71](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/71) | 1 | Un PR por tema, con el mismo método que la división con residuo |
-| 3 | Salón por archivos (opción B de la plataforma) | #66 | **Decisión del titular** | Solo si elige A + B: la docente junta los archivos de su salón en su aparato |
-| 4 | F1.11 Guion de voz | [#51](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/51) | Sí del titular | 40 a 60 frases con nombre de archivo |
-| 5 | Convertir en issues los hallazgos de las pruebas con niños | #72 | Las sesiones del titular | Con la plantilla de la guía |
+| 1 | F3.5 Más temas: múltiplos y divisores; perímetro y área (enlaza con el rectángulo); decimales y dinero; porcentajes sencillos | [#71](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/71) | — | Un PR por tema, con el mismo método que la división con residuo |
+| 2 | Salón por archivos (opción B de la plataforma) | #66 | **Decisión del titular** | Solo si elige A + B: la docente junta los archivos de su salón en su aparato |
+| 3 | F1.11 Guion de voz | [#51](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/51) | Sí del titular | 40 a 60 frases con nombre de archivo |
+| 4 | Convertir en issues los hallazgos de las pruebas con niños | #72 | Las sesiones del titular | Con la plantilla de la guía |
 
 ### Del titular (no los puede hacer Claude)
 - [ ] **Decidir la plataforma** (#66): A, B, C o D, con el documento delante. Bloquea cuentas, salón en vivo, retos en línea, métricas y privacidad.
@@ -110,7 +109,7 @@ gantt
     section Hito 3 sin servidor
     Opciones de plataforma y guía de pruebas       :done,    h3a, 2026-11-16, 1d
     División con residuo y turnos                  :done,    h3b, 2026-11-16, 1d
-    Separar arte y datos en archivos               :         h3s, 2026-11-17, 1d
+    Separar arte y datos en archivos               :done,    h3s, 2026-11-17, 1d
     Más temas (múltiplos, área, decimales, %)      :         h3t, after h3s, 6d
     Pruebas con niños (titular)                    :         h3n, 2026-11-17, 14d
     section Hito 3 con servidor (si se decide)
@@ -122,7 +121,7 @@ gantt
 
 | Semana | Claude | Titular |
 |--------|--------|---------|
-| 16 al 22 de noviembre | Separar arte y datos; múltiplos y divisores; perímetro y área | Probar lo nuevo en el teléfono; empezar a leer el documento de plataforma |
+| 16 al 22 de noviembre | ~~Separar arte y datos~~ (hecho, #96); múltiplos y divisores; perímetro y área | Probar lo nuevo en el teléfono; empezar a leer el documento de plataforma |
 | 23 al 29 de noviembre | Decimales y dinero; porcentajes; ajustes | **Decidir la plataforma**; decidir la voz; empezar pruebas con niños |
 | 30 de noviembre al 13 de diciembre | Lo que salga de las pruebas con niños; salón por archivos si se elige B | Terminar las pruebas con niños |
 | Desde el 14 de diciembre | Si se elige C: cuentas, salón en vivo, privacidad y métricas | Revisión legal del aviso de privacidad |
@@ -132,7 +131,7 @@ gantt
 ```mermaid
 graph LR
     H2[Hito 2 ✅] --> F35[F3.5 Más temas]
-    SEP[Separar arte y datos] --> F35
+    SEP[Separar arte y datos ✅] --> F35
     T1{{Titular: plataforma}} --> F31[F3.1 Decisión]
     DOC[DECISION-PLATAFORMA.md ✅] --> F31
     F31 --> B[Salón por archivos]
@@ -156,7 +155,7 @@ graph LR
 | Romper el progreso guardado de los niños | Baja | Alto | Migraciones probadas en cada cambio de datos (misiones → meta, héroe guardado, «vistos») | Mitigado |
 | Pruebas que no prueban nada (pasan aunque el código esté roto) | Media | Alto | Comprobación de mutaciones en cada PR. Ya destapó aserciones negativas que esperaban algo que desaparece solo; se corrigieron | Mitigado |
 | Pruebas que dependen de la fecha real o del azar | Media | Medio | Fechas relativas a hoy; datos fijos donde importa. Una prueba fallaba solo cuando salía 3 × 1 y se corrigió (#91) | Mitigado |
-| Un solo archivo grande es difícil de mantener y pesa en teléfonos modestos | **Alta** | Medio | Una prueba de la compuerta avisa a los 600 KB. Hoy pesa 569 KB: separar el arte y los datos en archivos es el siguiente paso (el service worker los guarda para usar sin internet) | **Próximo a actuar** |
+| Un solo archivo grande es difícil de mantener y pesa en teléfonos modestos | Media | Medio | Separado en #96: arte, sonido, datos y estilos en archivos aparte (index.html, 445 KB). Pruebas que vigilan el tamaño de cada archivo, la lista para usar sin internet y el orden de carga | Mitigado |
 | Sin presupuesto de GitHub Actions: la compuerta depende de correrla en local | Alta | Medio | `npm run comprobar` antes de cada fusión, sin excepción; el resultado se escribe en cada PR | Mitigado |
 | Arte desigual o que se parezca a otro juego | Baja | Medio | Guía de estilo con reglas medibles; todo dibujado desde cero | Mitigado |
 | Datos de menores (LFPDPPP) si se añade servidor | Media | Alto | Hoy no sale nada del dispositivo. Con servidor: datos mínimos, alias, consentimiento y derechos ARCO (F3.7), revisión legal del titular | Abierto |

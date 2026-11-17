@@ -18,7 +18,7 @@ números van sobre papel liso.
 
 ## Colores
 
-Están definidos como variables CSS en `:root` (en `index.html`). Úsalas en
+Están definidos como variables CSS en `:root` (en `juego.css`). Úsalas en
 lugar de escribir colores sueltos.
 
 ### Base de la interfaz

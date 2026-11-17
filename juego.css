@@ -1,0 +1,671 @@
+/* Estilos propios del juego (los de Tailwind están en estilos.css).
+   Separados de index.html; se cargan después de estilos.css, como antes. */
+
+/* GUÍA DE ESTILO (docs/ESTILO.md): los colores del juego y del arte.
+   Lo nuevo usa estas variables en lugar de colores sueltos. */
+:root {
+    --hoja: #047857; --hoja-clara: #d1fae5;
+    --cielo: #0369a1; --cielo-claro: #e0f2fe;
+    --sol: #facc15; --sol-oscuro: #a16207;
+    --flor: #be185d; --tierra: #78350f;
+    --tinta: #1f2937; --tinta-suave: #4b5563; --papel: #fffdf7;
+    /* Arte: contorno cálido (nunca negro puro), brillo, sombra y mejillas. */
+    --contorno: #2e2a3b;
+    --brillo: rgba(255, 255, 255, 0.55);
+    --sombra-arte: rgba(46, 42, 59, 0.18);
+    --mejilla: rgba(251, 113, 133, 0.55);
+}
+
+/* ICONOS DE LA INTERFAZ: del tamaño de la letra, alineados con el texto. */
+.icono { display: inline-block; width: 1.25em; height: 1.25em; vertical-align: -0.25em; flex: none; overflow: visible; }
+.modo-aventura .icono { width: 1.5em; height: 1.5em; }
+/* En las teclas, el icono no pasa de la altura de la letra: si no, la
+   fila de abajo crece y el nivel deja de caber en el teléfono. */
+#tecla-borrar .icono, #aventura-borrar .icono { width: 1.4em; height: 1em; vertical-align: -0.12em; }
+#nivel-corazones .icono { width: 1.35rem; height: 1.35rem; vertical-align: -0.2rem; }
+
+/* LUMI, la mascota (docs/ESTILO.md). Un solo dibujo con las piezas de
+   las seis caras; data-expresion decide cuáles se ven. Así cambiar de
+   cara es cambiar un atributo, y cabe una animación entre una y otra. */
+.lumi-caja { display: inline-flex; flex: none; }
+.lumi-caja > svg { width: 100%; height: 100%; overflow: visible; }
+.lumi [data-e] { display: none; }
+.lumi[data-expresion="contenta"] [data-e~="contenta"],
+.lumi[data-expresion="pensando"] [data-e~="pensando"],
+.lumi[data-expresion="animando"] [data-e~="animando"],
+.lumi[data-expresion="celebrando"] [data-e~="celebrando"],
+.lumi[data-expresion="sorprendida"] [data-e~="sorprendida"],
+.lumi[data-expresion="durmiendo"] [data-e~="durmiendo"] { display: inline; }
+.lumi .chispa { transform-origin: 51px 9px; transition: transform 0.3s ease-out; }
+.lumi[data-expresion="celebrando"] .chispa, .lumi[data-expresion="sorprendida"] .chispa { transform: scale(1.35); }
+.lumi[data-expresion="durmiendo"] .chispa { opacity: 0.45; }
+/* Respira y parpadea en reposo; da un saltito al reaccionar. «Menos
+   movimiento» lo deja quieto (ver más abajo): solo cambia la cara. */
+.lumi { transform-origin: 50% 95%; animation: lumi-respira 3.6s ease-in-out infinite; }
+.lumi.salta { animation: lumi-salta 0.5s ease-out; }
+.lumi .parpadea { transform-box: fill-box; transform-origin: center; animation: lumi-parpadea 5s infinite; }
+@keyframes lumi-respira { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.03, 0.97); } }
+@keyframes lumi-salta { 0% { transform: translateY(0); } 40% { transform: translateY(-14%) scale(1.04); } 70% { transform: translateY(0) scale(1.04, 0.95); } 100% { transform: none; } }
+@keyframes lumi-parpadea { 0%, 95%, 100% { transform: scaleY(1); } 97.5% { transform: scaleY(0.1); } }
+/* Lo que dice Lumi en una racha: un globo bajo ella, encima de todo, que
+   no empuja nada. Es aria-hidden: el lector de pantalla ya lo oye en
+   #game-feedback, una sola vez. */
+.globo-lumi {
+    position: absolute; top: calc(100% + 0.35rem); left: 50%; transform: translateX(-50%);
+    z-index: 30; white-space: nowrap; pointer-events: none;
+    background: var(--papel); color: var(--tierra); border: 3px solid var(--sol);
+    border-radius: 1rem; padding: 0.15rem 0.7rem; font-weight: 800; font-size: 0.95rem;
+    box-shadow: 0 3px 0 var(--sombra-arte);
+}
+.globo-lumi::before {
+    content: ""; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    border: 0.45rem solid transparent; border-bottom-color: var(--sol);
+}
+.globo-lumi.aparece { animation: globo-aparece 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes globo-aparece { from { transform: translateX(-50%) scale(0.4); opacity: 0; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
+
+/* CELEBRACIONES (docs/ESTILO.md, «Movimiento»): todas de 600 ms o menos
+   y ninguna retrasa la siguiente pregunta. «Menos movimiento» las apaga
+   (ver al final), y el mensaje sigue en el texto. */
+.celebra-pop { animation: celebra-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes celebra-pop { 0% { transform: scale(1); } 45% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.celebra-brinca { animation: celebra-brinca 0.4s ease-out; }
+@keyframes celebra-brinca { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-25%) scale(1.15); } 100% { transform: none; } }
+.bono-flota {
+    position: absolute; right: 0.5rem; top: 100%; z-index: 30; pointer-events: none;
+    font-weight: 800; color: var(--sol-oscuro); background: var(--papel);
+    border: 2px solid var(--sol); border-radius: 9999px; padding: 0 0.5rem;
+    animation: bono-flota 0.6s ease-out forwards;
+}
+@keyframes bono-flota { 0% { transform: translateY(0.6rem) scale(0.6); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+/* Una flor que florece de verdad (se sabe de memoria) crece más y brilla. */
+.flor-florecida { filter: drop-shadow(0 0 6px #fde047); font-size: 2.6rem; z-index: 5; }
+/* Las estrellas del diploma aparecen una tras otra. */
+.estrella-victoria { display: inline-block; }
+.estrellas-victoria.aparecen .estrella-victoria { animation: estrella-aparece 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.estrellas-victoria.aparecen .estrella-victoria:nth-child(2) { animation-delay: 0.15s; }
+.estrellas-victoria.aparecen .estrella-victoria:nth-child(3) { animation-delay: 0.3s; }
+@keyframes estrella-aparece { from { transform: scale(0) rotate(-90deg); opacity: 0; } to { transform: none; opacity: 1; } }
+/* Confeti propio: hojas, estrellas y semillas con los colores de la guía. */
+.confeti { position: absolute; pointer-events: none; width: 0.9rem; height: 0.9rem; animation: fall linear forwards; z-index: 50; }
+.confeti-hoja { border-radius: 0 100% 0 100%; }
+.confeti-estrella { clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); width: 1.1rem; height: 1.1rem; }
+.confeti-semilla { border-radius: 50%; width: 0.7rem; height: 0.9rem; }
+
+/* La bienvenida guiada cabe sin desplazarse: en el teléfono, Lumi y el
+   título se achican; acostado, dos columnas (Lumi y lo que dice a la
+   izquierda; lo que se elige y el botón a la derecha). */
+@media (max-width: 640px) {
+    #screen-guia { padding-top: 0; }
+    #screen-guia > * + * { margin-top: 0.6rem !important; }
+    #screen-guia .lumi-bienvenida { width: 4.5rem; height: 4.5rem; }
+    #guia-titulo { font-size: 1.6rem; }
+    #guia-texto { font-size: 1rem; }
+    #screen-guia .ficha span.cara { padding: 0.25rem 0.2rem; }
+    #screen-guia [data-paso="practica"] > * + * { margin-top: 0.5rem; }
+    #screen-guia .puntos-practica { grid-template-columns: repeat(3, 1.8rem); gap: 0.4rem; padding: 0.45rem; }
+    #screen-guia .puntos-practica span { width: 1.8rem; height: 1.8rem; }
+    #guia-opciones button { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+    #screen-guia {
+        display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+        column-gap: 1.25rem; row-gap: 0.4rem; align-items: center; padding: 0;
+    }
+    #screen-guia.hidden { display: none; }
+    #screen-guia > * { margin: 0 !important; }
+    #screen-guia > :first-child { grid-column: 1 / 3; grid-row: 1; }
+    #screen-guia #lumi-guia { grid-column: 1; grid-row: 2; justify-self: center; width: 4rem; height: 4rem; }
+    #guia-titulo { grid-column: 1; grid-row: 3; font-size: 1.5rem; }
+    #guia-texto { grid-column: 1; grid-row: 4; font-size: 1rem; }
+    #guia-contenido { grid-column: 2; grid-row: 2 / 4; width: 100%; }
+    #guia-seguir { grid-column: 2; grid-row: 4; }
+    #screen-guia .ficha span.cara { padding: 0.15rem; }
+    #screen-guia .ficha .text-3xl { font-size: 1.5rem; }
+    #screen-guia .puntos-practica { grid-template-columns: repeat(3, 1.6rem); gap: 0.35rem; padding: 0.4rem; }
+    #screen-guia .puntos-practica span { width: 1.6rem; height: 1.6rem; }
+    #guia-opciones button { padding-top: 0.35rem; padding-bottom: 0.35rem; font-size: 1.5rem; }
+    /* La práctica, acostada: los puntos a un lado y las opciones al otro. */
+    #screen-guia [data-paso="practica"]:not(.hidden) { display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 0.75rem; align-items: center; }
+    #screen-guia [data-paso="practica"] > * { margin: 0 !important; }
+    #guia-respuesta { grid-column: 1 / 3; min-height: 1.5rem; font-size: 1rem; }
+}
+
+/* El diagnóstico cabe en el teléfono: Lumi y el título más chicos;
+   acostado, Lumi se esconde y las opciones van en una fila. */
+@media (max-width: 640px) {
+    #screen-diagnostico { padding-top: 0; }
+    #screen-diagnostico > * + * { margin-top: 0.5rem !important; }
+    #screen-diagnostico .lumi-seguir { width: 2.75rem; height: 2.75rem; }
+    #diag-titulo { font-size: 1.5rem; }
+    #diag-pregunta > p { font-size: 0.9rem; }
+    #diag-op { font-size: 2.5rem; }
+    #diag-opciones button { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+    #screen-diagnostico > * + * { margin-top: 0.4rem !important; }
+    #screen-diagnostico .lumi-seguir, #diag-pregunta > p { display: none; }
+    #diag-titulo { font-size: 1.4rem; }
+    #diag-op { font-size: 2.2rem; }
+    #diag-opciones { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    #diag-opciones button { padding-top: 0.35rem; padding-bottom: 0.35rem; font-size: 1.5rem; }
+}
+
+/* La pregunta de práctica de la bienvenida guiada: 2 filas de 3. */
+.puntos-practica { display: grid; grid-template-columns: repeat(3, 2.2rem); gap: 0.5rem; width: max-content; padding: 0.6rem; background: var(--papel); border: 3px solid var(--hoja-clara); border-radius: 1rem; }
+.puntos-practica span { width: 2.2rem; height: 2.2rem; border-radius: 50%; background: #f4c27a; border: 3px solid var(--contorno); }
+
+.lumi-seguir { width: 3.5rem; height: 3.5rem; }
+.icono-seguir { width: 2rem; height: 2rem; }
+
+.lumi-bienvenida { width: 7rem; height: 7rem; }
+.lumi-victoria { width: 8rem; height: 8rem; }
+.lumi-partida { width: 2.75rem; height: 2.75rem; }
+@media (min-width: 768px) {
+    .lumi-bienvenida { width: 9rem; height: 9rem; }
+    .lumi-partida { width: 3.25rem; height: 3.25rem; }
+}
+
+/* Casillas del mapa de tablas: color Y símbolo (🌸 🌷 🌱), no solo color. */
+.celda-mapa {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.6rem; height: 1.6rem; border-radius: 0.4rem;
+    font-weight: 700; font-size: 0.85rem; text-align: center;
+}
+td.celda-mapa { display: table-cell; vertical-align: middle; }
+.celda-florecida { background: #bbf7d0; color: #14532d; }
+.celda-casi { background: #fce7f3; color: #831843; }
+.celda-practica { background: #fef3c7; color: #78350f; }
+.celda-nuevo { background: #f3f4f6; border: 1px solid #d1d5db; }
+.celda-marchita { background: #e7e5e4; color: #44403c; }
+
+/* Plantas del jardín: el emoji dice el estado; la etiqueta, cuál es. */
+.planta {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    width: 3rem; min-height: 3.4rem; border-radius: 0.75rem; padding: 0.15rem 0;
+    background: #ecfccb;
+}
+.planta .dibujo svg { display: block; width: 2.7rem; height: 2.5rem; overflow: visible; transform-origin: 50% 90%; }
+.leyenda-planta { display: inline-block; vertical-align: middle; }
+.leyenda-planta svg { display: block; width: 1.9rem; height: 1.8rem; overflow: visible; }
+/* Estatus de cada tabla: una forma por estatus, no solo un color. */
+.estatus-dibujo { display: inline-block; vertical-align: middle; flex: none; }
+.estatus-dibujo svg { display: block; width: 1.75rem; height: 1.75rem; }
+.mapa-fila .estatus-dibujo svg { width: 1.1rem; height: 1.1rem; }
+.victoria-estatus .estatus-dibujo svg { width: 3rem; height: 3rem; }
+
+/* EL CAMINO (issue #46): tramos en zigzag sobre una línea punteada. */
+#camino-tramos { position: relative; max-width: 26rem; margin: 0 auto; padding: 0.25rem 0; }
+#camino-tramos::before { content: ""; position: absolute; left: 50%; top: 1rem; bottom: 1rem; border-left: 4px dashed #86efac; transform: translateX(-2px); }
+.tramo { position: relative; display: flex; width: 100%; margin: 0.35rem 0; }
+.tramo:nth-child(even) { justify-content: flex-end; }
+.tramo > .tramo-caja { width: calc(50% + 1.5rem); display: flex; align-items: center; gap: 0.5rem; background: #fff; border: 2px solid #bbf7d0; border-radius: 1rem; padding: 0.4rem 0.6rem; text-align: left; }
+.tramo:nth-child(odd) > .tramo-caja { flex-direction: row-reverse; text-align: right; }
+.tramo-hecho > .tramo-caja { background: #f0fdf4; border-color: #4ade80; }
+.tramo-cerrado > .tramo-caja { background: #f3f4f6; border-color: #d1d5db; color: #374151; }
+.tramo-actual > .tramo-caja { border-color: #0f766e; box-shadow: 0 0 0 3px #99f6e4; }
+.tramo-dibujo { flex: none; width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; }
+.tramo-dibujo svg { width: 2.5rem; height: 2.5rem; }
+.tramo-dibujo .icono { width: 1.6rem; height: 1.6rem; }
+button.tramo-caja { min-height: 2.75rem; cursor: pointer; }
+button.tramo-caja:hover { filter: brightness(0.97); }
+
+/* Opciones con texto («3, sobran 2»): no caben con la letra de un número. */
+#opciones.opciones-largas .btn-option { font-size: 1.2rem; line-height: 1.2; padding: 0.75rem 0.5rem; }
+
+/* INFORME PARA IMPRIMIR (issue #65): una hoja carta. En pantalla no se
+   ve; al imprimir desde «Para las personas adultas» es lo único que
+   sale. Imprimir cualquier otra pantalla (Ctrl+P) sigue igual. */
+#informe { display: none; }
+.informe { color: #111827; font-size: 10.5pt; line-height: 1.35; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.informe h1 { font-size: 16pt; font-weight: 800; color: #14532d; margin: 0; }
+.informe h2 { font-size: 11.5pt; font-weight: 800; color: #14532d; margin: 0.55rem 0 0.15rem; border-bottom: 1.5px solid #bbf7d0; padding-bottom: 0.1rem; }
+.informe p { margin: 0.15rem 0; }
+.informe .informe-quien { font-size: 11pt; color: #374151; }
+.informe table { border-collapse: collapse; width: 100%; margin-top: 0.2rem; }
+.informe th, .informe td { border: 1px solid #d1d5db; padding: 0.12rem 0.4rem; text-align: left; vertical-align: middle; }
+.informe th { background: #f0fdf4; font-weight: 700; }
+.informe .estatus-dibujo svg { width: 1.1rem; height: 1.1rem; display: inline-block; vertical-align: middle; margin-right: 0.25rem; }
+.informe .informe-dias { display: flex; gap: 3px; margin-top: 0.2rem; }
+.informe .informe-dias span { width: 1.15rem; height: 1.15rem; border: 1px solid #9ca3af; border-radius: 3px; font-size: 8pt; display: flex; align-items: center; justify-content: center; }
+.informe .informe-dias .si { background: #16a34a; border-color: #16a34a; color: #fff; }
+.informe .informe-sugerencia { background: #fefce8; border: 1.5px solid #fde047; border-radius: 8px; padding: 0.35rem 0.6rem; margin-top: 0.5rem; }
+.informe footer { margin-top: 0.6rem; font-size: 8.5pt; color: #4b5563; }
+@media print {
+    @page { size: letter; margin: 1.3cm 1.5cm; }
+    body.imprimiendo { display: block !important; min-height: 0 !important; padding: 0 !important; background: #fff !important; }
+    body.imprimiendo > *:not(#informe) { display: none !important; }
+    body.imprimiendo #informe { display: block; }
+}
+.planta-partida svg { display: block; width: 2.6rem; height: 2.4rem; overflow: visible; }
+.flor-florecida .planta-partida svg { width: 3.2rem; height: 3rem; }
+/* Lo que cambió desde la última visita: crece, se marchita o revive al regarlo. */
+.cambia-crece .dibujo svg { animation: planta-crece 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.cambia-revive .dibujo svg { animation: planta-revive 0.6s ease-out both; }
+.cambia-marchita .dibujo svg { animation: planta-marchita 0.6s ease-in both; }
+@keyframes planta-crece { from { transform: scale(0.35); } to { transform: scale(1); } }
+@keyframes planta-revive { 0% { transform: scale(0.8) rotate(10deg); filter: grayscale(1); } 60% { transform: scale(1.12); filter: drop-shadow(0 0 6px #fde047); } 100% { transform: none; } }
+@keyframes planta-marchita { from { transform: rotate(-8deg) scale(1.05); filter: none; } to { transform: none; } }
+.planta .etiqueta { font-size: 0.75rem; font-weight: 700; color: #365314; }
+.planta-nuevo { background: #f5f5f4; }
+.planta-marchita { background: #e7e5e4; }
+/* Fuentes con licencia SIL OFL 1.1: ver fuentes/OFL-*.txt.
+   Solo el subconjunto latino, que incluye ñ, tildes, ¡, ¿ y ×. */
+@font-face {
+    font-family: 'Fredoka One';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(fuentes/fredoka-one-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* Quicksand es variable: un solo archivo sirve los pesos 500 y 700. */
+@font-face {
+    font-family: 'Quicksand';
+    font-style: normal;
+    font-weight: 300 700;
+    font-display: swap;
+    src: url(fuentes/quicksand-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+body {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    /* Neutro: crema, cielo y verde. Cada mundo trae su propio fondo
+       (ver «MUNDOS»); antes el fondo degradaba a rosa para todos. */
+    background: linear-gradient(135deg, #fef6e4 0%, #e0f2fe 50%, #e8f5e9 100%);
+    overflow-x: hidden;
+}
+
+/* Un fondo por mundo (body[data-mundo]); en la bienvenida, el neutro. */
+body[data-mundo="huerto"] { background: linear-gradient(135deg, #fef9c3 0%, #ffedd5 50%, #dcfce7 100%); }
+body[data-mundo="bosque"] { background: linear-gradient(135deg, #ecfccb 0%, #d1fae5 50%, #e0f2fe 100%); }
+body[data-mundo="dinos"] { background: linear-gradient(135deg, #fef3c7 0%, #d9f99d 50%, #ccfbf1 100%); }
+body[data-mundo="desierto"] { background: linear-gradient(135deg, #fffbeb 0%, #fde68a 50%, #fed7aa 100%); }
+body[data-mundo="espacio"] { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #ede9fe 100%); }
+body[data-mundo="mar"] { background: linear-gradient(135deg, #cffafe 0%, #bae6fd 50%, #e0f2fe 100%); }
+body[data-mundo="granja"] { background: linear-gradient(135deg, #fef9c3 0%, #fde68a 50%, #dcfce7 100%); }
+body[data-mundo="flores"] { background: linear-gradient(135deg, #fef6e4 0%, #fce7f3 50%, #e8f5e9 100%); }
+
+/* Fichas para elegir mundo y personaje: radios de verdad (teclado y
+   lector de pantalla), con la marca de elegido en borde Y en ✓. */
+.ficha input { position: absolute; opacity: 0; pointer-events: none; }
+.ficha span.cara { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; border: 3px solid #e5e7eb; background: #fff; border-radius: 1rem; padding: 0.4rem 0.3rem; cursor: pointer; position: relative; }
+.ficha input:checked + span.cara { border-color: #047857; background: #ecfdf5; }
+.ficha input:checked + span.cara::after { content: "✓"; position: absolute; top: 0.1rem; right: 0.35rem; font-weight: 700; color: #047857; }
+.ficha input:focus-visible + span.cara { outline: 3px solid #0369a1; outline-offset: 2px; }
+
+/* --- LA AVENTURA --- */
+/* TOCAR SIN QUE LA PANTALLA SE MUEVA. En el teléfono, dos toques
+   rápidos en un botón hacían zoom, y un dedo que se desliza un poco
+   sobre el teclado arrastraba la página: se perdía tiempo en pleno
+   nivel. «manipulation» quita el zoom por doble toque (el de dos dedos
+   sigue, hace falta para quien ve poco); sobre los teclados, las
+   opciones y la arena, tocar nunca desplaza. */
+html { touch-action: manipulation; overscroll-behavior-y: none; }
+button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+.teclado-tactil, .teclado-tactil button, #aventura-opciones, #aventura-opciones button, #opciones .btn-option { touch-action: none; }
+/* DEDOS, NO PUNTEROS. Todo lo que se toca mide al menos 44 × 44 px
+   (lo que piden Apple y la WCAG para dedos). Antes, «⬅ Menú» medía
+   52 × 20 en todas las pantallas, y las tablas del mapa, 15 × 16. */
+.btn-volver { min-height: 2.75rem; padding: 0 0.9rem 0 0.7rem; background: #fff; border: 2px solid #e5e7eb; border-radius: 9999px; }
+.btn-volver:active { background: #f0fdf4; }
+.enlace-tactil { min-height: 2.75rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; padding: 0 0.5rem; }
+.mapa-fila { min-width: 2.75rem; min-height: 2.75rem; }
+.deslizador-tactil { height: 2.75rem; }
+.modo-aventura { min-height: 2.75rem; }
+.pizarra { touch-action: none; aspect-ratio: 12 / 5; cursor: crosshair; }
+.modo-aventura[aria-pressed="true"] { background: #4338ca; border-color: #4338ca; color: #fff; }
+.sin-prisa[aria-pressed="true"] { background: #047857; border-color: #047857; color: #fff; }
+/* Sin prisa: el enemigo que llegó a su sitio espera, balanceándose. */
+@keyframes esperar { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
+html:not(.calma) .enemigo.esperando { animation: esperar 1.6s ease-in-out infinite; }
+.arena { position: relative; overflow: hidden; height: 20rem; border-radius: 1.5rem; touch-action: none; user-select: none; -webkit-user-select: none; }
+@media (min-width: 768px) { .arena { height: 24rem; } }
+/* En el teléfono, la arena y el teclado tienen que caber juntos: si
+   hay que desplazarse para teclear, los enemigos avanzan sin verse. */
+@media (max-width: 640px) {
+    body { padding: 0.5rem; }
+    /* LA PARTIDA EN EL TELÉFONO: la pregunta y las respuestas (o el
+       teclado) a la vista sin desplazarse. Antes, en un teléfono de
+       667 px, las opciones quedaban debajo y el teclado a 870 px. */
+    #screen-game > * + *, .grupo-partida > * + * { margin-top: 0.6rem !important; }
+    #screen-game > div:first-child { padding: 0.3rem 0.5rem; }
+    #aviso-repaso { font-size: 0.75rem; padding: 0.3rem 0.6rem; line-height: 1.25; }
+    #girasol { width: 8rem; height: 8rem; }
+    #girasol #question-text { font-size: 1.4rem; }
+    #girasol.girasol-chico { width: 3.75rem; height: 3.75rem; }
+    #girasol.girasol-chico #question-text { font-size: 1.1rem; }
+    #girasol { margin-top: -0.6rem; margin-bottom: -0.6rem; }
+    #problema-texto { font-size: 1rem; padding: 0.5rem 0.75rem; }
+    #opciones { gap: 0.6rem; }
+    #opciones .btn-option { padding-top: 0.55rem; padding-bottom: 0.55rem; font-size: 1.6rem; }
+    #escritura > * + * { margin-top: 0.4rem !important; }
+    #escritura > p:first-child { font-size: 0.8rem; }
+    #escrito { min-height: 2.9rem; font-size: 1.9rem; padding-top: 0.1rem; padding-bottom: 0.1rem; }
+    #teclado-juego { gap: 0.4rem; }
+    #teclado-juego button { min-height: 2.75rem; padding-top: 0; padding-bottom: 0; font-size: 1.4rem; line-height: 1; border-width: 3px; }
+    #game-feedback { font-size: 1rem; min-height: 1.5rem; }
+    main:has(#screen-aventura-juego:not(.hidden)) { padding-top: 3.25rem; }
+    #screen-aventura-juego > * + * { margin-top: 0.5rem; }
+    /* Cabecera en dos filas: «Mapa», corazones y puntos arriba; el nivel debajo. */
+    #nivel-cabecera { display: grid; grid-template-columns: 1fr auto; row-gap: 0.15rem; padding: 0.35rem 0.6rem; }
+    #nivel-cabecera > h2 { grid-column: 1 / -1; grid-row: 2; }
+    #nivel-cabecera > button { justify-self: start; }
+    /* La operación ya va marcada en rojo en la arena: el texto queda para el lector de pantalla. */
+    #aventura-objetivo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    #aventura-mensaje:empty { display: none; }
+    /* Los modos, solo con su icono y a la izquierda de la respuesta:
+       una fila menos. El nombre sigue ahí para el lector de pantalla. */
+    #aventura-entrada { display: grid; grid-template-columns: auto 1fr; column-gap: 0.5rem; row-gap: 0.4rem; }
+    #aventura-entrada > * { grid-column: 1 / -1; margin-top: 0 !important; }
+    #aventura-entrada > #modos-aventura { grid-column: 1; align-self: center; }
+    #aventura-entrada > #aventura-escrito:not(.hidden) { grid-column: 2; grid-row: 1; }
+    #modos-aventura .modo-aventura { width: 2.75rem; padding: 0; font-size: 1.25rem; display: inline-flex; align-items: center; justify-content: center; }
+    #modos-aventura .texto-modo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .arena { height: 12.5rem; }
+    .heroe { font-size: 2.6rem; bottom: 0.4rem; }
+    .enemigo .cara { font-size: 2.1rem; }
+    .enemigo.jefe .cara { font-size: 3.4rem; }
+    #nivel-titulo { font-size: 1rem; line-height: 1.3; }
+    #aventura-teclado { gap: 0.4rem; }
+    #aventura-teclado button { padding-top: 0.3rem; padding-bottom: 0.3rem; }
+    #aventura-escrito { min-height: 2.75rem; font-size: 1.6rem; padding-top: 0; padding-bottom: 0; }
+    #aventura-lanzar { font-size: 0.95rem; }
+}
+/* EL TELÉFONO ACOSTADO. La altura es muy poca (360 a 390 px), así que
+   se usa el ancho: la pregunta a la izquierda y la respuesta a la
+   derecha; en la Aventura, la arena a la izquierda y el teclado a la
+   derecha. «Ajustes» queda como un icono en la esquina. */
+@media (orientation: landscape) and (max-height: 520px) {
+    body { padding: 0.25rem; align-items: flex-start; }
+    main { max-width: 64rem; padding: 0.5rem 0.75rem 0.75rem !important; border-width: 2px; border-radius: 1.25rem; }
+    #ajustes { top: 0.4rem; right: 0.5rem; }
+    #ajustes summary { width: 2.75rem; justify-content: center; padding: 0; }
+    #ajustes .texto-ajustes { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    #screen-game > div:first-child, #nivel-cabecera, #cabecera-menu { margin-right: 3.25rem; }
+    /* Los encabezados de las demás pantallas tampoco van bajo el icono. */
+    main > div[id^="screen-"] > div:first-child:not(#cabecera-menu) { padding-right: 3.25rem; }
+
+    /* El menú: quién juega y la misión, lado a lado; las tablas, de cinco en cinco. */
+    #screen-selector { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 0.75rem; row-gap: 0.75rem; align-items: stretch; }
+    #screen-selector.hidden { display: none; }
+    #screen-selector > * { grid-column: 1 / -1; margin-top: 0 !important; }
+    #screen-selector > #cabecera-menu { grid-column: 1; grid-row: 1 / span 2; margin-right: 0; }
+    /* «Seguir» arriba a la derecha, a la vista sin desplazarse; la misión, debajo. */
+    #screen-selector > #seguir { grid-column: 2; grid-row: 1; max-width: none; padding-right: 3.25rem; }
+    #screen-selector > #mision { grid-column: 2; grid-row: 2; max-width: none; margin-right: 3.25rem; }
+    #grid-tablas-container { grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: none; }
+
+    /* La partida, lado a lado. */
+    #screen-game { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); column-gap: 1rem; row-gap: 0.5rem; align-items: start; }
+    #screen-game.hidden { display: none; }
+    #screen-game > * { margin-top: 0 !important; }
+    #screen-game > div:first-child, #screen-game > #help-panel, #screen-game > div:last-child { grid-column: 1 / -1; }
+    /* La ayuda, acostada: el rectángulo a la derecha y lo que se lee y
+       se toca a la izquierda, para verla entera sin desplazarse. */
+    #help-panel { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 0.75rem; row-gap: 0.4rem; align-items: center; padding: 0.6rem; }
+    #help-panel.hidden { display: none; }
+    #help-panel > * { grid-column: 1; margin-top: 0 !important; }
+    #help-panel > #help-visual-container { grid-column: 2; grid-row: 1 / span 4; }
+    #help-truco, #help-explain { font-size: 0.8rem; line-height: 1.25; }
+    #help-truco { padding: 0.3rem 0.5rem; }
+    #screen-game > div:first-child { padding: 0.25rem 0.5rem; }
+    .grupo-partida > * + * { margin-top: 0.5rem !important; }
+    #aviso-repaso { font-size: 0.7rem; padding: 0.25rem 0.5rem; line-height: 1.2; }
+    #girasol { width: 7rem; height: 7rem; margin: -0.5rem auto; }
+    #girasol #question-text { font-size: 1.25rem; }
+    #girasol.girasol-chico { width: 3.5rem; height: 3.5rem; }
+    #girasol.girasol-chico #question-text { font-size: 1rem; }
+    #problema-texto { font-size: 0.95rem; padding: 0.4rem 0.6rem; }
+    #opciones { gap: 0.5rem; max-width: none; }
+    #opciones .btn-option { padding: 0.45rem; font-size: 1.5rem; }
+    #escritura { max-width: none; }
+    /* La respuesta y «Mejor con el dedo» en una fila; el aviso («ahora
+       escríbela») queda para el lector de pantalla: el teclado ya lo dice. */
+    #escritura { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 0.5rem; row-gap: 0.35rem; }
+    #escritura.hidden { display: none; }
+    #escritura > * { grid-column: 1 / -1; margin-top: 0 !important; }
+    #escritura > p:first-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    #escritura > #escrito { grid-column: 1; grid-row: 1; }
+    #escritura > p:nth-child(2) { grid-column: 2; grid-row: 1; }
+    #escrito { min-height: 2.75rem; font-size: 1.6rem; padding-top: 0; padding-bottom: 0; }
+    #teclado-juego { gap: 0.35rem; }
+    #teclado-juego button { min-height: 2.75rem; padding-top: 0; padding-bottom: 0; font-size: 1.3rem; line-height: 1; border-width: 3px; }
+    #game-feedback { font-size: 0.95rem; min-height: 1.25rem; }
+
+    /* La Aventura, lado a lado: la arena tan alta como quepa. */
+    #screen-aventura-juego { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); grid-template-rows: auto auto auto 1fr; column-gap: 0.75rem; row-gap: 0.25rem; align-items: start; }
+    #screen-aventura-juego.hidden { display: none; }
+    #screen-aventura-juego > * { margin-top: 0 !important; }
+    #nivel-cabecera { grid-column: 1 / -1; display: flex; padding: 0.1rem 0.5rem; }
+    #nivel-titulo { font-size: 0.95rem; line-height: 1.2; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .arena { grid-column: 1; grid-row: 2 / span 3; height: calc(100vh - 5.4rem); height: calc(100dvh - 5.4rem); min-height: 11rem; }
+    #aventura-objetivo { grid-column: 2; grid-row: 2; font-size: 0.85rem; min-height: 0; position: static; width: auto; height: auto; clip-path: none; }
+    #aventura-mensaje { grid-column: 2; grid-row: 3; font-size: 0.8rem; min-height: 0; }
+    #aventura-mensaje:empty { display: none; }
+    #aventura-entrada { grid-column: 2; grid-row: 4; max-width: none; display: grid; grid-template-columns: auto 1fr; column-gap: 0.5rem; row-gap: 0.35rem; }
+    #aventura-entrada > * { grid-column: 1 / -1; margin-top: 0 !important; }
+    #aventura-entrada > #modos-aventura { grid-column: 1; align-self: center; }
+    #aventura-entrada > #aventura-escrito:not(.hidden) { grid-column: 2; grid-row: 1; }
+    #modos-aventura .modo-aventura { width: 2.75rem; padding: 0; font-size: 1.2rem; display: inline-flex; align-items: center; justify-content: center; }
+    #modos-aventura .texto-modo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    #aventura-escrito { min-height: 2.75rem; font-size: 1.5rem; padding-top: 0; padding-bottom: 0; }
+    #aventura-teclado { gap: 0.25rem; }
+    #aventura-teclado button { min-height: 2.75rem; padding-top: 0; padding-bottom: 0; font-size: 1.25rem; line-height: 1; }
+    #aventura-opciones button { padding-top: 0.5rem; padding-bottom: 0.5rem; font-size: 1.4rem; }
+    #aventura-lanzar { font-size: 0.9rem; white-space: nowrap; }
+    #aventura-pizarra > * + * { margin-top: 0.3rem !important; }
+    .heroe { font-size: 2.4rem; bottom: 0.4rem; }
+    .enemigo .cara { font-size: 2rem; }
+    .enemigo.jefe .cara { font-size: 3.2rem; }
+}
+.arena[data-mundo="0"] { background: linear-gradient(#bae6fd 0%, #e0f2fe 55%, #86efac 55%, #4ade80 100%); }
+.arena[data-mundo="1"] { background: linear-gradient(#a7f3d0 0%, #d1fae5 50%, #166534 50%, #14532d 100%); }
+.arena[data-mundo="2"] { background: linear-gradient(#c4b5fd 0%, #ede9fe 55%, #6d28d9 55%, #4c1d95 100%); }
+.arena[data-mundo="3"] { background: linear-gradient(#1e293b 0%, #334155 55%, #3f6212 55%, #1a2e05 100%); }
+.arena[data-mundo="4"] { background: radial-gradient(circle at 20% 20%, #312e81, #0f172a 70%); }
+.arena[data-mundo="5"] { background: linear-gradient(#67e8f9 0%, #0891b2 60%, #164e63 100%); }
+.heroe { position: absolute; left: 50%; bottom: 0.75rem; transform: translateX(-50%); font-size: 3.5rem; line-height: 1; filter: drop-shadow(0 4px 4px rgba(0,0,0,.25)); }
+/* Arte propio de la Aventura: se mide en em, así los tamaños de
+   teléfono y de pantalla acostada (font-size) le siguen sirviendo. */
+.heroe > svg { display: block; width: 1.35em; height: 1.35em; overflow: visible; }
+.enemigo .cara > svg { display: block; width: 1.3em; height: 1.4em; overflow: visible; }
+.arte [data-e] { display: none; }
+.arte[data-estado="quieto"] [data-e~="quieto"], .arte[data-estado="lanzando"] [data-e~="lanzando"],
+.arte[data-estado="golpeado"] [data-e~="golpeado"], .arte:not([data-estado]) [data-e~="quieto"] { display: inline; }
+.heroe-arte .brazo-varita { transform-origin: 68px 74px; transition: transform 0.15s ease-out; }
+.heroe-arte[data-estado="lanzando"] .brazo-varita { transform: rotate(-40deg); }
+/* Quieto, el héroe respira; los enemigos caminan balanceándose. */
+.heroe-arte { transform-origin: 50% 95%; animation: lumi-respira 3.2s ease-in-out infinite; }
+.enemigo .cara > svg { transform-origin: 50% 95%; animation: anda 0.55s ease-in-out infinite alternate; }
+.enemigo.esperando .cara > svg { animation-duration: 1.2s; }
+@keyframes anda { from { transform: rotate(-5deg) translateY(0); } to { transform: rotate(5deg) translateY(-4%); } }
+/* Al vencer a un enemigo: un «pof» de estrellas donde estaba. */
+.pof { position: absolute; width: 4rem; height: 4rem; transform: translate(-50%, -10%); pointer-events: none; animation: pof 0.45s ease-out forwards; }
+@keyframes pof { from { transform: translate(-50%, -10%) scale(0.4); opacity: 1; } to { transform: translate(-50%, -10%) scale(1.3); opacity: 0; } }
+.elegir-heroe .ficha svg { width: 2.6rem; height: 2.6rem; overflow: visible; }
+.titulo-mundo-arte svg { width: 2.2rem; height: 2.2rem; overflow: visible; display: inline-block; vertical-align: middle; }
+.heroe.golpeado { animation: golpe 0.4s ease; }
+@keyframes golpe { 0%,100% { transform: translateX(-50%); } 25% { transform: translateX(-62%); } 75% { transform: translateX(-38%); } }
+.enemigo { position: absolute; transform: translate(-50%, 0); display: flex; flex-direction: column; align-items: center; gap: 0.15rem; transition: opacity .25s, transform .25s; }
+.enemigo .cara { font-size: 2.6rem; line-height: 1; filter: drop-shadow(0 3px 3px rgba(0,0,0,.3)); }
+.enemigo.jefe .cara { font-size: 4.5rem; }
+.enemigo .op { background: #fff; color: #111827; font-weight: 800; font-size: 1.1rem; padding: 0.1rem 0.5rem; border-radius: 0.75rem; border: 3px solid #4338ca; white-space: nowrap; box-shadow: 0 2px 0 rgba(0,0,0,.2); }
+.enemigo.objetivo .op { border-color: #dc2626; background: #fef9c3; }
+.enemigo .vida { height: 0.4rem; width: 4rem; background: #fecaca; border-radius: 1rem; overflow: hidden; }
+.enemigo .vida > span { display: block; height: 100%; background: #dc2626; }
+.enemigo.vencido { opacity: 0; transform: translate(-50%, -1rem) scale(1.4); }
+.rayo { position: absolute; height: 0.35rem; background: linear-gradient(90deg, #fde047, #f0abfc); border-radius: 1rem; transform-origin: 0 50%; box-shadow: 0 0 12px #fde047; pointer-events: none; }
+.puntos-flotan { position: absolute; font-weight: 800; color: #facc15; text-shadow: 0 2px 2px rgba(0,0,0,.5); pointer-events: none; animation: flotar 0.9s ease forwards; }
+@keyframes flotar { to { transform: translateY(-2.5rem); opacity: 0; } }
+.reduce-motion .heroe.golpeado, .reduce-motion .puntos-flotan { animation: none; }
+
+/* --- PRESENTACIÓN ---
+   Fondo ilustrado por mundo (colinas y adornos que flotan despacio),
+   entrada suave de cada pantalla, botones con relieve que se hunden al
+   tocarlos y una onda en el punto del toque. Todo el movimiento se
+   apaga con «Menos movimiento» o si el sistema lo pide: el juego se
+   ve igual de completo, solo quieto. */
+main { z-index: 1; }
+body { --colina1: #dcfce7; --colina2: #bbf7d0; }
+body[data-mundo="huerto"] { --colina1: #bbf7d0; --colina2: #86efac; }
+body[data-mundo="bosque"] { --colina1: #a7f3d0; --colina2: #6ee7b7; }
+body[data-mundo="dinos"] { --colina1: #d9f99d; --colina2: #bef264; }
+body[data-mundo="desierto"] { --colina1: #fde68a; --colina2: #fcd34d; }
+body[data-mundo="espacio"] { --colina1: #c7d2fe; --colina2: #a5b4fc; }
+body[data-mundo="mar"] { --colina1: #a5f3fc; --colina2: #67e8f9; }
+body[data-mundo="granja"] { --colina1: #d9f99d; --colina2: #fde68a; }
+body[data-mundo="flores"] { --colina1: #fbcfe8; --colina2: #bbf7d0; }
+#fondo { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+/* Paisajes SVG por capas (ver «PAISAJES»): llenan el fondo desde abajo
+   y, en la Aventura, la arena. Las colinas usan --colina1 y --colina2. */
+#fondo .paisaje, #arena-decor > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+#fondo .paisaje { opacity: 0.9; }
+#arena-decor { position: absolute; inset: 0; pointer-events: none; }
+@keyframes nube-deriva { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(24px); } }
+@keyframes titila { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes burbuja-sube { from { transform: translateY(0); opacity: 0.7; } to { transform: translateY(-60px); opacity: 0; } }
+@keyframes alga-mece { 0%, 100% { transform: skewX(-4deg); } 50% { transform: skewX(4deg); } }
+@keyframes entrar { from { opacity: 0; transform: translateY(14px) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes onda { from { transform: translate(-50%, -50%) scale(0); opacity: 0.22; } to { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
+@media (prefers-reduced-motion: no-preference) {
+    html:not(.calma) .paisaje .nube, html:not(.calma) .paisaje-arena .nube { animation: nube-deriva 14s ease-in-out infinite; }
+    html:not(.calma) .titila { animation: titila 3.5s ease-in-out infinite; }
+    html:not(.calma) .titila:nth-of-type(2n) { animation-delay: -1.7s; }
+    html:not(.calma) .burbuja { animation: burbuja-sube 4s ease-in infinite; }
+    html:not(.calma) .alga { transform-box: fill-box; transform-origin: 50% 100%; animation: alga-mece 5s ease-in-out infinite; }
+    html:not(.calma) .entrando { animation: entrar 0.38s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    html:not(.calma) .entrando .escalonar > * { animation: entrar 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: calc(min(var(--i, 0), 8) * 0.04s); }
+    html:not(.calma) main button { transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease; }
+}
+/* Relieve: los botones con sombra parecen teclas que se hunden. */
+main button.shadow-sm, main button.shadow-md, main button.shadow-lg, main button.shadow-xl {
+    box-shadow: 0 4px 0 rgb(15 23 42 / 0.16), 0 10px 18px -8px rgb(15 23 42 / 0.25);
+}
+main button:is(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl):active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 rgb(15 23 42 / 0.16), 0 3px 6px -3px rgb(15 23 42 / 0.25);
+}
+@media (hover: hover) and (pointer: fine) {
+    /* Sin moverlo: si sube, deja de estar bajo el ratón, baja, vuelve a
+       estar bajo el ratón… y tiembla sin parar en el borde. */
+    main button:is(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl):hover:not(:disabled):not(:active) { transform: none; filter: brightness(1.05); box-shadow: 0 5px 0 rgb(15 23 42 / 0.16), 0 14px 22px -8px rgb(15 23 42 / 0.3); }
+}
+.ficha span.cara:active { transform: scale(0.96); }
+.con-onda { position: relative; overflow: hidden; }
+/* Del color del texto: clara en los botones de color, oscura en los blancos. */
+.onda { position: absolute; border-radius: 9999px; background: currentColor; pointer-events: none;
+    animation: onda 0.5s ease-out forwards; }
+
+/* Los subtítulos de los botones, en la letra del juego (antes, la del sistema). */
+.subtitulo { font-family: 'Quicksand', system-ui, sans-serif; }
+#girasol.girasol-chico { width: 5.5rem; height: 5.5rem; }
+#girasol.girasol-chico #question-text { font-size: 1.5rem; }
+
+.bubble-font {
+    font-family: 'Fredoka One', 'Quicksand', system-ui, sans-serif;
+}
+
+/* Animaciones mágicas */
+@keyframes sway {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+}
+.animate-sway {
+    animation: sway 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+.animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* Efecto de pétalos o confeti flotando */
+.confetti-particle {
+    position: absolute;
+    pointer-events: none;
+    animation: fall linear forwards;
+}
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+    }
+}
+
+/* Flores naciendo */
+@keyframes bloom {
+    0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+    70% { transform: scale(1.2) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.animate-bloom {
+    animation: bloom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Regadera regando */
+@keyframes pour {
+    0% { transform: rotate(0deg); }
+    30% { transform: rotate(-35deg) translateX(-10px); }
+    70% { transform: rotate(-35deg) translateX(-10px); }
+    100% { transform: rotate(0deg); }
+}
+.animate-pour {
+    animation: pour 1.5s ease-in-out;
+}
+
+/* Texto solo para lectores de pantalla. No display:none ni
+   visibility:hidden: los dos lo esconden también del lector. */
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* Los atajos de teclado solo se anuncian donde hay teclado: en una
+   tablet serían instrucciones para algo que no existe. */
+.solo-teclado { display: none; }
+@media (hover: hover) and (pointer: fine) {
+    .solo-teclado { display: inline; }
+}
+
+/* Número del atajo en cada respuesta (1-4), solo donde hay teclado. */
+@media (hover: hover) and (pointer: fine) {
+    .btn-option::before {
+        content: attr(data-tecla);
+        position: absolute; top: 4px; left: 8px;
+        font-size: 0.75rem; font-weight: 700; color: #4b5563;
+    }
+}
+
+/* Foco siempre visible y con contraste. */
+:focus-visible { outline: 3px solid #be185d; outline-offset: 3px; border-radius: 0.75rem; }
+[data-foco]:focus { outline: none; }
+
+/* MENOS MOVIMIENTO. Se activa si el sistema lo pide o si se elige en
+   Ajustes. Para un niño con sensibilidad sensorial, el balanceo, el
+   flotado, el latido y el confeti permanentes hacen el sitio dificil de
+   usar; el juego tiene que ser igual de jugable sin ellos. */
+html.calma *, html.calma *::before, html.calma *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}

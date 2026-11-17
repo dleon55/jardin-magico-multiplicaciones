@@ -631,9 +631,28 @@ y la usa **la siguiente vez que se abre el juego**, nunca a mitad de una partida
 El sitio no necesita ninguna dependencia para funcionar: es `index.html` más
 archivos estáticos. Node.js solo hace falta para construirlo y probarlo.
 
+`index.html` tiene la estructura y el script principal. El arte, el sonido,
+los datos y los estilos propios van aparte, como scripts clásicos (no
+módulos), para que lo que declaran siga siendo global:
+
+| Archivo | Qué lleva |
+| --- | --- |
+| `js/datos.js` | Mundos y personajes, héroes y mundos de la Aventura, trucos por tabla, colores del menú |
+| `js/arte.js` | Paisajes, Lumi, plantas y el arte de la Aventura, en SVG |
+| `js/sonido.js` | Música de fondo, audio sintético y sonidos por capas |
+| `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
+
+Se cargan antes del script principal, en ese orden. Solo declaran: no leen
+ni guardan nada y no hacen nada al cargar, y lo que usan del principal lo
+usan solo dentro de funciones. La carga de los perfiles y el estado de la
+Aventura se quedan en `index.html`. Si se añade un archivo, hay que ponerlo
+también en la lista `ARCHIVOS` de `sw.js`, para que se guarde y funcione sin
+internet. `pruebas/archivos.spec.mjs` lo comprueba, igual que el orden y que
+nada se defina dos veces.
+
 ```sh
 npm ci
-npm run construir   # obligatorio después de tocar index.html
+npm run construir   # obligatorio después de tocar index.html, js/ o juego.css
 npm test            # pruebas en Chromium, escritorio y tablet
 npm run servir      # http://localhost:4173/jardin-magico-multiplicaciones/
 npm run comprobar   # compuerta antes de fusionar: construcción al día + pruebas
@@ -641,7 +660,8 @@ npm run comprobar   # compuerta antes de fusionar: construcción al día + prueb
 
 `npm run construir` hace dos cosas:
 
-1. Compila `estilos.css` con Tailwind, con solo las clases que usa `index.html`.
+1. Compila `estilos.css` con Tailwind, con solo las clases que usan `index.html`
+   y `js/`.
 2. Sella en `sw.js` una versión calculada a partir del contenido de los
    archivos del sitio. Así cada cambio publicado llega a los dispositivos que ya
    tienen el juego guardado.
@@ -693,7 +713,9 @@ a la vez.
 
 | Archivo | Qué es |
 | --- | --- |
-| `index.html` | El juego |
+| `index.html` | El juego: estructura y script principal |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js` | Datos, arte y sonido (ver «Desarrollo») |
+| `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |
 | `sw.js` | Service worker que guarda el juego para usarlo sin internet |
