@@ -441,6 +441,10 @@
                     <span><span aria-hidden="true">🔟</span> Fracciones decimales</span>
                     <span class="text-xs subtitulo font-semibold">Décimos, centésimos y el punto</span>
                 </button>
+                <button type="button" id="btn-tiempo" onclick="startTable('tiempo')" class="col-span-2 bubble-font bg-gradient-to-r from-violet-200 to-sky-200 hover:from-violet-300 hover:to-sky-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                    <span><span aria-hidden="true">🕒</span> Medidas de tiempo</span>
+                    <span class="text-xs subtitulo font-semibold">El reloj, cuánto dura y horas a minutos</span>
+                </button>
                 <button type="button" id="btn-equipo" onclick="mostrarEquipo()" class="col-span-2 bubble-font bg-gradient-to-r from-rose-200 to-pink-200 hover:from-rose-300 hover:to-pink-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">👫</span> En equipo</span>
                     <span class="text-xs subtitulo font-semibold">Se turnan en este aparato, y entre todos riegan 10 plantas</span>
@@ -1078,6 +1082,7 @@
     <script src="js/dinero.js"></script>
     <script src="js/porcentajes.js"></script>
     <script src="js/decimales.js"></script>
+    <script src="js/tiempo.js"></script>
     <!-- Script del Juego -->
     <script>
         // --- ALMACENAMIENTO ---
@@ -1222,7 +1227,7 @@
         const TABLAS = 9;
         const MULTIPLICADORES = 10;
         let playerName = "";   // vacío = sin nombre: se habla del jardín, no de la persona
-        let currentTable = 1; // 1-9, "mix", "falta", "div", "residuo", "multiplos", "area", "dinero", "porcentajes", "decimales", "problemas", "logica" o "fracciones"
+        let currentTable = 1; // 1-9, "mix", "falta", "div", "residuo", "multiplos", "area", "dinero", "porcentajes", "decimales", "tiempo", "problemas", "logica" o "fracciones"
         let globalStars = 0;
         let score = 0; // Aciertos actuales conseguidos
         let targetScore = 10; // Meta FIJA de aciertos: los fallos ya no la mueven
@@ -1251,7 +1256,7 @@
         // numA y numB siguen siendo los dos factores de la multiplicación que
         // hay debajo, también al dividir (56 ÷ 8 = 7: numA 8, numB 7).
         let pregunta = null;
-        let aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0, "M": 0, "A": 0, "$": 0, "%": 0, "D": 0 };
+        let aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0, "M": 0, "A": 0, "$": 0, "%": 0, "D": 0, "T": 0 };
         let rachaPartida = 0;   // aciertos seguidos en esta partida (celebraciones)
         let metaEnEstaPartida = false;   // ¿se cumplió la meta de hoy durante esta partida?
         // --- AJUSTES ---
@@ -1583,7 +1588,7 @@
             }));
             hechosDeLaPartida = new Set();
             estrellasAlEmpezar = globalStars;
-            aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0, "M": 0, "A": 0, "$": 0, "%": 0, "D": 0 };
+            aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0, "M": 0, "A": 0, "$": 0, "%": 0, "D": 0, "T": 0 };
             rachaPartida = 0;
             metaEnEstaPartida = false;
             callarGloboLumi();
@@ -1900,7 +1905,7 @@
 
             // Fracciones, retos y Aventura, si jugó.
             const otrosP = [];
-            for (const [prefijo, nombre] of [["fraccion:", "Fracciones"], ["logica:", "Retos de lógica"], ["residuo:", "División con residuo"], ["multiplos:", "Múltiplos y divisores"], ["area:", "Perímetro y área"], ["dinero:", "Decimales y dinero"], ["porcentaje:", "Porcentajes"], ["decimales:", "Fracciones decimales"]]) {
+            for (const [prefijo, nombre] of [["fraccion:", "Fracciones"], ["logica:", "Retos de lógica"], ["residuo:", "División con residuo"], ["multiplos:", "Múltiplos y divisores"], ["area:", "Perímetro y área"], ["dinero:", "Decimales y dinero"], ["porcentaje:", "Porcentajes"], ["decimales:", "Fracciones decimales"], ["tiempo:", "Medidas de tiempo"]]) {
                 // Una línea por tema, para que quepa en una hoja aunque juegue a
                 // todo; el detalle por clase está en la vista para adultos.
                 const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
@@ -2239,6 +2244,7 @@
             "dinero:sumar": "sumar precios", "dinero:cambio": "el cambio", "dinero:por": "varias cosas iguales", "dinero:decimal": "comparar decimales",
             "porcentaje:de": "el tanto por ciento de un número", "porcentaje:descuento": "descuentos", "porcentaje:fraccion": "fracción y porcentaje",
             "decimales:aDecimal": "de fracción a decimal", "decimales:aFraccion": "de decimal a fracción", "decimales:comparar": "comparar", "decimales:sumar": "sumar décimos",
+            "tiempo:leer": "leer el reloj", "tiempo:sumar": "qué hora será", "tiempo:duracion": "cuánto dura", "tiempo:convertir": "horas a minutos",
         };
         // El botón de «🍕 Fracciones» que practica esa clase sola.
         const BOTON_CLASE_FRACCION = { "fraccion:de": "De un número", "fraccion:equivalente": "Equivalentes",
@@ -2277,6 +2283,7 @@
             if (p?.tipo === "dinero") return `dinero:${p.clase}`;
             if (p?.tipo === "porcentaje") return `porcentaje:${p.clase}`;
             if (p?.tipo === "decimales") return `decimales:${p.clase}`;
+            if (p?.tipo === "tiempo") return `tiempo:${p.clase}`;
             if (p?.tipo === "logica") return `logica:${p.clase}`;
             return null;
         }
@@ -2416,7 +2423,7 @@
                     caja.appendChild(olvidar);
                     piezas.push(caja);
                 }
-                for (const [prefijo, nombre, clase] of [["fraccion:", "Fracciones", "adulto-fracciones"], ["logica:", "Retos de lógica", "adulto-retos"], ["residuo:", "División con residuo", "adulto-residuo"], ["multiplos:", "Múltiplos y divisores", "adulto-multiplos"], ["area:", "Perímetro y área", "adulto-area"], ["dinero:", "Decimales y dinero", "adulto-dinero"], ["porcentaje:", "Porcentajes", "adulto-porcentajes"], ["decimales:", "Fracciones decimales", "adulto-decimales"]]) {
+                for (const [prefijo, nombre, clase] of [["fraccion:", "Fracciones", "adulto-fracciones"], ["logica:", "Retos de lógica", "adulto-retos"], ["residuo:", "División con residuo", "adulto-residuo"], ["multiplos:", "Múltiplos y divisores", "adulto-multiplos"], ["area:", "Perímetro y área", "adulto-area"], ["dinero:", "Decimales y dinero", "adulto-dinero"], ["porcentaje:", "Porcentajes", "adulto-porcentajes"], ["decimales:", "Fracciones decimales", "adulto-decimales"], ["tiempo:", "Medidas de tiempo", "adulto-tiempo"]]) {
                     const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
                     if (filas.length === 0) continue;
                     let texto = `${nombre} (sus últimas respuestas): ${filas.map((f) => `${f.nombre} ${f.bien} de ${f.de}`).join(", ")}.`;
@@ -3912,6 +3919,8 @@
                 bolsa = bolsaDePorcentajes();
             } else if (currentTable === "decimales") {
                 bolsa = bolsaDeDecimales();
+            } else if (currentTable === "tiempo") {
+                bolsa = bolsaDeTiempo();
             } else if (currentTable === "dinero") {
                 bolsa = bolsaDeDinero();
             } else if (currentTable === "area") {
@@ -4540,6 +4549,7 @@
             if (currentTable === "dinero" && h.reto) return armarDinero(h.reto);
             if (currentTable === "porcentajes" && h.reto) return armarPorcentaje(h.reto);
             if (currentTable === "decimales" && h.reto) return armarDecimales(h.reto);
+            if (currentTable === "tiempo" && h.reto) return armarTiempo(h.reto);
             if (currentTable === "logica" && h.reto) {
                 return { ...armarReto(h.reto), a, b };
             }
@@ -4624,6 +4634,7 @@
             if (pregunta.tipo === "dinero") [numA, numB] = numerosDeDinero(pregunta.reto);
             if (pregunta.tipo === "porcentaje") [numA, numB] = numerosDePorcentaje(pregunta.reto);
             if (pregunta.tipo === "decimales") [numA, numB] = numerosDeDecimales(pregunta.reto);
+            if (pregunta.tipo === "tiempo") [numA, numB] = numerosDeTiempo(pregunta.reto);
             correctAnswer = pregunta.respuesta;
             ayudaGirada = false;
             ayudaRect = null;
@@ -4635,9 +4646,11 @@
             // respuesta que se pueda escribir (¿cuál da más?).
             modoEscrito = pregunta.tipo === "mult"
                 ? seEscribe(numA, numB)
-                : !["logica", "residuo", "multiplos", "area", "dinero", "porcentaje", "decimales"].includes(pregunta.tipo) && !pregunta.tiras && !repasoActual && estadoHecho(numA, numB) === "florecida";
+                : !["logica", "residuo", "multiplos", "area", "dinero", "porcentaje", "decimales", "tiempo"].includes(pregunta.tipo) && !pregunta.tiras && !repasoActual && estadoHecho(numA, numB) === "florecida";
             // «3, sobran 2» no cabe con la letra grande de un número.
             document.getElementById("opciones").classList.toggle("opciones-largas", pregunta.tipo === "residuo");
+            // «135 min»: un tamaño menos, para que quepa en un renglón en el teléfono.
+            document.getElementById("opciones").classList.toggle("opciones-medianas", !!pregunta.opcionesMedianas);
             document.getElementById("escritura-aviso").innerText = pregunta.tipo === "mult"
                 ? "Esta ya te salió bien: ahora escríbela."
                 : "Esta multiplicación ya te la sabes: escribe la respuesta.";
@@ -4657,19 +4670,30 @@
             const textoPregunta = document.getElementById("question-text");
             const problema = document.getElementById("problema-texto");
             // «3/4 de 24» tampoco cabe en el girasol.
-            const largo = ["problema", "logica", "fraccion", "multiplos", "area", "dinero", "porcentaje", "decimales"].includes(pregunta.tipo);
+            const largo = ["problema", "logica", "fraccion", "multiplos", "area", "dinero", "porcentaje", "decimales", "tiempo"].includes(pregunta.tipo);
             problema.classList.toggle("hidden", !largo);
             // Con la pregunta escrita arriba, el girasol solo dice «¿?»: pequeño,
             // para que las opciones queden a la vista sin desplazarse.
             document.getElementById("girasol").classList.toggle("girasol-chico", largo);
             if (largo) {
                 problema.innerText = pregunta.texto;
+                // Un dibujo que es parte de la pregunta (el reloj): al lado del
+                // texto, para que las opciones sigan a la vista en el teléfono.
+                if (pregunta.dibujo) {
+                    const fila = document.createElement("span");
+                    fila.className = "dibujo-pregunta flex items-center justify-center gap-3";
+                    const texto = document.createElement("span");
+                    texto.textContent = pregunta.texto;
+                    fila.append(texto);
+                    fila.insertAdjacentHTML("beforeend", pregunta.dibujo);
+                    problema.replaceChildren(fila);
+                }
                 const visible = document.createElement("span");
                 visible.setAttribute("aria-hidden", "true");
                 visible.textContent = "¿?";
                 const leido = document.createElement("span");
                 leido.className = "sr-only";
-                leido.textContent = pregunta.texto;
+                leido.textContent = pregunta.descripcion ? `${pregunta.texto} ${pregunta.descripcion}` : pregunta.texto;
                 textoPregunta.replaceChildren(visible, leido);
             } else {
                 problema.innerText = "";
@@ -4741,7 +4765,7 @@
         function generateHelpVisual() {
             // En los retos, el rectángulo solo ayuda a partir una multiplicación.
             const sinDibujo = pregunta?.tipo === "logica" && pregunta.clase !== "partir";
-            document.getElementById("btn-girar").classList.toggle("hidden", ["logica", "fraccion", "residuo", "multiplos", "area", "dinero", "porcentaje", "decimales"].includes(pregunta?.tipo));
+            document.getElementById("btn-girar").classList.toggle("hidden", ["logica", "fraccion", "residuo", "multiplos", "area", "dinero", "porcentaje", "decimales", "tiempo"].includes(pregunta?.tipo));
             pintarControlesAyuda(false);   // los dibujos de retos y fracciones no se tocan
             if (pregunta?.tipo === "residuo") {
                 pintarControlesAyuda(false);
@@ -4766,6 +4790,10 @@
             }
             if (pregunta?.tipo === "decimales") {
                 dibujarDecimales();
+                return;
+            }
+            if (pregunta?.tipo === "tiempo") {
+                dibujarTiempo();
                 return;
             }
             if (pregunta?.tipo === "fraccion") {
@@ -5811,7 +5839,7 @@
                 }
 
                 score++;
-                aciertosPorOp[pregunta.tipo === "logica" ? "L" : pregunta.tipo === "fraccion" ? "F" : pregunta.tipo === "residuo" ? "R" : pregunta.tipo === "multiplos" ? "M" : pregunta.tipo === "area" ? "A" : pregunta.tipo === "dinero" ? "$" : pregunta.tipo === "porcentaje" ? "%" : pregunta.tipo === "decimales" ? "D" : seDivide() ? "÷" : "×"]++;
+                aciertosPorOp[pregunta.tipo === "logica" ? "L" : pregunta.tipo === "fraccion" ? "F" : pregunta.tipo === "residuo" ? "R" : pregunta.tipo === "multiplos" ? "M" : pregunta.tipo === "area" ? "A" : pregunta.tipo === "dinero" ? "$" : pregunta.tipo === "porcentaje" ? "%" : pregunta.tipo === "decimales" ? "D" : pregunta.tipo === "tiempo" ? "T" : seDivide() ? "÷" : "×"]++;
                 ganarEstrellas(1 + (florecio ? BONO_FLOR : 0));
                 updateHUD();
                 celebrar(document.getElementById("pastilla-estrellas"), "celebra-brinca");
@@ -5893,7 +5921,7 @@
 
         /** Lo que hace falta guardar en la cola para repetir la misma pregunta. */
         function extraDeRepaso() {
-            if (["logica", "fraccion", "residuo", "multiplos", "area", "dinero", "porcentaje", "decimales"].includes(pregunta.tipo)) return { reto: pregunta.reto };
+            if (["logica", "fraccion", "residuo", "multiplos", "area", "dinero", "porcentaje", "decimales", "tiempo"].includes(pregunta.tipo)) return { reto: pregunta.reto };
             return pregunta.tipo === "problema" ? { op: pregunta.op, t: pregunta.t } : {};
         }
 
@@ -5960,11 +5988,12 @@
                 : currentTable === "dinero" ? "Decimales y Dinero"
                 : currentTable === "porcentajes" ? "Porcentajes"
                 : currentTable === "decimales" ? "Fracciones Decimales"
+                : currentTable === "tiempo" ? "Medidas de Tiempo"
                 : currentTable === "fracciones" ? (claseFracciones === "mezcla" ? "Las Fracciones del Jardín" : `Fracciones: ${NOMBRE_CLASE_FRACCION[claseFracciones]}`)
                 : `La Tabla del ${currentTable}`;
             document.getElementById("victory-table-name").innerText = tableName;
 
-            const aprendido = ["div", "residuo", "multiplos", "area", "dinero", "porcentajes", "decimales", "problemas", "logica", "fracciones"].includes(currentTable)
+            const aprendido = ["div", "residuo", "multiplos", "area", "dinero", "porcentajes", "decimales", "tiempo", "problemas", "logica", "fracciones"].includes(currentTable)
                 ? fraseDeLoResuelto()
                 : fraseDeLoAprendido();
             document.getElementById("victoria-aprendido").innerText = aprendido;
@@ -6039,6 +6068,10 @@
                     comparar: "Para comparar, pásalas al mismo número de abajo.",
                 }[pregunta?.clase] || "Para sacar 3/4 de un número, se divide entre 4 y se multiplica por 3.";
                 return `Resolviste ${n} ${n === 1 ? "fracción" : "fracciones"}. ${idea}`;
+            }
+            if (currentTable === "tiempo") {
+                const n = aciertosPorOp["T"];
+                return `Resolviste ${n} ${n === 1 ? "pregunta" : "preguntas"} de tiempo. Una hora tiene 60 minutos, no 100: por eso 3:50 y 20 minutos más son las 4:10. Cada número del reloj son 5 minutos, como la tabla del 5.`;
             }
             if (currentTable === "decimales") {
                 const n = aciertosPorOp["D"];
