@@ -102,8 +102,10 @@ test("dice cuándo practica, la meta, las fracciones, los retos y la Aventura", 
   await expect(informe).toContainText("Cumplió la meta del día (acertar 10) 3 veces.");
   await expect(informe.locator(".informe-dias span")).toHaveCount(14);
   await expect(informe.locator(".informe-dias .si")).toHaveCount(3);
-  await expect(informe).toContainText("Fracciones: de un número, 6 de 10 bien");
-  await expect(informe).toContainText("Retos de lógica: ¿cuál da más?, 6 de 10 bien");
+  // Una línea por tema (las cinco clases de cada uno, 6 de 10 cada una).
+  await expect(informe).toContainText("De sus últimas respuestas en cada tema:");
+  await expect(informe).toContainText("Fracciones: 30 de 50 bien.");
+  await expect(informe).toContainText("Retos de lógica: 30 de 50 bien.");
   await expect(informe).toContainText("La Aventura: va en el mundo 2 de 6.");
   await expect(informe.locator("footer")).toContainText("No se envió nada por internet.");
 });
@@ -116,7 +118,7 @@ test("sin jugar: lo dice claro y sugiere empezar juntos", async ({ page }) => {
   await expect(informe).toContainText("Aún no ha jugado a multiplicar.");
   await expect(informe).toContainText("Todavía no domina ninguna tabla entera de memoria.");
   await expect(informe.locator("tbody tr").first()).toContainText("Sin jugar");
-  await expect(informe).not.toContainText("Fracciones, retos, división y Aventura");
+  await expect(informe).not.toContainText("Otros temas y la Aventura");
   await expect(informe.locator(".informe-sugerencia")).toContainText("Siéntense juntos la primera vez");
 });
 

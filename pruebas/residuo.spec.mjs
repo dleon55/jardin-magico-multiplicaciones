@@ -139,7 +139,7 @@ test("no cuenta para el mapa ni el jardín, y queda en la vista para adultos y e
   await page.evaluate(() => mostrarAdultos());
   await expect(page.locator(".adulto-residuo")).toContainText("División con residuo (sus últimas respuestas): dividir con lo que sobra 1 de 1.");
   await page.evaluate(() => { window.print = () => {}; imprimirInforme(perfilActual); });
-  await expect(page.locator("#informe")).toContainText("División con residuo: dividir con lo que sobra, 1 de 1 bien.");
+  await expect(page.locator("#informe")).toContainText("División con residuo: 1 de 1 bien.");
 });
 
 test("diez aciertos: la victoria lo dice con la idea que hay que llevarse", async ({ page }) => {

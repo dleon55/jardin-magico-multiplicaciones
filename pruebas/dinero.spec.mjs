@@ -167,7 +167,7 @@ test("queda en la vista para adultos y en el informe, por clase", async ({ page 
   await page.evaluate(() => mostrarAdultos());
   await expect(page.locator(".adulto-dinero")).toContainText("Decimales y dinero (sus últimas respuestas): sumar precios 1 de 1, el cambio 0 de 1.");
   await page.evaluate(() => { window.print = () => {}; imprimirInforme(perfilActual); });
-  await expect(page.locator("#informe")).toContainText("Decimales y dinero: sumar precios, 1 de 1 bien; el cambio, 0 de 1 bien.");
+  await expect(page.locator("#informe")).toContainText("Decimales y dinero: 1 de 2 bien.");
 });
 
 test("diez aciertos: la victoria deja la idea clave", async ({ page }) => {

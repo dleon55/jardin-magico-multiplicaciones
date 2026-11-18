@@ -9,6 +9,19 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-18
 
+- **Porcentajes** (#100, tarea #71, quinto y último tema de la lista): el
+  tanto por ciento de un número, descuentos y fracción ↔ porcentaje, con
+  10, 20, 25, 50 y 75 %.
+  - Las falsas son los errores típicos (el porcentaje como respuesta,
+    restar, la mitad por la cuarta parte, pagar el descuento, «la cuarta
+    parte es el 4 %»), cada uno explicado al fallar.
+  - La ayuda pinta 100 cuadritos.
+  - Vive en `js/porcentajes.js`.
+
+  De paso, el informe imprimible volvía a pasar de una hoja con todos los
+  temas jugados. Ahora el apartado «Otros temas y la Aventura» da una línea
+  por tema («Fracciones: 30 de 50 bien») y el detalle por clase queda en la
+  vista para adultos.
 - **Decimales y dinero** (#99, tarea #71, cuarto tema nuevo): sumar precios,
   el cambio, varias cosas iguales y comparar decimales, con pesos y
   centavos.
