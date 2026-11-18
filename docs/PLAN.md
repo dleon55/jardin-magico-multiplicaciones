@@ -17,8 +17,8 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | **Todo lo que no necesita servidor, hecho** | Los cinco temas nuevos (#71 cerrado), turnos en un aparato, guía de pruebas y opciones de plataforma. Lo demás espera las decisiones del titular (#66, #72) |
 
 **Cifras al día:**
-- 32 PRs fusionados desde que empezó el plan (#73 a #106), cada uno verificado en el sitio publicado.
-- La compuerta de calidad (`npm run comprobar`) tiene **1239 pruebas en verde**, en escritorio y tableta.
+- 34 PRs fusionados desde que empezó el plan (#73 a #109), cada uno verificado en el sitio publicado.
+- La compuerta de calidad (`npm run comprobar`) tiene **1271 pruebas en verde**, en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
 - El juego, en varios archivos desde #96: `index.html` pesa 453 KB, más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`. Sin dependencias externas, y funciona sin internet.
 
@@ -69,6 +69,7 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | F1.11 Guion de la voz | #51 | #101 | [`GUION-VOZ.md`](GUION-VOZ.md): 50 frases con nombre de archivo, cómo grabar y modelo de permiso |
 | F3.5b Fracciones decimales | #102 | #103 | Fracción ↔ decimal, comparar y sumar décimos; la ayuda es una tira de 10 o 100 cuadritos |
 | F3.5c Medidas de tiempo | #105 | #106 | Leer el reloj, qué hora será, cuánto dura y horas a minutos; el reloj es un dibujo propio y la ayuda, bloques de 5 minutos |
+| F3.5d El calendario | #108 | #109 | Días y semanas, qué día será, los meses y días entre fechas; un mes dibujado y los nudillos. El informe pasa a dos columnas en «Otros temas» |
 
 **Calidad que se mantuvo en todo el camino:**
 - accesibilidad WCAG 2.1 AA medida con axe en cada pantalla nueva;
@@ -89,9 +90,9 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 4 | Lo que se decida con servidor: cuentas, salón en vivo, privacidad, métricas | #66, #67 | **Decisión del titular** | Solo con la opción C o D |
 
 **No queda trabajo de Claude que no dependa de una decisión o una tarea del
-titular.** Ya hay siete temas nuevos: los cinco de #71, las fracciones decimales
-(#102) y las medidas de tiempo (#105). Si se quieren más (por ejemplo, el
-calendario), se abre un issue nuevo y se hacen con el mismo método.
+titular.** Ya hay ocho temas nuevos: los cinco de #71, las fracciones decimales
+(#102), las medidas de tiempo (#105) y el calendario (#108). Si se quieren
+más, se abre un issue nuevo y se hacen con el mismo método.
 
 ### Del titular (no los puede hacer Claude)
 - [ ] **Decidir la plataforma** (#66): A, B, C o D, con el documento delante. Bloquea cuentas, salón en vivo, retos en línea, métricas y privacidad.
