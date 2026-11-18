@@ -159,6 +159,17 @@ test("perímetro y área, con la ayuda abierta", async ({ page }) => {
   await auditar(page, "perímetro y área");
 });
 
+test("decimales y dinero, con la ayuda abierta (el cambio y los decimales)", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("#btn-dinero");
+  for (const reto of [{ clase: "cambio", billete: 50, precio: 3740 }, { clase: "decimal", a: 50, b: 45 }]) {
+    await page.evaluate((r) => { cancelarEspera(); colaRepaso = []; bolsa = [{ a: 5, b: 1, reto: r }]; nextQuestion(); }, reto);
+    if (await page.locator("#help-panel").isHidden()) await page.click("#btn-help");
+    await auditar(page, `decimales y dinero: ${reto.clase}`);
+  }
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");

@@ -7,6 +7,18 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-18
+
+- **Decimales y dinero** (#99, tarea #71, cuarto tema nuevo): sumar precios,
+  el cambio, varias cosas iguales y comparar decimales, con pesos y
+  centavos.
+  - Las falsas son los errores típicos (no llevar el peso, no pedir
+    prestado, multiplicar solo los pesos, «más cifras es más grande»), cada
+    uno explicado al fallar.
+  - La ayuda muestra la cuenta en columnas, los saltos del cambio y tiras
+    para los decimales.
+  - Vive en `js/dinero.js`.
+
 ## 2026-11-17
 
 - **Perímetro y área** (#98, tarea #71, tercer tema nuevo): área, perímetro
