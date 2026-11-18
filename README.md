@@ -450,6 +450,30 @@ mismo.
   perímetro, la orilla va en naranja; en «un lado», el que falta lleva «?».
   Se evitan los rectángulos en que área y perímetro dan lo mismo (4 × 4 y
   3 × 6), para que la confusión se note. Vive en `js/area.js`.
+- **🪙 Decimales y dinero** (Fase 3, #71). Diez preguntas por partida, con
+  pesos y centavos:
+  - 3 de **sumar precios:** «Una paleta de $12.50 y un jugo de $8.75: ¿cuánto
+    pagas?». Los centavos siempre pasan de un peso.
+  - 3 de **el cambio:** «Pagas con $50 algo de $37.40». Nunca con 50
+    centavos, porque ahí pedir prestado o no daría lo mismo.
+  - 2 de **varias cosas iguales:** «3 cuadernos de $12.50».
+  - 2 de **comparar decimales:** «¿Cuál es el número más grande?», con 0.5,
+    0.45, 0.4 y 0.09.
+
+  Las falsas son los errores típicos, cada uno explicado al fallar:
+  - no llevar el peso de los centavos;
+  - copiar los centavos en el cambio, o no pedir el peso prestado;
+  - multiplicar solo los pesos;
+  - creer que más cifras es más grande.
+
+  **La ayuda**, sin dar la respuesta:
+  - la cuenta en columnas de pesos y centavos;
+  - contar el cambio hacia arriba, por saltos, como en la tienda;
+  - el precio repetido una vez por cosa;
+  - una tira por número decimal.
+
+  Todo se cuenta en centavos enteros, para que no haya errores de redondeo.
+  Vive en `js/dinero.js`.
 - **👫 En equipo** (Fase 3, #70, sin servidor). Dos o tres niños se turnan
   en el mismo aparato.
   - Se marcan quiénes juegan, o se añade a quien falta: si ya tiene jardín
@@ -680,6 +704,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/sonido.js` | Música de fondo, audio sintético y sonidos por capas |
 | `js/multiplos.js` | El tema de múltiplos y divisores |
 | `js/area.js` | El tema de perímetro y área |
+| `js/dinero.js` | El tema de decimales y dinero |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -754,7 +779,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |

@@ -19,7 +19,7 @@
 // olvidara cambiarla, quien ya tuviera el juego instalado se quedaría para
 // siempre en la versión vieja, porque todo se sirve desde la caché.
 
-const VERSION = "d910acdb4e84";
+const VERSION = "855e56b6aaae";
 const CACHE = `jardin-${VERSION}`;
 
 const ARCHIVOS = [
@@ -32,6 +32,7 @@ const ARCHIVOS = [
   "js/sonido.js",
   "js/multiplos.js",
   "js/area.js",
+  "js/dinero.js",
   "manifest.webmanifest",
   "fuentes/fredoka-one-latin.woff2",
   "fuentes/quicksand-latin.woff2",
