@@ -3,7 +3,7 @@
 El Jardín Mágico de las Multiplicaciones: de un buen juego de tablas a uno de
 calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
-**Actualizado: 17 de noviembre de 2026.**
+**Actualizado: 18 de noviembre de 2026.**
 - El estado del día a día está en el
   [issue de estado #20](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/20).
 - El detalle de cada cambio, con su PR, está en el [CHANGELOG](../CHANGELOG.md).
@@ -12,15 +12,15 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
 | Hito | Issue | Avance | Estado |
 |------|-------|--------|--------|
-| 1 · Calidad que se ve y se oye | [#45](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/45) | **10 de 11** | Casi cerrado: falta la voz grabada, que depende del titular |
+| 1 · Calidad que se ve y se oye | [#45](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/45) | **10 de 11** | Casi cerrado: el guion de la voz está listo ([`GUION-VOZ.md`](GUION-VOZ.md)); faltan la grabación y el permiso, del titular |
 | 2 · Un solo camino y mejor enseñanza | [#46](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/46) | **7 de 7** | **Cerrado** el 16 de noviembre |
-| 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | Lo que no necesita servidor, avanzado | Primer tema nuevo y turnos locales hechos; guía de pruebas y opciones de plataforma escritas. Lo demás espera la decisión del titular (#66) |
+| 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | **Todo lo que no necesita servidor, hecho** | Los cinco temas nuevos (#71 cerrado), turnos en un aparato, guía de pruebas y opciones de plataforma. Lo demás espera las decisiones del titular (#66, #72) |
 
 **Cifras al día:**
-- 24 PRs fusionados desde que empezó el plan (#73 a #96), cada uno verificado en el sitio publicado.
-- La compuerta de calidad (`npm run comprobar`) tiene **1057 pruebas en verde**, en escritorio y tableta.
+- 29 PRs fusionados desde que empezó el plan (#73 a #101), cada uno verificado en el sitio publicado.
+- La compuerta de calidad (`npm run comprobar`) tiene **más de 1170 pruebas en verde**, en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
-- El juego, en varios archivos desde #96: `index.html` pesa 445 KB (antes 569), más `js/arte.js`, `js/sonido.js`, `js/datos.js` y `juego.css`. Sin dependencias externas, y funciona sin internet.
+- El juego, en varios archivos desde #96: `index.html` pesa 453 KB, más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`. Sin dependencias externas, y funciona sin internet.
 
 ## Objetivos cumplidos
 
@@ -61,6 +61,12 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | F3.6 Guía de pruebas con niños | #72 | #90 | [`PRUEBAS-CON-NINOS.md`](PRUEBAS-CON-NINOS.md): permiso, ocho tareas, hoja de registro, de la observación al issue. **Las sesiones son del titular** |
 | F3.5 Primer tema nuevo: división con residuo | #71 | #93 | «17 ÷ 5 = 3, y sobran 2», con errores típicos explicados, ayuda visual y registro para adultos |
 | F3.4 Turnos en el mismo aparato | #70 | #94 | «En equipo»: dos o tres niños se turnan; cada respuesta crece en el jardín de quien contesta; meta común, sin comparar |
+| Separar el juego en archivos | — | #96 | Arte, sonido, datos y estilos fuera de `index.html` (569 → 445 KB); una prueba vigila la lista sin internet y el orden de carga |
+| F3.5 Múltiplos y divisores | #71 | #97 | Múltiplo, divisor y «en dos tablas a la vez»; la ayuda muestra las tablas como filas |
+| F3.5 Perímetro y área | #71 | #98 | Área, perímetro y un lado desde el área; la ayuda es el rectángulo de las tablas en cuadritos |
+| F3.5 Decimales y dinero | #71 | #99 | Sumar precios llevando el peso, el cambio, varias cosas iguales y comparar decimales |
+| F3.5 Porcentajes | #71 | #100 | El tanto por ciento, descuentos y fracción ↔ porcentaje, con 100 cuadritos |
+| F1.11 Guion de la voz | #51 | #101 | [`GUION-VOZ.md`](GUION-VOZ.md): 50 frases con nombre de archivo, cómo grabar y modelo de permiso |
 
 **Calidad que se mantuvo en todo el camino:**
 - accesibilidad WCAG 2.1 AA medida con axe en cada pantalla nueva;
@@ -75,10 +81,15 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
 | # | Tarea | Issue | Depende de | Notas |
 |---|-------|-------|------------|-------|
-| 1 | F3.5 Más temas: múltiplos y divisores; perímetro y área (enlaza con el rectángulo); decimales y dinero; porcentajes sencillos | [#71](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/71) | — | Un PR por tema, con el mismo método que la división con residuo |
+| 1 | Reproducir la voz grabada, con la sintética de respaldo | [#51](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/51) | **Las grabaciones y el permiso del titular** | El guion dice qué archivo suena en cada momento |
 | 2 | Salón por archivos (opción B de la plataforma) | #66 | **Decisión del titular** | Solo si elige A + B: la docente junta los archivos de su salón en su aparato |
-| 3 | F1.11 Guion de voz | [#51](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/51) | Sí del titular | 40 a 60 frases con nombre de archivo |
-| 4 | Convertir en issues los hallazgos de las pruebas con niños | #72 | Las sesiones del titular | Con la plantilla de la guía |
+| 3 | Convertir en issues los hallazgos de las pruebas con niños | #72 | **Las sesiones del titular** | Con la plantilla de la guía |
+| 4 | Lo que se decida con servidor: cuentas, salón en vivo, privacidad, métricas | #66, #67 | **Decisión del titular** | Solo con la opción C o D |
+
+**No queda trabajo de Claude que no dependa de una decisión o una tarea del
+titular.** Si se quieren más temas que los cinco de #71 (por ejemplo,
+fracciones decimales o medidas de tiempo), se abre un issue nuevo y se hacen
+con el mismo método.
 
 ### Del titular (no los puede hacer Claude)
 - [ ] **Decidir la plataforma** (#66): A, B, C o D, con el documento delante. Bloquea cuentas, salón en vivo, retos en línea, métricas y privacidad.
@@ -103,6 +114,7 @@ gantt
     axisFormat  %d %b
     section Hito 1
     Arte, mascota, sonido, bienvenida (10 tareas)  :done,    h1, 2026-11-15, 2d
+    Guion de la voz                                :done,    h1g, 2026-11-18, 1d
     Voz grabada (titular)                          :         h1v, 2026-11-23, 7d
     section Hito 2
     Las 7 tareas y el camino                       :done,    h2, 2026-11-16, 1d
@@ -110,7 +122,7 @@ gantt
     Opciones de plataforma y guía de pruebas       :done,    h3a, 2026-11-16, 1d
     División con residuo y turnos                  :done,    h3b, 2026-11-16, 1d
     Separar arte y datos en archivos               :done,    h3s, 2026-11-17, 1d
-    Más temas (múltiplos, área, decimales, %)      :         h3t, after h3s, 6d
+    Más temas (múltiplos, área, decimales, %)      :done,    h3t, 2026-11-17, 2d
     Pruebas con niños (titular)                    :         h3n, 2026-11-17, 14d
     section Hito 3 con servidor (si se decide)
     Decisión de plataforma (titular)               :crit,    h3d, 2026-11-17, 10d
@@ -121,8 +133,8 @@ gantt
 
 | Semana | Claude | Titular |
 |--------|--------|---------|
-| 16 al 22 de noviembre | ~~Separar arte y datos~~ (hecho, #96); múltiplos y divisores; perímetro y área | Probar lo nuevo en el teléfono; empezar a leer el documento de plataforma |
-| 23 al 29 de noviembre | Decimales y dinero; porcentajes; ajustes | **Decidir la plataforma**; decidir la voz; empezar pruebas con niños |
+| 16 al 22 de noviembre | **Hecho:** separar en archivos, los cuatro temas que faltaban y el guion de la voz | Probar lo nuevo en el teléfono; leer el documento de plataforma |
+| 23 al 29 de noviembre | Lo que pidan las decisiones o las pruebas del titular | **Decidir la plataforma**; grabar la voz; empezar pruebas con niños |
 | 30 de noviembre al 13 de diciembre | Lo que salga de las pruebas con niños; salón por archivos si se elige B | Terminar las pruebas con niños |
 | Desde el 14 de diciembre | Si se elige C: cuentas, salón en vivo, privacidad y métricas | Revisión legal del aviso de privacidad |
 
@@ -130,7 +142,7 @@ gantt
 
 ```mermaid
 graph LR
-    H2[Hito 2 ✅] --> F35[F3.5 Más temas]
+    H2[Hito 2 ✅] --> F35[F3.5 Cinco temas ✅]
     SEP[Separar arte y datos ✅] --> F35
     T1{{Titular: plataforma}} --> F31[F3.1 Decisión]
     DOC[DECISION-PLATAFORMA.md ✅] --> F31
@@ -161,6 +173,7 @@ graph LR
 | Datos de menores (LFPDPPP) si se añade servidor | Media | Alto | Hoy no sale nada del dispositivo. Con servidor: datos mínimos, alias, consentimiento y derechos ARCO (F3.7), revisión legal del titular | Abierto |
 | Ramas fusionadas acumuladas (más de 60) | Alta | Bajo | Script de limpieza listo; el titular las borra o activa el borrado automático | Abierto |
 | Un mundo cerrado de la Aventura frustra a quien quería jugar | Media | Medio | El primer mundo está abierto desde el primer día; lo ya jugado nunca se cierra; el cierre dice qué tabla falta | Mitigado; confirmar en pruebas con niños |
+| El informe imprimible crece con cada tema y pasa de una hoja | Media | Bajo | Una línea por tema (#100); la prueba de «una hoja carta» siembra todas las clases de todos los temas, así que avisa si un tema nuevo la desborda | Mitigado |
 
 ## Cómo se trabaja cada tarea
 
