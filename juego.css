@@ -231,6 +231,8 @@ button.tramo-caja:hover { filter: brightness(0.97); }
 .informe .informe-dias span { width: 1.15rem; height: 1.15rem; border: 1px solid #9ca3af; border-radius: 3px; font-size: 8pt; display: flex; align-items: center; justify-content: center; }
 .informe .informe-dias .si { background: #16a34a; border-color: #16a34a; color: #fff; }
 .informe .informe-sugerencia { background: #fefce8; border: 1.5px solid #fde047; border-radius: 8px; padding: 0.35rem 0.6rem; margin-top: 0.5rem; }
+.informe .informe-temas { columns: 2; column-gap: 1.2rem; }
+.informe .informe-temas p { break-inside: avoid; }
 .informe footer { margin-top: 0.6rem; font-size: 8.5pt; color: #4b5563; }
 @media print {
     @page { size: letter; margin: 1.3cm 1.5cm; }
