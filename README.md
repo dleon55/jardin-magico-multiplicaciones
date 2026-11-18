@@ -539,6 +539,32 @@ mismo.
   manecillas, sin decir la hora. Siempre se pasa a la hora siguiente, sin
   a. m. ni p. m. Con pocas tablas sabidas, solo en punto, y cuarto, y media
   y menos cuarto. Vive en `js/tiempo.js`.
+- **📅 El calendario** (Fase 3, #108). La semana tiene 7 días (la tabla del
+  7) y los meses 28, 30 o 31; se une con la división con residuo: 10 días
+  son 1 semana y 3 días. Diez preguntas por partida:
+  - 3 de **días y semanas:** «¿Cuántos días son 2 semanas y 3 días?»;
+  - 3 de **qué día será:** «Hoy es martes. ¿Qué día será en 10 días?», o
+    con un mes dibujado en el que solo la primera semana tiene números:
+    «El 1 de marzo es jueves. ¿Qué día de la semana es el 15?»;
+  - 2 de **los meses:** «¿Cuántos días tiene abril?», «¿Qué mes es 5 meses
+    después de septiembre?»;
+  - 2 de **días entre dos fechas:** «Del 25 de mayo al 3 de junio, ¿cuántos
+    días pasan?».
+
+  Las falsas son los errores típicos, cada uno explicado al fallar:
+  - semanas de 10 días o de 5 (los de escuela), o sumar 2 + 7;
+  - contar el día de hoy, o contar las semanas y no los días que sobran;
+  - no dar la vuelta al año (quedarse en diciembre);
+  - «todos los meses tienen 30 días»;
+  - restar las fechas sin mirar el mes (25 − 3 = 22), o contar los dos días.
+
+  **La ayuda:** una fila de 7 cuadritos por semana; los 7 días con hoy
+  marcado; la columna del 1 en el calendario (1, 8, 15, 22, 29); los meses
+  en los nudillos de los dos puños; los 12 meses en fila; el camino de una
+  fecha a otra, un cuadrito por día. No usa la fecha del aparato, y febrero
+  tiene 28 días (los años bisiestos quedan fuera). Con pocas tablas sabidas:
+  semanas enteras, hasta 7 días y sin cruzar de mes. Vive en
+  `js/calendario.js`.
 - **👫 En equipo** (Fase 3, #70, sin servidor). Dos o tres niños se turnan
   en el mismo aparato.
   - Se marcan quiénes juegan, o se añade a quien falta: si ya tiene jardín
@@ -773,6 +799,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/porcentajes.js` | El tema de porcentajes |
 | `js/decimales.js` | El tema de fracciones decimales |
 | `js/tiempo.js` | El tema de medidas de tiempo |
+| `js/calendario.js` | El tema del calendario |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -847,7 +874,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |

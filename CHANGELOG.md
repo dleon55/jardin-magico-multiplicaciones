@@ -9,6 +9,20 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-18
 
+- **El calendario** (#109, tarea #108): días y semanas, qué día será, los
+  meses y los días entre dos fechas.
+  - Las falsas son los errores típicos (semanas de 10 o de 5 días, contar
+    el día de hoy, quedarse en diciembre, «todos los meses tienen 30»,
+    25 − 3 = 22 entre meses), cada uno explicado al fallar.
+  - Un mes dibujado con solo la primera semana numerada: el 15 se cuenta
+    de 7 en 7, no se lee.
+  - La ayuda: semanas en filas de 7, la columna del 1, los nudillos de los
+    dos puños y el camino de una fecha a otra.
+  - Vive en `js/calendario.js`. Las preguntas pueden pedir opciones largas
+    (`pregunta.opcionesLargas`), para «miércoles» o «septiembre».
+
+  De paso, con diez temas jugados el informe imprimible volvía a pasar de
+  una hoja: ahora «Otros temas y la Aventura» va en dos columnas.
 - **Medidas de tiempo** (#106, tarea #105): leer el reloj de manecillas,
   qué hora será, cuánto dura y horas a minutos.
   - Las falsas son los errores típicos (leer el número y no los minutos,

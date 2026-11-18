@@ -203,6 +203,18 @@ test("medidas de tiempo, con el reloj y la ayuda abierta (las cuatro clases)", a
   }
 });
 
+test("el calendario, con el mes dibujado y la ayuda abierta (todas las formas)", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("#btn-calendario");
+  for (const reto of [{ clase: "semanas", s: 2, d: 3 }, { clase: "diaSemana", forma: "hoy", i: 1, n: 10 }, { clase: "diaSemana", forma: "mes", mes: 2, i: 3, k: 15 },
+    { clase: "meses", forma: "dias", mes: 3 }, { clase: "meses", forma: "despues", mes: 8, n: 5 }, { clase: "cuantosDias", mes: 4, a: 25, b: 3 }]) {
+    await page.evaluate((r) => { cancelarEspera(); colaRepaso = []; bolsa = [{ a: 2, b: 1, reto: r }]; nextQuestion(); }, reto);
+    if (await page.locator("#help-panel").isHidden()) await page.click("#btn-help");
+    await auditar(page, `calendario: ${reto.clase} ${reto.forma ?? ""}`);
+  }
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
