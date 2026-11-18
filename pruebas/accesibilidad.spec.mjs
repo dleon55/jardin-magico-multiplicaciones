@@ -170,6 +170,17 @@ test("decimales y dinero, con la ayuda abierta (el cambio y los decimales)", asy
   }
 });
 
+test("porcentajes, con la ayuda abierta (de un número y fracción)", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("#btn-porcentajes");
+  for (const reto of [{ clase: "de", p: 25, n: 40 }, { clase: "fraccion", p: 75 }]) {
+    await page.evaluate((r) => { cancelarEspera(); colaRepaso = []; bolsa = [{ a: 4, b: 1, reto: r }]; nextQuestion(); }, reto);
+    if (await page.locator("#help-panel").isHidden()) await page.click("#btn-help");
+    await auditar(page, `porcentajes: ${reto.clase}`);
+  }
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");

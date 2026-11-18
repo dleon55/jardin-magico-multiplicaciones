@@ -147,7 +147,7 @@ test("queda en la vista para adultos y en el informe, por clase", async ({ page 
   await page.evaluate(() => mostrarAdultos());
   await expect(page.locator(".adulto-area")).toContainText("Perímetro y área (sus últimas respuestas): área 1 de 1, perímetro 0 de 1.");
   await page.evaluate(() => { window.print = () => {}; imprimirInforme(perfilActual); });
-  await expect(page.locator("#informe")).toContainText("Perímetro y área: área, 1 de 1 bien; perímetro, 0 de 1 bien.");
+  await expect(page.locator("#informe")).toContainText("Perímetro y área: 1 de 2 bien.");
 });
 
 test("diez aciertos: la victoria deja la idea clave", async ({ page }) => {

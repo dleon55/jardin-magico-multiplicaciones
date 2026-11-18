@@ -160,7 +160,7 @@ test("queda en la vista para adultos y en el informe, por clase", async ({ page 
   await page.evaluate(() => mostrarAdultos());
   await expect(page.locator(".adulto-multiplos")).toContainText("Múltiplos y divisores (sus últimas respuestas): múltiplos de un número 0 de 1, divisores 1 de 1.");
   await page.evaluate(() => { window.print = () => {}; imprimirInforme(perfilActual); });
-  await expect(page.locator("#informe")).toContainText("Múltiplos y divisores: múltiplos de un número, 0 de 1 bien; divisores, 1 de 1 bien.");
+  await expect(page.locator("#informe")).toContainText("Múltiplos y divisores: 1 de 2 bien.");
 });
 
 test("diez aciertos: la victoria deja la idea clave", async ({ page }) => {

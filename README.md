@@ -474,6 +474,25 @@ mismo.
 
   Todo se cuenta en centavos enteros, para que no haya errores de redondeo.
   Vive en `js/dinero.js`.
+- **💯 Porcentajes** (Fase 3, #71). Solo los amables: 10, 20, 25, 50 y 75 %.
+  Diez preguntas por partida:
+  - 4 de **el tanto por ciento de un número:** «¿Cuánto es el 25% de 40?»;
+  - 3 de **descuentos:** «Un juguete cuesta $80 y tiene 25% de descuento.
+    ¿Cuánto pagas?»;
+  - 3 de **fracción y porcentaje:** «¿Qué porcentaje es la cuarta parte?».
+
+  Las falsas son los errores típicos, cada uno explicado al fallar:
+  - tomar el porcentaje como la respuesta;
+  - restar el número en lugar de sacar el porcentaje;
+  - confundir la mitad con la cuarta parte;
+  - pagar el descuento en lugar del precio, o sumarlo;
+  - «la cuarta parte es el 4 %».
+
+  **La ayuda** pinta 100 cuadritos: el porcentaje coloreado, o el 100
+  partido en sus partes iguales, sin pintar la respuesta. Los números dan
+  siempre exacto, y los descuentos nunca dejan centavos. Con pocas tablas
+  sabidas, solo la mitad, la cuarta y la décima parte. Vive en
+  `js/porcentajes.js`.
 - **👫 En equipo** (Fase 3, #70, sin servidor). Dos o tres niños se turnan
   en el mismo aparato.
   - Se marcan quiénes juegan, o se añade a quien falta: si ya tiene jardín
@@ -705,6 +724,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/multiplos.js` | El tema de múltiplos y divisores |
 | `js/area.js` | El tema de perímetro y área |
 | `js/dinero.js` | El tema de decimales y dinero |
+| `js/porcentajes.js` | El tema de porcentajes |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -779,7 +799,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |
