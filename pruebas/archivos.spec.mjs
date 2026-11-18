@@ -5,7 +5,7 @@ import { test, expect } from "@playwright/test";
 import { readFile, stat } from "node:fs/promises";
 
 const leer = (ruta) => readFile(new URL(`../${ruta}`, import.meta.url), "utf8");
-const ARCHIVOS_JS = ["js/datos.js", "js/arte.js", "js/sonido.js", "js/multiplos.js", "js/area.js", "js/dinero.js", "js/porcentajes.js"];
+const ARCHIVOS_JS = ["js/datos.js", "js/arte.js", "js/sonido.js", "js/multiplos.js", "js/area.js", "js/dinero.js", "js/porcentajes.js", "js/decimales.js"];
 
 test("todo lo que index.html carga del sitio está en la lista del service worker, y existe", async () => {
   const html = await leer("index.html");

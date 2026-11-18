@@ -82,7 +82,7 @@ test("doscientas al azar: 4 opciones distintas y positivas, con la respuesta bie
 test("se juega desde el menú y no toca el jardín; un fallo vuelve igual", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
-  await page.click("#screen-selector >> text=Fracciones");
+  await page.click("#btn-fracciones");
   await page.click('#clases-fracciones button[data-clase="mezcla"]');
   await expect(page.locator("#problema-texto")).toHaveText(/fracción|¿Cuánto es \d+\/\d+ (de \d+|[+−] \d+\/\d+)\?/);   // cualquiera de las clases
   const antes = await page.evaluate(() => JSON.stringify(pregunta.reto));
@@ -124,7 +124,7 @@ test("se escribe solo si la multiplicación de debajo ya floreció", async ({ pa
 test("diez aciertos: la victoria dice cuántas se resolvieron y cómo se saca", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
-  await page.click("#screen-selector >> text=Fracciones");
+  await page.click("#btn-fracciones");
   await page.click('#clases-fracciones button[data-clase="mezcla"]');
   for (let i = 0; i < 10; i++) {
     const c = await page.evaluate(() => correctAnswer);
@@ -348,7 +348,7 @@ test.describe("partidas por clase", () => {
   test("«Fracciones» abre la elección: todo mezclado y cinco clases; Esc vuelve al menú", async ({ page }, testInfo) => {
     await page.goto("./");
     await page.click("#screen-welcome button");
-    await page.click("#screen-selector >> text=Fracciones");
+    await page.click("#btn-fracciones");
     await expect(page.locator("#screen-fracciones")).toBeVisible();
     await expect(page.locator("#screen-fracciones [data-foco]")).toBeFocused();
     await expect(page.locator("#clases-fracciones button")).toHaveCount(6);
@@ -363,7 +363,7 @@ test.describe("partidas por clase", () => {
     test(`«${boton}»: las diez preguntas son de esa clase`, async ({ page }) => {
       await page.goto("./");
       await page.click("#screen-welcome button");
-      await page.click("#screen-selector >> text=Fracciones");
+      await page.click("#btn-fracciones");
       await page.click(`#clases-fracciones button[data-clase="${clase}"]`);
       await expect(page.locator("#screen-game")).toBeVisible();
       const r = await page.evaluate(() => {
@@ -394,7 +394,7 @@ test.describe("partidas por clase", () => {
   test("al ganar una clase sola, la victoria dice cuál fue", async ({ page }) => {
     await page.goto("./");
     await page.click("#screen-welcome button");
-    await page.click("#screen-selector >> text=Fracciones");
+    await page.click("#btn-fracciones");
     await page.click('#clases-fracciones button[data-clase="equivalente"]');
     await page.evaluate(() => { aciertosPorOp.F = 10; endGameSuccess(); });
     await expect(page.locator("#victory-table-name")).toHaveText("Fracciones: Equivalentes");
