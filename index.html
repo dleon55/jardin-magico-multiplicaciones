@@ -437,11 +437,15 @@
                     <span><span aria-hidden="true">💯</span> Porcentajes</span>
                     <span class="text-xs subtitulo font-semibold">La mitad, la cuarta parte y los descuentos</span>
                 </button>
+                <button type="button" id="btn-decimales" onclick="startTable('decimales')" class="col-span-2 bubble-font bg-gradient-to-r from-cyan-200 to-indigo-200 hover:from-cyan-300 hover:to-indigo-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                    <span><span aria-hidden="true">🔟</span> Fracciones decimales</span>
+                    <span class="text-xs subtitulo font-semibold">Décimos, centésimos y el punto</span>
+                </button>
                 <button type="button" id="btn-equipo" onclick="mostrarEquipo()" class="col-span-2 bubble-font bg-gradient-to-r from-rose-200 to-pink-200 hover:from-rose-300 hover:to-pink-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">👫</span> En equipo</span>
                     <span class="text-xs subtitulo font-semibold">Se turnan en este aparato, y entre todos riegan 10 plantas</span>
                 </button>
-                <button type="button" onclick="mostrarFracciones()" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                <button type="button" id="btn-fracciones" onclick="mostrarFracciones()" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🍕</span> Fracciones</span>
                     <span class="text-xs subtitulo font-semibold">De un número, iguales, comparar y sumar</span>
                 </button>
@@ -1073,6 +1077,7 @@
     <script src="js/area.js"></script>
     <script src="js/dinero.js"></script>
     <script src="js/porcentajes.js"></script>
+    <script src="js/decimales.js"></script>
     <!-- Script del Juego -->
     <script>
         // --- ALMACENAMIENTO ---
@@ -1217,7 +1222,7 @@
         const TABLAS = 9;
         const MULTIPLICADORES = 10;
         let playerName = "";   // vacío = sin nombre: se habla del jardín, no de la persona
-        let currentTable = 1; // 1-9, "mix", "falta", "div", "residuo", "multiplos", "area", "dinero", "porcentajes", "problemas", "logica" o "fracciones"
+        let currentTable = 1; // 1-9, "mix", "falta", "div", "residuo", "multiplos", "area", "dinero", "porcentajes", "decimales", "problemas", "logica" o "fracciones"
         let globalStars = 0;
         let score = 0; // Aciertos actuales conseguidos
         let targetScore = 10; // Meta FIJA de aciertos: los fallos ya no la mueven
@@ -1246,7 +1251,7 @@
         // numA y numB siguen siendo los dos factores de la multiplicación que
         // hay debajo, también al dividir (56 ÷ 8 = 7: numA 8, numB 7).
         let pregunta = null;
-        let aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0, "M": 0, "A": 0, "$": 0, "%": 0 };
+        let aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0, "M": 0, "A": 0, "$": 0, "%": 0, "D": 0 };
         let rachaPartida = 0;   // aciertos seguidos en esta partida (celebraciones)
         let metaEnEstaPartida = false;   // ¿se cumplió la meta de hoy durante esta partida?
         // --- AJUSTES ---
@@ -1578,7 +1583,7 @@
             }));
             hechosDeLaPartida = new Set();
             estrellasAlEmpezar = globalStars;
-            aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0, "M": 0, "A": 0, "$": 0, "%": 0 };
+            aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0, "M": 0, "A": 0, "$": 0, "%": 0, "D": 0 };
             rachaPartida = 0;
             metaEnEstaPartida = false;
             callarGloboLumi();
@@ -1895,7 +1900,7 @@
 
             // Fracciones, retos y Aventura, si jugó.
             const otrosP = [];
-            for (const [prefijo, nombre] of [["fraccion:", "Fracciones"], ["logica:", "Retos de lógica"], ["residuo:", "División con residuo"], ["multiplos:", "Múltiplos y divisores"], ["area:", "Perímetro y área"], ["dinero:", "Decimales y dinero"], ["porcentaje:", "Porcentajes"]]) {
+            for (const [prefijo, nombre] of [["fraccion:", "Fracciones"], ["logica:", "Retos de lógica"], ["residuo:", "División con residuo"], ["multiplos:", "Múltiplos y divisores"], ["area:", "Perímetro y área"], ["dinero:", "Decimales y dinero"], ["porcentaje:", "Porcentajes"], ["decimales:", "Fracciones decimales"]]) {
                 // Una línea por tema, para que quepa en una hoja aunque juegue a
                 // todo; el detalle por clase está en la vista para adultos.
                 const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
@@ -2233,6 +2238,7 @@
             "area:area": "área", "area:perimetro": "perímetro", "area:lado": "un lado desde el área",
             "dinero:sumar": "sumar precios", "dinero:cambio": "el cambio", "dinero:por": "varias cosas iguales", "dinero:decimal": "comparar decimales",
             "porcentaje:de": "el tanto por ciento de un número", "porcentaje:descuento": "descuentos", "porcentaje:fraccion": "fracción y porcentaje",
+            "decimales:aDecimal": "de fracción a decimal", "decimales:aFraccion": "de decimal a fracción", "decimales:comparar": "comparar", "decimales:sumar": "sumar décimos",
         };
         // El botón de «🍕 Fracciones» que practica esa clase sola.
         const BOTON_CLASE_FRACCION = { "fraccion:de": "De un número", "fraccion:equivalente": "Equivalentes",
@@ -2270,6 +2276,7 @@
             if (p?.tipo === "area") return `area:${p.clase}`;
             if (p?.tipo === "dinero") return `dinero:${p.clase}`;
             if (p?.tipo === "porcentaje") return `porcentaje:${p.clase}`;
+            if (p?.tipo === "decimales") return `decimales:${p.clase}`;
             if (p?.tipo === "logica") return `logica:${p.clase}`;
             return null;
         }
@@ -2409,7 +2416,7 @@
                     caja.appendChild(olvidar);
                     piezas.push(caja);
                 }
-                for (const [prefijo, nombre, clase] of [["fraccion:", "Fracciones", "adulto-fracciones"], ["logica:", "Retos de lógica", "adulto-retos"], ["residuo:", "División con residuo", "adulto-residuo"], ["multiplos:", "Múltiplos y divisores", "adulto-multiplos"], ["area:", "Perímetro y área", "adulto-area"], ["dinero:", "Decimales y dinero", "adulto-dinero"], ["porcentaje:", "Porcentajes", "adulto-porcentajes"]]) {
+                for (const [prefijo, nombre, clase] of [["fraccion:", "Fracciones", "adulto-fracciones"], ["logica:", "Retos de lógica", "adulto-retos"], ["residuo:", "División con residuo", "adulto-residuo"], ["multiplos:", "Múltiplos y divisores", "adulto-multiplos"], ["area:", "Perímetro y área", "adulto-area"], ["dinero:", "Decimales y dinero", "adulto-dinero"], ["porcentaje:", "Porcentajes", "adulto-porcentajes"], ["decimales:", "Fracciones decimales", "adulto-decimales"]]) {
                     const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
                     if (filas.length === 0) continue;
                     let texto = `${nombre} (sus últimas respuestas): ${filas.map((f) => `${f.nombre} ${f.bien} de ${f.de}`).join(", ")}.`;
@@ -3903,6 +3910,8 @@
                 bolsa = bolsaDeRetos();
             } else if (currentTable === "porcentajes") {
                 bolsa = bolsaDePorcentajes();
+            } else if (currentTable === "decimales") {
+                bolsa = bolsaDeDecimales();
             } else if (currentTable === "dinero") {
                 bolsa = bolsaDeDinero();
             } else if (currentTable === "area") {
@@ -4530,6 +4539,7 @@
             if (currentTable === "area" && h.reto) return armarArea(h.reto);
             if (currentTable === "dinero" && h.reto) return armarDinero(h.reto);
             if (currentTable === "porcentajes" && h.reto) return armarPorcentaje(h.reto);
+            if (currentTable === "decimales" && h.reto) return armarDecimales(h.reto);
             if (currentTable === "logica" && h.reto) {
                 return { ...armarReto(h.reto), a, b };
             }
@@ -4613,6 +4623,7 @@
             if (pregunta.tipo === "area") [numA, numB] = [pregunta.reto.a, pregunta.reto.b];
             if (pregunta.tipo === "dinero") [numA, numB] = numerosDeDinero(pregunta.reto);
             if (pregunta.tipo === "porcentaje") [numA, numB] = numerosDePorcentaje(pregunta.reto);
+            if (pregunta.tipo === "decimales") [numA, numB] = numerosDeDecimales(pregunta.reto);
             correctAnswer = pregunta.respuesta;
             ayudaGirada = false;
             ayudaRect = null;
@@ -4624,7 +4635,7 @@
             // respuesta que se pueda escribir (¿cuál da más?).
             modoEscrito = pregunta.tipo === "mult"
                 ? seEscribe(numA, numB)
-                : !["logica", "residuo", "multiplos", "area", "dinero", "porcentaje"].includes(pregunta.tipo) && !pregunta.tiras && !repasoActual && estadoHecho(numA, numB) === "florecida";
+                : !["logica", "residuo", "multiplos", "area", "dinero", "porcentaje", "decimales"].includes(pregunta.tipo) && !pregunta.tiras && !repasoActual && estadoHecho(numA, numB) === "florecida";
             // «3, sobran 2» no cabe con la letra grande de un número.
             document.getElementById("opciones").classList.toggle("opciones-largas", pregunta.tipo === "residuo");
             document.getElementById("escritura-aviso").innerText = pregunta.tipo === "mult"
@@ -4646,7 +4657,7 @@
             const textoPregunta = document.getElementById("question-text");
             const problema = document.getElementById("problema-texto");
             // «3/4 de 24» tampoco cabe en el girasol.
-            const largo = ["problema", "logica", "fraccion", "multiplos", "area", "dinero", "porcentaje"].includes(pregunta.tipo);
+            const largo = ["problema", "logica", "fraccion", "multiplos", "area", "dinero", "porcentaje", "decimales"].includes(pregunta.tipo);
             problema.classList.toggle("hidden", !largo);
             // Con la pregunta escrita arriba, el girasol solo dice «¿?»: pequeño,
             // para que las opciones queden a la vista sin desplazarse.
@@ -4730,7 +4741,7 @@
         function generateHelpVisual() {
             // En los retos, el rectángulo solo ayuda a partir una multiplicación.
             const sinDibujo = pregunta?.tipo === "logica" && pregunta.clase !== "partir";
-            document.getElementById("btn-girar").classList.toggle("hidden", ["logica", "fraccion", "residuo", "multiplos", "area", "dinero", "porcentaje"].includes(pregunta?.tipo));
+            document.getElementById("btn-girar").classList.toggle("hidden", ["logica", "fraccion", "residuo", "multiplos", "area", "dinero", "porcentaje", "decimales"].includes(pregunta?.tipo));
             pintarControlesAyuda(false);   // los dibujos de retos y fracciones no se tocan
             if (pregunta?.tipo === "residuo") {
                 pintarControlesAyuda(false);
@@ -4751,6 +4762,10 @@
             }
             if (pregunta?.tipo === "porcentaje") {
                 dibujarPorcentaje();
+                return;
+            }
+            if (pregunta?.tipo === "decimales") {
+                dibujarDecimales();
                 return;
             }
             if (pregunta?.tipo === "fraccion") {
@@ -5796,7 +5811,7 @@
                 }
 
                 score++;
-                aciertosPorOp[pregunta.tipo === "logica" ? "L" : pregunta.tipo === "fraccion" ? "F" : pregunta.tipo === "residuo" ? "R" : pregunta.tipo === "multiplos" ? "M" : pregunta.tipo === "area" ? "A" : pregunta.tipo === "dinero" ? "$" : pregunta.tipo === "porcentaje" ? "%" : seDivide() ? "÷" : "×"]++;
+                aciertosPorOp[pregunta.tipo === "logica" ? "L" : pregunta.tipo === "fraccion" ? "F" : pregunta.tipo === "residuo" ? "R" : pregunta.tipo === "multiplos" ? "M" : pregunta.tipo === "area" ? "A" : pregunta.tipo === "dinero" ? "$" : pregunta.tipo === "porcentaje" ? "%" : pregunta.tipo === "decimales" ? "D" : seDivide() ? "÷" : "×"]++;
                 ganarEstrellas(1 + (florecio ? BONO_FLOR : 0));
                 updateHUD();
                 celebrar(document.getElementById("pastilla-estrellas"), "celebra-brinca");
@@ -5878,7 +5893,7 @@
 
         /** Lo que hace falta guardar en la cola para repetir la misma pregunta. */
         function extraDeRepaso() {
-            if (["logica", "fraccion", "residuo", "multiplos", "area", "dinero", "porcentaje"].includes(pregunta.tipo)) return { reto: pregunta.reto };
+            if (["logica", "fraccion", "residuo", "multiplos", "area", "dinero", "porcentaje", "decimales"].includes(pregunta.tipo)) return { reto: pregunta.reto };
             return pregunta.tipo === "problema" ? { op: pregunta.op, t: pregunta.t } : {};
         }
 
@@ -5944,11 +5959,12 @@
                 : currentTable === "area" ? "Perímetro y Área"
                 : currentTable === "dinero" ? "Decimales y Dinero"
                 : currentTable === "porcentajes" ? "Porcentajes"
+                : currentTable === "decimales" ? "Fracciones Decimales"
                 : currentTable === "fracciones" ? (claseFracciones === "mezcla" ? "Las Fracciones del Jardín" : `Fracciones: ${NOMBRE_CLASE_FRACCION[claseFracciones]}`)
                 : `La Tabla del ${currentTable}`;
             document.getElementById("victory-table-name").innerText = tableName;
 
-            const aprendido = ["div", "residuo", "multiplos", "area", "dinero", "porcentajes", "problemas", "logica", "fracciones"].includes(currentTable)
+            const aprendido = ["div", "residuo", "multiplos", "area", "dinero", "porcentajes", "decimales", "problemas", "logica", "fracciones"].includes(currentTable)
                 ? fraseDeLoResuelto()
                 : fraseDeLoAprendido();
             document.getElementById("victoria-aprendido").innerText = aprendido;
@@ -6023,6 +6039,10 @@
                     comparar: "Para comparar, pásalas al mismo número de abajo.",
                 }[pregunta?.clase] || "Para sacar 3/4 de un número, se divide entre 4 y se multiplica por 3.";
                 return `Resolviste ${n} ${n === 1 ? "fracción" : "fracciones"}. ${idea}`;
+            }
+            if (currentTable === "decimales") {
+                const n = aciertosPorOp["D"];
+                return `Resolviste ${n} ${n === 1 ? "pregunta" : "preguntas"} de fracciones decimales. 3/10 es 0.3 y 25/100 es 0.25: los décimos van en la primera cifra después del punto, y los centésimos en las dos primeras.`;
             }
             if (currentTable === "porcentajes") {
                 const n = aciertosPorOp["%"];

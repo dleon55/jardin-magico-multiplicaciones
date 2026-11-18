@@ -493,6 +493,28 @@ mismo.
   siempre exacto, y los descuentos nunca dejan centavos. Con pocas tablas
   sabidas, solo la mitad, la cuarta y la décima parte. Vive en
   `js/porcentajes.js`.
+- **🔟 Fracciones decimales** (Fase 3, #102). Une las fracciones con el
+  punto decimal: décimos y centésimos. Diez preguntas por partida:
+  - 3 de **fracción a decimal:** «¿Cómo se escribe 3/10 con punto decimal?»;
+  - 3 de **decimal a fracción:** «¿Qué fracción es 0.25?»;
+  - 2 de **comparar:** «¿Cuál es el número más grande?», con decimales y
+    fracciones mezclados (0.7, 0.65, 6/10, 69/100);
+  - 2 de **sumar décimos** que pasan del entero: «¿Cuánto es 0.6 + 0.5?».
+
+  Las falsas son los errores típicos, cada uno explicado al fallar:
+  - décimos por centésimos (3/10 = 0.03) o al revés (25/100 = 2.5);
+  - el número de abajo equivocado (0.25 = 25/10) o la fracción al revés
+    (1/25);
+  - «más cifras es más grande» (0.65 > 0.7);
+  - sumar las cifras sin llevar al entero (0.6 + 0.5 = 0.11), u olvidar el
+    entero (0.1).
+
+  **La ayuda** es una tira de 10 partes para los décimos y 100 cuadritos
+  para los centésimos; al comparar, una tira por opción, llena según lo que
+  vale; al sumar, las dos tiras juntas. Con pocas tablas sabidas, solo
+  décimos. Ninguna falsa vale lo mismo que la buena (3/10 y 30/100 no
+  salen juntas). Todo se cuenta en milésimos enteros. Vive en
+  `js/decimales.js`.
 - **👫 En equipo** (Fase 3, #70, sin servidor). Dos o tres niños se turnan
   en el mismo aparato.
   - Se marcan quiénes juegan, o se añade a quien falta: si ya tiene jardín
@@ -725,6 +747,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/area.js` | El tema de perímetro y área |
 | `js/dinero.js` | El tema de decimales y dinero |
 | `js/porcentajes.js` | El tema de porcentajes |
+| `js/decimales.js` | El tema de fracciones decimales |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -799,7 +822,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |

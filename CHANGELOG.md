@@ -9,6 +9,20 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-18
 
+- **Fracciones decimales** (#103, tarea #102): décimos y centésimos, para
+  unir las fracciones con el punto decimal.
+  - Cuatro clases: fracción a decimal (3/10 → 0.3), decimal a fracción
+    (0.25 → 25/100), comparar decimales con fracciones y sumar décimos que
+    pasan del entero (0.6 + 0.5 = 1.1).
+  - Las falsas son los errores típicos (3/10 = 0.03, 0.25 = 25/10,
+    0.65 > 0.7, 0.6 + 0.5 = 0.11), cada uno explicado al fallar.
+  - La ayuda es una tira de 10 partes o 100 cuadritos; al comparar, una
+    tira por opción.
+  - Vive en `js/decimales.js`.
+
+  De paso, el botón de «🍕 Fracciones» tiene su propio `id`, como los demás
+  temas: las pruebas lo buscaban por el texto «Fracciones», que ahora
+  también está en «Fracciones decimales».
 - **Porcentajes** (#100, tarea #71, quinto y último tema de la lista): el
   tanto por ciento de un número, descuentos y fracción ↔ porcentaje, con
   10, 20, 25, 50 y 75 %.

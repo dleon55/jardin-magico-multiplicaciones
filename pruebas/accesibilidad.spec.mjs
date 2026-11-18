@@ -181,6 +181,17 @@ test("porcentajes, con la ayuda abierta (de un número y fracción)", async ({ p
   }
 });
 
+test("fracciones decimales, con la ayuda abierta (las cuatro clases)", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("#btn-decimales");
+  for (const reto of [{ clase: "aDecimal", arriba: 3, abajo: 10 }, { clase: "aFraccion", arriba: 25, abajo: 100 }, { clase: "comparar", t: 7, x: 5 }, { clase: "sumar", a: 6, b: 5 }]) {
+    await page.evaluate((r) => { cancelarEspera(); colaRepaso = []; bolsa = [{ a: 3, b: 1, reto: r }]; nextQuestion(); }, reto);
+    if (await page.locator("#help-panel").isHidden()) await page.click("#btn-help");
+    await auditar(page, `decimales: ${reto.clase}`);
+  }
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
@@ -294,7 +305,7 @@ test("un reto de lógica, con la ayuda abierta y uno fallado", async ({ page }) 
 test("una fracción con la ayuda abierta", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
-  await page.click("#screen-selector >> text=Fracciones");
+  await page.click("#btn-fracciones");
   await page.click('#clases-fracciones button[data-clase="mezcla"]');
   await page.click("#btn-help");
   await auditar(page, "una fracción con el rectángulo repartido");
@@ -327,7 +338,7 @@ test("sumar fracciones con distinto denominador, con las tiras", async ({ page }
 test("elegir qué fracciones practicar", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
-  await page.click("#screen-selector >> text=Fracciones");
+  await page.click("#btn-fracciones");
   await auditar(page, "la elección de fracciones");
 });
 

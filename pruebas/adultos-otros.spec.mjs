@@ -14,7 +14,7 @@ async function entrar(page, nombre) {
 test("contestar fracciones y retos queda registrado por clase, con el día", async ({ page }) => {
   await page.goto("./");
   await entrar(page, "Ana");
-  await page.click("#screen-selector >> text=Fracciones");
+  await page.click("#btn-fracciones");
   await page.click('#clases-fracciones button[data-clase="equivalente"]');
   await page.click(`.btn-option[data-valor="${await page.evaluate(() => correctAnswer)}"]`);
   await page.click("#screen-game button:has-text('Menú')");
