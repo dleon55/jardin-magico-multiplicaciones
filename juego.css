@@ -212,6 +212,7 @@ button.tramo-caja:hover { filter: brightness(0.97); }
 
 /* Opciones con texto («3, sobran 2»): no caben con la letra de un número. */
 #opciones.opciones-largas .btn-option { font-size: 1.2rem; line-height: 1.2; padding: 0.75rem 0.5rem; }
+#opciones.opciones-medianas .btn-option { font-size: 1.5rem; white-space: nowrap; }
 
 /* INFORME PARA IMPRIMIR (issue #65): una hoja carta. En pantalla no se
    ve; al imprimir desde «Para las personas adultas» es lo único que

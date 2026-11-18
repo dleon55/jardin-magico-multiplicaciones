@@ -515,6 +515,30 @@ mismo.
   décimos. Ninguna falsa vale lo mismo que la buena (3/10 y 30/100 no
   salen juntas). Todo se cuenta en milésimos enteros. Vive en
   `js/decimales.js`.
+- **🕒 Medidas de tiempo** (Fase 3, #105). Una hora tiene 60 minutos, no
+  100, y cada número del reloj son 5 minutos (la tabla del 5). Diez
+  preguntas por partida:
+  - 3 de **leer el reloj** de manecillas (un reloj dibujado, al lado de la
+    pregunta);
+  - 3 de **qué hora será:** «Son las 3:50. ¿Qué hora será en 20 minutos?»;
+  - 2 de **cuánto dura:** «Sale a las 3:40 y llega a las 4:15. ¿Cuántos
+    minutos tardó?»;
+  - 2 de **horas a minutos:** «¿Cuántos minutos son 2 horas y 15 minutos?»
+    o «¿… un cuarto de hora?».
+
+  Las falsas son los errores típicos, cada uno explicado al fallar:
+  - leer el número y no los minutos (la larga en el 10 como «10 minutos»);
+  - cambiar las manecillas, o tomar la hora a la que la corta ya casi llega;
+  - contar la hora como de 100 minutos: «3:70», «415 − 340 = 75», «215»;
+  - no pasar a la hora siguiente (3:50 + 20 = «3:10»).
+
+  **La ayuda:** al leer, el reloj grande con los minutos junto a cada
+  número; al sumar y en cuánto dura, bloques de 5 minutos partidos por la
+  raya de la hora en punto; al convertir, cada hora en 12 bloques de 5.
+  Para el lector de pantalla, el reloj se describe por dónde están las
+  manecillas, sin decir la hora. Siempre se pasa a la hora siguiente, sin
+  a. m. ni p. m. Con pocas tablas sabidas, solo en punto, y cuarto, y media
+  y menos cuarto. Vive en `js/tiempo.js`.
 - **👫 En equipo** (Fase 3, #70, sin servidor). Dos o tres niños se turnan
   en el mismo aparato.
   - Se marcan quiénes juegan, o se añade a quien falta: si ya tiene jardín
@@ -748,6 +772,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/dinero.js` | El tema de decimales y dinero |
 | `js/porcentajes.js` | El tema de porcentajes |
 | `js/decimales.js` | El tema de fracciones decimales |
+| `js/tiempo.js` | El tema de medidas de tiempo |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -822,7 +847,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |

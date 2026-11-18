@@ -9,6 +9,18 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-18
 
+- **Medidas de tiempo** (#106, tarea #105): leer el reloj de manecillas,
+  qué hora será, cuánto dura y horas a minutos.
+  - Las falsas son los errores típicos (leer el número y no los minutos,
+    cambiar las manecillas, «3:70», «75 minutos» de 3:40 a 4:15, «215» por
+    2 horas y 15), cada uno explicado al fallar.
+  - El reloj es un dibujo propio al lado de la pregunta; el lector de
+    pantalla oye dónde están las manecillas, no la hora.
+  - La ayuda es el reloj con los minutos, bloques de 5 minutos partidos en
+    la hora en punto o cada hora en 12 bloques.
+  - Vive en `js/tiempo.js`. Las preguntas pueden llevar un dibujo
+    (`pregunta.dibujo`) y pedir opciones de tamaño mediano
+    (`pregunta.opcionesMedianas`), para «135 min».
 - **Fracciones decimales** (#103, tarea #102): décimos y centésimos, para
   unir las fracciones con el punto decimal.
   - Cuatro clases: fracción a decimal (3/10 → 0.3), decimal a fracción

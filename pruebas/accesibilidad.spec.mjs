@@ -192,6 +192,17 @@ test("fracciones decimales, con la ayuda abierta (las cuatro clases)", async ({ 
   }
 });
 
+test("medidas de tiempo, con el reloj y la ayuda abierta (las cuatro clases)", async ({ page }) => {
+  await page.goto("./");
+  await page.click("#screen-welcome button");
+  await page.click("#btn-tiempo");
+  for (const reto of [{ clase: "leer", h: 2, m: 50 }, { clase: "sumar", h: 3, m: 50, d: 20 }, { clase: "duracion", h: 3, m: 40, d: 35 }, { clase: "convertir", H: 2, M: 15 }]) {
+    await page.evaluate((r) => { cancelarEspera(); colaRepaso = []; bolsa = [{ a: 2, b: 1, reto: r }]; nextQuestion(); }, reto);
+    if (await page.locator("#help-panel").isHidden()) await page.click("#btn-help");
+    await auditar(page, `tiempo: ${reto.clase}`);
+  }
+});
+
 test("mapa de tablas, con hechos en los cuatro estados", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
