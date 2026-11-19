@@ -9,6 +9,22 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-19
 
+- **Lo que quedó de la revisión visual** (#115, tarea #114):
+  - **Una sola regla para dibujar la multiplicación: a × b son a filas de
+    b.** «Descubre la tabla» decía «7 × 3: 3 veces 7» con 3 filas de 7; ahora
+    dice «3 × 7 = 21: 3 filas de 7», como la ayuda de la partida. La regla
+    está en la guía de estilo.
+  - El jardinero, el personaje con que se empieza, está en la lista de «Mi
+    personaje» y aparece marcado. En equipo, a quien se suma le toca un
+    personaje que nadie usa.
+  - En la Aventura, lo cerrado se lee (borde punteado y candado, sin
+    desvanecerse), las estrellas son más grandes y «Compartir mi puntaje»
+    aparece solo con puntaje.
+  - La vista para adultos: un tema por tarjeta, con una pastilla por clase
+    (verde, ámbar o rosa según cómo va) y «Le cuesta más» aparte; los 14 días
+    en dos semanas de 7; «Todo se guarda solo en este dispositivo» una vez.
+  - En el vivero, sin estrellas se dice solo el precio, y los botones miden
+    44 px de alto.
 - **Revisión visual completa** (#113): 248 capturas de todas las pantallas
   en teléfono vertical, teléfono acostado y tableta. Lo que se veía roto:
   - en la Aventura acostada, «¡Lanzar!» se salía de su botón;

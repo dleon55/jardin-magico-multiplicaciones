@@ -305,8 +305,9 @@ mismo.
   ayuda no da la respuesta.
 - **🔍 Antes de practicar una tabla, se descubre.** La primera vez que se
   elige una tabla en el menú, se arma fila a fila: cada toque de «Otra fila»
-  añade una fila de N puntos y dice la multiplicación («3 filas de 7:
-  7 × 3 = 21»), mientras se cuenta de N en N (7, 14, 21…). Con las 10 filas
+  añade una fila de N puntos y dice la multiplicación («3 × 7 = 21: 3 filas
+  de 7»), mientras se cuenta de N en N (7, 14, 21…). En todo el juego,
+  a × b son **a filas de b**, igual que en la ayuda de la partida. Con las 10 filas
   aparecen el truco de la tabla, con un ejemplo, y cuáles de sus
   multiplicaciones son nuevas: las de antes ya se vieron del otro lado
   (7 × 3 es 3 × 7), así que de la del 7 solo son nuevas 7 × 7, 7 × 8, 7 × 9 y

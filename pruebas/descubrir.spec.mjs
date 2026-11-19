@@ -31,7 +31,7 @@ test("cada fila suma 7 puntos, cuenta de 7 en 7 y dice la multiplicación", asyn
   await tabla(page, 7).click();
   for (let i = 0; i < 3; i++) await page.click("#descubrir-otra");
   await expect(page.locator("#descubrir-rejilla .punto")).toHaveCount(21);
-  await expect(page.locator("#descubrir-cuenta")).toHaveText("7 × 3 = 21: 3 veces 7");
+  await expect(page.locator("#descubrir-cuenta")).toHaveText("3 × 7 = 21: 3 filas de 7");
   expect(await saltos(page)).toEqual(["7", "14", "21"]);
 });
 
@@ -93,7 +93,7 @@ test("desde Mi jardín se vuelve a ver cualquier tabla", async ({ page }) => {
   await page.click("text=Ver la tabla del 6");
   await expect(page.locator("#screen-descubrir h2")).toHaveText("Descubre la tabla del 6");
   await page.click("#descubrir-otra");
-  await expect(page.locator("#descubrir-cuenta")).toHaveText("6 × 1 = 6: una vez 6");
+  await expect(page.locator("#descubrir-cuenta")).toHaveText("1 × 6 = 6: 1 fila de 6");
   // Volver a entrar empieza de cero.
   await page.click("#screen-descubrir button:has-text('Menú')");
   await page.click("#screen-selector >> text=Mi jardín");
@@ -108,7 +108,7 @@ test("con teclado: Espacio arma otra fila y Esc vuelve al menú", async ({ page 
   await expect(page.locator("#screen-descubrir")).toBeVisible();
   await page.keyboard.press(" ");
   await page.keyboard.press(" ");
-  await expect(page.locator("#descubrir-cuenta")).toHaveText("8 × 2 = 16: 2 veces 8");
+  await expect(page.locator("#descubrir-cuenta")).toHaveText("2 × 8 = 16: 2 filas de 8");
   await page.keyboard.press("Escape");
   await expect(page.locator("#screen-selector")).toBeVisible();
 });
@@ -119,9 +119,9 @@ test("la voz cuenta cada fila y lee el truco al final", async ({ page }) => {
   await tabla(page, 3).click();
   for (let i = 0; i < 10; i++) await page.click("#descubrir-otra");
   const dicho = await page.evaluate(() => window.__dicho.map((d) => d.texto));
-  expect(dicho).toContain("Una vez 3: 3.");
-  expect(dicho).toContain("2 veces 3: 6.");
-  expect(dicho).toContain("10 veces 3: 30.");
+  expect(dicho).toContain("Una fila de 3: 3.");
+  expect(dicho).toContain("2 filas de 3: 6.");
+  expect(dicho).toContain("10 filas de 3: 30.");
   expect(dicho.at(-1)).toMatch(/^¡Ya tienes la tabla entera! Truco del 3: es el doble y una vez más\. Por ejemplo, 3 por 3/);
 });
 
