@@ -92,6 +92,14 @@ brillo y la sombra.
    `<symbol>` y se usan con `<use href="#…">`.
 10. **Sin internet:** todo va dentro del HTML, sin imágenes externas.
 
+## Cómo se dibuja la multiplicación
+
+Una sola regla en todo el juego: **a × b son a filas de b**. 7 × 4 son 7
+filas de 4 puntos, y «7 veces 4» quiere decir lo mismo. La siguen la ayuda de
+la partida, «Descubre la tabla» (3 filas de 7 son 3 × 7), los rectángulos de
+perímetro y área, y los textos para adultos. Si un dibujo nuevo pone filas,
+el primer número dice cuántas son.
+
 ## Iconos
 
 La interfaz usa un solo juego de símbolos SVG (`<symbol id="i-…">`, al principio

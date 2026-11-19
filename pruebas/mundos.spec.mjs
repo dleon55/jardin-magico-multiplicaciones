@@ -17,10 +17,10 @@ async function crear(page, nombre, { mundo = null, personaje = null } = {}) {
   await expect(page.locator("#screen-selector")).toBeVisible();
 }
 
-test("la bienvenida ofrece 8 mundos y 12 personajes, sin elegir ninguno por adelantado, y es neutra", async ({ page }) => {
+test("la bienvenida ofrece 8 mundos y 13 personajes (el jardinero y 12 más), sin elegir ninguno por adelantado, y es neutra", async ({ page }) => {
   await page.goto("./");
   await expect(page.locator("#screen-welcome .elegir-mundo input")).toHaveCount(8);
-  await expect(page.locator("#screen-welcome .elegir-personaje input")).toHaveCount(12);
+  await expect(page.locator("#screen-welcome .elegir-personaje input")).toHaveCount(13);
   await expect(page.locator("#screen-welcome input[type=radio]:checked")).toHaveCount(0);
   await expect(page.locator("#screen-welcome .elegir-mundo")).toContainText("Selva de dinosaurios");
   expect(await page.evaluate(() => document.body.dataset.mundo)).toBeUndefined();

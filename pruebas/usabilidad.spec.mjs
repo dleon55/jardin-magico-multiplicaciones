@@ -84,13 +84,20 @@ test("con la pregunta escrita arriba (fracciones, retos, problemas) el girasol s
   expect((await page.locator("#girasol").boundingBox()).height).toBeGreaterThan(alto * 1.5);
 });
 
-test("al descubrir una tabla, el texto no contradice a la ayuda", async ({ page }) => {
+test("una sola regla en todo el juego: a × b son a filas de b, al descubrir y en la ayuda", async ({ page }) => {
   await alMenu(page);
   await page.locator("#grid-tablas-container button").nth(3).click();
   for (let i = 0; i < 3; i++) await page.click("#descubrir-otra");
-  await expect(page.locator("#descubrir-cuenta")).toHaveText("4 × 3 = 12: 3 veces 4");
-  // La ayuda dibuja 4 × 3 como «4 filas de 3»: aquí ya no se dice «3 filas de 4: 4 × 3».
-  await expect(page.locator("#descubrir-cuenta")).not.toContainText("filas de");
+  // Descubrir: 3 filas de 4 puntos se escriben 3 × 4.
+  await expect(page.locator("#descubrir-cuenta")).toHaveText("3 × 4 = 12: 3 filas de 4");
+  const filasDescubrir = await page.locator("#descubrir-rejilla").evaluate((r) => new Set([...r.children].map((p) => Math.round(p.getBoundingClientRect().top))).size);
+  const porFila = await page.locator("#descubrir-rejilla").evaluate((r) => r.style.gridTemplateColumns);
+  expect(filasDescubrir).toBe(3);
+  expect(porFila).toContain("repeat(4");
+  // La ayuda de la partida: 3 × 4 también son 3 filas de 4.
+  await page.evaluate(() => { startTable(3); cancelarEspera(); colaRepaso = []; bolsa = [{ a: 3, b: 4 }]; nextQuestion(); });
+  await page.click("#btn-help");
+  await expect(page.locator("#help-explain")).toContainText("3 × 4: 3 filas de 4 puntos.");
 });
 
 test("al terminar un nivel de la aventura, el teclado se va y las estrellas son doradas", async ({ page }) => {

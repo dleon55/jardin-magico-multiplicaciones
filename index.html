@@ -1747,13 +1747,14 @@
             }));
         }
 
-        const NOMBRES_PERSONAJE = { "🦊": "zorro", "🐸": "rana", "🦖": "dinosaurio", "🐢": "tortuga", "🦉": "búho", "🐝": "abeja", "🚀": "cohete", "🦁": "león", "🐼": "panda", "🐙": "pulpo", "🦄": "unicornio", "🐱": "gato" };
+        const NOMBRES_PERSONAJE = { "🧑‍🌾": "jardinero", "🦊": "zorro", "🐸": "rana", "🦖": "dinosaurio", "🐢": "tortuga", "🦉": "búho", "🐝": "abeja", "🚀": "cohete", "🦁": "león", "🐼": "panda", "🐙": "pulpo", "🦄": "unicornio", "🐱": "gato" };
 
         function pintarElecciones(raiz, mundoElegido, personajeElegido) {
             raiz.querySelectorAll(".elegir-mundo").forEach((c) => pintarFichas(c,
                 Object.entries(MUNDOS).map(([valor, m]) => ({ valor, emoji: m.emoji, texto: { visible: true, valor: m.nombre } })), mundoElegido));
             raiz.querySelectorAll(".elegir-personaje").forEach((c) => pintarFichas(c,
-                PERSONAJES.map((e) => ({ valor: e, emoji: e, texto: { visible: false, valor: NOMBRES_PERSONAJE[e] } })), personajeElegido));
+                // El del principio va primero: así quien no ha elegido lo ve marcado.
+                [PERSONAJE_INICIAL, ...PERSONAJES].map((e) => ({ valor: e, emoji: e, texto: { visible: false, valor: NOMBRES_PERSONAJE[e] } })), personajeElegido));
         }
 
         const elegidoEn = (raiz, nombre) => raiz.querySelector(`input[name="${nombre}"]:checked`)?.value ?? null;
@@ -2074,7 +2075,8 @@
                 : conservado === false ? " Este navegador podría borrar los datos si le falta espacio: conviene guardar una copia de vez en cuando."
                 : "";
             document.getElementById("cuidar-estado").textContent =
-                `Todo se guarda solo en este dispositivo. ${textoUltima}${textoConserva}`;
+                // «Todo se guarda solo en este dispositivo» ya lo dice el pie de la pantalla.
+                `${textoUltima}${textoConserva}`;
         }
 
         /** Todo lo de los jardines (no los ajustes del dispositivo), como objeto. */
@@ -2400,7 +2402,8 @@
                     `Practicó ${practicados} de los últimos ${DIAS_VISTOS} días.` +
                     (ultimoDia ? ` Último día: ${fechaLarga(ultimoDia)}.` : ""));
                 const semana = document.createElement("ol");
-                semana.className = "flex flex-wrap gap-1";
+                // Dos semanas de 7: antes, en el teléfono, se partía al azar (11 + 3).
+                semana.className = "adulto-semanas grid grid-cols-7 gap-1 w-max";
                 semana.setAttribute("aria-label", `Los últimos ${DIAS_VISTOS} días`);
                 ultimos.forEach((d) => {
                     const li = document.createElement("li");
@@ -2449,16 +2452,40 @@
                     caja.appendChild(olvidar);
                     piezas.push(caja);
                 }
+                const temas = document.createElement("div");
+                temas.className = "adulto-temas grid gap-2 sm:grid-cols-2";
                 for (const [prefijo, nombre, clase] of [["fraccion:", "Fracciones", "adulto-fracciones"], ["logica:", "Retos de lógica", "adulto-retos"], ["residuo:", "División con residuo", "adulto-residuo"], ["multiplos:", "Múltiplos y divisores", "adulto-multiplos"], ["area:", "Perímetro y área", "adulto-area"], ["dinero:", "Decimales y dinero", "adulto-dinero"], ["porcentaje:", "Porcentajes", "adulto-porcentajes"], ["decimales:", "Fracciones decimales", "adulto-decimales"], ["tiempo:", "Medidas de tiempo", "adulto-tiempo"], ["calendario:", "El calendario", "adulto-calendario"]]) {
                     const { filas, cuesta: dificil } = resumenOtros(o, prefijo);
                     if (filas.length === 0) continue;
-                    let texto = `${nombre} (sus últimas respuestas): ${filas.map((f) => `${f.nombre} ${f.bien} de ${f.de}`).join(", ")}.`;
+                    // Antes, un párrafo por tema: diez seguidos eran un muro de texto.
+                    // Ahora una tarjeta: el nombre, una pastilla por clase y lo que le
+                    // cuesta en su renglón. El texto que se lee es el mismo (las
+                    // comas y los dos puntos van ocultos, para el lector de pantalla).
+                    const tarjeta = document.createElement("div");
+                    tarjeta.className = `${clase} adulto-tema bg-white border border-gray-200 rounded-xl p-2 text-gray-800`;
+                    const titulo = document.createElement("p");
+                    titulo.className = "font-bold text-gray-900";
+                    titulo.append(nombre);
+                    const oculto = (t) => { const e = document.createElement("span"); e.className = "sr-only"; e.textContent = t; return e; };
+                    titulo.append(oculto(" (sus últimas respuestas): "));
+                    const pastillas = document.createElement("p");
+                    pastillas.className = "flex flex-wrap gap-1 mt-1 text-sm";
+                    filas.forEach((f, i) => {
+                        const pastilla = document.createElement("span");
+                        const nivel = f.bien / f.de >= 0.8 ? "bg-green-100 border-green-300" : f.bien / f.de >= 0.5 ? "bg-amber-50 border-amber-300" : "bg-rose-50 border-rose-300";
+                        pastilla.className = `adulto-clase border rounded-full px-2 py-0.5 ${nivel}`;
+                        pastilla.textContent = `${f.nombre} ${f.bien} de ${f.de}`;
+                        pastillas.append(pastilla, oculto(i < filas.length - 1 ? ", " : "."));
+                    });
+                    tarjeta.append(titulo, pastillas);
                     if (dificil) {
-                        texto += ` Le cuesta más: ${dificil.nombre}.`;
+                        let texto = ` Le cuesta más: ${dificil.nombre}.`;
                         if (BOTON_CLASE_FRACCION[dificil.k]) texto += ` Para practicar solo eso: «🍕 Fracciones» → «${BOTON_CLASE_FRACCION[dificil.k]}».`;
+                        tarjeta.append(parrafo("adulto-cuesta text-sm text-amber-900 mt-1", texto));
                     }
-                    piezas.push(parrafo(`${clase} text-gray-800`, texto));
+                    temas.append(tarjeta);
                 }
+                if (temas.children.length) piezas.push(temas);
                 if (marchitas > 0 || cuesta.length > 0) {
                     const porDonde = cuesta.length > 0 && marchitas > 0 ? "por lo que falló y por las flores marchitas"
                         : cuesta.length > 0 ? "por lo que falló" : "por las flores marchitas";
@@ -3725,9 +3752,10 @@
                     boton.type = "button";
                     const falta = v.precio - globalStars;
                     boton.disabled = falta > 0;
-                    boton.className = "w-full rounded-xl px-2 py-1 text-sm font-bold bg-green-700 hover:bg-green-800 text-white disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-not-allowed";
+                    boton.className = "w-full min-h-11 rounded-xl px-2 py-1 text-sm font-bold bg-green-700 hover:bg-green-800 text-white disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-not-allowed";
+                    // Sin estrellas, «faltan 10» repetía el precio: se dice solo el precio.
                     boton.innerHTML = falta > 0
-                        ? `<span aria-hidden="true">${v.precio} ⭐ · faltan ${falta}</span><span class="sr-only">${v.nombre}: cuesta ${v.precio} estrellas, te faltan ${falta}</span>`
+                        ? `<span aria-hidden="true">${v.precio} ⭐${globalStars > 0 ? ` · faltan ${falta}` : ""}</span><span class="sr-only">${v.nombre}: cuesta ${v.precio} estrellas, te faltan ${falta}</span>`
                         : `<span aria-hidden="true">Comprar · ${v.precio} ⭐</span><span class="sr-only">Comprar ${v.nombre} por ${v.precio} estrellas</span>`;
                     boton.onclick = () => comprar(v.id);
                     li.appendChild(boton);
@@ -5425,7 +5453,7 @@
             pintarDescubrir();
             const total = d.tabla * d.filas;
             callarVoz();
-            speak(d.filas === 1 ? `Una vez ${d.tabla}: ${d.tabla}.` : `${d.filas} veces ${d.tabla}: ${total}.`);
+            speak(d.filas === 1 ? `Una fila de ${d.tabla}: ${d.tabla}.` : `${d.filas} filas de ${d.tabla}: ${total}.`);
             if (d.filas === MULTIPLICADORES) {
                 const final = document.getElementById("descubrir-final");
                 final.classList.remove("hidden");
@@ -5454,9 +5482,10 @@
 
             document.getElementById("descubrir-cuenta").textContent = filas === 0
                 ? ""
-                // «veces» y no «filas de»: la ayuda dibuja 4 × 3 como 4 filas
-                // de 3, y aquí son 3 filas de 4. Las dos dan lo mismo.
-                : `${n} × ${filas} = ${n * filas}: ${filas === 1 ? "una vez" : `${filas} veces`} ${n}`;
+                // Una sola regla en todo el juego: a × b son a filas de b (como
+                // en la ayuda de la partida). Aquí se suman filas de n, así que
+                // 3 filas de 7 son 3 × 7; la del 7 se cuenta de 7 en 7.
+                : `${filas} × ${n} = ${n * filas}: ${filas === 1 ? "1 fila" : `${filas} filas`} de ${n}`;
             const saltos = document.getElementById("descubrir-saltos");
             saltos.replaceChildren(...Array.from({ length: filas }, (_, i) => {
                 const li = document.createElement("li");
@@ -6303,7 +6332,11 @@
             if (!nombre) return false;
             const marcados = elegidosEquipo();
             const igual = (x, y) => x.toLocaleLowerCase("es") === y.toLocaleLowerCase("es");
-            const perfil = perfiles.find((p) => p.iniciado && igual(p.nombre, nombre)) || nuevoPerfil(nombre, true);
+            // A quien se crea aquí le toca un personaje que nadie usa: en el
+            // turno se distingue también por el dibujo, no solo por el nombre.
+            const usados = new Set(perfiles.map((p) => p.emoji));
+            const libre = [PERSONAJE_INICIAL, ...PERSONAJES].find((e) => !usados.has(e)) ?? PERSONAJE_INICIAL;
+            const perfil = perfiles.find((p) => p.iniciado && igual(p.nombre, nombre)) || nuevoPerfil(nombre, true, MUNDO_INICIAL, libre);
             guardarPerfiles();
             campo.value = "";
             pintarEquipo([...marcados, perfil.id]);
@@ -6491,6 +6524,8 @@
                 i.addEventListener("change", () => { aventuraGuardada.heroe = i.value; guardarAventura(); });
             });
             pintarSinPrisa();
+            // Compartir un puntaje de 0 no tiene sentido: aparece al ganar algo.
+            document.getElementById("btn-compartir").classList.toggle("hidden", puntajeAventura() === 0);
             const lista = document.getElementById("aventura-mundos");
             lista.replaceChildren(...AVENTURA_MUNDOS.map((mundo, mi) => {
                 const li = document.createElement("li");
@@ -6518,9 +6553,12 @@
                     const est = g.estrellas[claveNivel(mi, n)] || 0;
                     b.disabled = !disponible;
                     b.dataset.nivel = claveNivel(mi, n);
-                    b.className = "btn-nivel rounded-xl border-2 py-2 text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed " +
-                        (disponible ? "bg-indigo-50 hover:bg-indigo-100 border-indigo-300 text-indigo-900" : "bg-gray-50 border-gray-200 text-gray-700");
-                    b.innerHTML = `<span>${n === NIVELES_POR_MUNDO - 1 ? `${icono("corona")} Jefe` : n + 1}</span><span class="block text-xs" aria-hidden="true">${disponible ? "★".repeat(est) + "☆".repeat(3 - est) : icono("candado")}</span>`;
+                    // Lo cerrado se distingue por la forma (borde punteado y candado),
+                    // no por desvanecerse: antes, gris claro sobre gris, casi no se leía.
+                    b.className = "btn-nivel rounded-xl border-2 py-2 text-sm font-bold disabled:cursor-not-allowed " +
+                        (disponible ? "bg-indigo-50 hover:bg-indigo-100 border-indigo-300 text-indigo-900" : "bg-white border-dashed border-gray-400 text-gray-700");
+                    const estrellas = `<span class="estrellas-nivel text-base leading-none tracking-wide"><span class="text-amber-600">${"★".repeat(est)}</span><span class="text-gray-500">${"☆".repeat(3 - est)}</span></span>`;
+                    b.innerHTML = `<span>${n === NIVELES_POR_MUNDO - 1 ? `${icono("corona")} Jefe` : n + 1}</span><span class="block" aria-hidden="true">${disponible ? estrellas : icono("candado")}</span>`;
                     b.setAttribute("aria-label", `${mundo.nombre}, ${nombreNivel(n)}: ${disponible ? `${est} de 3 estrellas` : "cerrado"}`);
                     b.onclick = () => empezarNivel(mi, n);
                     niveles.appendChild(b);
