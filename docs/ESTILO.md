@@ -152,6 +152,12 @@ original y no se parece a ningún personaje de otro juego.
 | `sorprendida` | Florecer, récord | Ojos muy abiertos, boca en «o» |
 | `durmiendo` | Bienvenida sin tocar | Ojos cerrados en línea, «z» flotando |
 
+**Objetos de los temas.** En las partidas de los temas nuevos, Lumi lleva un
+objeto del tema abajo a la derecha (`ACCESORIOS_LUMI`, en `js/arte.js`): mismo
+contorno de 2.5 que Lumi, colores de la paleta y nada más grande que su mano
+levantada (unos 25 × 22 en su dibujo de 100 × 100). Lo sigue llevando aunque
+cambie de cara, y en la victoria.
+
 **Voz y tono:**
 - frases cortas, de tú y en positivo;
 - nunca regaña: «¡Casi! Mira: 7 × 8 es una vez más 7 que 7 × 7»;

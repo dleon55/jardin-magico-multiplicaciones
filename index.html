@@ -1595,8 +1595,13 @@
             estrellasAlEmpezar = globalStars;
             aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0, "M": 0, "A": 0, "$": 0, "%": 0, "D": 0, "T": 0, "C": 0 };
             rachaPartida = 0;
+            fallosSeguidos = 0;
             metaEnEstaPartida = false;
             callarGloboLumi();
+            // En los temas nuevos, Lumi lleva el objeto del tema (y lo sigue
+            // llevando en la victoria); en las tablas, nada.
+            ponerAccesorioLumi("lumi-partida", table);
+            ponerAccesorioLumi("lumi-victoria", table);
 
             // Los amigos comprados en el vivero acompañan la partida: se ven
             // arriba del bancal, donde no tapan las flores que van naciendo.
@@ -1619,6 +1624,12 @@
 
             updateHUD();
             nextQuestion();
+            // Y lo presenta con una frase, que también queda escrita.
+            const tema = LUMI_TEMAS[table];
+            if (tema) {
+                decirLumi(tema.hola, GLOBO_TEMA_MS);
+                document.getElementById("game-feedback").innerText = `Lumi: «${tema.hola}»`;
+            }
         }
 
         function backToSelector() {
@@ -2656,7 +2667,9 @@
         // «Menos movimiento» no se mueve nada, pero el mensaje está en el texto.
         const FRASES_RACHA = { 3: "¡Tres seguidas! 🔥", 5: "¡Cinco seguidas! ¡Imparable!", 8: "¡Ocho seguidas! ¡Qué memoria!" };
         const GLOBO_LUMI_MS = 1800;
+        const GLOBO_TEMA_MS = 3200;   // la frase del tema y el truco se leen con calma
         let globoLumi = null;
+        let fallosSeguidos = 0;   // al segundo fallo seguido, Lumi da el truco del tema
 
         /** Vuelve a lanzar una animación de una vez (clase que se quita al acabar). */
         function celebrar(elemento, clase) {
@@ -2667,13 +2680,13 @@
         }
 
         /** Lumi dice algo en su globo, un momento. El texto también va en #game-feedback. */
-        function decirLumi(texto) {
+        function decirLumi(texto, ms = GLOBO_LUMI_MS) {
             const globo = document.getElementById("globo-lumi");
             clearTimeout(globoLumi);
             globo.textContent = texto;
             globo.classList.remove("hidden");
             celebrar(globo, "aparece");
-            globoLumi = setTimeout(callarGloboLumi, GLOBO_LUMI_MS);
+            globoLumi = setTimeout(callarGloboLumi, ms);
         }
         function callarGloboLumi() {
             clearTimeout(globoLumi);
@@ -5807,6 +5820,7 @@
                 lumi("lumi-partida", florecio ? "sorprendida" : "celebrando", 1500);
                 celebrar(selectedBtn || document.getElementById("escrito"), "celebra-pop");
                 rachaPartida++;
+                fallosSeguidos = 0;
                 const fraseRacha = FRASES_RACHA[rachaPartida] ?? "";
                 if (fraseRacha) {
                     decirLumi(fraseRacha);
@@ -5924,7 +5938,11 @@
                 const mensajeError = modoEscrito
                     ? `Escribiste ${chosenVal}.${nombreConfusion} ${explicacion} Te la vuelvo a preguntar en un ratito 🌱`
                     : `¡Casi!${nombreConfusion} ${explicacion} Te la vuelvo a preguntar en un ratito 🌱`;
-                feedback.innerText = mensajeError;
+                // Dos seguidas mal en un tema nuevo: Lumi da el truco del tema.
+                fallosSeguidos++;
+                const truco = fallosSeguidos === 2 ? LUMI_TEMAS[currentTable]?.truco : null;
+                feedback.innerText = truco ? `${mensajeError} Lumi: «${truco}»` : mensajeError;
+                if (truco) decirLumi(truco, GLOBO_TEMA_MS);
                 feedback.classList.add("text-rose-800");
                 // La voz lee el hecho COMPLETO, no solo el consuelo: oír
                 // "siete por ocho, cincuenta y seis" es de las formas más

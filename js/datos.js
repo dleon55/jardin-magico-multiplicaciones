@@ -154,3 +154,17 @@ const AVENTURA_MUNDOS = [
     { nombre: "El espacio de los aliens", enemigo: "👽", plural: "aliens", retos: "Dividir", cruce: 15, tipo: "div" },
     { nombre: "El mar de las criaturas", enemigo: "🐙", plural: "criaturas", retos: "Fracciones de un número", cruce: 17, tipo: "fraccion" },
 ];
+
+// Lo que dice Lumi en los temas nuevos: una frase al empezar la partida y
+// un truco corto si se fallan dos seguidas. Cortas, porque el globo es de
+// una línea; lo mismo va también en el texto, para el lector de pantalla.
+const LUMI_TEMAS = {
+    residuo: { hola: "¡Lo que sobra es menos!", truco: "Sobra menos que el divisor." },
+    multiplos: { hola: "¡Busca en las tablas!", truco: "Un múltiplo está en su tabla." },
+    area: { hola: "¡A contar cuadritos!", truco: "Área: adentro. Perímetro: orilla." },
+    dinero: { hola: "¡100 centavos, un peso!", truco: "Cada 100 centavos, un peso." },
+    porcentajes: { hola: "¡Tantos de cada 100!", truco: "El 50% es la mitad." },
+    decimales: { hola: "¡Décimos y centésimos!", truco: "Décimos: 1 cifra tras el punto." },
+    tiempo: { hola: "¡Una hora, 60 minutos!", truco: "Cuenta de 5 en 5 en el reloj." },
+    calendario: { hola: "¡La semana tiene 7 días!", truco: "Cada 7 días, el mismo día." },
+};
