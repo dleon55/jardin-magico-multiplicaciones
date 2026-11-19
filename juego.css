@@ -62,6 +62,12 @@
     border: 0.45rem solid transparent; border-bottom-color: var(--sol);
 }
 .globo-lumi.aparece { animation: globo-aparece 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@media (orientation: landscape) and (max-height: 520px) {
+    .globo-lumi { left: auto; right: 50%; transform: none; }
+    .globo-lumi::before { left: auto; right: 0.6rem; transform: none; }
+    .globo-lumi.aparece { animation-name: globo-aparece-lado; }
+}
+@keyframes globo-aparece-lado { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes globo-aparece { from { transform: translateX(-50%) scale(0.4); opacity: 0; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
 
 /* CELEBRACIONES (docs/ESTILO.md, «Movimiento»): todas de 600 ms o menos
@@ -340,6 +346,11 @@ html:not(.calma) .enemigo.esperando { animation: esperar 1.6s ease-in-out infini
     #girasol.girasol-chico { width: 3.75rem; height: 3.75rem; }
     #girasol.girasol-chico #question-text { font-size: 1.1rem; }
     #girasol { margin-top: -0.6rem; margin-bottom: -0.6rem; }
+    #girasol.girasol-escrito { width: 5.5rem; height: 5.5rem; }
+    #girasol.girasol-escrito #question-text { font-size: 1.35rem; }
+    /* Al escribir, lo que importa es la pregunta y el teclado: el aviso verde
+       se quita para que «Listo» no quede debajo de la orilla. */
+    #screen-game:has(#escritura:not(.hidden)) #aviso-repaso { display: none; }
     #problema-texto { font-size: 1rem; padding: 0.5rem 0.75rem; }
     #opciones { gap: 0.6rem; }
     #opciones .btn-option { padding-top: 0.55rem; padding-bottom: 0.55rem; font-size: 1.6rem; }
@@ -393,7 +404,7 @@ html:not(.calma) .enemigo.esperando { animation: esperar 1.6s ease-in-out infini
     /* El menú: quién juega y la misión, lado a lado; las tablas, de cinco en cinco. */
     #screen-selector { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 0.75rem; row-gap: 0.75rem; align-items: stretch; }
     #screen-selector.hidden { display: none; }
-    #screen-selector > * { grid-column: 1 / -1; margin-top: 0 !important; }
+    #screen-selector > * { grid-column: 1 / -1; margin-top: 0 !important; width: 100%; }
     #screen-selector > #cabecera-menu { grid-column: 1; grid-row: 1 / span 2; margin-right: 0; }
     /* «Seguir» arriba a la derecha, a la vista sin desplazarse; la misión, debajo. */
     #screen-selector > #seguir { grid-column: 2; grid-row: 1; max-width: none; padding-right: 3.25rem; }
@@ -458,6 +469,8 @@ html:not(.calma) .enemigo.esperando { animation: esperar 1.6s ease-in-out infini
     #aventura-teclado button { min-height: 2.75rem; padding-top: 0; padding-bottom: 0; font-size: 1.25rem; line-height: 1; }
     #aventura-opciones button { padding-top: 0.5rem; padding-bottom: 0.5rem; font-size: 1.4rem; }
     #aventura-lanzar { font-size: 0.9rem; white-space: nowrap; }
+    /* La columna mide unos 85 px: con el icono, «¡Lanzar!» se salía. */
+    #aventura-lanzar .icono { display: none; }
     #aventura-pizarra > * + * { margin-top: 0.3rem !important; }
     .heroe { font-size: 2.4rem; bottom: 0.4rem; }
     .enemigo .cara { font-size: 2rem; }
@@ -563,6 +576,8 @@ main button:is(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl):active:not(:disab
 
 /* Los subtítulos de los botones, en la letra del juego (antes, la del sistema). */
 .subtitulo { font-family: 'Quicksand', system-ui, sans-serif; }
+/* Ajustes: el panel cuelga del botón, a la derecha, y el botón no se mueve al abrirlo. */
+#ajustes > div { position: absolute; right: 0; top: 100%; max-height: calc(100vh - 5.5rem); overflow-y: auto; }
 #girasol.girasol-chico { width: 5.5rem; height: 5.5rem; }
 #girasol.girasol-chico #question-text { font-size: 1.5rem; }
 
@@ -649,6 +664,8 @@ main button:is(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl):active:not(:disab
         position: absolute; top: 4px; left: 8px;
         font-size: 0.75rem; font-weight: 700; color: #4b5563;
     }
+    /* «¹1, sobran 6» se leía «11, sobran 6». */
+    #opciones.opciones-largas .btn-option, #opciones.opciones-medianas .btn-option { padding-left: 1.4rem; }
 }
 
 /* Foco siempre visible y con contraste. */

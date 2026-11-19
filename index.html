@@ -421,7 +421,7 @@
                     <span><span aria-hidden="true">🔢</span> Múltiplos y divisores</span>
                     <span class="text-xs subtitulo font-semibold">¿Está en la tabla del 6?</span>
                 </button>
-                <button type="button" id="btn-residuo" onclick="startTable('residuo')" class="bubble-font bg-gradient-to-r from-cyan-200 to-teal-200 hover:from-cyan-300 hover:to-teal-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                <button type="button" id="btn-residuo" onclick="startTable('residuo')" class="col-span-2 bubble-font bg-gradient-to-r from-cyan-200 to-teal-200 hover:from-cyan-300 hover:to-teal-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🧺</span> Dividir con lo que sobra</span>
                     <span class="text-xs subtitulo font-semibold">17 entre 5: 3, y sobran 2</span>
                 </button>
@@ -453,7 +453,7 @@
                     <span><span aria-hidden="true">👫</span> En equipo</span>
                     <span class="text-xs subtitulo font-semibold">Se turnan en este aparato, y entre todos riegan 10 plantas</span>
                 </button>
-                <button type="button" id="btn-fracciones" onclick="mostrarFracciones()" class="bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                <button type="button" id="btn-fracciones" onclick="mostrarFracciones()" class="col-span-2 bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🍕</span> Fracciones</span>
                     <span class="text-xs subtitulo font-semibold">De un número, iguales, comparar y sumar</span>
                 </button>
@@ -527,7 +527,7 @@
                  class="relative w-full h-4 bg-gray-100 rounded-full overflow-visible">
                 <div id="progress-bar" class="h-full bg-gradient-to-r from-green-300 to-green-500 rounded-full transition-all duration-500" style="width: 0%;"></div>
                 <!-- Caracolito/Gusanito de progreso -->
-                <div id="progress-bug" aria-hidden="true" class="absolute top-1/2 -translate-y-1/2 -ml-3 text-xl transition-all duration-500" style="left: 0%;">🐛</div>
+                <div id="progress-bug" aria-hidden="true" class="absolute top-1/2 -translate-y-1/2 text-xl transition-all duration-500" style="left: 0%;">🐛</div>
                 <div aria-hidden="true" class="absolute right-0 top-1/2 -translate-y-1/2 text-xl">🍓</div>
             </div>
 
@@ -681,7 +681,7 @@
             <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-xs sm:max-w-md mx-auto">
                 <button onclick="backToSelector()" 
                         class="bubble-font bg-green-700 hover:bg-green-800 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
-                    Sigue Cultivando 🌱
+                    Sigue Cultivando&nbsp;🌱
                 </button>
                 <button onclick="cambiarDeJugador()" 
                         class="bubble-font bg-gray-300 hover:bg-gray-200 text-gray-800 text-lg px-6 py-3 rounded-2xl shadow-md transition w-full">
@@ -799,7 +799,7 @@
             </section>
             <div class="text-center">
                 <button id="descubrir-practicar" type="button" onclick="practicarDescubierta()" class="bubble-font bg-gradient-to-r from-green-300 to-emerald-300 hover:from-green-400 hover:to-emerald-400 text-gray-900 px-6 py-3 rounded-2xl shadow-md transition text-lg">
-                    <span aria-hidden="true">🌱</span> ¡A practicar la tabla del <span class="descubrir-n">2</span>!
+                    <span aria-hidden="true">🌱</span> ¡A practicar la tabla del&nbsp;<span class="descubrir-n">2</span>!
                 </button>
             </div>
         </div>
@@ -1628,7 +1628,10 @@
             const tema = LUMI_TEMAS[table];
             if (tema) {
                 decirLumi(tema.hola, GLOBO_TEMA_MS);
-                document.getElementById("game-feedback").innerText = `Lumi: «${tema.hola}»`;
+                const leido = document.createElement("span");
+                leido.className = "sr-only";
+                leido.textContent = `Lumi: «${tema.hola}»`;
+                document.getElementById("game-feedback").replaceChildren(leido);
             }
         }
 
@@ -2916,7 +2919,8 @@
             
             const percentage = Math.min((score / targetScore) * 100, 100);
             document.getElementById("progress-bar").style.width = `${percentage}%`;
-            document.getElementById("progress-bug").style.left = `calc(${percentage}% - 12px)`;
+            // Al 0 %, en la orilla; al 100 %, junto a la fresa (el gusanito mide unos 24 px).
+            document.getElementById("progress-bug").style.left = `calc(${percentage}% - ${percentage / 100 * 24}px)`;
             const progreso = document.getElementById("progreso");
             progreso.setAttribute("aria-valuenow", String(score));
             progreso.setAttribute("aria-valuemax", String(targetScore));
@@ -4684,6 +4688,7 @@
                 ? "Esta ya te salió bien: ahora escríbela."
                 : "Esta multiplicación ya te la sabes: escribe la respuesta.";
             document.getElementById("opciones").classList.toggle("hidden", modoEscrito);
+            document.getElementById("girasol").classList.toggle("girasol-escrito", modoEscrito);
             document.getElementById("escritura").classList.toggle("hidden", !modoEscrito);
             escrito = "";
             pintarLetra();
@@ -4774,6 +4779,8 @@
                 btn.setAttribute("aria-expanded", "true");
                 lumi("lumi-partida", "pensando");
                 generateHelpVisual();
+                // En el teléfono vertical se abría debajo de la orilla y parecía que no pasaba nada.
+                panel.scrollIntoView({ block: "nearest", behavior: calmaEfectiva() ? "auto" : "smooth" });
                 callarVoz();
                 speak(pistaPara().voz);
             } else {
@@ -4861,7 +4868,7 @@
                     ? textoAyudaTocada(rect)
                 : ayudaGirada
                     ? `Girado: ${filas} filas de ${columnas}. ¡Son los mismos puntos! ${numA} × ${numB} da lo mismo que ${numB} × ${numA}.`
-                    : `${numA} × ${numB}: ${filas} filas de ${columnas} puntos. Cuéntalos fila a fila.${manipulable ? " Toca una fila para partirlo." : ""}`;
+                    : `${numA} × ${numB}: ${filas} ${filas === 1 ? "fila" : "filas"} de ${columnas} ${columnas === 1 ? "punto" : "puntos"}. Cuéntalos fila a fila.${manipulable ? " Toca una fila para partirlo." : ""}`;
 
             const rejilla = document.createElement("div");
             rejilla.className = "inline-grid gap-1 bg-white border-2 border-indigo-100 rounded-xl p-3";
@@ -6327,7 +6334,7 @@
             banda.classList.toggle("hidden", !equipo);
             if (!equipo) { banda.textContent = ""; return; }
             const p = perfilEnUso();
-            banda.textContent = `Turno de ${p.emoji} ${nombreDe(p)} · Entre todos: ${score} de ${targetScore}`;
+            banda.textContent = `Turno de ${p.emoji} ${nombreDe(p)} · Entre todos: ${score}\u00a0de\u00a0${targetScore}`;
         }
 
         function nombresEquipo() {

@@ -9,6 +9,26 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-19
 
+- **Revisión visual completa** (#113): 248 capturas de todas las pantallas
+  en teléfono vertical, teléfono acostado y tableta. Lo que se veía roto:
+  - en la Aventura acostada, «¡Lanzar!» se salía de su botón;
+  - en el teléfono vertical, al escribir la respuesta, «Listo» quedaba
+    debajo de la orilla: ahora el girasol se achica y el aviso verde se
+    quita mientras se escribe;
+  - en el menú acostado, «La Aventura», el Desafío y «Tu progreso» se
+    encogían al ancho de su texto;
+  - el gusanito de la barra de avance se salía por la izquierda;
+  - en el teléfono acostado, el globo de Lumi tapaba la primera respuesta;
+  - en las respuestas largas, el número de tecla se pegaba al texto
+    («¹1, sobran 6» se leía «11»);
+  - «7 filas de 1 puntos».
+
+  Y lo mejorable: la ayuda se desplaza a la vista al abrirla, el botón de
+  Ajustes ya no salta al abrirlo (y el panel se desplaza por dentro si no
+  cabe), sin tarjetas sueltas a media anchura en «Juegos y retos», textos
+  que ya no dejan una palabra sola en el renglón, y la frase con que Lumi
+  presenta el tema ya no se repite escrita bajo las respuestas (queda para
+  el lector de pantalla).
 - **Lumi en los temas nuevos** (#111, Fase 1). En los ocho temas nuevos,
   Lumi lleva en la mano un objeto del tema (el reloj, el calendario, una
   moneda…), dibujado como ella, en la partida y en la victoria.
