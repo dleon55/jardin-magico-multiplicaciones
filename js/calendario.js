@@ -136,7 +136,7 @@ function armarCalendario(reto) {
         anadir(dia(i + n + 2), camino, buena.valor);
         p = { respuesta: buena.valor, opcionBuena: buena, opcionesLargas: true,
             texto: `Hoy es ${DIAS_SEMANA[i]}. ¿Qué día será en ${n} días?`,
-            pista: n >= 7 ? `Cada 7 días es otra vez ${DIAS_SEMANA[i]}. ¿Cuántas semanas caben en ${n}, y cuántos días sobran?` : `Cuenta desde mañana: el primer día después de ${DIAS_SEMANA[i]} es ${diaDeLaSemana(i + 1)}.`,
+            pista: n >= 7 ? `Cada 7 días es otra vez ${DIAS_SEMANA[i]}. ¿Cuántas semanas caben en ${n}, y cuántos días sobran?` : `Cuenta desde mañana: el primer día después del ${DIAS_SEMANA[i]} es el ${diaDeLaSemana(i + 1)}.`,
             explicacion: `En ${n} días será ${buena.etiqueta}. ${vueltas}`,
             voz: `Hoy es ${DIAS_SEMANA[i]}. ¿Qué día será en ${n} días?` };
     } else if (clase === "diaSemana") {
