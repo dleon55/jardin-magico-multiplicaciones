@@ -7,6 +7,18 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-19
+
+- **Lumi en los temas nuevos** (#111, Fase 1). En los ocho temas nuevos,
+  Lumi lleva en la mano un objeto del tema (el reloj, el calendario, una
+  moneda…), dibujado como ella, en la partida y en la victoria.
+  - Al empezar, presenta el tema con una frase en su globo («¡La semana
+    tiene 7 días!»).
+  - Si se fallan dos seguidas, da un truco corto del tema («Cada 7 días, el
+    mismo día»).
+  - Las dos frases quedan también escritas, para el lector de pantalla.
+  - En las tablas de multiplicar, Lumi sigue igual.
+
 ## 2026-11-18
 
 - **El calendario** (#109, tarea #108): días y semanas, qué día será, los

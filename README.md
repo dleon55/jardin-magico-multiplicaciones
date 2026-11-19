@@ -124,6 +124,14 @@ mascota del juego, un dibujo original, y cambia de cara según lo que pasa:
   - piensa mientras la ayuda está abierta;
 - en la victoria, celebra.
 
+En los ocho temas nuevos, Lumi lleva en la mano un objeto del tema, dibujado
+como ella: el reloj, el calendario, una moneda, el «%», una tarjeta con
+«0.1», un rectángulo en cuadritos, filas de puntos o puntos con uno aparte.
+Al empezar la partida presenta el tema con una frase («¡Una hora, 60
+minutos!») y, si se fallan dos seguidas, da un truco corto («Cuenta de 5 en
+5 en el reloj»). Las dos frases van en su globo y también escritas, para el
+lector de pantalla.
+
 **Celebraciones.** Cada logro tiene su momento, de 600 ms o menos y sin
 retrasar la siguiente pregunta:
 - el botón acertado salta y las estrellas de la partida brincan;

@@ -332,3 +332,50 @@ function svgEnemigo(m, jefe = false) {
     const dibujo = (ARTE_ENEMIGO[m] || ARTE_ENEMIGO[0])(jefe);
     return `<svg class="arte enemigo-arte" viewBox="0 -8 100 108" aria-hidden="true" focusable="false">${dibujo}${jefe ? CORONA_JEFE : ""}</svg>`;
 }
+
+// --- LUMI EN LOS TEMAS NUEVOS ---
+//
+// En las partidas de los temas nuevos, Lumi lleva en la mano un objeto del
+// tema: el reloj, el calendario, una moneda… Va abajo a la derecha, en las
+// mismas coordenadas que el dibujo de Lumi (100 × 100), con el contorno de
+// la guía de estilo. Es decorativo, como Lumi.
+const CONTORNO_ACCESORIO = 'stroke="var(--contorno)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"';
+const ACCESORIOS_LUMI = {
+    residuo: `<rect x="73" y="66" width="25" height="22" rx="4" fill="#e0f2fe" ${CONTORNO_ACCESORIO}/>
+        <g fill="#0284c7"><circle cx="79" cy="73" r="2.6"/><circle cx="85.5" cy="73" r="2.6"/><circle cx="92" cy="73" r="2.6"/></g>
+        <circle cx="79" cy="81.5" r="2.6" fill="#f59e0b"/>`,
+    multiplos: `<rect x="73" y="66" width="25" height="22" rx="4" fill="#fef3c7" ${CONTORNO_ACCESORIO}/>
+        <g fill="#b45309"><circle cx="79" cy="73" r="2.4"/><circle cx="85.5" cy="73" r="2.4"/><circle cx="92" cy="73" r="2.4"/>
+        <circle cx="79" cy="81" r="2.4"/><circle cx="85.5" cy="81" r="2.4"/><circle cx="92" cy="81" r="2.4"/></g>`,
+    area: `<rect x="74" y="66" width="22" height="22" rx="2" fill="#bbf7d0" ${CONTORNO_ACCESORIO}/>
+        <path d="M81.3 66 V88 M88.7 66 V88 M74 73.3 H96 M74 80.7 H96" stroke="#15803d" stroke-width="1.4"/>`,
+    dinero: `<circle cx="86" cy="77" r="11.5" fill="#fbbf24" ${CONTORNO_ACCESORIO}/>
+        <circle cx="86" cy="77" r="8" fill="none" stroke="#b45309" stroke-width="1.4"/>
+        <text x="86" y="77.5" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="800" fill="#92400e">$</text>`,
+    porcentajes: `<circle cx="86" cy="77" r="11.5" fill="#f9a8d4" ${CONTORNO_ACCESORIO}/>
+        <text x="86" y="77.5" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="800" fill="#831843">%</text>`,
+    decimales: `<rect x="71" y="68" width="29" height="18" rx="4" fill="#e0e7ff" ${CONTORNO_ACCESORIO}/>
+        <text x="85.5" y="77.5" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="800" fill="#3730a3">0.1</text>`,
+    tiempo: `<circle cx="86" cy="77" r="11.5" fill="#fff" ${CONTORNO_ACCESORIO}/>
+        <g stroke="#6366f1" stroke-width="1.4" stroke-linecap="round"><path d="M86 67.5 V69.5 M86 84.5 V86.5 M76.5 77 H78.5 M93.5 77 H95.5"/></g>
+        <path d="M86 77 V70.5 M86 77 L91 79" stroke="#1e1b4b" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+        <circle cx="86" cy="77" r="1.6" fill="#1e1b4b"/>`,
+    calendario: `<rect x="74" y="67" width="24" height="22" rx="3" fill="#fff" ${CONTORNO_ACCESORIO}/>
+        <path d="M74 70 Q74 67 77 67 H95 Q98 67 98 70 V74 H74 Z" fill="#ef4444" stroke="var(--contorno)" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M80 64.5 V69.5 M92 64.5 V69.5" stroke="var(--contorno)" stroke-width="2.5" stroke-linecap="round"/>
+        <g fill="#94a3b8"><rect x="77.5" y="77" width="3.5" height="3.5" rx="0.8"/><rect x="84.2" y="77" width="3.5" height="3.5" rx="0.8"/><rect x="91" y="77" width="3.5" height="3.5" rx="0.8"/>
+        <rect x="77.5" y="83" width="3.5" height="3.5" rx="0.8"/><rect x="84.2" y="83" width="3.5" height="3.5" rx="0.8" fill="#ef4444"/></g>`,
+};
+
+/** Pone en la Lumi de la caja `id` el objeto del tema (o se lo quita, si el tema no tiene). */
+function ponerAccesorioLumi(id, tema) {
+    const svg = document.querySelector(`#${id} > .lumi`);
+    if (!svg) return;
+    svg.querySelector(".accesorio-lumi")?.remove();
+    if (!ACCESORIOS_LUMI[tema]) return;
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("class", "accesorio-lumi");
+    g.dataset.tema = tema;
+    g.innerHTML = ACCESORIOS_LUMI[tema];
+    svg.appendChild(g);
+}
