@@ -9,6 +9,18 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-21
 
+- **Los tres tonos** (#122, Hito 4.3): el mismo juego para distintas
+  edades. Lo elige quien juega, en la bienvenida o en «Mi mundo y mi
+  personaje», y es de cada jardín.
+  - **Brote:** rótulos de una palabra, más grandes y sin letra chica; Lumi
+    más grande.
+  - **Explora:** el de siempre. Es el que queda si no se elige.
+  - **Pro:** el mundo de noche, letra sobria, «Correcto.» en lugar de
+    felicitaciones con emojis, la precisión de lo respondido y el tiempo de
+    cada partida contra la mejor marca propia (nunca contra otros). Con
+    «Sin prisa» o en equipo no se mide el tiempo.
+  - Los tonos no llevan la edad escrita: nadie tiene que sentirse «de
+    kínder».
 - **Lumi crece contigo** (#120, Hito 4.2): Lumi pasa de semilla a brote,
   plantita, arbolito y árbol en flor según las tablas del 2 al 9 que se
   saben (con 2, 4, 6 y 8).
