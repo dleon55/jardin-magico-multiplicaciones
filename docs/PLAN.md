@@ -15,7 +15,7 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 1 · Calidad que se ve y se oye | [#45](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/45) | **10 de 11** | Casi cerrado: el guion de la voz está listo ([`GUION-VOZ.md`](GUION-VOZ.md)); faltan la grabación y el permiso, del titular |
 | 2 · Un solo camino y mejor enseñanza | [#46](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/46) | **7 de 7** | **Cerrado** el 16 de noviembre |
 | 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | **Todo lo que no necesita servidor, hecho** | Los cinco temas nuevos (#71 cerrado), turnos en un aparato, guía de pruebas y opciones de plataforma. Lo demás espera las decisiones del titular (#66, #72) |
-| 4 · El mundo vivo (nueva presentación) | [#117](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/117) | **5 de 7** | En curso. Hecho: el mundo como inicio (#118), Lumi que crece (#120), los tres tonos (#122) , «Enséñale a Lumi» (#124) y la Expedición de hoy (#126). Sigue: «Enséñale a Lumi», Expedición de hoy, retos con código y el progreso en un solo lugar |
+| 4 · El mundo vivo (nueva presentación) | [#117](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/117) | **5 de 7** | En curso. Hecho: el mundo como inicio (#118), Lumi que crece (#120), los tres tonos (#122), «Enséñale a Lumi» (#124) y la Expedición de hoy (#126). Sigue: retos con código y el progreso en un solo lugar |
 
 **Cifras al día:**
 - 48 PRs fusionados desde que empezó el plan (#73 a #126), cada uno verificado en el sitio publicado.
