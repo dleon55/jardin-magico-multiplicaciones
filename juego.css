@@ -29,6 +29,10 @@
    cara es cambiar un atributo, y cabe una animación entre una y otra. */
 .lumi-caja { display: inline-flex; flex: none; }
 .lumi-caja > svg { width: 100%; height: 100%; overflow: visible; }
+/* Lo que le crece a Lumi: solo lo de su etapa. */
+.lumi [data-etapas] { display: none; }
+.lumi[data-etapa="1"] [data-etapas~="1"], .lumi[data-etapa="2"] [data-etapas~="2"],
+.lumi[data-etapa="3"] [data-etapas~="3"], .lumi[data-etapa="4"] [data-etapas~="4"] { display: inline; }
 .lumi [data-e] { display: none; }
 .lumi[data-expresion="contenta"] [data-e~="contenta"],
 .lumi[data-expresion="pensando"] [data-e~="pensando"],
@@ -604,7 +608,7 @@ body[data-mundo="bosque"], body[data-mundo="dinos"] { --mundo-pasto: #8fd37a; --
 .rotulo-lugar span { font-size: 0.75rem; font-weight: 700; color: var(--tinta-suave); }
 .lugar-dormido .rotulo-lugar { border-style: dashed; border-color: #78716c; }
 .lugar-mundo:active .rotulo-lugar { transform: translateY(2px); box-shadow: 0 2px 0 var(--sombra-arte); }
-.lumi-mundo { position: absolute; width: 17%; aspect-ratio: 1; transform: translate(-50%, -100%); pointer-events: none; }
+.lumi-mundo { position: absolute; width: 15%; transition: width 0.4s; aspect-ratio: 1; transform: translate(-50%, -100%); pointer-events: none; }
 .lumi-mundo > svg { width: 100%; height: 100%; overflow: visible; }
 .tabla-lugar { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 3.75rem; border: 2px solid #d1d5db; background: #fff; border-radius: 1rem; color: var(--hoja); box-shadow: 0 3px 0 var(--sombra-arte); }
 .tabla-lugar span + span { color: var(--tinta-suave); }

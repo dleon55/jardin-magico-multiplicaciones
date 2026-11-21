@@ -9,6 +9,15 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-21
 
+- **Lumi crece contigo** (#120, Hito 4.2): Lumi pasa de semilla a brote,
+  plantita, arbolito y árbol en flor según las tablas del 2 al 9 que se
+  saben (con 2, 4, 6 y 8).
+  - Cada etapa le suma algo: hojitas, hojas grandes, frutos y una flor. Se
+    ve en todas partes donde aparece Lumi, y más grande en el mundo.
+  - Al crecer, lo dice una vez al volver al inicio, en texto y en voz.
+  - El mundo dice en qué etapa va y cuántas tablas faltan para la siguiente.
+  - Nunca encoge: se guarda la etapa más alta de cada jardín (va en la copia
+    de seguridad). En la bienvenida, Lumi es semilla.
 - **El mundo vivo, parte 1** (#118, Hito 4): el inicio deja de ser una
   lista de unos 20 botones y pasa a ser un mundo que se recorre.
   - Cinco lugares, de lo más fácil a lo más avanzado: Huerto de las tablas,

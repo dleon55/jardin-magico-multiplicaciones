@@ -166,6 +166,12 @@ contorno de 2.5 que Lumi, colores de la paleta y nada más grande que su mano
 levantada (unos 25 × 22 en su dibujo de 100 × 100). Lo sigue llevando aunque
 cambie de cara, y en la victoria.
 
+**Etapas.** Lumi crece con las tablas que se saben (`ETAPAS_LUMI`, en
+`js/arte.js`): semilla, brote (dos hojitas más), plantita (hojas grandes),
+arbolito (frutos) y árbol en flor (una flor alrededor de la chispa). Los
+adornos van en la plantilla, en grupos `data-etapas`, detrás del cuerpo y con
+su mismo contorno. Lumi nunca pierde una etapa.
+
 **Voz y tono:**
 - frases cortas, de tú y en positivo;
 - nunca regaña: «¡Casi! Mira: 7 × 8 es una vez más 7 que 7 × 7»;
