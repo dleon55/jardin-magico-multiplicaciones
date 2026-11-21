@@ -9,6 +9,17 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-21
 
+- **Expedición de hoy** (#126, Hito 4.5): un recorrido corto en dos
+  paradas que deja algo nuevo en el mundo.
+  - Primera parada: lo que toca aprender (lo que propone «Seguir», pero
+    siempre una partida de tablas, nunca la Aventura). Segunda: una ronda de
+    «Enséñale a Lumi». La victoria de la primera ofrece la segunda.
+  - Al completarla se planta un banderín en el mundo: uno por día, con 5
+    estrellas la primera vez del día. Se puede repetir, y dejarla a medias
+    no quita nada.
+  - La tarjeta está sobre el mapa del mundo; con el menú en lista, «Seguir»
+    queda como estaba. En un jardín sin nada jugado va primero el
+    diagnóstico. Los banderines son de cada jardín y van en la copia.
 - **Enséñale a Lumi** (#124, Hito 4.4): Lumi da su respuesta a una
   pregunta y quien juega dice si está bien; si no, le enseña la buena.
   - Lumi se equivoca con los errores típicos que el juego ya conoce (las

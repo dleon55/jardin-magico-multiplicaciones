@@ -91,7 +91,7 @@ test.describe("con movimiento", () => {
   test("tocar un botón deja una onda que se va sola", async ({ page }) => {
     await page.goto("./");
     await entrar(page);
-    const boton = page.locator("#screen-selector button.shadow-md").first();
+    const boton = page.locator("#screen-selector button.shadow-md:visible").first();   // el primero a la vista: los del mundo no se ven con la lista
     await boton.scrollIntoViewIfNeeded();   // con «Seguir» arriba, puede quedar más abajo
     const caja = await boton.boundingBox();
     await page.evaluate(({ x, y }) => {
