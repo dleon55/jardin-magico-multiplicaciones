@@ -35,6 +35,16 @@ recorre, con cinco lugares ordenados de lo más fácil a lo más avanzado.
   inicio. Nunca encoge, aunque una tabla se marchite.
 - La Aventura y «En equipo» quedan a un toque, bajo el mundo.
 
+**Enséñale a Lumi.** Lumi da su respuesta a una pregunta («Yo digo que es
+3:70. ¿Está bien?») y quien juega decide. Si Lumi se equivocó, se le enseña
+cuál es la buena, y Lumi lo entiende con la explicación de ese error.
+- Sus errores son los típicos de cada tema, los mismos que el juego usa como
+  opciones falsas. Una de cada cuatro veces acierta.
+- Las preguntas salen de las tablas ya empezadas y de los temas de los
+  lugares despiertos.
+- Son rondas de cinco dudas. Cada duda resuelta a la primera da una estrella
+  y cuenta para la meta del día. No cambia el jardín ni el mapa.
+
 **Tres tonos.** El mismo juego para distintas edades. Lo elige quien juega,
 en la bienvenida o en «Mi mundo y mi personaje», y cada jardín tiene el suyo.
 
@@ -851,6 +861,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/tiempo.js` | El tema de medidas de tiempo |
 | `js/calendario.js` | El tema del calendario |
 | `js/mundo.js` | El mundo vivo: los lugares, sus dibujos y cuándo despiertan |
+| `js/ensenar.js` | «Enséñale a Lumi»: cómo se arman las dudas de Lumi |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -925,7 +936,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js`, `js/mundo.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js`, `js/mundo.js`, `js/ensenar.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |

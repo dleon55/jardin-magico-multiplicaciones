@@ -485,6 +485,10 @@
                     <span><span aria-hidden="true">👫</span> En equipo</span>
                     <span class="text-xs subtitulo font-semibold">Se turnan en este aparato, y entre todos riegan 10 plantas</span>
                 </button>
+                <button type="button" id="btn-ensenar" onclick="mostrarEnsenar()" class="col-span-2 bubble-font bg-gradient-to-r from-yellow-100 to-amber-200 hover:from-yellow-200 hover:to-amber-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
+                    <span>Enséñale a Lumi</span>
+                    <span class="text-xs subtitulo font-semibold">Lumi se equivoca: dile cuál es la buena</span>
+                </button>
                 <button type="button" id="btn-fracciones" onclick="mostrarFracciones()" class="col-span-2 bubble-font bg-gradient-to-r from-amber-200 to-orange-200 hover:from-amber-300 hover:to-orange-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span><span aria-hidden="true">🍕</span> Fracciones</span>
                     <span class="text-xs subtitulo font-semibold">De un número, iguales, comparar y sumar</span>
@@ -1034,6 +1038,32 @@
             <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Las flores miden la memoria de las tablas; las fracciones y los retos de lógica se muestran aparte. Dividir y los problemas cortos no se registran.</p>
         </div>
 
+        <!-- ================= ENSÉÑALE A LUMI ================= -->
+        <!-- Lumi da su respuesta y quien juega dice si está bien; si no, le
+             enseña la buena. Sus errores son los típicos de cada tema. -->
+        <div id="screen-ensenar" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+                <p id="ensenar-cuenta" class="text-sm font-bold text-amber-900 bg-amber-50 border-2 border-amber-200 rounded-full px-3 py-1"></p>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-2xl text-amber-800">Enséñale a Lumi</h2>
+                <p class="text-gray-700 text-sm max-w-md mx-auto">Lumi a veces se equivoca. Dile si su respuesta está bien y, si no, enséñale la buena.</p>
+            </div>
+            <div class="max-w-md mx-auto space-y-3">
+                <p id="ensenar-pregunta" class="bg-amber-50 border-2 border-amber-200 rounded-2xl px-4 py-3 text-lg font-bold text-gray-800 text-center"></p>
+                <div class="flex items-end gap-2">
+                    <span id="lumi-ensenar" class="lumi-caja flex-none w-20 h-20" data-lumi="pensando"></span>
+                    <p id="ensenar-dice" role="status" aria-live="polite" class="flex-1 bg-white border-4 border-yellow-400 rounded-2xl rounded-bl-sm px-3 py-2 font-bold text-amber-900"></p>
+                </div>
+                <div id="ensenar-botones" class="grid grid-cols-2 gap-3"></div>
+                <p id="ensenar-nota" role="status" aria-live="polite" class="min-h-12 text-center font-bold text-indigo-900"></p>
+                <button type="button" id="ensenar-sigue" onclick="siguienteDuda()" class="hidden w-full bubble-font bg-green-700 hover:bg-green-800 text-white text-lg px-6 py-3 rounded-2xl shadow-md min-h-11"></button>
+            </div>
+        </div>
+
         <!-- ================= EN EQUIPO ================= -->
         <!-- Dos o tres niños se turnan en el mismo aparato. Cada respuesta crece
              en el jardín de quien la contesta; la meta es común. Sin mensajes
@@ -1144,6 +1174,7 @@
     <script src="js/tiempo.js"></script>
     <script src="js/calendario.js"></script>
     <script src="js/mundo.js"></script>
+    <script src="js/ensenar.js"></script>
     <!-- Script del Juego -->
     <script>
         // --- ALMACENAMIENTO ---
@@ -2630,7 +2661,7 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-camino", "screen-equipo", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
+        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-camino", "screen-equipo", "screen-ensenar", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
         let pantallaActual = "screen-welcome";
 
         // --- BIENVENIDA GUIADA ---
@@ -2958,7 +2989,7 @@
                 return;
             }
 
-            if (["screen-mapa", "screen-camino", "screen-equipo", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura"].includes(pantallaActual) && evento.key === "Escape") {
+            if (["screen-mapa", "screen-camino", "screen-equipo", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-ensenar"].includes(pantallaActual) && evento.key === "Escape") {
                 evento.preventDefault();
                 backToSelector();
                 return;
@@ -5511,6 +5542,130 @@
         //
         // El inicio es un mundo: cada lugar es un botón sobre el dibujo. Los
         // despiertos abren sus juegos; los dormidos dicen qué tablas faltan.
+        // --- ENSÉÑALE A LUMI (js/ensenar.js) ---
+        function mostrarEnsenar() {
+            initAudio();
+            cancelarEspera();
+            callarVoz();
+            ensenar = { n: 0, bien: 0, duda: null, paso: "juzgar", primera: true };
+            mostrarPantalla("screen-ensenar");
+            siguienteDuda();
+        }
+
+        function botonEnsenar(texto, accion, clases = "") {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = `btn-ensenar bg-white hover:bg-sky-50 border-4 border-sky-200 text-gray-800 font-bold text-lg rounded-2xl shadow-md px-3 py-3 min-h-11 ${clases}`;
+            b.textContent = texto;
+            b.onclick = () => accion(b);
+            return b;
+        }
+
+        /** La siguiente duda de la ronda, o el final. */
+        function siguienteDuda() {
+            if (!ensenar) return;
+            const sigue = document.getElementById("ensenar-sigue");
+            sigue.classList.add("hidden");
+            document.getElementById("ensenar-nota").textContent = "";
+            if (ensenar.paso === "fin") { backToSelector(); return; }
+            if (ensenar.n >= DUDAS_POR_RONDA) { terminarEnsenar(); return; }
+            ensenar.n++;
+            ensenar.duda = nuevaDuda();
+            ensenar.paso = "juzgar";
+            ensenar.primera = true;
+            const { pregunta } = ensenar.duda;
+            document.getElementById("ensenar-cuenta").textContent = `Duda ${ensenar.n} de ${DUDAS_POR_RONDA}`;
+            const caja = document.getElementById("ensenar-pregunta");
+            caja.textContent = pregunta.texto;
+            // El dibujo de la pregunta (el reloj, el calendario), si lo trae.
+            if (pregunta.dibujo) caja.insertAdjacentHTML("beforeend", `<span class="flex justify-center mt-2">${pregunta.dibujo}</span>`);
+            const dice = fraseDeLumi(ensenar.duda);
+            document.getElementById("ensenar-dice").textContent = dice;
+            lumi("lumi-ensenar", "pensando");
+            document.getElementById("ensenar-botones").replaceChildren(
+                botonEnsenar("Sí, está bien", () => juzgarALumi(true), "ensenar-si"),
+                botonEnsenar("No, te equivocaste", () => juzgarALumi(false), "ensenar-no"));
+            speak(`${pregunta.voz || textoParaVoz(pregunta.texto)} ${textoParaVoz(dice)}`);
+        }
+
+        /** Cierra la duda: la nota, la cara de Lumi y el botón para seguir. */
+        function cerrarDuda(acerto, nota, dice) {
+            ensenar.paso = "resuelta";
+            document.getElementById("ensenar-botones").querySelectorAll("button").forEach((b) => { b.disabled = true; });
+            document.getElementById("ensenar-dice").textContent = dice;
+            document.getElementById("ensenar-nota").textContent = nota;
+            lumi("lumi-ensenar", acerto ? "celebrando" : "animando");
+            if (acerto) {
+                ensenar.bien++;
+                ganarEstrellas(1);
+                avanzarMision("acierto");
+                sonar("acierto");
+            }
+            const sigue = document.getElementById("ensenar-sigue");
+            sigue.textContent = ensenar.n >= DUDAS_POR_RONDA ? "Terminar" : "Otra duda";
+            sigue.classList.remove("hidden");
+            sigue.focus();
+            speak(textoParaVoz(`${dice} ${nota}`));
+        }
+
+        /** «Sí, está bien» o «No, te equivocaste». */
+        function juzgarALumi(diceQueSi) {
+            if (!ensenar || ensenar.paso !== "juzgar") return;
+            const { duda } = ensenar;
+            const { pregunta } = duda;
+            if (duda.acierta) {
+                if (diceQueSi) cerrarDuda(true, `¡Bien visto! ${pregunta.explicacion}`, "¡Sí la sabía!");
+                else cerrarDuda(false, `Esta vez Lumi tenía razón. ${pregunta.explicacion}`, `Creo que sí era ${duda.dicha.etiqueta}…`);
+                return;
+            }
+            if (diceQueSi) {
+                cerrarDuda(false, `No estaba bien. Dile a Lumi: «${duda.error}»`, "Mmm… algo no me cuadra.");
+                return;
+            }
+            // Lumi se equivocó y se lo dijeron: ahora, a enseñarle la buena.
+            ensenar.paso = "corregir";
+            document.getElementById("ensenar-dice").textContent = "¡Ay! Entonces, ¿cuál es la buena?";
+            document.getElementById("ensenar-nota").textContent = "";
+            document.getElementById("ensenar-botones").replaceChildren(...pregunta.opciones
+                .filter((o) => o.valor !== duda.dicha.valor)
+                .map((o) => { const b = botonEnsenar(o.etiqueta, (boton) => corregirALumi(o, boton), "ensenar-opcion"); b.dataset.valor = String(o.valor); return b; }));
+            speak("¡Ay! Entonces, ¿cuál es la buena?");
+        }
+
+        /** Elegir la respuesta buena para enseñársela a Lumi. */
+        function corregirALumi(opcion, boton) {
+            if (!ensenar || ensenar.paso !== "corregir") return;
+            const { duda } = ensenar;
+            if (opcion.valor === duda.pregunta.respuesta) {
+                boton.classList.add("ensenar-buena");
+                // Solo a la primera cuenta como enseñada (y da la estrella).
+                cerrarDuda(ensenar.primera, `Dile a Lumi: «${duda.error}»${ensenar.primera ? " Le enseñaste: +1 estrella." : ""}`, "¡Ah, ya entendí! Gracias por enseñarme.");
+                return;
+            }
+            ensenar.primera = false;
+            boton.disabled = true;
+            boton.classList.add("ensenar-mala");
+            document.getElementById("ensenar-nota").textContent = `Esa tampoco. ${duda.pregunta.porQue?.[opcion.valor] ?? ""} Prueba otra.`.replace("  ", " ");
+        }
+
+        function terminarEnsenar() {
+            ensenar.paso = "fin";
+            const { bien } = ensenar;
+            document.getElementById("ensenar-cuenta").textContent = `${bien} de ${DUDAS_POR_RONDA}`;
+            document.getElementById("ensenar-pregunta").textContent = bien === DUDAS_POR_RONDA ? "¡Lumi aprendió todo contigo!" : "¡Gracias por la clase!";
+            const dice = bien === 0 ? "Hoy nos costó a los dos. ¿Lo intentamos otra vez?"
+                : `Resolvimos ${bien === 1 ? "1 duda" : `${bien} dudas`} de ${DUDAS_POR_RONDA}. ¡Qué bien enseñas!`;
+            document.getElementById("ensenar-dice").textContent = dice;
+            document.getElementById("ensenar-botones").replaceChildren();
+            document.getElementById("ensenar-nota").textContent = bien ? `Ganaste ${bien === 1 ? "1 estrella" : `${bien} estrellas`}.` : "";
+            lumi("lumi-ensenar", bien ? "celebrando" : "animando");
+            const sigue = document.getElementById("ensenar-sigue");
+            sigue.textContent = "Volver al inicio";
+            sigue.classList.remove("hidden");
+            sigue.focus();
+            speak(dice);
+        }
+
         // --- LOS TRES TONOS: lo propio de Pro ---
         //
         // Pro mide: la precisión de lo respondido y el tiempo de cada partida
@@ -5604,7 +5759,8 @@
             // Con la lista a la vista, el mundo no se dibuja (ni duplica sus botones).
             if (ajustes.lista === true) { mapa.replaceChildren(); extras.replaceChildren(); return; }
             extras.replaceChildren(...[["btn-aventura-mundo", "La Aventura", mostrarAventura, "bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-700 hover:to-fuchsia-700 text-white"],
-                ["btn-equipo-mundo", "En equipo", mostrarEquipo, "bg-gradient-to-r from-rose-200 to-pink-200 hover:from-rose-300 hover:to-pink-300 text-gray-900"]].map(([id, texto, accion, color]) => {
+                ["btn-equipo-mundo", "En equipo", mostrarEquipo, "bg-gradient-to-r from-rose-200 to-pink-200 hover:from-rose-300 hover:to-pink-300 text-gray-900"],
+                ["btn-ensenar-mundo", "Enséñale a Lumi", mostrarEnsenar, "col-span-2 bg-gradient-to-r from-yellow-100 to-amber-200 hover:from-yellow-200 hover:to-amber-300 text-gray-900"]].map(([id, texto, accion, color]) => {
                 const boton = document.createElement("button");
                 boton.type = "button";
                 boton.id = id;
