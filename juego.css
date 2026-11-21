@@ -603,13 +603,24 @@ body[data-mundo="bosque"], body[data-mundo="dinos"] { --mundo-pasto: #8fd37a; --
 .mundo-mapa text { font-family: 'Quicksand', system-ui, sans-serif; }
 .escena-dormida { opacity: 0.55; filter: grayscale(0.9); }
 .lugar-mundo { position: absolute; display: flex; align-items: flex-end; justify-content: center; border-radius: 1.5rem; touch-action: manipulation; }
-.rotulo-lugar { display: block; max-width: 100%; background: #fff; color: var(--tinta); border: 3px solid var(--borde-lugar, #34d399); border-radius: 1rem; padding: 0.3rem 0.7rem; text-align: center; line-height: 1.15; box-shadow: 0 4px 0 var(--sombra-arte); }
+.rotulo-lugar { display: flex; flex-direction: column; justify-content: center; min-height: 2.75rem; max-width: 100%; background: #fff; color: var(--tinta); border: 3px solid var(--borde-lugar, #34d399); border-radius: 1rem; padding: 0.3rem 0.7rem; text-align: center; line-height: 1.15; box-shadow: 0 4px 0 var(--sombra-arte); }
 .rotulo-lugar b { display: block; font-family: 'Fredoka One', 'Quicksand', system-ui, sans-serif; font-weight: 400; font-size: 1.05rem; }
 .rotulo-lugar span { font-size: 0.75rem; font-weight: 700; color: var(--tinta-suave); }
 .lugar-dormido .rotulo-lugar { border-style: dashed; border-color: #78716c; }
 .lugar-mundo:active .rotulo-lugar { transform: translateY(2px); box-shadow: 0 2px 0 var(--sombra-arte); }
 .lumi-mundo { position: absolute; width: 15%; transition: width 0.4s; aspect-ratio: 1; transform: translate(-50%, -100%); pointer-events: none; }
 .lumi-mundo > svg { width: 100%; height: 100%; overflow: visible; }
+/* LOS TRES TONOS. Brote: grande y con pocas palabras. Pro: sobrio y de noche. */
+body[data-tono="brote"] .rotulo-lugar b { font-size: 1.3rem; }
+body[data-tono="brote"] .rotulo-lugar span, body[data-tono="brote"] #menu-lista .subtitulo,
+body[data-tono="brote"] .juego-lugar span > span, body[data-tono="brote"] .solo-teclado { display: none; }
+body[data-tono="brote"] .juego-lugar b { font-size: 1.25rem; }
+body[data-tono="pro"] { --mundo-pasto: #23493f; --mundo-pasto-2: #1c3d35; --mundo-agua: #3b82f6; --mundo-sendero: #8b7fd1; --mundo-niebla: #5a5296; --mundo-zzz: #e9e5ff; --mundo-cielo: linear-gradient(#17143a, #3a2a6e); }
+body[data-tono="pro"] .bubble-font { font-family: 'Quicksand', system-ui, sans-serif; font-weight: 700; letter-spacing: 0.01em; }
+body[data-tono="pro"] .rotulo-lugar { background: #1d1a44; color: #f3f0ff; border-radius: 0.5rem; }
+body[data-tono="pro"] .rotulo-lugar b { font-family: 'Quicksand', system-ui, sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; }
+body[data-tono="pro"] .rotulo-lugar span { color: #d9d4ff; }
+body[data-tono="pro"] .mundo-sol { fill: #e5e7eb; }
 .tabla-lugar { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 3.75rem; border: 2px solid #d1d5db; background: #fff; border-radius: 1rem; color: var(--hoja); box-shadow: 0 3px 0 var(--sombra-arte); }
 .tabla-lugar span + span { color: var(--tinta-suave); }
 .tabla-lugar.tabla-sabida { background: var(--hoja-clara); border-color: #6ee7b7; }

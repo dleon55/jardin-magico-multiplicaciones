@@ -9,23 +9,24 @@
 //
 // Es un script clásico que solo declara (ver pruebas/archivos.spec.mjs).
 
+// `corto`: el nombre de una palabra, para el tono Brote.
 // `pide`: las tablas que hay que saberse. `rastro`: si ya hay respuestas
 // guardadas de esos temas, el lugar no se vuelve a dormir aunque una tabla
 // se marchite (quien ya jugaba a los porcentajes los conserva).
 const LUGARES = [
-    { id: "huerto", nombre: "Huerto de las tablas", pide: [], rastro: [], cx: 115, cy: 190, borde: "#34d399", tinta: "#065f46",
+    { id: "huerto", nombre: "Huerto de las tablas", corto: "Las tablas", pide: [], rastro: [], cx: 115, cy: 190, borde: "#34d399", tinta: "#065f46",
         sub: "Descubre cada tabla, practícala y mézclalas.",
         juegos: [["desafio", "Desafío del Arcoíris", "Todas las tablas, mezcladas", "mix"]] },
-    { id: "bosque", nombre: "Bosque de dividir", pide: [2, 5], rastro: ["residuo:"], cx: 255, cy: 410, borde: "#38bdf8", tinta: "#075985",
+    { id: "bosque", nombre: "Bosque de dividir", corto: "Dividir", pide: [2, 5], rastro: ["residuo:"], cx: 255, cy: 410, borde: "#38bdf8", tinta: "#075985",
         sub: "Repartir en partes iguales, lo que sobra y problemas cortos.",
         juegos: [["dividir", "Dividir", "Repartir en partes iguales", "div"], ["residuo", "Dividir con lo que sobra", "17 entre 5: 3, y sobran 2", "residuo"], ["problemas", "Problemas cortos", "¿Se multiplica o se divide?", "problemas"]] },
-    { id: "rio", nombre: "Río de los números", pide: [2, 5, 3, 4], rastro: ["multiplos:", "logica:"], cx: 120, cy: 635, borde: "#f59e0b", tinta: "#92400e",
+    { id: "rio", nombre: "Río de los números", corto: "Números", pide: [2, 5, 3, 4], rastro: ["multiplos:", "logica:"], cx: 120, cy: 635, borde: "#f59e0b", tinta: "#92400e",
         sub: "Múltiplos, divisores y retos para pensar con las tablas.",
         juegos: [["multiplos", "Múltiplos y divisores", "¿Está en la tabla del 6?", "multiplos"], ["logica", "Retos de lógica", "Pensar con las tablas", "logica"]] },
-    { id: "partes", nombre: "Jardín de las partes", pide: [2, 5, 3, 4, 9, 6], rastro: ["fraccion:", "decimales:", "porcentaje:"], cx: 250, cy: 860, borde: "#fb7185", tinta: "#9f1239",
+    { id: "partes", nombre: "Jardín de las partes", corto: "Partes", pide: [2, 5, 3, 4, 9, 6], rastro: ["fraccion:", "decimales:", "porcentaje:"], cx: 250, cy: 860, borde: "#fb7185", tinta: "#9f1239",
         sub: "Fracciones, decimales y porcentajes: el entero en partes.",
         juegos: [["fracciones", "Fracciones", "De un número, iguales, comparar y sumar", "fracciones"], ["decimales", "Fracciones decimales", "Décimos, centésimos y el punto", "decimales"], ["porcentajes", "Porcentajes", "La mitad, la cuarta parte y los descuentos", "porcentajes"]] },
-    { id: "mercado", nombre: "Mercado y reloj", pide: [2, 5, 3, 4, 9, 6, 7], rastro: ["dinero:", "tiempo:", "calendario:", "area:"], cx: 125, cy: 1080, borde: "#a78bfa", tinta: "#5b21b6",
+    { id: "mercado", nombre: "Mercado y reloj", corto: "Medir", pide: [2, 5, 3, 4, 9, 6, 7], rastro: ["dinero:", "tiempo:", "calendario:", "area:"], cx: 125, cy: 1080, borde: "#a78bfa", tinta: "#5b21b6",
         sub: "Medir: el dinero, el tiempo, el calendario y el área.",
         juegos: [["dinero", "Decimales y dinero", "Pesos, centavos y el cambio", "dinero"], ["tiempo", "Medidas de tiempo", "El reloj y cuánto dura", "tiempo"], ["calendario", "El calendario", "Días, semanas y meses", "calendario"], ["area", "Perímetro y área", "La orilla y los cuadritos de adentro", "area"]] },
 ];

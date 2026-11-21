@@ -290,6 +290,10 @@
                     <legend class="block text-gray-700 font-bold text-center w-full mb-1">Elige tu personaje</legend>
                     <div class="elegir-personaje grid grid-cols-7 gap-1" data-nombre="personaje"></div>
                 </fieldset>
+                <fieldset class="text-left">
+                    <legend class="block text-gray-700 font-bold text-center w-full mb-1">¿Cómo quieres jugar?</legend>
+                    <div class="elegir-tono grid grid-cols-3 gap-2" data-nombre="tono"></div>
+                </fieldset>
 
                 <button onclick="saveNameAndGo()" 
                         class="w-full max-w-xs mx-auto block bubble-font bg-gradient-to-r from-green-700 to-teal-700 hover:from-green-800 hover:to-teal-800 text-white text-xl px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 transition-all duration-200 animate-pulse-soft">
@@ -389,6 +393,7 @@
                 <h2 id="mundo-titulo" data-foco class="bubble-font text-2xl text-green-700 text-center">Tu mundo</h2>
                 <p class="text-gray-700 text-sm text-center">Toca un lugar para jugar. Los que duermen despiertan con las tablas que aprendas.</p>
                 <p id="mundo-etapa" class="text-center text-sm font-bold text-green-800"></p>
+                <p id="mundo-datos" class="text-center text-sm font-bold text-indigo-900 empty:hidden"></p>
                 <div id="mundo-mapa" class="mundo-mapa"></div>
                 <p id="mundo-aviso" role="status" aria-live="polite" class="min-h-6 text-center text-sm font-bold text-indigo-900"></p>
                 <!-- La Aventura y En equipo: se crean solo con el mundo a la vista (pintarMundoVivo). -->
@@ -703,6 +708,7 @@
             </div>
 
             <p id="victoria-aprendido" class="text-green-800 font-bold text-lg max-w-md mx-auto"></p>
+            <p id="victoria-tiempo" class="hidden text-indigo-900 font-bold max-w-md mx-auto"></p>
             <p id="victoria-estatus" class="victoria-estatus hidden flex items-center justify-center gap-3 bg-lime-50 border-2 border-lime-300 text-green-900 font-bold rounded-2xl px-4 py-2 max-w-md mx-auto"></p>
             <p id="victoria-estrellas" class="text-amber-900 font-bold max-w-md mx-auto"></p>
             <p id="victoria-mision" class="hidden bg-sky-50 border-2 border-sky-200 text-sky-900 font-bold rounded-2xl px-4 py-2 max-w-md mx-auto"></p>
@@ -974,6 +980,10 @@
                 <legend class="block text-gray-700 font-bold text-center w-full mb-1">Personaje</legend>
                 <div class="elegir-personaje grid grid-cols-7 gap-1" data-nombre="personaje-cambio"></div>
             </fieldset>
+            <fieldset class="max-w-md mx-auto">
+                <legend class="block text-gray-700 font-bold text-center w-full mb-1">¿Cómo quieres jugar?</legend>
+                <div class="elegir-tono grid grid-cols-3 gap-2" data-nombre="tono-cambio"></div>
+            </fieldset>
             <div class="text-center">
                 <button type="button" onclick="guardarMiMundo()" class="bubble-font bg-gradient-to-r from-green-700 to-teal-700 hover:from-green-800 hover:to-teal-800 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition">Listo</button>
             </div>
@@ -1160,7 +1170,7 @@
         // Lo que es de cada jardín y viaja en la copia de seguridad. «vistos»:
         // el estado de cada planta la última vez que se abrió «Mi jardín», para
         // animar lo que cambió desde entonces (también al pasar a otro equipo).
-        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico", "estatus", "lumi"];
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico", "estatus", "lumi", "marcas"];
         let perfilActual = "p1";
 
         const almacen = {
@@ -1221,11 +1231,11 @@
             } catch (e) { /* sin memoria */ }
         }
 
-        function nuevoPerfil(nombre, iniciado, mundo = MUNDO_INICIAL, emoji = PERSONAJE_INICIAL) {
+        function nuevoPerfil(nombre, iniciado, mundo = MUNDO_INICIAL, emoji = PERSONAJE_INICIAL, tono = TONO_INICIAL) {
             const usados = new Set(perfiles.map((p) => p.id));
             let n = 1;
             while (usados.has(`p${n}`)) n++;
-            const perfil = { id: `p${n}`, nombre, emoji, mundo, iniciado };
+            const perfil = { id: `p${n}`, nombre, emoji, mundo, tono, iniciado };
             perfiles.push(perfil);
             return perfil;
         }
@@ -1240,6 +1250,8 @@
                     emoji: personajeValido(p.emoji) ? p.emoji : PERSONAJE_INICIAL,
                     // Los perfiles de antes de los mundos eran de flores.
                     mundo: MUNDOS[p.mundo] ? p.mundo : "flores",
+                    // Los de antes de los tonos siguen como estaban: Explora.
+                    tono: TONOS[p.tono] ? p.tono : TONO_INICIAL,
                     iniciado: Boolean(p.iniciado),
                 }));
         }
@@ -1550,7 +1562,7 @@
             // nombre. Antes decía "jardinera", "campeona" e "Invitada" a todo el
             // mundo, de modo que a un niño le hablaba como si no fuera para él.
             const raiz = document.getElementById("screen-welcome");
-            crearJugador(document.getElementById("player-name").value, elegidoEn(raiz, "mundo"), elegidoEn(raiz, "personaje"));
+            crearJugador(document.getElementById("player-name").value, elegidoEn(raiz, "mundo"), elegidoEn(raiz, "personaje"), elegidoEn(raiz, "tono"));
             entrarAlJardin();
         }
 
@@ -1559,7 +1571,7 @@
          * mundo y personaje (o los de siempre). Lo usan la bienvenida y la
          * bienvenida guiada.
          */
-        function crearJugador(nombreEscrito, mundo, personaje) {
+        function crearJugador(nombreEscrito, mundo, personaje, tono) {
             const nombre = nombreEscrito.trim().slice(0, 20);
             // Quien escribe un nombre que ya tiene jardín sigue con el suyo:
             // no se crean dos «Ana». El primer perfil, mientras nadie lo haya
@@ -1574,6 +1586,7 @@
                 const elegido = {
                     mundo: mundo || MUNDO_INICIAL,
                     emoji: personaje || PERSONAJE_INICIAL,
+                    tono: TONOS[tono] ? tono : TONO_INICIAL,
                 };
                 if (!perfilEnUso().iniciado) {
                     Object.assign(perfilEnUso(), { nombre, iniciado: true }, elegido);
@@ -1581,7 +1594,7 @@
                     playerName = nombre;
                     aplicarMundo();
                 } else {
-                    usarPerfil(nuevoPerfil(nombre, true, elegido.mundo, elegido.emoji).id);
+                    usarPerfil(nuevoPerfil(nombre, true, elegido.mundo, elegido.emoji, elegido.tono).id);
                 }
             }
         }
@@ -1649,6 +1662,7 @@
             estrellasAlEmpezar = globalStars;
             aciertosPorOp = { "×": 0, "÷": 0, "L": 0, "F": 0, "R": 0, "M": 0, "A": 0, "$": 0, "%": 0, "D": 0, "T": 0, "C": 0 };
             rachaPartida = 0;
+            inicioPartida = Date.now();
             fallosSeguidos = 0;
             metaEnEstaPartida = false;
             callarGloboLumi();
@@ -1733,6 +1747,9 @@
             else document.body.dataset.mundo = perfilEnUso().mundo;
             pintarFondo(pantallaActual === "screen-welcome" ? null : perfilEnUso().mundo);
             document.getElementById("display-personaje").textContent = perfilEnUso().emoji;
+            // El tono de quien juega; en la bienvenida, ninguno.
+            if (pantallaActual === "screen-welcome") delete document.body.dataset.tono;
+            else document.body.dataset.tono = tonoActual();
             // Lumi, con lo que ha crecido quien juega; en la bienvenida, semilla.
             ponerEtapaLumi(pantallaActual === "screen-welcome" ? 0 : etapaGuardadaLumi());
             // Quien riega el bancal de la partida es el personaje de quien juega.
@@ -1813,7 +1830,12 @@
 
         const NOMBRES_PERSONAJE = { "🧑‍🌾": "jardinero", "🦊": "zorro", "🐸": "rana", "🦖": "dinosaurio", "🐢": "tortuga", "🦉": "búho", "🐝": "abeja", "🚀": "cohete", "🦁": "león", "🐼": "panda", "🐙": "pulpo", "🦄": "unicornio", "🐱": "gato" };
 
-        function pintarElecciones(raiz, mundoElegido, personajeElegido) {
+        /** El tono de quien juega (Brote, Explora o Pro). */
+        const tonoActual = () => perfilEnUso()?.tono || TONO_INICIAL;
+
+        function pintarElecciones(raiz, mundoElegido, personajeElegido, tonoElegido = null) {
+            raiz.querySelectorAll(".elegir-tono").forEach((c) => pintarFichas(c,
+                Object.entries(TONOS).map(([valor, t]) => ({ valor, emoji: t.dibujo, texto: { visible: true, valor: `${t.nombre}: ${t.detalle}` } })), tonoElegido));
             raiz.querySelectorAll(".elegir-mundo").forEach((c) => pintarFichas(c,
                 Object.entries(MUNDOS).map(([valor, m]) => ({ valor, emoji: m.emoji, texto: { visible: true, valor: m.nombre } })), mundoElegido));
             raiz.querySelectorAll(".elegir-personaje").forEach((c) => pintarFichas(c,
@@ -1825,7 +1847,7 @@
 
         function mostrarMiMundo() {
             const p = perfilEnUso();
-            pintarElecciones(document.getElementById("screen-mundo"), p.mundo, p.emoji);
+            pintarElecciones(document.getElementById("screen-mundo"), p.mundo, p.emoji, p.tono);
             mostrarPantalla("screen-mundo");
         }
 
@@ -1834,6 +1856,7 @@
             const p = perfilEnUso();
             p.mundo = elegidoEn(raiz, "mundo-cambio") || p.mundo;
             p.emoji = elegidoEn(raiz, "personaje-cambio") || p.emoji;
+            p.tono = elegidoEn(raiz, "tono-cambio") || p.tono;
             guardarPerfiles();
             aplicarMundo();
             backToSelector();
@@ -2763,6 +2786,7 @@
         const GLOBO_LUMI_MS = 1800;
         const GLOBO_TEMA_MS = 3200;   // la frase del tema y el truco se leen con calma
         let globoLumi = null;
+        let inicioPartida = 0;    // para el tiempo de la partida (tono Pro)
         let fallosSeguidos = 0;   // al segundo fallo seguido, Lumi da el truco del tema
 
         /** Vuelve a lanzar una animación de una vez (clase que se quita al acabar). */
@@ -5487,6 +5511,50 @@
         //
         // El inicio es un mundo: cada lugar es un botón sobre el dibujo. Los
         // despiertos abren sus juegos; los dormidos dicen qué tablas faltan.
+        // --- LOS TRES TONOS: lo propio de Pro ---
+        //
+        // Pro mide: la precisión de lo respondido y el tiempo de cada partida
+        // contra la mejor marca propia (nunca contra otros). Con «Sin prisa» o
+        // en equipo no se mide el tiempo.
+        const minSeg = (ms) => `${Math.floor(ms / 60000)}:${String(Math.round((ms % 60000) / 1000) % 60).padStart(2, "0")}`;
+
+        function leerMarcas() {
+            try {
+                const m = JSON.parse(almacen.leer("marcas") || "{}");
+                return m && typeof m === "object" && !Array.isArray(m) ? m : {};
+            } catch (e) { return {}; }
+        }
+
+        /** «38 de 54 · precisión 93%» */
+        function datosPro() {
+            const intentos = Object.values(hechos).flat();
+            const partes = [`${cuentaPorEstado().florecida} de ${plantas().length}`];
+            if (intentos.length) partes.push(`precisión ${Math.round((intentos.filter((i) => i.ok).length / intentos.length) * 100)}%`);
+            const marcas = Object.keys(leerMarcas()).length;
+            if (marcas) partes.push(marcas === 1 ? "1 marca" : `${marcas} marcas`);
+            return partes.join(" · ");
+        }
+
+        /** En la victoria (solo Pro): el tiempo de la partida y la mejor marca en ese juego. */
+        function marcarTiempo() {
+            const linea = document.getElementById("victoria-tiempo");
+            const medir = tonoActual() === "pro" && !sinPrisaActiva() && !equipo && inicioPartida > 0;
+            linea.classList.toggle("hidden", !medir);
+            if (!medir) { linea.textContent = ""; return; }
+            const ms = Math.max(0, Date.now() - inicioPartida);
+            const marcas = leerMarcas();
+            const clave = String(currentTable);
+            const mejor = Number.isFinite(marcas[clave]) && marcas[clave] > 0 ? marcas[clave] : null;
+            if (mejor === null || ms < mejor) {
+                marcas[clave] = ms;
+                almacen.guardar("marcas", JSON.stringify(marcas));
+                linea.textContent = mejor === null ? `Tiempo: ${minSeg(ms)}. Es tu primera marca aquí: a vencerla.`
+                    : `Tiempo: ${minSeg(ms)}. ¡Nueva marca! La anterior era ${minSeg(mejor)}.`;
+            } else {
+                linea.textContent = `Tiempo: ${minSeg(ms)}. Tu mejor marca: ${minSeg(mejor)}.`;
+            }
+        }
+
         // --- LUMI CRECE CONTIGO ---
         //
         // Lumi pasa de semilla a árbol en flor según las tablas (del 2 al 9)
@@ -5564,7 +5632,7 @@
                 const rotulo = document.createElement("span");
                 rotulo.className = "rotulo-lugar";
                 const nombre = document.createElement("b");
-                nombre.textContent = lugar.nombre;
+                nombre.textContent = tonoActual() === "brote" ? lugar.corto : lugar.nombre;
                 const detalle = document.createElement("span");
                 // En el rótulo, corto; al tocarlo se dice la lista entera.
                 detalle.textContent = faltan.length > 2 ? `Despierta con ${faltan.length} tablas más`
@@ -5584,9 +5652,10 @@
             lumiMapa.style.left = `${((ultimo.cx + (ultimo.cx > MUNDO_ANCHO / 2 ? -112 : 112)) / MUNDO_ANCHO) * 100}%`;
             lumiMapa.style.top = `${((ultimo.cy + 40) / MUNDO_ALTO) * 100}%`;
             // Más grande con cada etapa.
-            lumiMapa.style.width = `${15 + etapaLumi * 2}%`;
+            lumiMapa.style.width = `${(15 + etapaLumi * 2) * ({ brote: 1.15, pro: 0.8 }[tonoActual()] ?? 1)}%`;
             lumiMapa.appendChild(lumiSuelta("contenta"));
             document.getElementById("mundo-etapa").textContent = textoEtapaLumi();
+            document.getElementById("mundo-datos").textContent = tonoActual() === "pro" ? datosPro() : "";
             mapa.appendChild(lumiMapa);
             document.getElementById("mundo-aviso").textContent = "";
         }
@@ -6110,7 +6179,7 @@
                     setTimeout(() => sonar("racha"), 320);   // tras el del acierto, no encima
                 }
 
-                const felicitaciones = ["¡Espectacular! 🎉", "¡Excelente trabajo! 👏", "¡Correcto! ⭐", "¡Súper bien hecho! 🌟", "¡Tu jardín va creciendo! 🌱"];
+                const felicitaciones = tonoActual() === "pro" ? FELICITACIONES_PRO : ["¡Espectacular! 🎉", "¡Excelente trabajo! 👏", "¡Correcto! ⭐", "¡Súper bien hecho! 🌟", "¡Tu jardín va creciendo! 🌱"];
                 const rFrase = florecio
                     ? `${mundo().flor} ¡${numA} × ${numB} floreció!`
                     : felicitaciones[Math.floor(Math.random() * felicitaciones.length)];
@@ -6320,6 +6389,7 @@
                 ? fraseDeLoResuelto()
                 : fraseDeLoAprendido();
             document.getElementById("victoria-aprendido").innerText = aprendido;
+            marcarTiempo();
 
             // Si una tabla subió de estatus en esta partida, se celebra aparte.
             // En equipo no: cada quien lo verá en su próxima partida.

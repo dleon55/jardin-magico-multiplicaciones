@@ -34,6 +34,21 @@ recorre, con cinco lugares ordenados de lo más fácil a lo más avanzado.
   Cada etapa le suma hojas, frutos o una flor, y lo anuncia al volver al
   inicio. Nunca encoge, aunque una tabla se marchite.
 - La Aventura y «En equipo» quedan a un toque, bajo el mundo.
+
+**Tres tonos.** El mismo juego para distintas edades. Lo elige quien juega,
+en la bienvenida o en «Mi mundo y mi personaje», y cada jardín tiene el suyo.
+
+| Tono | Para quién (orientación) | Qué cambia |
+|------|--------------------------|------------|
+| Brote | 6 a 8 años | Rótulos de una palabra, más grandes y sin letra chica; Lumi más grande |
+| Explora | 8 a 10 años | El de siempre; es el que queda si no se elige |
+| Pro | 11 años o más | El mundo de noche, letra sobria, «Correcto.» sin emojis, precisión y tiempos |
+
+- En la pantalla no se escribe la edad: nadie tiene que sentirse «de kínder».
+- **Pro mide el tiempo** de cada partida y lo compara con la mejor marca
+  propia en ese juego, nunca con otras personas. Con «Sin prisa» o en equipo
+  no se mide.
+- La enseñanza es la misma en los tres: preguntas, pistas y repaso.
 - En Ajustes, **«Menú en lista»** cambia a la lista de siempre, donde nada
   duerme: es la vista para lectores de pantalla y para las personas adultas.
   Se recuerda en el dispositivo.

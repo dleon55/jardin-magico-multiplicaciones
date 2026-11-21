@@ -77,6 +77,17 @@ const MUNDOS = {
 // Quien no elige empieza en el huerto: un jardín, sin inclinarse por
 // nadie. Lo guardado antes de los mundos sigue siendo de flores.
 const MUNDO_INICIAL = "huerto";
+// LOS TRES TONOS (Hito 4.3): el mismo juego para distintas edades. Lo elige
+// quien juega, y no lleva la edad escrita: nadie tiene que sentirse «de
+// kínder». Brote: grande y con pocas palabras (6 a 8 años, de orientación).
+// Explora: el de siempre (8 a 10). Pro: sobrio, de noche y con tiempos (11+).
+const TONOS = {
+    brote: { nombre: "Brote", detalle: "Grande y con pocas palabras", dibujo: "🌱" },
+    explora: { nombre: "Explora", detalle: "Con todo, como siempre", dibujo: "🧭" },
+    pro: { nombre: "Pro", detalle: "Sobrio, con tiempos y marcas", dibujo: "⚡" },
+};
+const TONO_INICIAL = "explora";
+const FELICITACIONES_PRO = ["Correcto.", "Bien.", "Exacto."];
 const PERSONAJES = ["🦊", "🐸", "🦖", "🐢", "🦉", "🐝", "🚀", "🦁", "🐼", "🐙", "🦄", "🐱"];
 const PERSONAJE_INICIAL = "🧑‍🌾";
 // Los emojis de flor que se asignaban solos antes de elegir personaje.
