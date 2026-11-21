@@ -53,7 +53,7 @@ test("quien no elige empieza en el huerto, con el jardinero", async ({ page }) =
   expect(await page.evaluate(() => [perfilEnUso().mundo, perfilEnUso().emoji])).toEqual(["huerto", "🧑‍🌾"]);
   await page.click("#screen-selector >> text=Cambiar de jugador");
   expect(await page.evaluate(() => document.body.dataset.mundo)).toBeUndefined();   // la bienvenida vuelve a ser neutra
-  await expect(page.locator(".btn-perfil")).toContainText("🥕 Huerto · 0 de 54 flores");
+  await expect(page.locator(".btn-perfil")).toContainText("🥕 Huerto · 0 de 54 cosechas");
 });
 
 test("cambiar de mundo desde el menú no borra nada y se recuerda", async ({ page }) => {

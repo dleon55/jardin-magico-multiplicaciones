@@ -7,6 +7,25 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-21
+
+- **Detalles de la revisión visual** (#116, tarea #114):
+  - En «Mi jardín», en el teléfono, «Tabla del 1 · Semilla» y «Ver la tabla
+    del 1» ya no se parten a la mitad: cada parte va entera y el enlace baja
+    a la derecha si no cabe.
+  - Las fichas de mundo de una fila miden lo mismo, y los 13 personajes van
+    en dos renglones (7 y 6), sin uno solo abajo.
+  - En equipo, con un solo jugador las tablas se ven en espera (borde
+    punteado y «Primero marquen al menos a dos»); al tocarlas siguen diciendo
+    qué falta.
+  - Lo que se cuenta en el jardín es de cada mundo: «0 de 54 dinosaurios»,
+    «estrellas», «peces»… Los nombres del avance de cada tabla (semilla,
+    arbolito, árbol) se quedan iguales en todos los mundos, porque son los
+    mismos que lee el adulto en el informe.
+  - El bancal de la partida dice «Aquí crece lo que aciertes» mientras está
+    vacío, se pinta del color de cada mundo (azul noche en el espacio, mar en
+    el fondo del mar) y lo riega el personaje de quien juega.
+
 ## 2026-11-19
 
 - **Lo que quedó de la revisión visual** (#115, tarea #114):

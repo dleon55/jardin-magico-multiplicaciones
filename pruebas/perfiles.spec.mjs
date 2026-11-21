@@ -26,7 +26,7 @@ test("la primera vez solo se pide el nombre; al volver, «¿Quién juega?»", as
   await expect(page.locator("#bienvenida-texto")).toHaveText("¡Hola! Toca tu jardín para seguir cultivándolo.");
   await expect(page.locator(".btn-perfil")).toHaveCount(1);
   await expect(page.locator(".btn-perfil")).toContainText("Ana");
-  await expect(page.locator(".btn-perfil")).toContainText("0 de 54 flores");
+  await expect(page.locator(".btn-perfil")).toContainText("0 de 54 ");
   await expect(page.locator("#nuevo-titulo")).toHaveText("¿Juega alguien nuevo?");
   await expect(page.locator("#player-name")).toHaveValue("");   // no invita a escribir sobre el de Ana
 });
@@ -46,7 +46,7 @@ test("cada quien tiene su jardín, y cambiar de jugador no borra nada", async ({
 
   await page.click("text=Cambiar de jugador");
   await expect(page.locator(".btn-perfil")).toHaveCount(2);
-  await expect(page.locator(".btn-perfil", { hasText: "Ana" })).toContainText("1 de 54 flores");
+  await expect(page.locator(".btn-perfil", { hasText: "Ana" })).toContainText("1 de 54 cosechas");
   await page.click(".btn-perfil:has-text('Ana')");
   await expect(page.locator("#display-name")).toHaveText("El jardín de Ana");
   expect(await page.evaluate(() => [estadoHecho(7, 8), estadoHecho(3, 4), globalStars])).toEqual(["florecida", "nuevo", 30]);

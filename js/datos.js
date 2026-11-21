@@ -31,44 +31,45 @@ const coloresTablas = [
 //   capullo: lo «casi»; crecen: lo que brota en cada partida
 // Solo emojis de Unicode 13 o anteriores: en tabletas viejas, los más
 // nuevos salen como cuadros vacíos.
+// nombreFlores: lo que se cuenta en el jardín de ese mundo («3 de 54 dinosaurios»).
 const MUNDOS = {
     huerto: {
-        nombre: "Huerto", emoji: "🥕", flor: "🍅", nombreFlor: "cosecha", capullo: "🌿", nombreCapullo: "mata, casi",
+        nombre: "Huerto", emoji: "🥕", flor: "🍅", nombreFlor: "cosecha", nombreFlores: "cosechas", capullo: "🌿", nombreCapullo: "mata, casi",
         flora: ["🥕", "🍅", "🌽", "🥦", "🍆", "🥔", "🥬", "🍓", "🎃"],
         crecen: ["🥕", "🍅", "🌽", "🥦", "🍆", "🥔", "🥬", "🍓", "🎃", "🌱"],
     },
     bosque: {
-        nombre: "Bosque", emoji: "🌲", flor: "🌳", nombreFlor: "árbol", capullo: "🌿", nombreCapullo: "arbolito, casi",
+        nombre: "Bosque", emoji: "🌲", flor: "🌳", nombreFlor: "árbol", nombreFlores: "árboles", capullo: "🌿", nombreCapullo: "arbolito, casi",
         flora: ["🌲", "🌳", "🍄", "🌰", "🍁", "🍂", "🦔", "🦉", "🦌"],
         crecen: ["🌲", "🌳", "🍄", "🌰", "🍁", "🍂", "🦔", "🦉", "🦌", "🐿️"],
     },
     dinos: {
-        nombre: "Selva de dinosaurios", emoji: "🦖", flor: "🦕", nombreFlor: "dinosaurio", capullo: "🥚", nombreCapullo: "huevo, casi",
+        nombre: "Selva de dinosaurios", emoji: "🦖", flor: "🦕", nombreFlor: "dinosaurio", nombreFlores: "dinosaurios", capullo: "🥚", nombreCapullo: "huevo, casi",
         flora: ["🦕", "🦖", "🐊", "🦎", "🐢", "🌴", "🌋", "🐉", "🦕"],
         crecen: ["🦕", "🦖", "🌴", "🐊", "🦎", "🐢", "🌋", "🥚", "🌿", "🐉"],
     },
     espacio: {
-        nombre: "Espacio", emoji: "🚀", flor: "🌟", nombreFlor: "estrella", capullo: "🌙", nombreCapullo: "luna, casi",
+        nombre: "Espacio", emoji: "🚀", flor: "🌟", nombreFlor: "estrella", nombreFlores: "estrellas", capullo: "🌙", nombreCapullo: "luna, casi",
         flora: ["🌍", "🌙", "⭐", "☄️", "🛸", "🌌", "🛰️", "🌠", "🚀"],
         crecen: ["⭐", "🌟", "🌙", "☄️", "🛸", "🛰️", "🌠", "🌍", "🌌", "✨"],
     },
     mar: {
-        nombre: "Fondo del mar", emoji: "🐠", flor: "🐠", nombreFlor: "pez", capullo: "🐚", nombreCapullo: "concha, casi",
+        nombre: "Fondo del mar", emoji: "🐠", flor: "🐠", nombreFlor: "pez", nombreFlores: "peces", capullo: "🐚", nombreCapullo: "concha, casi",
         flora: ["🐟", "🐠", "🐡", "🐙", "🦀", "🐢", "🐬", "🐳", "🦈"],
         crecen: ["🐟", "🐠", "🐡", "🐙", "🦀", "🐢", "🐬", "🐳", "🐚", "🦐"],
     },
     granja: {
-        nombre: "Granja", emoji: "🐄", flor: "🐔", nombreFlor: "animal de la granja", capullo: "🐣", nombreCapullo: "pollito, casi",
+        nombre: "Granja", emoji: "🐄", flor: "🐔", nombreFlor: "animal de la granja", nombreFlores: "animales", capullo: "🐣", nombreCapullo: "pollito, casi",
         flora: ["🐔", "🐄", "🐖", "🐑", "🐐", "🐴", "🦆", "🐇", "🐓"],
         crecen: ["🐔", "🐄", "🐖", "🐑", "🐐", "🐴", "🦆", "🐇", "🌾", "🚜"],
     },
     desierto: {
-        nombre: "Desierto", emoji: "🌵", flor: "🌵", nombreFlor: "cactus", capullo: "🌾", nombreCapullo: "brote de cactus, casi",
+        nombre: "Desierto", emoji: "🌵", flor: "🌵", nombreFlor: "cactus", nombreFlores: "cactus", capullo: "🌾", nombreCapullo: "brote de cactus, casi",
         flora: ["🌵", "🌴", "🦎", "🦂", "🐪", "🌞", "🏜️", "🐫", "🦅"],
         crecen: ["🌵", "🌴", "🦎", "🦂", "🐪", "🌞", "🏜️", "🐫", "🦅", "🌾"],
     },
     flores: {
-        nombre: "Jardín de flores", emoji: "🌸", flor: "🌸", nombreFlor: "flor", capullo: "🌷", nombreCapullo: "capullo, casi",
+        nombre: "Jardín de flores", emoji: "🌸", flor: "🌸", nombreFlor: "flor", nombreFlores: "flores", capullo: "🌷", nombreCapullo: "capullo, casi",
         flora: ["🌼", "🌸", "🌺", "🌻", "🌹", "💐", "🏵️", "💮", "🌼"],
         crecen: ["🌸", "🌹", "🌺", "🌻", "🌼", "🌷", "🌱", "🍀", "🏵️", "💮"],
     },

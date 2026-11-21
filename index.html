@@ -224,7 +224,7 @@
                 <section data-paso="personaje" class="hidden">
                     <fieldset class="text-left">
                         <legend class="sr-only">Elige tu personaje</legend>
-                        <div class="elegir-personaje grid grid-cols-4 sm:grid-cols-6 gap-2" data-nombre="guia-personaje"></div>
+                        <div class="elegir-personaje grid grid-cols-5 sm:grid-cols-7 gap-2" data-nombre="guia-personaje"></div>
                     </fieldset>
                 </section>
                 <section data-paso="practica" class="hidden space-y-3">
@@ -278,7 +278,7 @@
                 </fieldset>
                 <fieldset class="text-left">
                     <legend class="block text-gray-700 font-bold text-center w-full mb-1">Elige tu personaje</legend>
-                    <div class="elegir-personaje grid grid-cols-6 gap-1" data-nombre="personaje"></div>
+                    <div class="elegir-personaje grid grid-cols-7 gap-1" data-nombre="personaje"></div>
                 </fieldset>
 
                 <button onclick="saveNameAndGo()" 
@@ -469,7 +469,7 @@
                     <span id="camino-menu-resumen" class="text-xs subtitulo font-semibold"></span>
                 </button>
                 <button onclick="mostrarJardin()" class="w-full bubble-font bg-gradient-to-r from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 border-2 border-green-400 text-green-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3">
-                    <span class="sim-mundo" aria-hidden="true">🌱</span> Mi jardín (<span class="cuenta-flores">0</span> de 54 flores)
+                    <span class="sim-mundo" aria-hidden="true">🌱</span> Mi jardín (<span class="cuenta-flores">0</span> de 54 <span class="nombre-flores">flores</span>)
                 </button>
                 <button onclick="mostrarVivero()" class="w-full bubble-font bg-gradient-to-r from-yellow-100 to-amber-100 hover:from-yellow-200 hover:to-amber-200 border-2 border-amber-400 text-amber-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3 flex flex-col items-center gap-1">
                     <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-vivero"/></svg> Vivero mágico</span>
@@ -943,7 +943,7 @@
             </fieldset>
             <fieldset class="max-w-md mx-auto">
                 <legend class="block text-gray-700 font-bold text-center w-full mb-1">Personaje</legend>
-                <div class="elegir-personaje grid grid-cols-6 gap-1" data-nombre="personaje-cambio"></div>
+                <div class="elegir-personaje grid grid-cols-7 gap-1" data-nombre="personaje-cambio"></div>
             </fieldset>
             <div class="text-center">
                 <button type="button" onclick="guardarMiMundo()" class="bubble-font bg-gradient-to-r from-green-700 to-teal-700 hover:from-green-800 hover:to-teal-800 text-white text-lg px-6 py-3 rounded-2xl shadow-md transition">Listo</button>
@@ -1021,6 +1021,7 @@
             </form>
             <fieldset class="max-w-md mx-auto">
                 <legend class="block text-gray-800 font-bold text-center w-full mb-1">¿Qué practican?</legend>
+                <p id="equipo-falta" class="hidden text-center text-sm font-bold text-rose-900 mb-1">Primero marquen al menos a dos.</p>
                 <div id="equipo-tablas" class="grid grid-cols-5 gap-2"></div>
             </fieldset>
             <p id="equipo-aviso" role="status" class="text-center font-bold text-rose-900 min-h-6"></p>
@@ -1607,6 +1608,12 @@
             // arriba del bancal, donde no tapan las flores que van naciendo.
             const plot = document.getElementById("garden-plot");
             plot.innerHTML = "";
+            // Vacío, el bancal parecía roto: dice qué va a pasar ahí.
+            const vacio = document.createElement("p");
+            vacio.id = "garden-vacio";
+            vacio.className = "absolute inset-0 flex items-center justify-center";
+            vacio.innerHTML = '<span class="bg-black/50 text-white text-sm font-bold rounded-full px-3 py-1">Aquí crece lo que aciertes</span>';
+            plot.appendChild(vacio);
             if (compras.length > 0) {
                 const amigos = document.createElement("div");
                 amigos.id = "garden-amigos";
@@ -1673,6 +1680,8 @@
             else document.body.dataset.mundo = perfilEnUso().mundo;
             pintarFondo(pantallaActual === "screen-welcome" ? null : perfilEnUso().mundo);
             document.getElementById("display-personaje").textContent = perfilEnUso().emoji;
+            // Quien riega el bancal de la partida es el personaje de quien juega.
+            document.getElementById("watering-can").textContent = `💧${perfilEnUso().emoji}`;
             document.querySelectorAll(".sim-flor").forEach((e) => { e.textContent = m.flor; });
             document.querySelectorAll(".sim-capullo").forEach((e) => { e.textContent = m.capullo; });
             document.querySelectorAll(".sim-mundo").forEach((e) => { e.textContent = m.emoji; });
@@ -2019,7 +2028,7 @@
                 nombre.textContent = nombreDe(p);   // texto, nunca HTML: lo escribió quien juega
                 const cuenta = document.createElement("span");
                 cuenta.className = "text-xs font-semibold text-gray-700";
-                cuenta.textContent = `${MUNDOS[p.mundo].emoji} ${MUNDOS[p.mundo].nombre} · ${flores} de ${plantas().length} flores`;
+                cuenta.textContent = `${MUNDOS[p.mundo].emoji} ${MUNDOS[p.mundo].nombre} · ${flores} de ${plantas().length} ${MUNDOS[p.mundo].nombreFlores}`;
                 boton.append(emoji, nombre, cuenta);
                 boton.onclick = () => elegirPerfil(p.id);
                 li.appendChild(boton);
@@ -3547,6 +3556,8 @@
         function actualizarCuentaFlores() {
             const n = cuentaPorEstado().florecida;
             document.querySelectorAll(".cuenta-flores").forEach((e) => { e.textContent = String(n); });
+            // Lo que se cuenta depende del mundo: «flores», «dinosaurios», «estrellas»…
+            document.querySelectorAll(".nombre-flores").forEach((e) => { e.textContent = mundo().nombreFlores; });
         }
 
         function consejoDelJardin(cuenta, marchitas) {
@@ -3582,12 +3593,15 @@
                 bancal.setAttribute("aria-labelledby", `bancal-${a}`);
                 const titulo = document.createElement("h3");
                 titulo.id = `bancal-${a}`;
-                titulo.className = "text-sm font-bold text-green-900 mb-1 flex items-center justify-between gap-2";
+                // En el teléfono, «Tabla del 1 · Semilla» y «Ver la tabla del 1» se
+                // partían en renglones sueltos: ahora cada parte va entera, y si no
+                // caben juntas, el enlace baja a la derecha.
+                titulo.className = "text-sm font-bold text-green-900 mb-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5";
                 const estatus = estatusTabla(a);
                 bancal.dataset.estatus = estatus || "";
-                titulo.innerHTML = `<span class="flex items-center gap-1">${estatus ? dibujoEstatus(estatus) : ""}<button type="button" class="enlace-tactil hover:underline">Tabla del ${a}</button>` +
-                    (estatus ? `<span class="estatus-nombre text-xs font-semibold text-green-800">${NOMBRE_ESTATUS[estatus][0].toUpperCase()}${NOMBRE_ESTATUS[estatus].slice(1)}</span>` : "") + "</span>" +
-                    `<button type="button" class="descubrir-bancal enlace-tactil text-sm font-semibold text-indigo-800 hover:underline"><span aria-hidden="true">🔍</span> Ver la tabla del ${a}</button>`;
+                titulo.innerHTML = `<span class="flex items-center gap-1">${estatus ? dibujoEstatus(estatus) : ""}<button type="button" class="enlace-tactil hover:underline whitespace-nowrap">Tabla del ${a}</button>` +
+                    (estatus ? `<span class="estatus-nombre text-xs font-semibold text-green-800 whitespace-nowrap">${NOMBRE_ESTATUS[estatus][0].toUpperCase()}${NOMBRE_ESTATUS[estatus].slice(1)}</span>` : "") + "</span>" +
+                    `<button type="button" class="descubrir-bancal enlace-tactil text-sm font-semibold text-indigo-800 hover:underline whitespace-nowrap ml-auto"><span aria-hidden="true">🔍</span> Ver la tabla del ${a}</button>`;
                 const [practicar, ver] = titulo.querySelectorAll("button");
                 practicar.onclick = () => startTable(a);
                 ver.onclick = () => mostrarDescubrir(a);
@@ -3621,10 +3635,10 @@
             });
             const cuenta = cuentaPorEstado();
             const total = plantas().length;
-            document.getElementById("jardin-resumen").innerText = `${cuenta.florecida} de ${total} flores`;
+            document.getElementById("jardin-resumen").innerText = `${cuenta.florecida} de ${total} ${mundo().nombreFlores}`;
             const barra = document.getElementById("jardin-progreso");
             barra.setAttribute("aria-valuenow", String(cuenta.florecida));
-            barra.setAttribute("aria-valuetext", `${cuenta.florecida} de ${total} flores`);
+            barra.setAttribute("aria-valuetext", `${cuenta.florecida} de ${total} ${mundo().nombreFlores}`);
             document.getElementById("jardin-barra").style.width = `${(cuenta.florecida / total) * 100}%`;
             document.getElementById("jardin-consejo").innerText = consejoDelJardin(cuenta, marchitas);
             pintarAmigos();
@@ -6002,6 +6016,7 @@
         // --- ACCIÓN DE HACER CRECER UNA FLOR EN EL JARDÍN ---
         function sproutFlower(florecio = false) {
             const plot = document.getElementById("garden-plot");
+            document.getElementById("garden-vacio")?.remove();
             const flower = document.createElement("div");
             
             const can = document.getElementById("watering-can");
@@ -6302,6 +6317,7 @@
                 caja.value = p.id;
                 caja.checked = marcados.includes(p.id);
                 caja.className = "w-5 h-5 accent-rose-600";
+                caja.addEventListener("change", marcarTablasEquipo);
                 const nombre = document.createElement("span");
                 nombre.textContent = `${p.emoji} ${nombreDe(p)}`;
                 label.append(caja, nombre);
@@ -6318,6 +6334,24 @@
                 b.onclick = () => empezarEquipo(t);
                 return b;
             }));
+            marcarTablasEquipo();
+        }
+
+        /**
+         * Con menos de dos marcados, las tablas se ven en espera (borde punteado,
+         * fondo gris) y el lector de pantalla oye qué falta. Siguen respondiendo
+         * al toque para decirlo: un botón muerto no le explica nada a un niño.
+         */
+        function marcarTablasEquipo() {
+            const listos = elegidosEquipo().length >= 2;
+            document.getElementById("equipo-falta").classList.toggle("hidden", listos);
+            document.querySelectorAll("#equipo-tablas .btn-tabla-equipo").forEach((b) => {
+                b.dataset.espera = String(!listos);
+                if (listos) b.removeAttribute("aria-describedby"); else b.setAttribute("aria-describedby", "equipo-falta");
+                b.classList.toggle("border-dashed", !listos);
+                b.classList.toggle("bg-gray-50", !listos);
+                b.classList.toggle("bg-white", listos);
+            });
         }
 
         function elegidosEquipo() {
@@ -6339,7 +6373,7 @@
             const perfil = perfiles.find((p) => p.iniciado && igual(p.nombre, nombre)) || nuevoPerfil(nombre, true, MUNDO_INICIAL, libre);
             guardarPerfiles();
             campo.value = "";
-            pintarEquipo([...marcados, perfil.id]);
+            pintarEquipo([...marcados, perfil.id]);   // también marca las tablas
             document.getElementById("equipo-aviso").textContent = `${nombre} se une al equipo.`;
             return false;
         }

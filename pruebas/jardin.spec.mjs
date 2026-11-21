@@ -84,7 +84,7 @@ test.describe("Mi jardín", () => {
     await expect(page.locator("[data-planta]")).toHaveCount(54);
     const porBancal = await page.$$eval("#jardin-bancales section", (ss) => ss.map((s) => s.querySelectorAll("li").length));
     expect(porBancal).toEqual([10, 9, 8, 7, 6, 5, 4, 3, 2]);
-    await expect(page.locator("#jardin-resumen")).toHaveText("0 de 54 flores");
+    await expect(page.locator("#jardin-resumen")).toHaveText("0 de 54 cosechas");
     await expect(page.locator("#jardin-consejo")).toContainText("Juega una tabla");
   });
 
@@ -103,14 +103,14 @@ test.describe("Mi jardín", () => {
     await expect(planta("3x4").locator("svg.planta-arte")).toHaveAttribute("data-estado", "practica");
     await expect(planta("9x10")).toHaveAttribute("data-estado", "nuevo");
     await expect(planta("9x10")).toContainText("9 por 10: por sembrar");   // el ×10 no tiene pareja
-    await expect(page.locator("#jardin-resumen")).toHaveText("1 de 54 flores");
+    await expect(page.locator("#jardin-resumen")).toHaveText("1 de 54 cosechas");
   });
 
   test("el menú dice cuántas flores hay", async ({ page }) => {
     await page.goto("./");
     await ponerIntentos(page, "2x3", [rapida("2026-01-01"), rapida("2026-01-02")]);
     await page.click("#screen-welcome button");
-    await expect(page.locator("#screen-selector")).toContainText("Mi jardín (1 de 54 flores)");
+    await expect(page.locator("#screen-selector")).toContainText("Mi jardín (1 de 54 cosechas)");
   });
 
   test("tocar un bancal empieza a practicar esa tabla, y Esc vuelve al menú", async ({ page }, testInfo) => {
