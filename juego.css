@@ -745,3 +745,9 @@ html.calma *, html.calma *::before, html.calma *::after {
         transition-duration: 0.001ms !important;
     }
 }
+
+/* Expedición de hoy (Hito 4.5) */
+.banderin-icono { width: 1.5rem; height: 1.5rem; display: inline-block; vertical-align: -0.2rem; }
+.expedicion-paradas { display: grid; gap: 0.35rem; list-style: none; padding: 0; margin: 0; }
+.expedicion-paradas li { display: flex; align-items: center; gap: 0.5rem; }
+.parada-num { flex: none; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 999px; background: #0f766e; color: #fff; font-size: 0.9rem; }

@@ -34,6 +34,9 @@ const MUNDO_ANCHO = 370;
 const MUNDO_ALTO = 1240;
 // Dónde brotan las flores del camino, en orden: se ven tantas como lo florecido.
 const FLORES_MUNDO = [[190, 150], [230, 215], [285, 265], [300, 330], [180, 300], [170, 420], [110, 470], [75, 540], [200, 520], [210, 600], [270, 650], [310, 720], [170, 720], [165, 800], [330, 820], [120, 900], [80, 960], [220, 960], [230, 1040], [280, 1100], [60, 1150], [200, 1160], [320, 560], [50, 330]];
+// Dónde se plantan los banderines de la Expedición de hoy (uno por día
+// completado): a un lado del sendero, lejos de los lugares y de las flores.
+const BANDERINES_MUNDO = [[325, 150], [335, 235], [28, 395], [60, 445], [345, 725], [345, 775], [40, 820], [50, 895], [330, 1040], [335, 1160]];
 const COLORES_FLOR_MUNDO = ["#fb7185", "#facc15", "#a78bfa", "#fb923c", "#38bdf8"];
 const TRAZO_MUNDO = 'stroke="var(--contorno)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
 
@@ -111,7 +114,7 @@ function florDelMundo([x, y], i) {
  * aprendido, los lugares y la niebla sobre los que duermen. Decorativo: los
  * botones de cada lugar van encima, en HTML.
  */
-function svgMundo(dormidos, flores) {
+function svgMundo(dormidos, flores, banderines = 0) {
     const rio = "M-20 610 C70 560 150 700 250 640 S340 600 400 650";
     let s = `<svg class="mundo-arte" viewBox="0 0 ${MUNDO_ANCHO} ${MUNDO_ALTO}" aria-hidden="true" focusable="false">`;
     s += `<path d="M0 90 Q90 50 185 80 T370 70 V${MUNDO_ALTO} H0Z" fill="var(--mundo-pasto)"/>`;
@@ -121,6 +124,7 @@ function svgMundo(dormidos, flores) {
     s += `<path d="M-20 600 C70 550 150 690 250 630 S340 590 400 640" fill="none" stroke="var(--brillo)" stroke-width="6" stroke-dasharray="18 26" stroke-linecap="round"/>`;
     s += `<path d="M115 190 C300 230 330 340 255 410 S50 520 120 635 S340 740 250 860 S50 970 125 1080" fill="none" stroke="var(--mundo-sendero)" stroke-width="16" stroke-linecap="round" stroke-dasharray="2 24"/>`;
     s += FLORES_MUNDO.slice(0, flores).map(florDelMundo).join("");
+    s += BANDERINES_MUNDO.slice(0, banderines).map(banderinDelMundo).join("");
     for (const lugar of LUGARES) {
         const duerme = dormidos.has(lugar.id);
         s += `<g class="escena-lugar${duerme ? " escena-dormida" : ""}" data-lugar="${lugar.id}">${escenaLugar(lugar)}</g>`;
@@ -131,6 +135,13 @@ function svgMundo(dormidos, flores) {
         }
     }
     return `${s}</svg>`;
+}
+
+/** Un banderín plantado: un día con la Expedición completa. */
+function banderinDelMundo([x, y], i) {
+    return `<g class="banderin-mundo"><ellipse cx="${x}" cy="${y}" rx="11" ry="4" fill="var(--mundo-pasto-2)" ${TRAZO_MUNDO}/>` +
+        `<path d="M${x} ${y}V${y - 38}" fill="none" ${TRAZO_MUNDO}/>` +
+        `<path d="M${x} ${y - 38}l22 8l-22 8z" fill="${COLORES_FLOR_MUNDO[i % COLORES_FLOR_MUNDO.length]}" ${TRAZO_MUNDO}/></g>`;
 }
 
 /** Una Lumi suelta (fuera de las .lumi-caja que pinta ponerLumis). */
