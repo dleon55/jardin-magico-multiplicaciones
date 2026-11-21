@@ -9,6 +9,19 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-21
 
+- **El mundo vivo, parte 1** (#118, Hito 4): el inicio deja de ser una
+  lista de unos 20 botones y pasa a ser un mundo que se recorre.
+  - Cinco lugares, de lo más fácil a lo más avanzado: Huerto de las tablas,
+    Bosque de dividir, Río de los números, Jardín de las partes y Mercado y
+    reloj. Tocar uno abre sus juegos, cada uno con su dibujo.
+  - Los lugares despiertan con las tablas que se saben; dormidos, se ven
+    bajo la niebla y dicen qué falta. Quien ya jugaba un tema lo conserva.
+  - El camino florece con lo aprendido y Lumi está junto al último lugar
+    despierto.
+  - «Menú en lista», en Ajustes, deja la lista de siempre (sin nada
+    dormido), para lectores de pantalla y personas adultas.
+  - Vive en `js/mundo.js`. Las pruebas de siempre usan la lista; el mundo
+    tiene las suyas (`pruebas/mundo-vivo.spec.mjs`).
 - **Detalles de la revisión visual** (#116, tarea #114):
   - En «Mi jardín», en el teléfono, «Tabla del 1 · Semilla» y «Ver la tabla
     del 1» ya no se parten a la mitad: cada parte va entera y el enlace baja

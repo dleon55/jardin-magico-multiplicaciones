@@ -71,7 +71,9 @@ test("panel de ajustes abierto", async ({ page }) => {
 test("al cambiar de pantalla, el foco va a su encabezado", async ({ page }) => {
   await page.goto("./");
   await page.click("#screen-welcome button");
-  await expect(page.locator("#screen-selector [data-foco]")).toBeFocused();
+  // El inicio tiene dos encabezados (el mundo y la lista): el foco va al que se ve.
+  await expect(page.locator("#screen-selector [data-foco]:visible")).toHaveCount(1);
+  await expect(page.locator("#screen-selector [data-foco]:visible")).toBeFocused();
 });
 
 test("la pregunta y el resultado se anuncian solos al lector de pantalla", async ({ page }) => {

@@ -587,6 +587,32 @@ main button:is(.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl):active:not(:disab
 
 /* Los subtítulos de los botones, en la letra del juego (antes, la del sistema). */
 .subtitulo { font-family: 'Quicksand', system-ui, sans-serif; }
+
+/* EL MUNDO VIVO: el dibujo ocupa la caja y los lugares son botones encima. */
+:root { --mundo-pasto: #a5e08f; --mundo-pasto-2: #8fd27a; --mundo-agua: #5cc8f5; --mundo-sendero: #f3d9a4; --mundo-niebla: #ffffff; --mundo-zzz: #57534e; --mundo-cielo: linear-gradient(#a9e1ff, #ffeec2); }
+body[data-mundo="espacio"] { --mundo-pasto: #2b2a5e; --mundo-pasto-2: #232252; --mundo-agua: #3b82f6; --mundo-sendero: #a5b4fc; --mundo-niebla: #6366a8; --mundo-zzz: #eef2ff; --mundo-cielo: linear-gradient(#17143a, #3a2a6e); }
+body[data-mundo="mar"] { --mundo-pasto: #7dd3c8; --mundo-pasto-2: #5ec4b8; --mundo-agua: #2563eb; --mundo-cielo: linear-gradient(#bae6fd, #e0f2fe); }
+body[data-mundo="desierto"] { --mundo-pasto: #f5d48a; --mundo-pasto-2: #ecc56f; --mundo-sendero: #fff3d1; --mundo-cielo: linear-gradient(#fde68a, #fff7ed); }
+body[data-mundo="bosque"], body[data-mundo="dinos"] { --mundo-pasto: #8fd37a; --mundo-pasto-2: #77c463; }
+.mundo-mapa { position: relative; width: 100%; aspect-ratio: 370 / 1240; border-radius: 1.5rem; overflow: hidden; background: var(--mundo-cielo); border: 3px solid var(--contorno); }
+.mundo-mapa > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.mundo-mapa text { font-family: 'Quicksand', system-ui, sans-serif; }
+.escena-dormida { opacity: 0.55; filter: grayscale(0.9); }
+.lugar-mundo { position: absolute; display: flex; align-items: flex-end; justify-content: center; border-radius: 1.5rem; touch-action: manipulation; }
+.rotulo-lugar { display: block; max-width: 100%; background: #fff; color: var(--tinta); border: 3px solid var(--borde-lugar, #34d399); border-radius: 1rem; padding: 0.3rem 0.7rem; text-align: center; line-height: 1.15; box-shadow: 0 4px 0 var(--sombra-arte); }
+.rotulo-lugar b { display: block; font-family: 'Fredoka One', 'Quicksand', system-ui, sans-serif; font-weight: 400; font-size: 1.05rem; }
+.rotulo-lugar span { font-size: 0.75rem; font-weight: 700; color: var(--tinta-suave); }
+.lugar-dormido .rotulo-lugar { border-style: dashed; border-color: #78716c; }
+.lugar-mundo:active .rotulo-lugar { transform: translateY(2px); box-shadow: 0 2px 0 var(--sombra-arte); }
+.lumi-mundo { position: absolute; width: 17%; aspect-ratio: 1; transform: translate(-50%, -100%); pointer-events: none; }
+.lumi-mundo > svg { width: 100%; height: 100%; overflow: visible; }
+.tabla-lugar { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 3.75rem; border: 2px solid #d1d5db; background: #fff; border-radius: 1rem; color: var(--hoja); box-shadow: 0 3px 0 var(--sombra-arte); }
+.tabla-lugar span + span { color: var(--tinta-suave); }
+.tabla-lugar.tabla-sabida { background: var(--hoja-clara); border-color: #6ee7b7; }
+.juego-lugar { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; text-align: center; min-height: 7rem; padding: 0.6rem 0.5rem 0.75rem; border: 2px solid #d1d5db; background: #fff; border-radius: 1rem; color: var(--tinta); box-shadow: 0 4px 0 var(--sombra-arte); }
+.juego-lugar.col-span-2 { flex-direction: row; text-align: left; min-height: 0; gap: 0.75rem; padding: 0.6rem 0.75rem; }
+.juego-lugar:active, .tabla-lugar:active { transform: translateY(2px); }
+.icono-tema { width: 3.4rem; height: 3.4rem; flex: none; }
 /* Ajustes: el panel cuelga del botón, a la derecha, y el botón no se mueve al abrirlo. */
 #ajustes > div { position: absolute; right: 0; top: 100%; max-height: calc(100vh - 5.5rem); overflow-y: auto; }
 #girasol.girasol-chico { width: 5.5rem; height: 5.5rem; }

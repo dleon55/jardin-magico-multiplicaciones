@@ -191,6 +191,9 @@
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="calma" aria-pressed="false">
                     <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-calma"/></svg> Menos movimiento</span><span class="estado font-bold">No</span>
                 </button>
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border hover:bg-sky-50" data-ajuste="lista" aria-pressed="false">
+                    <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-elegir"/></svg> Menú en lista</span><span class="estado font-bold">No</span>
+                </button>
                 <p id="aviso-voz" class="hidden text-xs text-gray-700 px-1"></p>
             </div>
         </details>
@@ -369,6 +372,19 @@
                 <ol id="mision-semana" class="flex justify-between gap-1 text-xs" aria-label="Metas de los últimos 7 días"></ol>
             </section>
 
+            <!-- EL MUNDO VIVO (Hito 4): en lugar de la lista de botones, un mundo
+                 que se recorre. Cada lugar reúne unos temas y despierta con las
+                 tablas que se van sabiendo. La lista sigue en Ajustes. -->
+            <section id="mundo-vivo" aria-labelledby="mundo-titulo" class="hidden max-w-md mx-auto w-full space-y-2">
+                <h2 id="mundo-titulo" data-foco class="bubble-font text-2xl text-green-700 text-center">Tu mundo</h2>
+                <p class="text-gray-700 text-sm text-center">Toca un lugar para jugar. Los que duermen despiertan con las tablas que aprendas.</p>
+                <div id="mundo-mapa" class="mundo-mapa"></div>
+                <p id="mundo-aviso" role="status" aria-live="polite" class="min-h-6 text-center text-sm font-bold text-indigo-900"></p>
+                <!-- La Aventura y En equipo: se crean solo con el mundo a la vista (pintarMundoVivo). -->
+                <div id="mundo-extras" class="grid grid-cols-2 gap-3"></div>
+            </section>
+
+            <div id="menu-lista" class="space-y-6">
             <h2 id="juego-libre" class="text-center text-sm font-bold uppercase tracking-wider text-gray-600 border-t-2 border-dashed border-green-200 pt-3">Juego libre: elige tú</h2>
             <div class="text-center">
                 <h3 data-foco class="bubble-font text-2xl text-green-700">¿Qué tabla quieres cultivar hoy?</h3>
@@ -457,6 +473,8 @@
                     <span><span aria-hidden="true">🍕</span> Fracciones</span>
                     <span class="text-xs subtitulo font-semibold">De un número, iguales, comparar y sumar</span>
                 </button>
+            </div>
+
             </div>
 
             <h3 class="seccion-menu bubble-font text-xl text-green-800 text-center pt-2">Tu progreso</h3>
@@ -1075,6 +1093,21 @@
 
     </main>
 
+        <!-- Los juegos de un lugar del mundo: sube desde abajo, sobre el mapa.
+         Fuera de <main>: su desenfoque de fondo atraparía a un elemento fijo. -->
+        <div id="lugar-fondo" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center" style="background: rgba(46, 42, 59, 0.45)">
+            <div id="lugar-panel" role="dialog" aria-modal="true" aria-labelledby="lugar-titulo" class="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-t-3xl sm:rounded-3xl p-4 pb-6 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <h2 id="lugar-titulo" tabindex="-1" class="bubble-font text-2xl"></h2>
+                    <button type="button" id="lugar-cerrar" onclick="cerrarLugar()" aria-label="Cerrar" class="w-11 h-11 flex-none rounded-full border-2 border-gray-300 bg-white text-xl font-bold text-gray-800">×</button>
+                </div>
+                <p id="lugar-sub" class="text-gray-700 text-sm"></p>
+                <div id="lugar-tablas" class="hidden grid grid-cols-3 gap-2"></div>
+                <div id="lugar-juegos" class="grid grid-cols-2 gap-3"></div>
+            </div>
+        </div>
+
+
     <!-- Informe para imprimir: se llena desde «Para las personas adultas». -->
     <article id="informe" class="informe" aria-hidden="true"></article>
 
@@ -1089,6 +1122,7 @@
     <script src="js/decimales.js"></script>
     <script src="js/tiempo.js"></script>
     <script src="js/calendario.js"></script>
+    <script src="js/mundo.js"></script>
     <!-- Script del Juego -->
     <script>
         // --- ALMACENAMIENTO ---
@@ -1274,7 +1308,10 @@
         // al sistema operativo (y a sus cambios); true o false, lo que se eligió
         // aquí. Si se guardara el valor derivado del sistema, cambiar la voz
         // congelaría "calma" para siempre.
-        const ajustes = { voz: true, efectos: true, musica: true, volumenMusica: 5, velocidad: "normal", calma: null };
+        const ajustes = { voz: true, efectos: true, musica: true, volumenMusica: 5, velocidad: "normal", calma: null, lista: false };
+        // Los juegos de un lugar del mundo vivo, si están abiertos (ver «EL MUNDO VIVO»).
+        let lugarAbierto = null;
+        let regresoLugar = null;   // a dónde vuelve el foco al cerrar
 
         // Velocidades de la voz, en el orden en que las recorre el botón. Más de
         // 1,2 y en español los números se atropellan ("siete por ocho, cincuenta
@@ -1306,6 +1343,10 @@
 
         function aplicarAjustes() {
             document.documentElement.classList.toggle("calma", calmaEfectiva());
+            // El inicio: el mundo vivo, o la lista de siempre.
+            document.getElementById("mundo-vivo").classList.toggle("hidden", ajustes.lista === true);
+            document.getElementById("menu-lista").classList.toggle("hidden", ajustes.lista !== true);
+            if (ajustes.lista === true) cerrarLugar(false);
             const deslizador = document.getElementById("volumen-musica");
             deslizador.value = String(ajustes.volumenMusica);
             deslizador.setAttribute("aria-valuetext", ajustes.volumenMusica === 0 ? "0 de 10, en silencio" : `${ajustes.volumenMusica} de 10`);
@@ -1332,6 +1373,7 @@
             }
             almacen.guardar("ajustes", JSON.stringify(ajustes));
             aplicarAjustes();
+            if (nombre === "lista" && pantallaActual === "screen-selector") pintarMundoVivo();
             if (nombre === "voz") {
                 if (ajustes.voz) speak("Voz activada.");
                 else callarVoz();
@@ -2752,6 +2794,7 @@
                 actualizarResumenMenuAventura();
                 actualizarBotonesFalta();
                 actualizarCuentaFlores();
+                pintarMundoVivo();
                 actualizarEstrellas();
                 actualizarMision();
             }
@@ -2763,7 +2806,8 @@
             entrarPantalla(document.getElementById(id));
             window.scrollTo(0, 0);
             elegirMusica();
-            const destino = document.querySelector(`#${id} [data-foco]`);
+            // El primero que se ve: el inicio tiene dos (el mundo y la lista).
+            const destino = [...document.querySelectorAll(`#${id} [data-foco]`)].find((e) => e.offsetParent !== null);
             if (destino) {
                 destino.setAttribute("tabindex", "-1");
                 destino.focus({ preventScroll: true });
@@ -2845,6 +2889,12 @@
                 return;
             }
             const enCampoDeTexto = evento.target.tagName === "INPUT";
+
+            // Con los juegos de un lugar abiertos, Escape los cierra y nada más.
+            if (lugarAbierto) {
+                if (evento.key === "Escape") { evento.preventDefault(); cerrarLugar(); }
+                return;
+            }
 
             if (pantallaActual === "screen-adultos" && evento.key === "Escape") {
                 evento.preventDefault();
@@ -5419,6 +5469,129 @@
         }
 
         /** Saltar: no pregunta nada y no vuelve a proponerlo. */
+        // --- EL MUNDO VIVO (js/mundo.js) ---
+        //
+        // El inicio es un mundo: cada lugar es un botón sobre el dibujo. Los
+        // despiertos abren sus juegos; los dormidos dicen qué tablas faltan.
+        function pintarMundoVivo() {
+            const mapa = document.getElementById("mundo-mapa");
+            const extras = document.getElementById("mundo-extras");
+            // Con la lista a la vista, el mundo no se dibuja (ni duplica sus botones).
+            if (ajustes.lista === true) { mapa.replaceChildren(); extras.replaceChildren(); return; }
+            extras.replaceChildren(...[["btn-aventura-mundo", "La Aventura", mostrarAventura, "bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-700 hover:to-fuchsia-700 text-white"],
+                ["btn-equipo-mundo", "En equipo", mostrarEquipo, "bg-gradient-to-r from-rose-200 to-pink-200 hover:from-rose-300 hover:to-pink-300 text-gray-900"]].map(([id, texto, accion, color]) => {
+                const boton = document.createElement("button");
+                boton.type = "button";
+                boton.id = id;
+                boton.className = `bubble-font ${color} py-3 px-2 rounded-2xl shadow-md transition text-lg min-h-11`;
+                boton.textContent = texto;
+                boton.onclick = accion;
+                return boton;
+            }));
+            const dormidos = new Set(LUGARES.filter((l) => faltanParaLugar(l).length > 0).map((l) => l.id));
+            const florecidas = cuentaPorEstado().florecida;
+            // Con la primera flor ya se ve una en el camino; con las 54, todas.
+            const flores = florecidas === 0 ? 0 : Math.max(1, Math.round((florecidas / plantas().length) * FLORES_MUNDO.length));
+            mapa.innerHTML = svgMundo(dormidos, flores);
+            for (const lugar of LUGARES) {
+                const faltan = faltanParaLugar(lugar);
+                const b = document.createElement("button");
+                b.type = "button";
+                b.className = `lugar-mundo${faltan.length ? " lugar-dormido" : ""}`;
+                b.dataset.lugar = lugar.id;
+                b.style.left = `${((lugar.cx - 105) / MUNDO_ANCHO) * 100}%`;
+                b.style.top = `${((lugar.cy - 80) / MUNDO_ALTO) * 100}%`;
+                b.style.width = `${(210 / MUNDO_ANCHO) * 100}%`;
+                b.style.height = `${(196 / MUNDO_ALTO) * 100}%`;
+                b.style.setProperty("--borde-lugar", lugar.borde);
+                const rotulo = document.createElement("span");
+                rotulo.className = "rotulo-lugar";
+                const nombre = document.createElement("b");
+                nombre.textContent = lugar.nombre;
+                const detalle = document.createElement("span");
+                // En el rótulo, corto; al tocarlo se dice la lista entera.
+                detalle.textContent = faltan.length > 2 ? `Despierta con ${faltan.length} tablas más`
+                    : faltan.length ? `Despierta con ${listaTablas(faltan)}`
+                    : lugar.id === "huerto" ? "Las tablas y el Desafío" : `${lugar.juegos.length} juegos`;
+                rotulo.append(nombre, detalle);
+                b.appendChild(rotulo);
+                b.setAttribute("aria-label", faltan.length ? `${lugar.nombre}, dormido: despierta cuando sepas ${listaTablas(faltan)}` : `${lugar.nombre}: ${detalle.textContent}`);
+                b.onclick = () => (faltan.length ? avisarLugarDormido(lugar, faltan) : abrirLugar(lugar.id));
+                mapa.appendChild(b);
+            }
+            // Lumi, junto al último lugar despierto.
+            const ultimo = LUGARES.filter((l) => !dormidos.has(l.id)).at(-1);
+            const lumiMapa = document.createElement("span");
+            lumiMapa.className = "lumi-mundo";
+            lumiMapa.dataset.lugar = ultimo.id;
+            lumiMapa.style.left = `${((ultimo.cx + (ultimo.cx > MUNDO_ANCHO / 2 ? -112 : 112)) / MUNDO_ANCHO) * 100}%`;
+            lumiMapa.style.top = `${((ultimo.cy + 40) / MUNDO_ALTO) * 100}%`;
+            lumiMapa.appendChild(lumiSuelta("contenta"));
+            mapa.appendChild(lumiMapa);
+            document.getElementById("mundo-aviso").textContent = "";
+        }
+
+        function avisarLugarDormido(lugar, faltan) {
+            const texto = `${lugar.nombre} sigue dormido: despierta cuando sepas ${listaTablas(faltan)}.`;
+            document.getElementById("mundo-aviso").textContent = texto;
+            speak(texto);
+        }
+
+        function abrirLugar(id) {
+            const lugar = LUGARES.find((l) => l.id === id);
+            if (!lugar || faltanParaLugar(lugar).length > 0) return;
+            lugarAbierto = id;
+            regresoLugar = document.activeElement;
+            const titulo = document.getElementById("lugar-titulo");
+            titulo.textContent = lugar.nombre;
+            titulo.style.color = lugar.tinta;
+            document.getElementById("lugar-panel").style.borderTop = `6px solid ${lugar.borde}`;
+            document.getElementById("lugar-sub").textContent = lugar.sub;
+            const tablas = document.getElementById("lugar-tablas");
+            tablas.classList.toggle("hidden", id !== "huerto");
+            tablas.replaceChildren();
+            if (id === "huerto") {
+                for (let n = 1; n <= TABLAS; n++) {
+                    const b = document.createElement("button");
+                    b.type = "button";
+                    b.className = `tabla-lugar${tablaSabida(n) ? " tabla-sabida" : ""}`;
+                    b.dataset.tabla = String(n);
+                    b.innerHTML = `<span class="bubble-font text-2xl">${n}</span><span class="text-xs font-bold">${tablaSabida(n) ? "la sabes" : "practicar"}</span>`;
+                    b.setAttribute("aria-label", `Tabla del ${n}${tablaSabida(n) ? ", ya la sabes" : ""}`);
+                    b.onclick = () => { cerrarLugar(false); elegirTabla(n); };
+                    tablas.appendChild(b);
+                }
+            }
+            document.getElementById("lugar-juegos").replaceChildren(...lugar.juegos.map(([icono, nombre, detalle, destino], i) => {
+                const b = document.createElement("button");
+                b.type = "button";
+                b.className = `juego-lugar${lugar.juegos.length % 2 && i === lugar.juegos.length - 1 ? " col-span-2" : ""}`;
+                b.dataset.juego = destino;
+                b.innerHTML = iconoTema(icono);
+                const texto = document.createElement("span");
+                const fuerte = document.createElement("b");
+                fuerte.className = "bubble-font block text-lg leading-tight";
+                fuerte.textContent = nombre;
+                const chico = document.createElement("span");
+                chico.className = "block text-xs text-gray-700";
+                chico.textContent = detalle;
+                texto.append(fuerte, chico);
+                b.appendChild(texto);
+                b.onclick = () => { cerrarLugar(false); if (destino === "fracciones") mostrarFracciones(); else startTable(destino); };
+                return b;
+            }));
+            document.getElementById("lugar-fondo").classList.remove("hidden");
+            titulo.focus();
+            speak(`${lugar.nombre}. ${lugar.sub}`);
+        }
+
+        function cerrarLugar(devolverFoco = true) {
+            if (!lugarAbierto) return;
+            lugarAbierto = null;
+            document.getElementById("lugar-fondo").classList.add("hidden");
+            if (devolverFoco) { callarVoz(); regresoLugar?.focus?.(); }
+        }
+
         function saltarDiagnostico() {
             almacen.guardar("diagnostico", "saltado");
             diag = null;
