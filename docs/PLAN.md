@@ -15,11 +15,11 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 1 · Calidad que se ve y se oye | [#45](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/45) | **10 de 11** | Casi cerrado: el guion de la voz está listo ([`GUION-VOZ.md`](GUION-VOZ.md)); faltan la grabación y el permiso, del titular |
 | 2 · Un solo camino y mejor enseñanza | [#46](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/46) | **7 de 7** | **Cerrado** el 16 de noviembre |
 | 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | **Todo lo que no necesita servidor, hecho** | Los cinco temas nuevos (#71 cerrado), turnos en un aparato, guía de pruebas y opciones de plataforma. Lo demás espera las decisiones del titular (#66, #72) |
-| 4 · El mundo vivo (nueva presentación) | [#117](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/117) | **2 de 7** | En curso. Hecho: el mundo como inicio (#118) y Lumi que crece (#120). Sigue: los tres tonos, «Enséñale a Lumi», Expedición de hoy, retos con código y el progreso en un solo lugar |
+| 4 · El mundo vivo (nueva presentación) | [#117](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/117) | **3 de 7** | En curso. Hecho: el mundo como inicio (#118), Lumi que crece (#120) y los tres tonos (#122). Sigue: «Enséñale a Lumi», Expedición de hoy, retos con código y el progreso en un solo lugar |
 
 **Cifras al día:**
-- 43 PRs fusionados desde que empezó el plan (#73 a #120), cada uno verificado en el sitio publicado.
-- La compuerta de calidad (`npm run comprobar`) tiene **1379 pruebas en verde**, en escritorio y tableta.
+- 45 PRs fusionados desde que empezó el plan (#73 a #122), cada uno verificado en el sitio publicado.
+- La compuerta de calidad (`npm run comprobar`) tiene **1399 pruebas en verde**, en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
 - El juego, en varios archivos desde #96: `index.html` pesa 453 KB, más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`. Sin dependencias externas, y funciona sin internet.
 
@@ -91,8 +91,8 @@ lo elige quien juega.
 |-------|--------|--------|
 | 4.1 El mundo como inicio | **Hecho** (#118) | Cinco lugares que despiertan con las tablas; la lista de siempre queda en Ajustes |
 | 4.2 Lumi crece contigo | **Hecho** (#120) | De semilla a árbol en flor con 2, 4, 6 y 8 tablas; nunca encoge |
-| 4.3 Tres tonos | Sigue | Brote, Explora y Pro: el mismo mundo para 6, 9 y 12 años; lo elige quien juega |
-| 4.4 Enséñale a Lumi | Pendiente | Lumi se equivoca con los errores típicos y quien juega la corrige |
+| 4.3 Tres tonos | **Hecho** (#122) | Brote, Explora y Pro: el mismo mundo para 6, 9 y 12 años; lo elige quien juega. Pro mide tiempos contra la marca propia |
+| 4.4 Enséñale a Lumi | Sigue | Lumi se equivoca con los errores típicos y quien juega la corrige |
 | 4.5 Expedición de hoy | Pendiente | «Seguir» como cinco minutos con principio y final |
 | 4.6 Retos con código | Pendiente | Un reto en un enlace, sin cuentas ni servidor |
 | 4.7 El progreso en un solo lugar | Pendiente | Camino, jardín, mapa y vivero, juntos |
