@@ -29,6 +29,10 @@ recorre, con cinco lugares ordenados de lo más fácil a lo más avanzado.
 - Quien ya jugaba un tema no lo pierde: su lugar sigue despierto.
 - El camino florece con lo aprendido, y Lumi está junto al último lugar
   despierto.
+- **Lumi crece contigo:** es semilla al empezar, y con 2, 4, 6 y 8 tablas
+  sabidas (del 2 al 9) pasa a brote, plantita, arbolito y árbol en flor.
+  Cada etapa le suma hojas, frutos o una flor, y lo anuncia al volver al
+  inicio. Nunca encoge, aunque una tabla se marchite.
 - La Aventura y «En equipo» quedan a un toque, bajo el mundo.
 - En Ajustes, **«Menú en lista»** cambia a la lista de siempre, donde nada
   duerme: es la vista para lectores de pantalla y para las personas adultas.

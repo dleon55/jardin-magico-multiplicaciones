@@ -94,6 +94,20 @@ function svgPaisajeArena(m) {
 const EXPRESIONES_LUMI = ["contenta", "pensando", "animando", "celebrando", "sorprendida", "durmiendo"];
 const SUENO_LUMI_MS = 20000;
 let lumisCreados = 0;
+// Lumi crece con las tablas (del 2 al 9) que se saben: `desde` cuántas.
+const ETAPAS_LUMI = [{ nombre: "una semilla", desde: 0 }, { nombre: "un brote", desde: 2 }, { nombre: "una plantita", desde: 4 }, { nombre: "un arbolito", desde: 6 }, { nombre: "un árbol en flor", desde: 8 }];
+let etapaLumi = 0;   // la de quien juega; todas las Lumi en pantalla la muestran
+
+/** La etapa que toca con tantas tablas sabidas. */
+function etapaLumiPorTablas(sabidas) {
+    return ETAPAS_LUMI.reduce((etapa, e, i) => (sabidas >= e.desde ? i : etapa), 0);
+}
+
+/** Pone la etapa en todas las Lumi dibujadas (y en las que se dibujen después). */
+function ponerEtapaLumi(etapa) {
+    etapaLumi = etapa;
+    document.querySelectorAll("svg.lumi").forEach((svg) => { svg.dataset.etapa = String(etapa); });
+}
 const vueltaLumi = new Map();   // svg -> temporizador para volver a «contenta»
 let suenoLumi = null;
 
@@ -107,6 +121,7 @@ function ponerLumis() {
         svg.querySelector("[data-recorte]").id = id;
         svg.querySelector("[data-recortado]").setAttribute("clip-path", `url(#${id})`);
         svg.dataset.expresion = caja.dataset.lumi || "contenta";
+        svg.dataset.etapa = String(etapaLumi);
         caja.replaceChildren(svg);
     });
 }

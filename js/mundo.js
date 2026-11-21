@@ -139,5 +139,6 @@ function lumiSuelta(expresion) {
     svg.querySelector("[data-recorte]").id = id;
     svg.querySelector("[data-recortado]").setAttribute("clip-path", `url(#${id})`);
     svg.dataset.expresion = expresion;
+    svg.dataset.etapa = String(etapaLumi);
     return svg;
 }

@@ -79,6 +79,13 @@
                 <path d="M51 21 C44 10 30 10 28 18 C34 25 45 25 51 21 Z" fill="#4ade80"/>
                 <path d="M51 21 C58 10 72 10 74 18 C68 25 57 25 51 21 Z" fill="#4ade80" data-e="contenta animando celebrando sorprendida durmiendo"/>
                 <path d="M51 21 C56 8 66 2 72 6 C70 14 60 20 51 21 Z" fill="#4ade80" data-e="pensando"/>
+                <!-- Lumi crece (Hito 4): lo que le sale según su etapa. 1 brote: dos
+                     hojitas más; 2 plantita: hojas grandes; 3 arbolito: frutos;
+                     4 árbol en flor: una flor alrededor de la chispa. -->
+                <g data-etapas="1 2 3 4" stroke-width="2.5"><path d="M49 31 C43 25 35 26 32 31 C38 36 45 35 49 31 Z" fill="#22c55e"/><path d="M52 31 C58 25 66 26 69 31 C63 36 56 35 52 31 Z" fill="#22c55e"/></g>
+                <g data-etapas="2 3 4" stroke-width="2.5"><path d="M40 25 C30 12 14 14 12 24 C20 33 34 32 40 25 Z" fill="#16a34a"/><path d="M62 25 C72 12 88 14 90 24 C82 33 68 32 62 25 Z" fill="#16a34a"/></g>
+                <g data-etapas="3 4" stroke-width="2.2"><circle cx="15" cy="32" r="5.5" fill="#fb7185"/><circle cx="87" cy="32" r="5.5" fill="#facc15"/></g>
+                <g data-etapas="4" stroke-width="2" fill="#f472b6"><circle cx="51" cy="0.5" r="5"/><circle cx="59.1" cy="6.4" r="5"/><circle cx="56" cy="15.9" r="5"/><circle cx="46" cy="15.9" r="5"/><circle cx="42.9" cy="6.4" r="5"/></g>
                 <!-- cuerpo: sombra plana, luz desplazada arriba a la izquierda, contorno -->
                 <ellipse cx="50" cy="61" rx="30" ry="28" fill="#d99a4e" stroke="none"/>
                 <ellipse cx="45" cy="56" rx="29" ry="27" fill="#f4c27a" stroke="none" data-recortado/>
@@ -356,6 +363,9 @@
                 </button>
             </section>
 
+            <!-- Lumi creció: se dice una vez, al volver al inicio con una etapa nueva. -->
+            <p id="lumi-crecio" role="status" aria-live="polite" class="hidden max-w-lg mx-auto w-full text-center font-bold text-amber-900 bg-amber-50 border-2 border-amber-300 rounded-2xl px-3 py-2"></p>
+
             <!-- Misión del día: una meta corta y distinta cada día, para que valga
                  la pena volver mañana. Faltar un día no quita nada de lo ganado. -->
             <section id="mision" aria-labelledby="mision-titulo" class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-3 max-w-lg mx-auto space-y-2">
@@ -378,6 +388,7 @@
             <section id="mundo-vivo" aria-labelledby="mundo-titulo" class="hidden max-w-md mx-auto w-full space-y-2">
                 <h2 id="mundo-titulo" data-foco class="bubble-font text-2xl text-green-700 text-center">Tu mundo</h2>
                 <p class="text-gray-700 text-sm text-center">Toca un lugar para jugar. Los que duermen despiertan con las tablas que aprendas.</p>
+                <p id="mundo-etapa" class="text-center text-sm font-bold text-green-800"></p>
                 <div id="mundo-mapa" class="mundo-mapa"></div>
                 <p id="mundo-aviso" role="status" aria-live="polite" class="min-h-6 text-center text-sm font-bold text-indigo-900"></p>
                 <!-- La Aventura y En equipo: se crean solo con el mundo a la vista (pintarMundoVivo). -->
@@ -1149,7 +1160,7 @@
         // Lo que es de cada jardín y viaja en la copia de seguridad. «vistos»:
         // el estado de cada planta la última vez que se abrió «Mi jardín», para
         // animar lo que cambió desde entonces (también al pasar a otro equipo).
-        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico", "estatus"];
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico", "estatus", "lumi"];
         let perfilActual = "p1";
 
         const almacen = {
@@ -1722,6 +1733,8 @@
             else document.body.dataset.mundo = perfilEnUso().mundo;
             pintarFondo(pantallaActual === "screen-welcome" ? null : perfilEnUso().mundo);
             document.getElementById("display-personaje").textContent = perfilEnUso().emoji;
+            // Lumi, con lo que ha crecido quien juega; en la bienvenida, semilla.
+            ponerEtapaLumi(pantallaActual === "screen-welcome" ? 0 : etapaGuardadaLumi());
             // Quien riega el bancal de la partida es el personaje de quien juega.
             document.getElementById("watering-can").textContent = `💧${perfilEnUso().emoji}`;
             document.querySelectorAll(".sim-flor").forEach((e) => { e.textContent = m.flor; });
@@ -2794,6 +2807,7 @@
                 actualizarResumenMenuAventura();
                 actualizarBotonesFalta();
                 actualizarCuentaFlores();
+                anunciarLumi(crecerLumi());
                 pintarMundoVivo();
                 actualizarEstrellas();
                 actualizarMision();
@@ -5473,6 +5487,49 @@
         //
         // El inicio es un mundo: cada lugar es un botón sobre el dibujo. Los
         // despiertos abren sus juegos; los dormidos dicen qué tablas faltan.
+        // --- LUMI CRECE CONTIGO ---
+        //
+        // Lumi pasa de semilla a árbol en flor según las tablas (del 2 al 9)
+        // que se saben. Se guarda la etapa más alta alcanzada: si una tabla se
+        // marchita, Lumi no encoge. Faltar no quita nada.
+        const tablasSabidasLumi = () => [2, 3, 4, 5, 6, 7, 8, 9].filter((n) => tablaSabida(n)).length;
+
+        function etapaGuardadaLumi() {
+            const e = parseInt(almacen.leer("lumi") || "0", 10);
+            return Number.isInteger(e) && e >= 0 && e < ETAPAS_LUMI.length ? e : 0;
+        }
+
+        /** Sube la etapa si toca. Devuelve la nueva etapa si creció, o null. */
+        function crecerLumi() {
+            const antes = etapaGuardadaLumi();
+            const ahora = etapaLumiPorTablas(tablasSabidasLumi());
+            if (ahora <= antes) { ponerEtapaLumi(antes); return null; }
+            almacen.guardar("lumi", String(ahora));
+            ponerEtapaLumi(ahora);
+            return ahora;
+        }
+
+        /** Dice que Lumi creció (una vez); si no creció, quita el aviso. */
+        function anunciarLumi(etapa) {
+            const aviso = document.getElementById("lumi-crecio");
+            aviso.classList.toggle("hidden", etapa === null);
+            if (etapa === null) { aviso.textContent = ""; return; }
+            const texto = `¡Lumi creció! Ahora es ${ETAPAS_LUMI[etapa].nombre}: ya sabes ${tablasSabidasLumi()} tablas.`;
+            aviso.textContent = texto;
+            lumi("lumi-seguir", "celebrando", 2500);
+            sonar("florecer");
+            speak(texto);
+        }
+
+        /** «Lumi es un brote. Con 2 tablas más será una plantita.» */
+        function textoEtapaLumi() {
+            const e = etapaGuardadaLumi();
+            const sig = ETAPAS_LUMI[e + 1];
+            if (!sig) return `Lumi es ${ETAPAS_LUMI[e].nombre}: ¡sabes las ocho tablas!`;
+            const faltan = Math.max(1, sig.desde - tablasSabidasLumi());
+            return `Lumi es ${ETAPAS_LUMI[e].nombre}. Con ${faltan === 1 ? "1 tabla" : `${faltan} tablas`} más será ${sig.nombre}.`;
+        }
+
         function pintarMundoVivo() {
             const mapa = document.getElementById("mundo-mapa");
             const extras = document.getElementById("mundo-extras");
@@ -5526,7 +5583,10 @@
             lumiMapa.dataset.lugar = ultimo.id;
             lumiMapa.style.left = `${((ultimo.cx + (ultimo.cx > MUNDO_ANCHO / 2 ? -112 : 112)) / MUNDO_ANCHO) * 100}%`;
             lumiMapa.style.top = `${((ultimo.cy + 40) / MUNDO_ALTO) * 100}%`;
+            // Más grande con cada etapa.
+            lumiMapa.style.width = `${15 + etapaLumi * 2}%`;
             lumiMapa.appendChild(lumiSuelta("contenta"));
+            document.getElementById("mundo-etapa").textContent = textoEtapaLumi();
             mapa.appendChild(lumiMapa);
             document.getElementById("mundo-aviso").textContent = "";
         }
