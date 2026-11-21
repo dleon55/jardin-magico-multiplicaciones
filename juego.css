@@ -621,6 +621,10 @@ body[data-tono="pro"] .rotulo-lugar { background: #1d1a44; color: #f3f0ff; borde
 body[data-tono="pro"] .rotulo-lugar b { font-family: 'Quicksand', system-ui, sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; }
 body[data-tono="pro"] .rotulo-lugar span { color: #d9d4ff; }
 body[data-tono="pro"] .mundo-sol { fill: #e5e7eb; }
+/* ENSÉÑALE A LUMI */
+.ensenar-buena { border-color: #16a34a !important; background: #dcfce7 !important; }
+.ensenar-mala { border-color: #e11d48 !important; background: #ffe4e6 !important; }
+.btn-ensenar:disabled { cursor: default; }
 .tabla-lugar { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 3.75rem; border: 2px solid #d1d5db; background: #fff; border-radius: 1rem; color: var(--hoja); box-shadow: 0 3px 0 var(--sombra-arte); }
 .tabla-lugar span + span { color: var(--tinta-suave); }
 .tabla-lugar.tabla-sabida { background: var(--hoja-clara); border-color: #6ee7b7; }

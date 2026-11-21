@@ -9,6 +9,16 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-21
 
+- **Enséñale a Lumi** (#124, Hito 4.4): Lumi da su respuesta a una
+  pregunta y quien juega dice si está bien; si no, le enseña la buena.
+  - Lumi se equivoca con los errores típicos que el juego ya conoce (las
+    opciones falsas de cada tema, con su explicación) y una de cada cuatro
+    veces acierta, para que no baste decir siempre «no».
+  - Las preguntas salen de lo que se tiene a la mano: las tablas empezadas
+    y los temas de los lugares despiertos.
+  - Rondas de cinco dudas. Cada una resuelta a la primera da una estrella y
+    cuenta para la meta del día; no toca el jardín ni el mapa.
+  - Está bajo el mundo y en la lista. Vive en `js/ensenar.js`.
 - **Los tres tonos** (#122, Hito 4.3): el mismo juego para distintas
   edades. Lo elige quien juega, en la bienvenida o en «Mi mundo y mi
   personaje», y es de cada jardín.
