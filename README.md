@@ -12,6 +12,28 @@ issues) y la [guía de estilo visual](docs/ESTILO.md) que sigue el arte nuevo.
 
 Se elige una tabla y se responden preguntas hasta juntar 10 aciertos.
 
+**El mundo vivo.** El inicio no es una lista de botones: es un mundo que se
+recorre, con cinco lugares ordenados de lo más fácil a lo más avanzado.
+
+| Lugar | Qué hay | Despierta con |
+|-------|---------|---------------|
+| Huerto de las tablas | Las tablas del 1 al 9 y el Desafío del Arcoíris | Desde el principio |
+| Bosque de dividir | Dividir, dividir con lo que sobra, problemas cortos | La del 2 y la del 5 |
+| Río de los números | Múltiplos y divisores, retos de lógica | Además, la del 3 y la del 4 |
+| Jardín de las partes | Fracciones, fracciones decimales, porcentajes | Además, la del 9 y la del 6 |
+| Mercado y reloj | Dinero, tiempo, calendario, perímetro y área | Además, la del 7 |
+
+- Tocar un lugar despierto abre sus juegos, cada uno con su dibujo.
+- Un lugar dormido se ve bajo la niebla y, al tocarlo, dice qué tablas
+  faltan. «Saberse» una tabla es tenerla en arbolito o más.
+- Quien ya jugaba un tema no lo pierde: su lugar sigue despierto.
+- El camino florece con lo aprendido, y Lumi está junto al último lugar
+  despierto.
+- La Aventura y «En equipo» quedan a un toque, bajo el mundo.
+- En Ajustes, **«Menú en lista»** cambia a la lista de siempre, donde nada
+  duerme: es la vista para lectores de pantalla y para las personas adultas.
+  Se recuerda en el dispositivo.
+
 **Seguir.** En el menú, un botón grande con Lumi propone lo que toca, para que
 el niño no tenga que decidir:
 1. regar lo que se marchita;
@@ -809,6 +831,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/decimales.js` | El tema de fracciones decimales |
 | `js/tiempo.js` | El tema de medidas de tiempo |
 | `js/calendario.js` | El tema del calendario |
+| `js/mundo.js` | El mundo vivo: los lugares, sus dibujos y cuándo despiertan |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -883,7 +906,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js`, `js/mundo.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |
