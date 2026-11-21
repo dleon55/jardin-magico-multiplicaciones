@@ -9,6 +9,17 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-21
 
+- **Retos con código** (#128, Hito 4.6): diez multiplicaciones que se
+  mandan con un código de seis signos o un enlace (`?reto=CÓDIGO`).
+  - Sin cuentas ni servidor: el código dice las tablas, las preguntas (una
+    semilla) y la marca a vencer. No lleva nombres ni nada de quien lo creó.
+  - Quien lo recibe juega las mismas diez preguntas, con las mismas
+    opciones, una oportunidad cada una; al final se compara con la marca y
+    recibe su propio código para la revancha.
+  - El reto nuevo usa las tablas ya empezadas. «Copiar enlace» en todos
+    lados y «Compartir» donde el aparato lo ofrece.
+  - Cada acierto da una estrella y cuenta para la meta del día; no toca el
+    jardín ni el mapa, y no guarda nada. Vive en `js/retos.js`.
 - **Expedición de hoy** (#126, Hito 4.5): un recorrido corto en dos
   paradas que deja algo nuevo en el mundo.
   - Primera parada: lo que toca aprender (lo que propone «Seguir», pero

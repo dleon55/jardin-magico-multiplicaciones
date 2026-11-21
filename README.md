@@ -52,6 +52,15 @@ ronda de «Enséñale a Lumi».
   estrellas la primera vez del día.
 - Se puede repetir, y dejarla a medias no quita nada.
 
+**Retos con código.** Diez multiplicaciones para mandarle a alguien, con un
+código de seis signos («NKW K4S») o un enlace.
+- No hay cuentas ni servidor: el código mismo dice las tablas, las preguntas
+  y la marca a vencer. No lleva nombres ni datos de quien lo creó.
+- Quien lo recibe juega las mismas diez preguntas, una oportunidad cada una,
+  y al terminar tiene su propio código para la revancha.
+- Cada acierto da una estrella y cuenta para la meta del día. No cambia el
+  jardín ni el mapa.
+
 **Tres tonos.** El mismo juego para distintas edades. Lo elige quien juega,
 en la bienvenida o en «Mi mundo y mi personaje», y cada jardín tiene el suyo.
 
@@ -869,6 +878,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/calendario.js` | El tema del calendario |
 | `js/mundo.js` | El mundo vivo: los lugares, sus dibujos y cuándo despiertan |
 | `js/ensenar.js` | «Enséñale a Lumi»: cómo se arman las dudas de Lumi |
+| `js/retos.js` | Retos con código: el código, sus preguntas y el enlace |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -943,7 +953,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js`, `js/mundo.js`, `js/ensenar.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js`, `js/mundo.js`, `js/ensenar.js`, `js/retos.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |

@@ -751,3 +751,7 @@ html.calma *, html.calma *::before, html.calma *::after {
 .expedicion-paradas { display: grid; gap: 0.35rem; list-style: none; padding: 0; margin: 0; }
 .expedicion-paradas li { display: flex; align-items: center; gap: 0.5rem; }
 .parada-num { flex: none; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 999px; background: #0f766e; color: #fff; font-size: 0.9rem; }
+
+/* Retos con código (Hito 4.6) */
+.reto-codigo { font-family: ui-monospace, 'Courier New', monospace; letter-spacing: 0.15em; text-transform: uppercase; }
+#reto-pregunta:focus { outline: none; }
