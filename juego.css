@@ -287,6 +287,14 @@ body {
 }
 
 /* Un fondo por mundo (body[data-mundo]); en la bienvenida, el neutro. */
+/* El bancal de la partida, del color de cada mundo (antes, pasto en todos, también en el espacio). */
+body[data-mundo="bosque"] #garden-plot { background: linear-gradient(to top, #14532d, #15803d); }
+body[data-mundo="dinos"] #garden-plot { background: linear-gradient(to top, #365314, #4d7c0f); }
+body[data-mundo="espacio"] #garden-plot { background: linear-gradient(to top, #1e1b4b, #3730a3); border-bottom-color: #312e81; }
+body[data-mundo="mar"] #garden-plot { background: linear-gradient(to top, #0c4a6e, #0369a1); border-bottom-color: #a16207; }
+body[data-mundo="desierto"] #garden-plot { background: linear-gradient(to top, #92400e, #b45309); }
+body[data-mundo="granja"] #garden-plot { background: linear-gradient(to top, #3f6212, #65a30d); }
+body[data-mundo="flores"] #garden-plot { background: linear-gradient(to top, #166534, #16a34a); }
 body[data-mundo="huerto"] { background: linear-gradient(135deg, #fef9c3 0%, #ffedd5 50%, #dcfce7 100%); }
 body[data-mundo="bosque"] { background: linear-gradient(135deg, #ecfccb 0%, #d1fae5 50%, #e0f2fe 100%); }
 body[data-mundo="dinos"] { background: linear-gradient(135deg, #fef3c7 0%, #d9f99d 50%, #ccfbf1 100%); }
@@ -299,6 +307,9 @@ body[data-mundo="flores"] { background: linear-gradient(135deg, #fef6e4 0%, #fce
 /* Fichas para elegir mundo y personaje: radios de verdad (teclado y
    lector de pantalla), con la marca de elegido en borde Y en ✓. */
 .ficha input { position: absolute; opacity: 0; pointer-events: none; }
+/* Todas las fichas de una fila, de la misma altura (aunque el nombre ocupe más renglones). */
+.ficha { display: flex; }
+.ficha span.cara { flex: 1; }
 .ficha span.cara { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; border: 3px solid #e5e7eb; background: #fff; border-radius: 1rem; padding: 0.4rem 0.3rem; cursor: pointer; position: relative; }
 .ficha input:checked + span.cara { border-color: #047857; background: #ecfdf5; }
 .ficha input:checked + span.cara::after { content: "✓"; position: absolute; top: 0.1rem; right: 0.35rem; font-weight: 700; color: #047857; }
