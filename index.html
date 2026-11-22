@@ -1076,7 +1076,7 @@
                 </div>
                 <p id="aviso-copia" role="status" aria-live="polite" class="min-h-5 text-sm font-bold text-green-800"></p>
             </section>
-            <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Las flores miden la memoria de las tablas; las fracciones y los retos de lógica se muestran aparte. Dividir y los problemas cortos no se registran.</p>
+            <p class="text-gray-600 text-xs text-center max-w-md mx-auto">Todo se guarda solo en este dispositivo y no se envía a ningún lado. Las flores miden la memoria de las tablas; las fracciones y los retos de lógica se muestran aparte, igual que «Enséñale a Lumi», las expediciones y los retos con código. Dividir y los problemas cortos no se registran.</p>
         </div>
 
         <!-- ================= ENSÉÑALE A LUMI ================= -->
@@ -1349,7 +1349,7 @@
         // Lo que es de cada jardín y viaja en la copia de seguridad. «vistos»:
         // el estado de cada planta la última vez que se abrió «Mi jardín», para
         // animar lo que cambió desde entonces (también al pasar a otro equipo).
-        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico", "estatus", "lumi", "marcas", "expediciones"];
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico", "estatus", "lumi", "marcas", "expediciones", "actividad"];
         let perfilActual = "p1";
 
         const almacen = {
@@ -2221,6 +2221,7 @@
                 const m = Math.floor(av.alcanzado / NIVELES_POR_MUNDO);
                 otrosP.push(el("p", `La Aventura: va en el mundo ${m + 1} de ${AVENTURA_MUNDOS.length}.` + (av.sinPrisa ? " Juega «sin prisa»." : "")));
             }
+            for (const linea of lineasDeActividad(perfil.id)) otrosP.push(el("p", linea, "informe-actividad"));
             // En dos columnas: con los diez temas jugados, sigue cabiendo en una hoja.
             if (otrosP.length) {
                 const temas = el("div", "", "informe-temas");
@@ -2600,6 +2601,66 @@
             return null;
         }
 
+        // --- LO QUE SE HIZO EN LAS ACTIVIDADES NUEVAS (para las personas adultas) ---
+        //
+        // «Enséñale a Lumi» y los retos con código no tocan el jardín, así que
+        // aquí se lleva su cuenta: cuántas rondas, cuántas dudas resueltas,
+        // cuántos errores de Lumi se notaron y cómo fueron los retos. Es de
+        // cada jardín y viaja en la copia.
+        const ACTIVIDAD_VACIA = {
+            ensenar: { rondas: 0, dudas: 0, bien: 0, atrapados: 0, pasados: 0, ultimo: "" },
+            retos: { creados: 0, recibidos: 0, superados: 0, aciertos: 0, preguntas: 0, ultimo: "" },
+        };
+
+        /** Lo guardado, limpio: solo las cuentas conocidas, enteras y no negativas. */
+        function limpiarActividad(guardado) {
+            let dato = {};
+            try { dato = JSON.parse(guardado || "{}"); } catch (e) { dato = {}; }
+            const limpia = {};
+            for (const [cual, vacia] of Object.entries(ACTIVIDAD_VACIA)) {
+                limpia[cual] = {};
+                for (const [campo, inicial] of Object.entries(vacia)) {
+                    const valor = dato?.[cual]?.[campo];
+                    limpia[cual][campo] = inicial === "" ? (typeof valor === "string" && /^\d{4}-\d{2}-\d{2}$/.test(valor) ? valor : "")
+                        : (Number.isInteger(valor) && valor > 0 ? valor : 0);
+                }
+            }
+            return limpia;
+        }
+
+        function actividadDePerfil(id) {
+            return limpiarActividad(almacen.leerDe(id, "actividad"));
+        }
+
+        /** Suma a las cuentas de una actividad del jardín en uso, con la fecha de hoy. */
+        function anotarActividad(cual, sumas) {
+            const actividad = actividadDePerfil(perfilActual);
+            for (const [campo, n] of Object.entries(sumas)) actividad[cual][campo] += n;
+            actividad[cual].ultimo = hoy();
+            almacen.guardar("actividad", JSON.stringify(actividad));
+        }
+
+        /** Una línea por actividad jugada, para la vista de adultos y el informe. */
+        function lineasDeActividad(id) {
+            const { ensenar: e, retos: r } = actividadDePerfil(id);
+            const dias = leerExpediciones(almacen.leerDe(id, "expediciones"));
+            const lineas = [];
+            if (e.rondas > 0) {
+                const errores = e.atrapados + e.pasados;
+                lineas.push(`Enséñale a Lumi: ${e.rondas === 1 ? "1 ronda" : `${e.rondas} rondas`}; resolvió ${e.bien} de ${e.dudas} dudas.` +
+                    (errores > 0 ? ` Notó ${e.atrapados} de ${errores} errores de Lumi.` : ""));
+            }
+            if (dias.length > 0) {
+                lineas.push(`Expedición de hoy: la completó ${dias.length === 1 ? "1 día" : `${dias.length} días`} (el último, el ${fechaLarga([...dias].sort().at(-1))}).`);
+            }
+            const total = r.creados + r.recibidos;
+            if (total > 0) {
+                lineas.push(`Retos con código: ${r.aciertos} de ${r.preguntas} bien en ${total === 1 ? "1 reto" : `${total} retos`}.` +
+                    (r.recibidos > 0 ? ` Superó la marca en ${r.superados} de ${r.recibidos === 1 ? "1 recibido" : `${r.recibidos} recibidos`}.` : ""));
+            }
+            return lineas;
+        }
+
         function otrosDePerfil(id) {
             return id === perfilActual ? otros : limpiarOtros(almacen.leerDe(id, "otros"));
         }
@@ -2721,6 +2782,13 @@
                     piezas.push(parrafo("adulto-aventura text-gray-800",
                         `La Aventura: ${puntajeAventura(av)} puntos, ${estrellasAventura(av)} estrellas; va en el mundo ${m + 1} (${AVENTURA_MUNDOS[m].retos.toLowerCase()}).` +
                         (av.sinPrisa ? " Juega «sin prisa»: los enemigos lo esperan." : "")));
+                }
+                const actividad = lineasDeActividad(perfil.id);
+                if (actividad.length) {
+                    const caja = document.createElement("div");
+                    caja.className = "adulto-actividad text-gray-800 space-y-1";
+                    caja.append(...actividad.map((linea) => parrafo("", linea)));
+                    piezas.push(caja);
                 }
                 const cifrasLetra = Object.keys(letraDePerfil(perfil.id).muestras);
                 if (cifrasLetra.length) {
@@ -5622,9 +5690,9 @@
         }
 
         /** Los días con la expedición completa, sin repetir. */
-        function leerExpediciones() {
+        function leerExpediciones(guardado = almacen.leer("expediciones")) {
             try {
-                const dias = JSON.parse(almacen.leer("expediciones") || "[]");
+                const dias = JSON.parse(guardado || "[]");
                 return Array.isArray(dias) ? [...new Set(dias.filter((d) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)))] : [];
             } catch (e) { return []; }
         }
@@ -5995,6 +6063,8 @@
             const r = retoEnJuego;
             r.paso = "fin";
             r.codigo = codigoDeReto({ tablas: r.tablas, semilla: r.semilla, marca: r.bien });
+            anotarActividad("retos", r.marca === null ? { creados: 1, aciertos: r.bien, preguntas: RETO_PREGUNTAS }
+                : { recibidos: 1, superados: r.bien > r.marca ? 1 : 0, aciertos: r.bien, preguntas: RETO_PREGUNTAS });
             verParteDeReto("fin");
             piezaReto("cuenta").textContent = "";
             const resultado = `Hiciste ${r.bien} de ${RETO_PREGUNTAS}`;
@@ -6126,9 +6196,11 @@
                 return;
             }
             if (diceQueSi) {
+                anotarActividad("ensenar", { pasados: 1 });
                 cerrarDuda(false, `No estaba bien. Dile a Lumi: «${duda.error}»`, "Mmm… algo no me cuadra.");
                 return;
             }
+            anotarActividad("ensenar", { atrapados: 1 });
             // Lumi se equivocó y se lo dijeron: ahora, a enseñarle la buena.
             ensenar.paso = "corregir";
             document.getElementById("ensenar-dice").textContent = "¡Ay! Entonces, ¿cuál es la buena?";
@@ -6158,6 +6230,7 @@
         function terminarEnsenar() {
             ensenar.paso = "fin";
             const { bien } = ensenar;
+            anotarActividad("ensenar", { rondas: 1, dudas: DUDAS_POR_RONDA, bien });
             document.getElementById("ensenar-cuenta").textContent = `${bien} de ${DUDAS_POR_RONDA}`;
             document.getElementById("ensenar-pregunta").textContent = bien === DUDAS_POR_RONDA ? "¡Lumi aprendió todo contigo!" : "¡Gracias por la clase!";
             const dice = bien === 0 ? "Hoy nos costó a los dos. ¿Lo intentamos otra vez?"

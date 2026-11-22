@@ -9,6 +9,15 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-22
 
+- **Lo nuevo, a la vista de las personas adultas** (#135): «Enséñale a
+  Lumi», la Expedición de hoy y los retos con código salen en la vista para
+  adultos y en el informe imprimible.
+  - Enséñale a Lumi: rondas, dudas resueltas y cuántos errores de Lumi se
+    notaron. Expedición: días completos y el último. Retos: aciertos, retos
+    jugados y marcas superadas.
+  - Como esas actividades no tocan el jardín, su cuenta se lleva aparte
+    (clave `actividad`, de cada jardín, en la copia de seguridad). Empieza a
+    contar desde esta versión.
 - **Inicio simple** (#133): con el mundo a la vista, menos cosas antes del
   mapa.
   - La Expedición de hoy ocupa el lugar de «Seguir»: una sola propuesta

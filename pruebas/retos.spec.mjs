@@ -401,9 +401,11 @@ test("cuenta para la meta del día y no toca el jardín, el mapa ni lo guardado 
   await page.evaluate(() => { mostrarRetos(); empezarRetoNuevo(); });
   await jugar(page, 4);
   expect(await page.evaluate(() => misionDeHoy().cuenta)).toBe(4);
-  const despues = await page.evaluate(() => [JSON.stringify(hechos), Object.keys(localStorage).filter((k) => !/misiones|estrellas/.test(k)).sort().join()]);
+  // Lo único nuevo que guarda es su cuenta para las personas adultas (pruebas/adultos-actividad.spec.mjs).
+  expect(await page.evaluate(() => JSON.parse(almacen.leer("actividad")).retos)).toMatchObject({ creados: 1, aciertos: 4, preguntas: 10 });
+  const despues = await page.evaluate(() => [JSON.stringify(hechos), Object.keys(localStorage).filter((k) => !/misiones|estrellas|actividad/.test(k)).sort().join()]);
   expect(despues[0]).toBe(antes[0]);
-  expect(despues[1]).toBe(antes[1].split(",").filter((k) => !/misiones|estrellas/.test(k)).join());
+  expect(despues[1]).toBe(antes[1].split(",").filter((k) => !/misiones|estrellas|actividad/.test(k)).join());
 });
 
 test("Escape vuelve al inicio, y salir a medias no deja nada pendiente", async ({ page }, testInfo) => {

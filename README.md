@@ -42,6 +42,9 @@ cuál es la buena, y Lumi lo entiende con la explicación de ese error.
   opciones falsas. Una de cada cuatro veces acierta.
 - Las preguntas salen de las tablas ya empezadas y de los temas de los
   lugares despiertos.
+- La vista para las personas adultas y el informe dicen cuántas rondas
+  lleva y cuántos errores de Lumi notó; también los días de expedición y
+  cómo le fue en los retos con código.
 - Son rondas de cinco dudas. Cada duda resuelta a la primera da una estrella
   y cuenta para la meta del día. No cambia el jardín ni el mapa.
 
