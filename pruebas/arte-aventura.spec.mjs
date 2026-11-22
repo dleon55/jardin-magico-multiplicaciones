@@ -147,10 +147,14 @@ test.describe("con movimiento", () => {
     await nivel(page, 1, 0);
     expect(await page.locator("#arena .enemigo .cara > svg").first().evaluate((s) => getComputedStyle(s).animationName)).toBe("anda");
     expect(await page.locator("#heroe > svg").evaluate((s) => getComputedStyle(s).animationName)).toBe("lumi-respira");
-    await page.evaluate(() => responderAventura(enemigoObjetivo().op.respuesta));
-    await expect(page.locator("#arena .pof")).toHaveCount(1);
-    await expect(page.locator("#arena .pof")).toHaveAttribute("aria-hidden", "true");
-    await expect(page.locator("#arena .pof")).toHaveCount(0, { timeout: 1500 });
+    // El «pof» dura menos de un segundo: se mira en el mismo instante en que sale,
+    // para no depender de la velocidad de la máquina.
+    const pofs = await page.evaluate(() => {
+      responderAventura(enemigoObjetivo().op.respuesta);
+      return [...document.querySelectorAll("#arena .pof")].map((p) => p.getAttribute("aria-hidden"));
+    });
+    expect(pofs).toEqual(["true"]);
+    await expect(page.locator("#arena .pof")).toHaveCount(0, { timeout: 3000 });
   });
 
   test("con «Menos movimiento», no hay «pof» ni caminar", async ({ page }) => {

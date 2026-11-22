@@ -1809,8 +1809,8 @@
             document.getElementById("display-name").innerText =
                 playerName ? `El jardín de ${playerName}` : "Tu jardín";
 
-            speak(playerName ? `¡Hola, ${playerName}! Vamos a jugar con las matemáticas.`
-                             : "¡Hola! Vamos a jugar con las matemáticas.");
+            speak(`${playerName ? `¡Hola, ${playerName}! Vamos a jugar con las matemáticas.`
+                             : "¡Hola! Vamos a jugar con las matemáticas."} ${fraseDeHoyBrote()}`.trim());
         }
 
         function buildSelectorGrid() {
@@ -1843,7 +1843,8 @@
             document.getElementById("aviso-repaso").classList.remove("hidden");
             currentTable = table;
             score = 0;
-            targetScore = 10; // Meta fija: equivocarse ya no la mueve
+            // Meta fija: equivocarse ya no la mueve. En Brote, la mitad (en equipo no).
+            targetScore = esBrote() && !equipo ? PARTIDA_BROTE : 10;
             colaRepaso = [];
             repasoActual = null;
             ultimoHecho = "";
@@ -1912,6 +1913,7 @@
             terminarEquipo();
             mostrarPantalla("screen-selector");
             document.getElementById("global-stars").innerText = globalStars;
+            decirEnBrote(fraseDeHoyBrote());
         }
 
         // --- PERFILES ---
@@ -2029,6 +2031,21 @@
 
         /** El tono de quien juega (Brote, Explora o Pro). */
         const tonoActual = () => perfilEnUso()?.tono || TONO_INICIAL;
+        // BROTE SIN LEER (Hito 5.2): para quien aún no lee, Brote dice en voz lo
+        // que toca hoy y su progreso (abrir un lugar ya se dice en todos los tonos), acorta las partidas a la mitad y las
+        // rondas de Lumi a tres dudas, y no ofrece los retos con código (hay que
+        // leer y escribir un código).
+        const esBrote = () => tonoActual() === "brote";
+        const PARTIDA_BROTE = 5;
+        const DUDAS_BROTE = 3;
+        const decirEnBrote = (texto) => { if (esBrote() && texto) speak(texto); };
+
+        /** Lo que Lumi propone hoy, dicho: solo en Brote y con la expedición a la vista. */
+        function fraseDeHoyBrote() {
+            if (!esBrote() || ajustes.lista === true) return "";
+            const p = paradaUno();
+            return p ? `Hoy: ${p.que}. Después, enséñale a Lumi. Toca el botón grande.` : "";
+        }
 
         function pintarElecciones(raiz, mundoElegido, personajeElegido, tonoElegido = null) {
             raiz.querySelectorAll(".elegir-tono").forEach((c) => pintarFichas(c,
@@ -5905,6 +5922,8 @@
             callarVoz();
             pintarProgreso();
             mostrarPantalla("screen-progreso");
+            const r = resumenDeProgreso();
+            decirEnBrote(`Tu progreso. Llevas ${tantos(r.plantas.florecida, mundo().nombreFlor, mundo().nombreFlores)}. Sabes ${tantos(r.sabidas, "tabla", "tablas")}. Tienes ${tantos(globalStars, "estrella", "estrellas")}.`);
             desdeProgreso = true;   // desde aquí, «Menú» en las cuatro pantallas vuelve aquí
         }
 
@@ -6123,7 +6142,7 @@
             initAudio();
             cancelarEspera();
             callarVoz();
-            ensenar = { n: 0, bien: 0, duda: null, paso: "juzgar", primera: true };
+            ensenar = { n: 0, bien: 0, duda: null, paso: "juzgar", primera: true, total: esBrote() ? DUDAS_BROTE : DUDAS_POR_RONDA };
             mostrarPantalla("screen-ensenar");
             document.getElementById("ensenar-expedicion").classList.toggle("hidden", expedicion?.paso !== 2);
             siguienteDuda();
@@ -6145,13 +6164,13 @@
             sigue.classList.add("hidden");
             document.getElementById("ensenar-nota").textContent = "";
             if (ensenar.paso === "fin") { backToSelector(); return; }
-            if (ensenar.n >= DUDAS_POR_RONDA) { terminarEnsenar(); return; }
+            if (ensenar.n >= ensenar.total) { terminarEnsenar(); return; }
             ensenar.n++;
             ensenar.duda = nuevaDuda();
             ensenar.paso = "juzgar";
             ensenar.primera = true;
             const { pregunta } = ensenar.duda;
-            document.getElementById("ensenar-cuenta").textContent = `Duda ${ensenar.n} de ${DUDAS_POR_RONDA}`;
+            document.getElementById("ensenar-cuenta").textContent = `Duda ${ensenar.n} de ${ensenar.total}`;
             const caja = document.getElementById("ensenar-pregunta");
             caja.textContent = pregunta.texto;
             // El dibujo de la pregunta (el reloj, el calendario), si lo trae.
@@ -6179,7 +6198,7 @@
                 sonar("acierto");
             }
             const sigue = document.getElementById("ensenar-sigue");
-            sigue.textContent = ensenar.n >= DUDAS_POR_RONDA ? "Terminar" : "Otra duda";
+            sigue.textContent = ensenar.n >= ensenar.total ? "Terminar" : "Otra duda";
             sigue.classList.remove("hidden");
             sigue.focus();
             speak(textoParaVoz(`${dice} ${nota}`));
@@ -6230,11 +6249,11 @@
         function terminarEnsenar() {
             ensenar.paso = "fin";
             const { bien } = ensenar;
-            anotarActividad("ensenar", { rondas: 1, dudas: DUDAS_POR_RONDA, bien });
-            document.getElementById("ensenar-cuenta").textContent = `${bien} de ${DUDAS_POR_RONDA}`;
-            document.getElementById("ensenar-pregunta").textContent = bien === DUDAS_POR_RONDA ? "¡Lumi aprendió todo contigo!" : "¡Gracias por la clase!";
+            anotarActividad("ensenar", { rondas: 1, dudas: ensenar.total, bien });
+            document.getElementById("ensenar-cuenta").textContent = `${bien} de ${ensenar.total}`;
+            document.getElementById("ensenar-pregunta").textContent = bien === ensenar.total ? "¡Lumi aprendió todo contigo!" : "¡Gracias por la clase!";
             const dice = bien === 0 ? "Hoy nos costó a los dos. ¿Lo intentamos otra vez?"
-                : `Resolvimos ${bien === 1 ? "1 duda" : `${bien} dudas`} de ${DUDAS_POR_RONDA}. ¡Qué bien enseñas!`;
+                : `Resolvimos ${bien === 1 ? "1 duda" : `${bien} dudas`} de ${ensenar.total}. ¡Qué bien enseñas!`;
             document.getElementById("ensenar-dice").textContent = dice;
             document.getElementById("ensenar-botones").replaceChildren();
             const banderin = expedicion?.paso === 2 ? completarExpedicion() : "";
@@ -6344,7 +6363,7 @@
             extras.replaceChildren(...[["btn-aventura-mundo", "La Aventura", mostrarAventura, "bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-700 hover:to-fuchsia-700 text-white"],
                 ["btn-equipo-mundo", "En equipo", mostrarEquipo, "bg-gradient-to-r from-rose-200 to-pink-200 hover:from-rose-300 hover:to-pink-300 text-gray-900"],
                 ["btn-ensenar-mundo", "Enséñale a Lumi", mostrarEnsenar, "col-span-2 bg-gradient-to-r from-yellow-100 to-amber-200 hover:from-yellow-200 hover:to-amber-300 text-gray-900"],
-                ["btn-reto-mundo", "Retos con código", () => mostrarRetos(), "col-span-2 bg-gradient-to-r from-indigo-100 to-violet-200 hover:from-indigo-200 hover:to-violet-300 text-gray-900"]].map(([id, texto, accion, color]) => {
+                ...(esBrote() ? [] : [["btn-reto-mundo", "Retos con código", () => mostrarRetos(), "col-span-2 bg-gradient-to-r from-indigo-100 to-violet-200 hover:from-indigo-200 hover:to-violet-300 text-gray-900"]])].map(([id, texto, accion, color]) => {
                 const boton = document.createElement("button");
                 boton.type = "button";
                 boton.id = id;
