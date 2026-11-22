@@ -45,8 +45,8 @@ cuál es la buena, y Lumi lo entiende con la explicación de ese error.
 - Son rondas de cinco dudas. Cada duda resuelta a la primera da una estrella
   y cuenta para la meta del día. No cambia el jardín ni el mapa.
 
-**Expedición de hoy.** Un recorrido corto en dos paradas, sobre el mapa del
-mundo: primero lo que toca aprender (una partida de tablas) y después una
+**Expedición de hoy.** Un recorrido corto en dos paradas, arriba del inicio
+(con el mundo a la vista ocupa el lugar de «Seguir»): primero lo que toca aprender (una partida de tablas) y después una
 ronda de «Enséñale a Lumi».
 - Al completarla se planta un banderín en el mundo: uno por día, con 5
   estrellas la primera vez del día.

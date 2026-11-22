@@ -423,6 +423,7 @@ html:not(.calma) .enemigo.esperando { animation: esperar 1.6s ease-in-out infini
     #screen-selector > #cabecera-menu { grid-column: 1; grid-row: 1 / span 2; margin-right: 0; }
     /* «Seguir» arriba a la derecha, a la vista sin desplazarse; la misión, debajo. */
     #screen-selector > #seguir { grid-column: 2; grid-row: 1; max-width: none; padding-right: 3.25rem; }
+    #screen-selector > #expedicion { grid-column: 2; grid-row: 1; max-width: none; margin-right: 3.25rem; width: auto; }
     #screen-selector > #mision { grid-column: 2; grid-row: 2; max-width: none; margin-right: 3.25rem; }
     #grid-tablas-container { grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: none; }
 
@@ -769,3 +770,8 @@ html.calma *, html.calma *::before, html.calma *::after {
 .ficha-empezada { background: #fde68a; color: #78350f; }
 .ficha-nueva { background: #fff; color: #374151; border-style: dashed; }
 .ficha-muestra { min-width: 1.3rem; height: 1.2rem; font-size: 0.7rem; vertical-align: middle; margin-left: 0.4rem; }
+
+/* Inicio simple: con el mundo a la vista, menos cosas antes del mapa. */
+.inicio-mundo #cabecera-lema, .inicio-mundo #mision-leyenda, .inicio-mundo #mision-semana { display: none; }
+.inicio-mundo #cabecera-menu { padding: 0.75rem; }
+.inicio-mundo #cabecera-menu > * + * { margin-top: 0.5rem; }

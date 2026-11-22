@@ -338,7 +338,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-sky-900"><span id="display-name" class="bubble-font">Tu jardín</span> <span id="display-personaje" aria-hidden="true">🧑‍🌾</span></h2>
-                        <p class="text-sm text-gray-600">¡Haz crecer tu jardín ganando estrellas doradas!</p>
+                        <p id="cabecera-lema" class="text-sm text-gray-600">¡Haz crecer tu jardín ganando estrellas doradas!</p>
                     </div>
                     <div class="flex items-center gap-2 bg-yellow-100 text-yellow-900 px-4 py-2 rounded-full font-bold whitespace-nowrap">
                         <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-estrella"/></svg> Tus estrellas:</span>
@@ -365,6 +365,27 @@
                     </span>
                     <svg class="icono icono-seguir" aria-hidden="true" focusable="false"><use href="#i-siguiente"/></svg>
                 </button>
+            </section>
+
+            <!-- HOY (inicio simple): con el mundo a la vista, la Expedición ocupa el lugar
+                 de «Seguir»: una sola propuesta, con sus dos paradas y el banderín. -->
+            <section id="expedicion" aria-labelledby="expedicion-titulo" class="hidden max-w-lg mx-auto w-full bg-teal-50 border-2 border-teal-300 rounded-2xl p-3 space-y-2">
+                <div class="flex items-center gap-3">
+                    <span id="lumi-expedicion" class="lumi-caja lumi-seguir flex-none" data-lumi="contenta"></span>
+                    <div class="flex-1 min-w-0 space-y-1">
+                            <h3 id="expedicion-titulo" class="bubble-font text-xl text-teal-900"><svg class="icono banderin-icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 22V3" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M6 4l13 4.5L6 13z" fill="#fb7185" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> Expedición de hoy</h3>
+                            <ol class="expedicion-paradas text-gray-800 font-bold">
+                                <li><span class="parada-num" aria-hidden="true">1</span><span class="sr-only">Parada 1: </span><span id="expedicion-parada-1"></span></li>
+                                <li><span class="parada-num" aria-hidden="true">2</span><span class="sr-only">Parada 2: </span>Enséñale a Lumi</li>
+                            </ol>
+                    </div>
+                </div>
+                <p id="expedicion-estado" class="text-sm font-bold text-teal-900"></p>
+                <button type="button" id="btn-expedicion" onclick="empezarExpedicion()" aria-describedby="expedicion-estado"
+                        class="w-full bubble-font bg-teal-700 hover:bg-teal-800 text-white text-lg px-4 py-3 rounded-2xl shadow-md min-h-11"></button>
+                <!-- Si «Seguir» proponía la Aventura (un mundo recién abierto), no se pierde. -->
+                <button type="button" id="expedicion-tambien" onclick="seguir()"
+                        class="hidden w-full bg-white hover:bg-teal-50 border-2 border-teal-300 text-teal-900 font-bold text-sm px-3 py-2 rounded-2xl min-h-11"></button>
             </section>
 
             <!-- Lumi creció: se dice una vez, al volver al inicio con una etapa nueva. -->
@@ -394,17 +415,6 @@
                 <p class="text-gray-700 text-sm text-center">Toca un lugar para jugar. Los que duermen despiertan con las tablas que aprendas.</p>
                 <p id="mundo-etapa" class="text-center text-sm font-bold text-green-800"></p>
                 <p id="mundo-datos" class="text-center text-sm font-bold text-indigo-900 empty:hidden"></p>
-                <!-- Expedición de hoy (Hito 4.5): dos paradas y un banderín en el mundo. -->
-                <section id="expedicion" aria-labelledby="expedicion-titulo" class="hidden bg-teal-50 border-2 border-teal-300 rounded-2xl p-3 space-y-2">
-                    <h3 id="expedicion-titulo" class="bubble-font text-xl text-teal-900"><svg class="icono banderin-icono" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 22V3" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M6 4l13 4.5L6 13z" fill="#fb7185" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg> Expedición de hoy</h3>
-                    <ol class="expedicion-paradas text-gray-800 font-bold">
-                        <li><span class="parada-num" aria-hidden="true">1</span><span class="sr-only">Parada 1: </span><span id="expedicion-parada-1"></span></li>
-                        <li><span class="parada-num" aria-hidden="true">2</span><span class="sr-only">Parada 2: </span>Enséñale a Lumi</li>
-                    </ol>
-                    <p id="expedicion-estado" class="text-sm font-bold text-teal-900"></p>
-                    <button type="button" id="btn-expedicion" onclick="empezarExpedicion()" aria-describedby="expedicion-estado"
-                            class="w-full bubble-font bg-teal-700 hover:bg-teal-800 text-white text-lg px-4 py-3 rounded-2xl shadow-md min-h-11"></button>
-                </section>
                 <div id="mundo-mapa" class="mundo-mapa"></div>
                 <p id="mundo-aviso" role="status" aria-live="polite" class="min-h-6 text-center text-sm font-bold text-indigo-900"></p>
                 <!-- La Aventura y En equipo: se crean solo con el mundo a la vista (pintarMundoVivo). -->
@@ -1540,6 +1550,12 @@
             document.getElementById("menu-lista").classList.toggle("hidden", ajustes.lista !== true);
             document.getElementById("progreso-lista").classList.toggle("hidden", ajustes.lista !== true);
             document.getElementById("btn-progreso").classList.toggle("hidden", ajustes.lista === true);
+            // Con el mundo, el inicio va ligero: sin lema y con la meta del día compacta.
+            document.getElementById("screen-selector").classList.toggle("inicio-mundo", ajustes.lista !== true);
+            // La meta del día va después del mundo (con la lista, antes, como siempre).
+            const mundoVivo = document.getElementById("mundo-vivo");
+            const mision = document.getElementById("mision");
+            if (ajustes.lista === true) mundoVivo.before(mision); else mundoVivo.after(mision);
             if (ajustes.lista === true) cerrarLugar(false);
             const deslizador = document.getElementById("volumen-musica");
             deslizador.value = String(ajustes.volumenMusica);
@@ -5616,9 +5632,16 @@
         const cuentaBanderines = (n) => (n === 1 ? "1 banderín" : `${n} banderines`);
 
         function pintarExpedicion() {
-            const p = paradaUno();
+            // Solo con el mundo a la vista; ahí ocupa el lugar de «Seguir».
+            const p = ajustes.lista === true ? null : paradaUno();
             document.getElementById("expedicion").classList.toggle("hidden", !p);
+            document.getElementById("seguir").classList.toggle("hidden", Boolean(p));
             if (!p) return;
+            lumi("lumi-expedicion", p.cara);
+            const sigue = siguientePaso();
+            const tambien = document.getElementById("expedicion-tambien");
+            tambien.classList.toggle("hidden", sigue.tipo !== "aventura");
+            tambien.textContent = sigue.tipo === "aventura" ? `También puedes ir a ${sigue.que}` : "";
             const dias = leerExpediciones();
             const hecha = dias.includes(hoy());
             document.getElementById("expedicion-parada-1").textContent = p.que;
@@ -6242,6 +6265,7 @@
         function pintarMundoVivo() {
             const mapa = document.getElementById("mundo-mapa");
             const extras = document.getElementById("mundo-extras");
+            pintarExpedicion();
             // Con la lista a la vista, el mundo no se dibuja (ni duplica sus botones).
             if (ajustes.lista === true) { mapa.replaceChildren(); extras.replaceChildren(); return; }
             extras.replaceChildren(...[["btn-aventura-mundo", "La Aventura", mostrarAventura, "bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-700 hover:to-fuchsia-700 text-white"],
@@ -6260,7 +6284,6 @@
             const florecidas = cuentaPorEstado().florecida;
             // Con la primera flor ya se ve una en el camino; con las 54, todas.
             const flores = florecidas === 0 ? 0 : Math.max(1, Math.round((florecidas / plantas().length) * FLORES_MUNDO.length));
-            pintarExpedicion();
             mapa.innerHTML = svgMundo(dormidos, flores, leerExpediciones().length);
             for (const lugar of LUGARES) {
                 const faltan = faltanParaLugar(lugar);
