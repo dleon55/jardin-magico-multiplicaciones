@@ -59,9 +59,10 @@ test("la tarjeta dice las dos paradas, lo que se gana y cómo salir", async ({ p
   await expect(page.locator("#btn-expedicion")).toHaveText("Salir de expedición");
   await expect(page.locator("#btn-expedicion")).toHaveAccessibleDescription("Dos paradas cortas y plantas un banderín en tu mundo.");
   await expect(page.locator(".banderin-mundo")).toHaveCount(0);
-  // Va antes del mapa, y «Seguir» sigue en su sitio.
-  const orden = await page.evaluate(() => ["btn-seguir", "expedicion", "mundo-mapa"].map((id) => document.getElementById(id).getBoundingClientRect().top));
+  // Va antes del mapa, en el lugar de «Seguir» (pruebas/inicio-simple.spec.mjs).
+  const orden = await page.evaluate(() => ["expedicion", "mundo-mapa"].map((id) => document.getElementById(id).getBoundingClientRect().top));
   expect([...orden].sort((a, b) => a - b)).toEqual(orden);
+  await expect(page.locator("#seguir")).toBeHidden();
 });
 
 test("la expedición entera, tocando: la tabla, la victoria con la segunda parada, Lumi y el banderín", async ({ page }) => {

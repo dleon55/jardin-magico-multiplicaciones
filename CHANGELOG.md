@@ -9,6 +9,16 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-22
 
+- **Inicio simple** (#133): con el mundo a la vista, menos cosas antes del
+  mapa.
+  - La Expedición de hoy ocupa el lugar de «Seguir»: una sola propuesta
+    arriba, con Lumi. Si lo que tocaba era la Aventura (un mundo recién
+    abierto), la tarjeta lo ofrece en un botón aparte. En un jardín sin nada
+    jugado sigue «Seguir», con el diagnóstico.
+  - La meta del día va compacta (sin la semana) y después del mundo; el
+    encabezado ya no lleva el lema.
+  - En el teléfono, el título del mundo y el arranque del mapa se ven sin
+    desplazarse. Con el «Menú en lista», todo queda como estaba.
 - **Mi progreso** (#130, Hito 4.7): el camino, el jardín, el mapa de tablas
   y el vivero, resumidos en una sola pantalla.
   - Cada tarjeta dice lo suyo de un vistazo: tramos del camino con su barra,
