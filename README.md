@@ -91,6 +91,9 @@ en la bienvenida o en «Mi mundo y mi personaje», y cada jardín tiene el suyo.
   propia en ese juego, nunca con otras personas. Con «Sin prisa» o en equipo
   no se mide.
 - La enseñanza es la misma en los tres: preguntas, pistas y repaso.
+- Para entrar a «Para las personas adultas» hay que mantener presionado un
+  momento (con teclado o lector de pantalla, activarlo dos veces). Se puede
+  quitar desde dentro.
 - En la pantalla «Para las personas adultas», **«Menú en lista»** cambia a
   la lista de siempre, donde nada duerme: es la vista para lectores de
   pantalla y para las personas adultas. Se recuerda en el dispositivo.

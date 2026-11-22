@@ -161,7 +161,7 @@ test("«Menú en lista», en la pantalla de adultos, cambia a la lista de siempr
   await page.click("#ajustes summary");
   await expect(page.locator('#ajustes .ajuste[data-ajuste="lista"]')).toHaveCount(0);
   await page.click("#ajustes summary");
-  await page.click("#btn-adultos-menu");
+  await page.click("#btn-adultos-menu", { delay: 1700 });   // con el candado de serie (Hito 6.3)
   const boton = page.locator('#inicio-adultos .ajuste[data-ajuste="lista"]');
   await expect(boton).toHaveAttribute("aria-pressed", "false");
   await expect(boton.locator(".estado")).toHaveText("No");
@@ -176,7 +176,7 @@ test("«Menú en lista», en la pantalla de adultos, cambia a la lista de siempr
   await page.reload();
   await page.click(".btn-perfil >> nth=0");
   await expect(page.locator("#menu-lista")).toBeVisible();
-  await page.click("#btn-adultos-menu");
+  await page.click("#btn-adultos-menu", { delay: 1700 });   // con el candado de serie (Hito 6.3)
   await page.click('#inicio-adultos .ajuste[data-ajuste="lista"]');
   await page.click("#screen-adultos .btn-volver");
   await expect(page.locator("#mundo-vivo")).toBeVisible();

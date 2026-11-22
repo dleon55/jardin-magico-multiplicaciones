@@ -3,7 +3,7 @@
   "origins": [
     {
       "origin": "http://localhost:4173",
-      "localStorage": [{ "name": "jardin:guia", "value": "1" }, { "name": "jardin:ajustes", "value": "{\"lista\":true}" }]
+      "localStorage": [{ "name": "jardin:guia", "value": "1" }, { "name": "jardin:ajustes", "value": "{\"lista\":true,\"candado\":false}" }]
     }
   ]
 }
