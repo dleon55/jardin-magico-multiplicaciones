@@ -1152,6 +1152,8 @@
                         <button type="button" id="btn-reto-compartir" onclick="compartirReto()" class="bubble-font bg-white hover:bg-indigo-50 border-4 border-indigo-200 text-gray-900 text-lg px-3 py-3 rounded-2xl shadow-md min-h-11">Compartir</button>
                     </div>
                     <p id="reto-copiado" role="status" aria-live="polite" class="min-h-6 text-sm font-bold text-indigo-900"></p>
+                    <!-- Para el salón (Hito 5.5): el enlace como código QR, en grande, para proyectarlo. -->
+                    <button type="button" id="btn-reto-qr" onclick="abrirQRDeReto()" class="w-full bubble-font bg-white hover:bg-indigo-50 border-4 border-indigo-200 text-gray-900 text-lg px-3 py-3 rounded-2xl shadow-md min-h-11">Mostrar código QR</button>
                 </section>
                 <div class="grid grid-cols-2 gap-3">
                     <button type="button" id="btn-reto-otra" onclick="repetirReto()" class="bubble-font bg-white hover:bg-sky-50 border-4 border-sky-200 text-gray-900 text-lg px-3 py-3 rounded-2xl shadow-md min-h-11">Jugar otra vez</button>
@@ -1307,6 +1309,20 @@
 
     </main>
 
+        <!-- El código QR de un reto, en grande: para proyectar en el salón y abrir el
+             reto con la cámara. Fuera de <main>, como los juegos de un lugar. -->
+        <div id="qr-fondo" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3" style="background: rgba(46, 42, 59, 0.6)">
+            <div id="qr-panel" role="dialog" aria-modal="true" aria-labelledby="qr-titulo" class="w-full max-w-lg max-h-full overflow-y-auto bg-white rounded-3xl p-4 space-y-2 text-center">
+                <div class="flex items-center justify-between gap-2">
+                    <h2 id="qr-titulo" tabindex="-1" class="bubble-font text-2xl text-indigo-900 text-left">Reto con código QR</h2>
+                    <button type="button" id="qr-cerrar" onclick="cerrarQRDeReto()" aria-label="Cerrar" class="w-11 h-11 flex-none rounded-full border-2 border-gray-300 bg-white text-xl font-bold text-gray-800">×</button>
+                </div>
+                <p id="qr-detalle" class="text-gray-800 font-bold"></p>
+                <div id="qr-dibujo" class="qr-dibujo mx-auto" role="img"></div>
+                <p class="text-gray-800 font-bold">o escribe el código: <span id="qr-codigo" class="reto-codigo text-2xl text-indigo-900"></span></p>
+            </div>
+        </div>
+
         <!-- Los juegos de un lugar del mundo: sube desde abajo, sobre el mapa.
          Fuera de <main>: su desenfoque de fondo atraparía a un elemento fijo. -->
         <div id="lugar-fondo" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center" style="background: rgba(46, 42, 59, 0.45)">
@@ -1339,6 +1355,7 @@
     <script src="js/mundo.js"></script>
     <script src="js/ensenar.js"></script>
     <script src="js/retos.js"></script>
+    <script src="js/qr.js"></script>
     <!-- Script del Juego -->
     <script>
         // --- ALMACENAMIENTO ---
@@ -1529,6 +1546,7 @@
         const ajustes = { voz: true, efectos: true, musica: true, volumenMusica: 5, velocidad: "normal", calma: null, lista: false };
         // Los juegos de un lugar del mundo vivo, si están abiertos (ver «EL MUNDO VIVO»).
         let lugarAbierto = null;
+        let qrAbierto = false;   // el QR de un reto, en grande
         let regresoLugar = null;   // a dónde vuelve el foco al cerrar
 
         // Velocidades de la voz, en el orden en que las recorre el botón. Más de
@@ -3149,6 +3167,7 @@
 
         function mostrarPantalla(id) {
             if (!PANTALLAS_EXPEDICION.includes(id)) expedicion = null;
+            cerrarQRDeReto(false);   // el QR en grande no sobrevive a un cambio de pantalla
             if (id !== "screen-progreso" && !PANTALLAS_PROGRESO.includes(id)) desdeProgreso = false;
             PANTALLAS.forEach((p) => document.getElementById(p).classList.toggle("hidden", p !== id));
             if (id === "screen-welcome") pintarBienvenida();
@@ -3260,6 +3279,12 @@
                 return;
             }
             const enCampoDeTexto = evento.target.tagName === "INPUT";
+
+            // Con el QR de un reto en grande, Escape lo cierra y nada más.
+            if (qrAbierto) {
+                if (evento.key === "Escape") { evento.preventDefault(); cerrarQRDeReto(); }
+                return;
+            }
 
             // Con los juegos de un lugar abiertos, Escape los cierra y nada más.
             if (lugarAbierto) {
@@ -6163,6 +6188,27 @@
             try {
                 await navigator.share({ title: "Reto del Jardín Mágico", text: textoDeReto(), url: enlaceDeReto(retoEnJuego.codigo) });
             } catch (e) { /* se cerró la hoja de compartir: no pasa nada */ }
+        }
+
+        /** El enlace del reto como código QR, en grande: para proyectarlo y abrirlo con la cámara. */
+        function abrirQRDeReto() {
+            const r = retoEnJuego;
+            if (r?.paso !== "fin") return;
+            const dibujo = document.getElementById("qr-dibujo");
+            dibujo.innerHTML = svgQR(enlaceDeReto(r.codigo));
+            dibujo.setAttribute("aria-label", `Código QR con el enlace del reto ${r.codigo.split("").join(" ")}`);
+            document.getElementById("qr-detalle").textContent = `Diez multiplicaciones de ${tablasDeReto(r.tablas)}. La marca a vencer: ${r.bien} de ${RETO_PREGUNTAS}. Apunta la cámara al código.`;
+            document.getElementById("qr-codigo").textContent = codigoALaVista(r.codigo);
+            document.getElementById("qr-fondo").classList.remove("hidden");
+            qrAbierto = true;
+            document.getElementById("qr-titulo").focus({ preventScroll: true });
+        }
+
+        function cerrarQRDeReto(devolverFoco = true) {
+            if (!qrAbierto) return;
+            qrAbierto = false;
+            document.getElementById("qr-fondo").classList.add("hidden");
+            if (devolverFoco) document.getElementById("btn-reto-qr").focus({ preventScroll: true });
         }
 
         /** Las mismas diez, contra la misma marca. */

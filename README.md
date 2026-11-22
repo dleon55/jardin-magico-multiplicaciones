@@ -61,6 +61,8 @@ código de seis signos («NKW K4S») o un enlace.
   y la marca a vencer. No lleva nombres ni datos de quien lo creó.
 - Quien lo recibe juega las mismas diez preguntas, una oportunidad cada una,
   y al terminar tiene su propio código para la revancha.
+- «Mostrar código QR» abre en grande el QR del enlace, para proyectarlo en
+  el salón. Lo dibuja el propio juego, sin bibliotecas ni internet.
 - Cada acierto da una estrella y cuenta para la meta del día. No cambia el
   jardín ni el mapa.
 
@@ -890,6 +892,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/mundo.js` | El mundo vivo: los lugares, sus dibujos y cuándo despiertan |
 | `js/ensenar.js` | «Enséñale a Lumi»: cómo se arman las dudas de Lumi |
 | `js/retos.js` | Retos con código: el código, sus preguntas y el enlace |
+| `js/qr.js` | El código QR del enlace de un reto, dibujado sin bibliotecas |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -964,7 +967,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js`, `js/mundo.js`, `js/ensenar.js`, `js/retos.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js`, `js/mundo.js`, `js/ensenar.js`, `js/retos.js`, `js/qr.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |

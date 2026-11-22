@@ -9,6 +9,13 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-22
 
+- **Retos para el salón: código QR** (#142, Hito 5.5): al terminar un reto,
+  «Mostrar código QR» abre en grande el QR de su enlace, con las tablas, la
+  marca a vencer y el código escrito, para proyectarlo y abrirlo con la
+  cámara.
+  - El juego dibuja el QR por sí mismo (`js/qr.js`): sin bibliotecas y sin
+    internet. Modo de bytes, corrección M, versiones 1 a 10 (hasta 213 bytes).
+  - Se cierra con el botón o con Escape y el foco vuelve al botón.
 - **Ajustes para adultos** (#141, Hito 5.4):
   - «Menú en lista» sale de Ajustes y pasa a la pantalla «Para las personas
     adultas», con su explicación: ya no está a mano de quien juega para
