@@ -387,6 +387,8 @@
                     </div>
                 </div>
                 <p id="expedicion-estado" class="text-sm font-bold text-teal-900"></p>
+                <!-- En Brote sin voz (Hito 6.4), una flecha señala el botón que toca: no pide leer ni oír. -->
+                <span id="expedicion-senal" class="senal-brote hidden" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 2h6v10h5l-8 10-8-10h5z" fill="var(--sol)" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
                 <button type="button" id="btn-expedicion" onclick="empezarExpedicion()" aria-describedby="expedicion-estado"
                         class="w-full bubble-font bg-teal-700 hover:bg-teal-800 text-white text-lg px-4 py-3 rounded-2xl shadow-md min-h-11"></button>
                 <!-- Si «Seguir» proponía la Aventura (un mundo recién abierto), no se pierde. -->
@@ -1626,6 +1628,7 @@
             if (nombre === "voz") {
                 if (ajustes.voz) speak("Voz activada.");
                 else callarVoz();
+                if (pantallaActual === "screen-selector") pintarExpedicion();   // la señal de Brote depende de la voz
             }
             if (nombre === "musica") {
                 if (ajustes.musica) { initAudio(); arrancarMusica(); }
@@ -1708,6 +1711,8 @@
 
         function marcarSinVoz(motivo) {
             hayVozEspanol = false;
+            // Se supo tarde que no hay voz: si el inicio está a la vista, la señal de Brote sale ya.
+            if (pantallaActual === "screen-selector") pintarExpedicion();
             const aviso = document.getElementById("aviso-voz");
             aviso.textContent = motivo;
             aviso.classList.remove("hidden");
@@ -2078,6 +2083,9 @@
         const PARTIDA_BROTE = 5;
         const DUDAS_BROTE = 3;
         const decirEnBrote = (texto) => { if (esBrote() && texto) speak(texto); };
+        // Brote se apoya en la voz. Si no hay (está apagada, o el aparato no tiene
+        // voz en español), en su lugar una flecha señala el botón que toca.
+        const brotePideSenal = () => esBrote() && (!ajustes.voz || hayVozEspanol === false || !("speechSynthesis" in window));
 
         /** Lo que Lumi propone hoy, dicho: solo en Brote y con la expedición a la vista. */
         function fraseDeHoyBrote() {
@@ -5844,6 +5852,7 @@
             const p = ajustes.lista === true ? null : paradaUno();
             document.getElementById("expedicion").classList.toggle("hidden", !p);
             document.getElementById("seguir").classList.toggle("hidden", Boolean(p));
+            document.getElementById("expedicion-senal").classList.toggle("hidden", !brotePideSenal());
             if (!p) return;
             lumi("lumi-expedicion", p.cara);
             const sigue = siguientePaso();

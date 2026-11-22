@@ -132,3 +132,75 @@ test("con el menú en lista: el botón de retos no se ve en Brote, y volver al i
   await page.evaluate(() => { perfilEnUso().tono = "explora"; document.body.dataset.tono = "explora"; });
   await expect(page.locator("#btn-reto")).toBeVisible();
 });
+
+// --- Hito 6.4: Brote sin voz ---
+test.describe("sin voz", () => {
+  test.use({ storageState: MUNDO });
+  /** Entra en un tono, en un aparato cuyas voces son las dadas ([] = ninguna en español). */
+  async function entrarConVoces(page, tono, voces) {
+    await instalarDobles(page, voces);
+    await page.goto("./");
+    await page.click(`#screen-welcome .elegir-tono label:has(input[value="${tono}"])`);
+    await page.fill("#player-name", "Ana");
+    await page.evaluate(() => almacen.guardar("diagnostico", "saltado"));
+    await page.click("#screen-welcome button:has-text('Comenzar')");
+    await expect(page.locator("#expedicion")).toBeVisible();
+  }
+  const senal = (page) => page.locator("#expedicion-senal");
+
+  test("en Brote, en un aparato sin voz en español, una flecha señala el botón de la expedición", async ({ page }) => {
+    await entrarConVoces(page, "brote", [{ lang: "en-US" }]);
+    expect(await page.evaluate(() => hayVozEspanol)).toBe(false);
+    await expect(senal(page)).toBeVisible();
+    await expect(senal(page)).toHaveAttribute("aria-hidden", "true");
+    // Justo encima del botón, y apuntando hacia él (la punta de la flecha, abajo).
+    const r = await page.evaluate(() => {
+      const [s, b] = [document.querySelector("#expedicion-senal svg"), document.getElementById("btn-expedicion")].map((e) => e.getBoundingClientRect());
+      return { encima: s.bottom <= b.top + 1 && b.top - s.bottom < 24, centrada: Math.abs((s.left + s.right) / 2 - (b.left + b.right) / 2) < 4, alto: s.height };
+    });
+    expect(r.encima).toBe(true);
+    expect(r.centrada).toBe(true);
+    expect(r.alto).toBeGreaterThanOrEqual(32);
+    expect(await page.evaluate(() => window.__dicho.length)).toBe(0);   // y no se intentó hablar
+  });
+
+  test("con voz en español no hay flecha; al apagar la voz en Ajustes sale, y al encenderla se va", async ({ page }) => {
+    await entrarConVoces(page, "brote", [{ lang: "es-MX" }]);
+    await expect(senal(page)).toBeHidden();
+    await page.evaluate(() => cambiarAjuste("voz"));
+    await expect(senal(page)).toBeVisible();
+    await page.evaluate(() => cambiarAjuste("voz"));
+    await expect(senal(page)).toBeHidden();
+  });
+
+  test("en Explora y en Pro no hay flecha aunque no haya voz", async ({ page }) => {
+    await entrarConVoces(page, "explora", [{ lang: "en-US" }]);
+    await expect(senal(page)).toBeHidden();
+    await page.evaluate(() => { perfilEnUso().tono = "pro"; mostrarPantalla("screen-selector"); });
+    await expect(senal(page)).toBeHidden();
+    await page.evaluate(() => { perfilEnUso().tono = "brote"; mostrarPantalla("screen-selector"); });
+    await expect(senal(page)).toBeVisible();
+  });
+
+  test("si se sabe tarde que no hay voz, la flecha sale sin esperar a volver al inicio", async ({ page }) => {
+    await entrarConVoces(page, "brote", [{ lang: "es-MX" }]);
+    await expect(senal(page)).toBeHidden();
+    await page.evaluate(() => marcarSinVoz("Este dispositivo no tiene voces para leer en voz alta."));
+    await expect(senal(page)).toBeVisible();
+    // Fuera del inicio no se repinta nada (no hay error ni cambio de pantalla).
+    await page.evaluate(() => { mostrarJardin(); hayVozEspanol = true; marcarSinVoz("Sin voz."); });
+    await expect(page.locator("#screen-jardin")).toBeVisible();
+  });
+
+  test("sin expedición a la vista no hay flecha, y con «Menos movimiento» se queda quieta", async ({ page }) => {
+    await entrarConVoces(page, "brote", [{ lang: "en-US" }]);
+    await page.evaluate(() => { ajustes.lista = true; aplicarAjustes(); mostrarPantalla("screen-selector"); });
+    await expect(senal(page)).toBeHidden();
+    await page.evaluate(() => { ajustes.lista = false; aplicarAjustes(); mostrarPantalla("screen-selector"); });
+    await expect(senal(page)).toBeVisible();
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    expect(await senal(page).evaluate((e) => getComputedStyle(e).animationName)).toBe("senal-brote");
+    await page.evaluate(() => { ajustes.calma = true; aplicarAjustes(); });
+    expect(await senal(page).evaluate((e) => getComputedStyle(e).animationName)).toBe("none");
+  });
+});
