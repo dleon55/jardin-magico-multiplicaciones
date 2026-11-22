@@ -7,6 +7,19 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-22
+
+- **Mi progreso** (#130, Hito 4.7): el camino, el jardín, el mapa de tablas
+  y el vivero, resumidos en una sola pantalla.
+  - Cada tarjeta dice lo suyo de un vistazo: tramos del camino con su barra,
+    plantas por estado, una ficha por tabla (la sabes, empezada, nueva) y
+    las estrellas con lo siguiente del vivero. Arriba, Lumi y su etapa;
+    abajo, los banderines y la racha de metas.
+  - Tocar una tarjeta abre la pantalla completa de siempre, y «Menú» vuelve
+    a Mi progreso.
+  - Con el mundo a la vista sustituye a los cuatro botones del inicio; con
+    el «Menú en lista», esos botones siguen. No guarda nada nuevo.
+
 ## 2026-11-21
 
 - **Retos con código** (#128, Hito 4.6): diez multiplicaciones que se

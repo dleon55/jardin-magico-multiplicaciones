@@ -61,6 +61,12 @@ código de seis signos («NKW K4S») o un enlace.
 - Cada acierto da una estrella y cuenta para la meta del día. No cambia el
   jardín ni el mapa.
 
+**Mi progreso.** Con el mundo a la vista, el inicio tiene una sola tarjeta
+de progreso. Abre una pantalla con cuatro resúmenes: el camino, el jardín,
+el mapa de tablas y el vivero.
+- Cada tarjeta abre su pantalla completa, y «Menú» vuelve a Mi progreso.
+- Con el «Menú en lista» siguen los cuatro botones de siempre.
+
 **Tres tonos.** El mismo juego para distintas edades. Lo elige quien juega,
 en la bienvenida o en «Mi mundo y mi personaje», y cada jardín tiene el suyo.
 

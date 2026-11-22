@@ -517,6 +517,13 @@
                 <button type="button" onclick="startTable('falta')" class="btn-falta hidden w-full bubble-font bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3">
                     <span aria-hidden="true">🎯</span> Practicar lo que me falta (<span class="cuenta-falta">0</span>)
                 </button>
+                <!-- Con el mundo a la vista, el progreso está en un solo lugar (Hito 4.7). -->
+                <button type="button" id="btn-progreso" onclick="mostrarProgreso()" aria-describedby="progreso-resumen"
+                        class="hidden w-full bubble-font bg-gradient-to-r from-teal-50 to-green-100 hover:from-teal-100 hover:to-green-200 border-2 border-teal-400 text-teal-900 py-3 px-2 rounded-2xl shadow-sm transition text-lg flex flex-col items-center gap-1 min-h-11">
+                    <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-mapa"/></svg> Mi progreso</span>
+                    <span id="progreso-resumen" class="text-xs subtitulo font-semibold"></span>
+                </button>
+                <div id="progreso-lista">
                 <button type="button" id="btn-camino" onclick="mostrarCamino()" class="w-full bubble-font bg-gradient-to-r from-teal-50 to-green-100 hover:from-teal-100 hover:to-green-200 border-2 border-teal-400 text-teal-900 py-3 rounded-2xl shadow-sm transition text-lg mb-3 flex flex-col items-center gap-1">
                     <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-mapa"/></svg> Mi camino</span>
                     <span id="camino-menu-resumen" class="text-xs subtitulo font-semibold"></span>
@@ -531,6 +538,7 @@
                 <button onclick="mostrarMapa()" class="w-full bubble-font bg-white hover:bg-green-50 border-2 border-green-300 text-green-800 py-3 rounded-2xl shadow-sm transition text-lg">
                     <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-mapa"/></svg> Mi mapa de tablas
                 </button>
+                </div>
             </div>
             <!-- Para las personas adultas: aparte, al final, como en la bienvenida. -->
             <p class="text-center pt-2 border-t border-dashed border-gray-200">
@@ -1185,6 +1193,49 @@
         <!-- ================= EL CAMINO ================= -->
         <!-- Un solo camino que une las tablas del jardín y los mundos de la
              Aventura: cada mundo se abre al saberse sus tablas. -->
+        <!-- MI PROGRESO (Hito 4.7): el camino, el jardín, el mapa y el vivero,
+             cada uno con su resumen, en una sola pantalla. Cada tarjeta abre el detalle. -->
+        <div id="screen-progreso" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+            </div>
+            <div class="text-center space-y-1">
+                <h2 data-foco class="bubble-font text-2xl text-green-700">Mi progreso</h2>
+                <p class="text-gray-700 text-sm">Todo lo que llevas, en un solo lugar. Toca una tarjeta para verla completa.</p>
+            </div>
+            <div class="max-w-md mx-auto flex items-center gap-3 bg-lime-50 border-2 border-lime-300 rounded-2xl px-3 py-2">
+                <span id="lumi-progreso" class="lumi-caja flex-none w-16 h-16" data-lumi="contenta"></span>
+                <p id="progreso-lumi" class="font-bold text-green-900"></p>
+            </div>
+            <div class="max-w-md mx-auto grid gap-3">
+                <button type="button" id="progreso-camino" onclick="mostrarCamino()" class="tarjeta-progreso border-teal-400 bg-gradient-to-r from-teal-50 to-green-100 hover:from-teal-100 hover:to-green-200 text-teal-900">
+                    <span class="bubble-font text-xl"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-mapa"/></svg> Mi camino</span>
+                    <span id="progreso-camino-texto" class="font-bold text-sm text-gray-800"></span>
+                    <span class="progreso-barra" aria-hidden="true"><span id="progreso-camino-barra" class="tramo-barra"></span></span>
+                </button>
+                <button type="button" id="progreso-jardin" onclick="mostrarJardin()" class="tarjeta-progreso border-green-400 bg-gradient-to-r from-green-100 to-emerald-100 hover:from-green-200 hover:to-emerald-200 text-green-900">
+                    <span class="bubble-font text-xl"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-jardin"/></svg> Mi jardín</span>
+                    <span id="progreso-jardin-texto" class="font-bold text-sm text-gray-800"></span>
+                    <span id="progreso-jardin-barra" class="progreso-barra" aria-hidden="true"></span>
+                    <span id="progreso-jardin-detalle" class="text-xs font-semibold text-gray-700"></span>
+                </button>
+                <button type="button" id="progreso-mapa" onclick="mostrarMapa()" class="tarjeta-progreso border-green-300 bg-white hover:bg-green-50 text-green-800">
+                    <span class="bubble-font text-xl"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-mapa"/></svg> Mi mapa de tablas</span>
+                    <span id="progreso-mapa-texto" class="font-bold text-sm text-gray-800"></span>
+                    <span id="progreso-mapa-fichas" class="fichas-tablas" aria-hidden="true"></span>
+                    <span class="text-xs font-semibold text-gray-700" aria-hidden="true"><span class="ficha-tabla ficha-sabida ficha-muestra">✓</span> la sabes <span class="ficha-tabla ficha-empezada ficha-muestra">•</span> empezada <span class="ficha-tabla ficha-nueva ficha-muestra"></span> nueva</span>
+                </button>
+                <button type="button" id="progreso-vivero" onclick="mostrarVivero()" class="tarjeta-progreso border-amber-400 bg-gradient-to-r from-yellow-100 to-amber-100 hover:from-yellow-200 hover:to-amber-200 text-amber-900">
+                    <span class="bubble-font text-xl"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-vivero"/></svg> Vivero mágico</span>
+                    <span id="progreso-vivero-texto" class="font-bold text-sm text-gray-800"></span>
+                    <span id="progreso-vivero-detalle" class="text-xs font-semibold text-gray-700"></span>
+                </button>
+            </div>
+            <p id="progreso-datos" class="max-w-md mx-auto text-center text-sm font-bold text-indigo-900 empty:hidden"></p>
+        </div>
+
         <div id="screen-camino" class="hidden space-y-4">
             <div class="flex justify-between items-center">
                 <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
@@ -1487,6 +1538,8 @@
             // El inicio: el mundo vivo, o la lista de siempre.
             document.getElementById("mundo-vivo").classList.toggle("hidden", ajustes.lista === true);
             document.getElementById("menu-lista").classList.toggle("hidden", ajustes.lista !== true);
+            document.getElementById("progreso-lista").classList.toggle("hidden", ajustes.lista !== true);
+            document.getElementById("btn-progreso").classList.toggle("hidden", ajustes.lista === true);
             if (ajustes.lista === true) cerrarLugar(false);
             const deslizador = document.getElementById("volumen-musica");
             deslizador.value = String(ajustes.volumenMusica);
@@ -1839,6 +1892,7 @@
         function backToSelector() {
             cancelarEspera();
             callarVoz();
+            if (desdeProgreso && PANTALLAS_PROGRESO.includes(pantallaActual)) { mostrarProgreso(); return; }
             terminarEquipo();
             mostrarPantalla("screen-selector");
             document.getElementById("global-stars").innerText = globalStars;
@@ -2757,11 +2811,15 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-camino", "screen-equipo", "screen-ensenar", "screen-reto", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
+        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-camino", "screen-equipo", "screen-ensenar", "screen-reto", "screen-progreso", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
         let pantallaActual = "screen-welcome";
         // La Expedición de hoy en curso: { paso: 1 | 2 }. Solo vive en las pantallas
         // de sus paradas: salir a cualquier otra la cancela, sin quitar nada.
         let expedicion = null;
+        // «Mi progreso» (Hito 4.7) reúne estas cuatro: si se entró a una desde ahí,
+        // «Menú» vuelve ahí y no al inicio.
+        const PANTALLAS_PROGRESO = ["screen-camino", "screen-jardin", "screen-mapa", "screen-vivero"];
+        let desdeProgreso = false;
         const PANTALLAS_EXPEDICION = ["screen-game", "screen-descubrir", "screen-victory", "screen-ensenar"];
 
         // --- BIENVENIDA GUIADA ---
@@ -2956,6 +3014,7 @@
 
         function mostrarPantalla(id) {
             if (!PANTALLAS_EXPEDICION.includes(id)) expedicion = null;
+            if (id !== "screen-progreso" && !PANTALLAS_PROGRESO.includes(id)) desdeProgreso = false;
             PANTALLAS.forEach((p) => document.getElementById(p).classList.toggle("hidden", p !== id));
             if (id === "screen-welcome") pintarBienvenida();
             if (id === "screen-selector") {
@@ -2967,6 +3026,7 @@
                 pintarMundoVivo();
                 actualizarEstrellas();
                 actualizarMision();
+                document.getElementById("progreso-resumen").textContent = resumenCortoDeProgreso();
             }
             if (id !== "screen-aventura-juego") detenerAventura();   // el nivel no sigue de fondo
             pantallaActual = id;
@@ -3096,7 +3156,7 @@
                 return;
             }
 
-            if (["screen-mapa", "screen-camino", "screen-equipo", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-ensenar", "screen-reto"].includes(pantallaActual) && evento.key === "Escape") {
+            if (["screen-mapa", "screen-camino", "screen-equipo", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-ensenar", "screen-reto", "screen-progreso"].includes(pantallaActual) && evento.key === "Escape") {
                 evento.preventDefault();
                 backToSelector();
                 return;
@@ -5719,6 +5779,78 @@
         //
         // El inicio es un mundo: cada lugar es un botón sobre el dibujo. Los
         // despiertos abren sus juegos; los dormidos dicen qué tablas faltan.
+        // --- MI PROGRESO (Hito 4.7) ---
+        //
+        // Una sola pantalla con el resumen del camino, el jardín, el mapa y el
+        // vivero. No guarda nada: todo se calcula de lo ya guardado. Con el mundo
+        // a la vista sustituye a los cuatro botones del inicio; con la lista,
+        // esos botones siguen.
+        const tantos = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
+
+        /** Los números del progreso. */
+        function resumenDeProgreso() {
+            const tablas = [];
+            for (let n = 1; n <= TABLAS; n++) tablas.push({ n, estado: tablaSabida(n) ? "sabida" : tablaYaJugada(n) ? "empezada" : "nueva" });
+            return {
+                tramos: CAMINO.filter((t) => estadoTramo(t).estado === "hecho").length,
+                actual: tramoActual(),
+                plantas: cuentaPorEstado(),
+                tablas,
+                sabidas: tablas.filter((t) => t.estado === "sabida").length,
+                amigos: compras.length,
+                banderines: leerExpediciones().length,
+                racha: rachaActual(),
+            };
+        }
+
+        /** La línea de la tarjeta del inicio. */
+        function resumenCortoDeProgreso() {
+            const r = resumenDeProgreso();
+            return `${r.tramos} de ${CAMINO.length} tramos · ${tantos(r.plantas.florecida, mundo().nombreFlor, mundo().nombreFlores)} · ${tantos(globalStars, "estrella", "estrellas")}`;
+        }
+
+        function mostrarProgreso() {
+            cancelarEspera();
+            callarVoz();
+            pintarProgreso();
+            mostrarPantalla("screen-progreso");
+            desdeProgreso = true;   // desde aquí, «Menú» en las cuatro pantallas vuelve aquí
+        }
+
+        function pintarProgreso() {
+            const r = resumenDeProgreso();
+            const pon = (id, texto) => { document.getElementById(`progreso-${id}`).textContent = texto; };
+            pon("lumi", textoEtapaLumi());
+            // El camino.
+            pon("camino-texto", r.actual ? `${r.tramos} de ${CAMINO.length} tramos · Ahora: ${nombreTramo(r.actual)}` : `¡Camino completo: ${r.tramos} de ${CAMINO.length} tramos!`);
+            document.getElementById("progreso-camino-barra").style.width = `${(r.tramos / CAMINO.length) * 100}%`;
+            // El jardín: una barra en tres tramos (florecidas, casi, en práctica); lo que falta queda en blanco.
+            const total = plantas().length;
+            pon("jardin-texto", `${r.plantas.florecida} de ${total} ${mundo().nombreFlores}`);
+            document.getElementById("progreso-jardin-barra").replaceChildren(...["florecida", "casi", "practica"].map((estado) => {
+                const tramo = document.createElement("span");
+                tramo.className = `tramo-barra tramo-${estado}`;
+                tramo.dataset.estado = estado;
+                tramo.style.width = `${(r.plantas[estado] / total) * 100}%`;
+                return tramo;
+            }));
+            pon("jardin-detalle", `${tantos(r.plantas.casi, "está casi", "están casi")} · ${r.plantas.practica} en práctica · ${r.plantas.nuevo} por descubrir`);
+            // El mapa: una ficha por tabla.
+            pon("mapa-texto", `Sabes ${r.sabidas} de ${TABLAS} tablas`);
+            document.getElementById("progreso-mapa-fichas").replaceChildren(...r.tablas.map(({ n, estado }) => {
+                const ficha = document.createElement("span");
+                ficha.className = `ficha-tabla ficha-${estado}`;
+                ficha.dataset.tabla = String(n);
+                ficha.textContent = estado === "sabida" ? `${n} ✓` : estado === "empezada" ? `${n} •` : String(n);
+                return ficha;
+            }));
+            // El vivero.
+            pon("vivero-texto", `${tantos(globalStars, "estrella", "estrellas")} · Tienes ${r.amigos} de ${VIVERO.length} del vivero`);
+            pon("vivero-detalle", document.getElementById("vivero-antojo").textContent);
+            // Lo demás que se ha ganado, si hay.
+            pon("datos", [r.banderines ? `${cuentaBanderines(r.banderines)} de expedición` : "", r.racha >= 2 ? `${r.racha} días seguidos con la meta` : ""].filter(Boolean).join(" · "));
+        }
+
         // --- RETOS CON CÓDIGO (js/retos.js) ---
         //
         // Crear un reto es jugarlo: al terminar, el código lleva la marca. Quien
