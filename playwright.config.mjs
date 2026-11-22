@@ -11,6 +11,10 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
+  // En local, un proceso por núcleo (Playwright usa la mitad si no se le dice).
+  // Medido en una máquina de 4 núcleos: la compuerta entera baja de 28 minutos
+  // con 2 procesos a lo que anota docs/PLAN.md. PROCESOS=2 vuelve a lo de antes.
+  workers: process.env.CI ? undefined : (Number(process.env.PROCESOS) || "100%"),
   reporter: process.env.CI ? [["github"], ["list"]] : "list",
   use: {
     baseURL: "http://localhost:4173/jardin-magico-multiplicaciones/",

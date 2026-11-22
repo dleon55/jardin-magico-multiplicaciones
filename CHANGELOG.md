@@ -9,6 +9,11 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-22
 
+- **Compuerta más rápida y plan del Hito 5** (#138): las pruebas corren con
+  un proceso por núcleo (de 28 a 23 minutos en 4 núcleos; `PROCESOS=2`
+  vuelve a lo de antes). Una prueba de animaciones dependía de la velocidad
+  de la máquina y se corrigió. El plan (`docs/PLAN.md`) suma el Hito 5, el
+  cronograma y las ocho etapas de cada tarea. Sin cambios en el juego.
 - **Lo nuevo, a la vista de las personas adultas** (#135): «Enséñale a
   Lumi», la Expedición de hoy y los retos con código salen en la vista para
   adultos y en el informe imprimible.

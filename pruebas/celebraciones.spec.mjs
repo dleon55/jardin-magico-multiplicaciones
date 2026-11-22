@@ -94,15 +94,23 @@ test.describe("con movimiento", () => {
 
   test("al acertar, el botón salta y las estrellas brincan, en 600 ms o menos", async ({ page }) => {
     await entrar(page, 8);
+    // Las animaciones duran menos de un segundo: se anotan al empezar, para no
+    // depender de leerlas antes de que acaben (en una máquina ocupada, no da tiempo).
+    await page.evaluate(() => {
+      window.__animaciones = [];
+      document.addEventListener("animationstart", (e) => {
+        window.__animaciones.push({ id: e.target.id, nombre: e.animationName, dura: parseFloat(getComputedStyle(e.target).animationDuration) });
+      });
+    });
     const i = await responder(page, true);
-    const boton = typeof i === "number" ? page.locator(`#opt-${i}`) : page.locator("#escrito");
-    const anim = (l) => l.evaluate((e) => [getComputedStyle(e).animationName, parseFloat(getComputedStyle(e).animationDuration)]);
-    const [nombreBoton, durBoton] = await anim(boton);
-    expect(nombreBoton).toBe("celebra-pop");
-    expect(durBoton).toBeLessThanOrEqual(0.6);
-    const [nombreEstrellas, durEstrellas] = await anim(page.locator("#pastilla-estrellas"));
-    expect(nombreEstrellas).toBe("celebra-brinca");
-    expect(durEstrellas).toBeLessThanOrEqual(0.6);
+    const idBoton = typeof i === "number" ? `opt-${i}` : "escrito";
+    const de = (id, nombre) => page.waitForFunction(([id, nombre]) => window.__animaciones.find((a) => a.id === id && a.nombre === nombre), [id, nombre]).then((h) => h.jsonValue());
+    const boton = await de(idBoton, "celebra-pop");
+    expect(boton.dura).toBeGreaterThan(0);
+    expect(boton.dura).toBeLessThanOrEqual(0.6);
+    const estrellas = await de("pastilla-estrellas", "celebra-brinca");
+    expect(estrellas.dura).toBeGreaterThan(0);
+    expect(estrellas.dura).toBeLessThanOrEqual(0.6);
   });
 
   test("las celebraciones no retrasan la siguiente pregunta", async ({ page }) => {

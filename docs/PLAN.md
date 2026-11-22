@@ -16,9 +16,10 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 2 · Un solo camino y mejor enseñanza | [#46](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/46) | **7 de 7** | **Cerrado** el 16 de noviembre |
 | 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | **Todo lo que no necesita servidor, hecho** | Los cinco temas nuevos (#71 cerrado), turnos en un aparato, guía de pruebas y opciones de plataforma. Lo demás espera las decisiones del titular (#66, #72) |
 | 4 · El mundo vivo (nueva presentación) | [#117](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/117) | **7 de 7** | **Completo** el 22 de noviembre: el mundo como inicio (#118), Lumi que crece (#120), los tres tonos (#122), «Enséñale a Lumi» (#124), la Expedición de hoy (#126), los retos con código (#128) y el progreso en un solo lugar (#130) |
+| 5 · Pulido de la presentación nueva | [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/137) | **3 de 9** | **En curso**, sin dependencias externas: inicio simple (#133), lo nuevo para adultos (#135) y la compuerta más rápida (#138), hechos. Sigue Brote sin leer |
 
 **Cifras al día:**
-- 52 PRs fusionados desde que empezó el plan (#73 a #135), cada uno verificado en el sitio publicado.
+- 53 PRs fusionados desde que empezó el plan (#73 a #138), cada uno verificado en el sitio publicado.
 - La compuerta de calidad (`npm run comprobar`) tiene **1566 pruebas en verde**, en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
 - El juego, en varios archivos desde #96: `index.html` pesa 453 KB, más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`. Sin dependencias externas, y funciona sin internet.
@@ -96,8 +97,28 @@ lo elige quien juega.
 | 4.5 Expedición de hoy | **Hecho** (#126) | Dos paradas (tablas y «Enséñale a Lumi») y un banderín por día en el mundo |
 | 4.6 Retos con código | **Hecho** (#128) | Diez multiplicaciones en un código de seis signos o un enlace, sin cuentas, servidor ni nombres |
 | 4.7 El progreso en un solo lugar | **Hecho** (#130) | «Mi progreso»: camino, jardín, mapa y vivero resumidos en una pantalla; cada tarjeta abre el detalle |
-| Inicio simple (después del hito) | **Hecho** (#133) | Con el mundo, la Expedición ocupa el lugar de «Seguir», la meta va compacta tras el mundo y el encabezado pierde el lema |
-| Lo nuevo, para las personas adultas (después del hito) | **Hecho** (#135) | «Enséñale a Lumi», expediciones y retos, en la vista para adultos y el informe |
+
+## Hito 5 · Pulido de la presentación nueva
+
+El Hito 4 cambió la presentación. Este hito la pule con lo que no depende de
+nadie más: ni decisión de plataforma, ni grabaciones, ni pruebas con niños.
+Seguimiento en [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/137).
+
+| Parte | Estado | Objetivo | Cómo se implementa | Hecho cuando |
+|-------|--------|----------|--------------------|--------------|
+| Inicio simple | **Hecho** (#133) | Menos cosas antes del mapa | La Expedición ocupa el lugar de «Seguir»; meta compacta tras el mundo | En teléfono, el mundo asoma sin desplazarse |
+| Lo nuevo, para adultos | **Hecho** (#135) | Que quien acompaña vea lo nuevo | Clave `actividad` por jardín; líneas en la vista de adultos y el informe | El informe sigue en una hoja |
+| 5.1 Compuerta más rápida | **Hecho** (#138) | Acortar cada entrega | Un proceso por núcleo en `playwright.config.mjs` (`PROCESOS=2` vuelve a lo de antes) | Medido en 4 núcleos: de 28 a 23 minutos. El tiempo está repartido en 1 580 pruebas de unos 2 segundos, sin un punto caliente; para bajar más habría que dejar de repetir en tableta las pruebas de pura lógica |
+| 5.2 Brote sin leer | Sigue | Que 6 años jueguen sin leer | En tono Brote: cada pantalla nueva se dice en voz al abrirse; partidas y rondas más cortas; menos botones bajo el mundo | Una prueba recorre el inicio, «Enséñale a Lumi», la Expedición y «Mi progreso» en Brote y comprueba lo dicho y lo corto |
+| 5.3 La bienvenida presenta el mundo y el tono | Pendiente | Que el primer día se entienda el mundo | Un paso de la guía pregunta el tono (tres fichas) y otro muestra el mundo con un lugar despierto y uno dormido | La guía sigue cabiendo en teléfono vertical y acostado, y se puede saltar |
+| 5.4 Ajustes para adultos | Pendiente | Que el atajo del menú no esté a mano de quien juega, y que «Cuándo practica» sea completo | «Menú en lista» pasa a la pantalla de adultos; `actividad` guarda los días y «Cuándo practica» los cuenta | Las pruebas que usan la lista siguen pasando; un día con solo un reto cuenta como practicado |
+| 5.5 Retos para el salón | Pendiente | Mandar un reto sin teclear | Código QR dibujado por el propio juego (sin bibliotecas) con el enlace del reto, para proyectar o imprimir | Una prueba decodifica el QR dibujado y obtiene el enlace |
+| 5.6 Un mundo más vivo | Pendiente | Que el mundo no sea un dibujo fijo | Animaciones pequeñas solo con `transform` (apagadas con «Menos movimiento»), un sonido al entrar a un lugar y un detalle que cambia con la racha | Accesibilidad y «Menos movimiento» en verde; sin trabajo en reposo |
+| 5.7 Presupuesto de peso | Pendiente | Que el juego no se vuelva pesado | Medir la carga con el procesador frenado y fijar topes de tamaño por archivo en una prueba | La prueba falla si un archivo pasa su tope |
+
+**Fuera de este hito** (necesitan a la persona dueña): retos con otros temas
+que cambien el formato del código se deciden tras ver cómo se usan los
+actuales; voz grabada (#51); plataforma (#66); pruebas con niñas y niños (#72).
 
 ## Pendientes
 
@@ -105,12 +126,13 @@ lo elige quien juega.
 
 | # | Tarea | Issue | Depende de | Notas |
 |---|-------|-------|------------|-------|
+| 0 | **Hito 5**: las siete partes que faltan, en el orden de su tabla | [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/137) | Nada | Una parte por PR, sin esperar a nadie |
 | 1 | Reproducir la voz grabada, con la sintética de respaldo | [#51](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/51) | **Las grabaciones y el permiso del titular** | El guion dice qué archivo suena en cada momento |
 | 2 | Salón por archivos (opción B de la plataforma) | #66 | **Decisión del titular** | Solo si elige A + B: la docente junta los archivos de su salón en su aparato |
 | 3 | Convertir en issues los hallazgos de las pruebas con niños | #72 | **Las sesiones del titular** | Con la plantilla de la guía |
 | 4 | Lo que se decida con servidor: cuentas, salón en vivo, privacidad, métricas | #66, #67 | **Decisión del titular** | Solo con la opción C o D |
 
-**No queda trabajo de Claude que no dependa de una decisión o una tarea del
+**Fuera del Hito 5, todo lo demás depende de una decisión o una tarea del
 titular.** Ya hay ocho temas nuevos: los cinco de #71, las fracciones decimales
 (#102), las medidas de tiempo (#105) y el calendario (#108). Si se quieren
 más, se abre un issue nuevo y se hacen con el mismo método.
@@ -153,6 +175,11 @@ gantt
     Lumi en los temas y revisión visual            :done,    h4a, 2026-11-18, 3d
     Mundo, Lumi que crece, tonos y Enséñale a Lumi :done,    h4b, 2026-11-21, 1d
     Expedición, retos con código y Mi progreso     :done,    h4c, 2026-11-21, 2d
+    section Hito 5 (sin dependencias)
+    Inicio simple y lo nuevo para adultos          :done,    h5a, 2026-11-22, 1d
+    Compuerta rápida, Brote sin leer y bienvenida  :active,  h5b, 2026-11-22, 2d
+    Ajustes para adultos y retos con QR            :         h5c, after h5b, 1d
+    Mundo más vivo y presupuesto de peso           :         h5d, after h5c, 1d
     section Hito 3 con servidor (si se decide)
     Decisión de plataforma (titular)               :crit,    h3d, 2026-11-23, 10d
     Salón por archivos (opción B)                  :         h3b2, after h3d, 5d
@@ -163,7 +190,7 @@ gantt
 | Semana | Claude | Titular |
 |--------|--------|---------|
 | 16 al 22 de noviembre | **Hecho:** separar en archivos, los temas que faltaban, el guion de la voz y el Hito 4 entero (la presentación nueva) | Probar lo nuevo en el teléfono; leer el documento de plataforma |
-| 23 al 29 de noviembre | Lo que pidan las decisiones o las pruebas del titular | **Decidir la plataforma**; grabar la voz; empezar pruebas con niños, con la presentación nueva |
+| 23 al 29 de noviembre | **Hito 5** entero (siete partes); después, lo que pidan las decisiones o las pruebas del titular | **Decidir la plataforma**; grabar la voz; empezar pruebas con niños, con la presentación nueva |
 | 30 de noviembre al 13 de diciembre | Lo que salga de las pruebas con niños; salón por archivos si se elige B | Terminar las pruebas con niños |
 | Desde el 14 de diciembre | Si se elige C: cuentas, salón en vivo, privacidad y métricas | Revisión legal del aviso de privacidad |
 
@@ -197,6 +224,7 @@ graph LR
 | Pruebas que no prueban nada (pasan aunque el código esté roto) | Media | Alto | Comprobación de mutaciones en cada PR. Ya destapó aserciones negativas que esperaban algo que desaparece solo; se corrigieron | Mitigado |
 | Pruebas que dependen de la fecha real o del azar | Media | Medio | Fechas relativas a hoy; datos fijos donde importa. Una prueba fallaba solo cuando salía 3 × 1 y se corrigió (#91) | Mitigado |
 | Un solo archivo grande es difícil de mantener y pesa en teléfonos modestos | Media | Medio | Separado en #96: arte, sonido, datos y estilos en archivos aparte (index.html, 445 KB). Pruebas que vigilan el tamaño de cada archivo, la lista para usar sin internet y el orden de carga | Mitigado |
+| La compuerta tarda y frena cada entrega | Alta | Medio | Un proceso por núcleo (#138): de 28 a 23 minutos; mientras se desarrolla solo corren las pruebas afectadas. Al ir más cargada la máquina salió una prueba que dependía del tiempo, y se corrigió | Mitigado en parte |
 | Sin presupuesto de GitHub Actions: la compuerta depende de correrla en local | Alta | Medio | `npm run comprobar` antes de cada fusión, sin excepción; el resultado se escribe en cada PR | Mitigado |
 | Arte desigual o que se parezca a otro juego | Baja | Medio | Guía de estilo con reglas medibles; todo dibujado desde cero | Mitigado |
 | Datos de menores (LFPDPPP) si se añade servidor | Media | Alto | Hoy no sale nada del dispositivo. Con servidor: datos mínimos, alias, consentimiento y derechos ARCO (F3.7), revisión legal del titular | Abierto |
@@ -206,13 +234,24 @@ graph LR
 
 ## Cómo se trabaja cada tarea
 
-Igual desde el principio:
-- una rama y un PR por tarea, con un issue de seguimiento;
-- pruebas automáticas y comprobación de mutaciones;
-- la compuerta local `npm run comprobar` en verde antes de fusionar;
-- README y CHANGELOG al día;
-- verificar el sitio en vivo por el sello de `sw.js`;
-- cerrar el issue con sus criterios marcados y actualizar #20.
+Cada tarea pasa por las mismas ocho etapas, y no se fusiona si una falla:
+
+| Etapa | Qué se hace | Cómo se sabe que está |
+|-------|-------------|------------------------|
+| 1. Análisis | Leer el código que se va a tocar y medir antes de proponer | Se sabe qué hay y qué falta, con datos |
+| 2. Diseño | Decidir pantalla, textos y datos con el alcance mínimo que cumple el objetivo | Las decisiones que se pueden cambiar quedan anotadas en el PR |
+| 3. Desarrollo | Una rama por tarea; sin dependencias externas | El juego construye y el sello cambia |
+| 4. Pruebas | Una especificación nueva, en escritorio y tableta, con accesibilidad (axe) y tamaños táctiles | Las pruebas nuevas y las afectadas pasan |
+| 5. Verificación | Capturas en teléfono, la compuerta entera (`npm run comprobar`) y mutaciones | Compuerta en verde; cada mutación muere, o se quita el código que sobraba |
+| 6. Integración | PR con lo hecho, lo decidido y los resultados; fusión | PR fusionado en `main` |
+| 7. Despliegue | GitHub Pages publica `main` | El sello de `sw.js` publicado es el de `main` |
+| 8. Cierre | README, CHANGELOG, este plan y #20 al día | El issue de la tarea queda marcado |
+
+**Para ir rápido sin perder calidad:**
+- mientras se desarrolla, solo se corren las pruebas afectadas; la compuerta entera, una vez por PR;
+- la compuerta corre de fondo mientras se preparan las mutaciones;
+- una tarea, un PR: los cambios pequeños se revisan y se deshacen fácil;
+- lo que una mutación muestra como redundante se quita, no se justifica.
 
 **Reglas que no cambian:**
 - sin internet;
