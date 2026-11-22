@@ -9,6 +9,13 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-22
 
+- **Brote sin leer** (#139, Hito 5.2): el tono Brote, para quien aún no lee.
+  - Dice en voz lo que toca hoy (al entrar y al volver al inicio) y el
+    resumen de «Mi progreso».
+  - Las partidas son de 5 aciertos en vez de 10 (en equipo siguen en 10) y
+    las rondas de «Enséñale a Lumi», de 3 dudas.
+  - No ofrece los retos con código, que piden leer y escribir un código.
+  - Explora y Pro no cambian.
 - **Compuerta más rápida y plan del Hito 5** (#138): las pruebas corren con
   un proceso por núcleo (de 28 a 23 minutos en 4 núcleos; `PROCESOS=2`
   vuelve a lo de antes). Una prueba de animaciones dependía de la velocidad

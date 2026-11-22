@@ -775,3 +775,6 @@ html.calma *, html.calma *::before, html.calma *::after {
 .inicio-mundo #cabecera-lema, .inicio-mundo #mision-leyenda, .inicio-mundo #mision-semana { display: none; }
 .inicio-mundo #cabecera-menu { padding: 0.75rem; }
 .inicio-mundo #cabecera-menu > * + * { margin-top: 0.5rem; }
+
+/* Brote sin leer (Hito 5.2): los retos con código piden leer y escribir. */
+body[data-tono="brote"] #btn-reto { display: none; }
