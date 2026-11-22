@@ -74,3 +74,45 @@ test("cada archivo se queda en un tamaño razonable", async () => {
   expect(await kb("index.html")).toBeLessThan(600);
   for (const a of [...ARCHIVOS_JS, "juego.css"]) expect(await kb(a), a).toBeLessThan(150);
 });
+
+// PRESUPUESTO DE PESO (Hito 5.7). Lo que importa en un teléfono con red lenta
+// es lo que viaja: el sitio publicado comprime el texto (gzip), y la primera
+// visita baja todo lo de la lista del service worker. Medido el 22 de
+// noviembre de 2026 (herramientas/medir-carga.mjs, sitio publicado, con el
+// procesador 4× más lento y 4G lenta): listo en 1,9 s, con 224 KB de texto
+// comprimido, 44 KB de fuentes y 29 KB de iconos. Los topes dejan un margen
+// de un 20 %: si una prueba de aquí falla, hay que decidir si lo nuevo vale
+// lo que pesa, no subir el tope sin más.
+const TOPES_KB = { "index.html": 165, total: 270, fuentes: 50, iconos: 35 };
+
+test("lo que se descarga la primera vez cabe en su presupuesto, comprimido como lo sirve el sitio", async () => {
+  const { gzipSync } = await import("node:zlib");
+  const { readFile } = await import("node:fs/promises");
+  const sw = await leer("sw.js");
+  const lista = [...sw.match(/const ARCHIVOS = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]).filter((a) => a !== "./");
+  const bytes = async (a) => readFile(new URL(`../${a}`, import.meta.url));
+  const esTexto = (a) => /\.(html|css|js|webmanifest|svg)$/.test(a);
+  let texto = 0, fuentes = 0, iconos = 0;
+  const comprimidos = {};
+  for (const a of lista) {
+    const contenido = await bytes(a);
+    if (esTexto(a)) { comprimidos[a] = gzipSync(contenido, { level: 9 }).length / 1000; texto += comprimidos[a]; }
+    else if (a.startsWith("fuentes/")) fuentes += contenido.length / 1000;
+    else iconos += contenido.length / 1000;
+  }
+  // Todo lo de la lista cae en una de las tres cuentas: nada se queda sin presupuesto.
+  expect(lista.filter((a) => !esTexto(a) && !a.startsWith("fuentes/") && !a.startsWith("iconos/"))).toEqual([]);
+  expect(comprimidos["index.html"], "index.html comprimido").toBeLessThan(TOPES_KB["index.html"]);
+  expect(texto, `texto comprimido: ${Object.entries(comprimidos).sort((x, y) => y[1] - x[1]).slice(0, 4).map(([a, k]) => `${a} ${k.toFixed(0)}`).join(", ")}`).toBeLessThan(TOPES_KB.total);
+  expect(fuentes, "fuentes").toBeLessThan(TOPES_KB.fuentes);
+  expect(iconos, "iconos").toBeLessThan(TOPES_KB.iconos);
+  // Y los topes no están tan holgados que no avisen: lo de hoy pasa del 70 % de cada uno.
+  expect(comprimidos["index.html"]).toBeGreaterThan(TOPES_KB["index.html"] * 0.7);
+  expect(texto).toBeGreaterThan(TOPES_KB.total * 0.7);
+});
+
+test("en la raíz del repositorio no hay imágenes sueltas: se publicarían con el sitio", async () => {
+  const { readdir } = await import("node:fs/promises");
+  const raiz = await readdir(new URL("../", import.meta.url));
+  expect(raiz.filter((a) => /\.(png|jpe?g|gif|webp)$/i.test(a))).toEqual([]);
+});

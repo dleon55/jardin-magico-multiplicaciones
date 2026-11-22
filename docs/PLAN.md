@@ -16,13 +16,13 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 2 · Un solo camino y mejor enseñanza | [#46](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/46) | **7 de 7** | **Cerrado** el 16 de noviembre |
 | 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | **Todo lo que no necesita servidor, hecho** | Los cinco temas nuevos (#71 cerrado), turnos en un aparato, guía de pruebas y opciones de plataforma. Lo demás espera las decisiones del titular (#66, #72) |
 | 4 · El mundo vivo (nueva presentación) | [#117](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/117) | **7 de 7** | **Completo** el 22 de noviembre: el mundo como inicio (#118), Lumi que crece (#120), los tres tonos (#122), «Enséñale a Lumi» (#124), la Expedición de hoy (#126), los retos con código (#128) y el progreso en un solo lugar (#130) |
-| 5 · Pulido de la presentación nueva | [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/137) | **8 de 9** | **En curso**, sin dependencias externas. Hecho: inicio simple (#133), lo nuevo para adultos (#135), la compuerta más rápida (#138), Brote sin leer (#139), la bienvenida con el mundo y el tono (#140), los ajustes para adultos (#141), el QR de los retos (#142) y un mundo más vivo (#143). Sigue: el presupuesto de peso |
+| 5 · Pulido de la presentación nueva | [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/137) | **9 de 9** | **Completo** el 22 de noviembre, sin dependencias externas: inicio simple (#133), lo nuevo para adultos (#135), la compuerta más rápida (#138), Brote sin leer (#139), la bienvenida con el mundo y el tono (#140), los ajustes para adultos (#141), el QR de los retos (#142), un mundo más vivo (#143) y el presupuesto de peso (#144) |
 
 **Cifras al día:**
-- 58 PRs fusionados desde que empezó el plan (#73 a #143), cada uno verificado en el sitio publicado.
-- La compuerta de calidad (`npm run comprobar`) tiene **1586 pruebas en verde**, en escritorio y tableta.
+- 59 PRs fusionados desde que empezó el plan (#73 a #144), cada uno verificado en el sitio publicado.
+- La compuerta de calidad (`npm run comprobar`) tiene **1632 pruebas en verde** (unos 24 minutos con 4 procesos), en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
-- El juego, en varios archivos desde #96: `index.html` pesa 453 KB, más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`. Sin dependencias externas, y funciona sin internet.
+- El juego, en varios archivos desde #96: `index.html` pesa 544 KB (135 KB comprimido, como lo sirve el sitio), más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`: 224 KB de texto comprimido en total, con tope de 270 en una prueba. Sin dependencias externas, y funciona sin internet.
 
 ## Objetivos cumplidos
 
@@ -114,7 +114,7 @@ Seguimiento en [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/
 | 5.4 Ajustes para adultos | **Hecho** (#141) | Que el atajo del menú no esté a mano de quien juega, y que «Cuándo practica» sea completo | «Menú en lista» pasa a la pantalla de adultos; `actividad` guarda los días y «Cuándo practica» los cuenta | Las pruebas que usan la lista siguen pasando; un día con solo un reto cuenta como practicado |
 | 5.5 Retos para el salón | **Hecho** (#142) | Mandar un reto sin teclear | Código QR dibujado por el propio juego (sin bibliotecas) con el enlace del reto, para proyectar o imprimir | Un lector escrito aparte vuelve a sacar el enlace del QR dibujado, y las matrices se comprobaron con un lector independiente fuera del repositorio |
 | 5.6 Un mundo más vivo | **Hecho** (#143) | Que el mundo no sea un dibujo fijo | Animaciones pequeñas solo con `transform` (apagadas con «Menos movimiento»), un sonido al entrar a un lugar y un detalle que cambia con la racha | Accesibilidad y «Menos movimiento» en verde; sin trabajo en reposo |
-| 5.7 Presupuesto de peso | Sigue | Que el juego no se vuelva pesado | Medir la carga con el procesador frenado y fijar topes de tamaño por archivo en una prueba | La prueba falla si un archivo pasa su tope |
+| 5.7 Presupuesto de peso | **Hecho** (#144) | Que el juego no se vuelva pesado | Medir la carga con el procesador frenado y fijar topes de tamaño por archivo en una prueba | La prueba falla si lo que se descarga pasa su tope. Medido en el sitio publicado, con el procesador 4× más lento y 4G lenta: listo en 1,9 s; el procesador casi no pesa (0,7 s sin frenar la red), lo que cuesta es bajar los archivos |
 
 **Fuera de este hito** (necesitan a la persona dueña): retos con otros temas
 que cambien el formato del código se deciden tras ver cómo se usan los
@@ -126,14 +126,13 @@ actuales; voz grabada (#51); plataforma (#66); pruebas con niñas y niños (#72)
 
 | # | Tarea | Issue | Depende de | Notas |
 |---|-------|-------|------------|-------|
-| 0 | **Hito 5**: las siete partes que faltan, en el orden de su tabla | [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/137) | Nada | Una parte por PR, sin esperar a nadie |
 | 1 | Reproducir la voz grabada, con la sintética de respaldo | [#51](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/51) | **Las grabaciones y el permiso del titular** | El guion dice qué archivo suena en cada momento |
 | 2 | Salón por archivos (opción B de la plataforma) | #66 | **Decisión del titular** | Solo si elige A + B: la docente junta los archivos de su salón en su aparato |
 | 3 | Convertir en issues los hallazgos de las pruebas con niños | #72 | **Las sesiones del titular** | Con la plantilla de la guía |
 | 4 | Lo que se decida con servidor: cuentas, salón en vivo, privacidad, métricas | #66, #67 | **Decisión del titular** | Solo con la opción C o D |
 
-**Fuera del Hito 5, todo lo demás depende de una decisión o una tarea del
-titular.** Ya hay ocho temas nuevos: los cinco de #71, las fracciones decimales
+**Con el Hito 5 completo, todo lo que queda depende de una decisión o una
+tarea del titular.** Ya hay ocho temas nuevos: los cinco de #71, las fracciones decimales
 (#102), las medidas de tiempo (#105) y el calendario (#108). Si se quieren
 más, se abre un issue nuevo y se hacen con el mismo método.
 
@@ -177,9 +176,7 @@ gantt
     Expedición, retos con código y Mi progreso     :done,    h4c, 2026-11-21, 2d
     section Hito 5 (sin dependencias)
     Inicio simple y lo nuevo para adultos          :done,    h5a, 2026-11-22, 1d
-    Compuerta rápida, Brote sin leer y bienvenida  :active,  h5b, 2026-11-22, 2d
-    Ajustes para adultos y retos con QR            :         h5c, after h5b, 1d
-    Mundo más vivo y presupuesto de peso           :         h5d, after h5c, 1d
+    Las siete partes restantes (5.1 a 5.7)         :done,    h5b, 2026-11-22, 1d
     section Hito 3 con servidor (si se decide)
     Decisión de plataforma (titular)               :crit,    h3d, 2026-11-23, 10d
     Salón por archivos (opción B)                  :         h3b2, after h3d, 5d
@@ -190,7 +187,7 @@ gantt
 | Semana | Claude | Titular |
 |--------|--------|---------|
 | 16 al 22 de noviembre | **Hecho:** separar en archivos, los temas que faltaban, el guion de la voz y el Hito 4 entero (la presentación nueva) | Probar lo nuevo en el teléfono; leer el documento de plataforma |
-| 23 al 29 de noviembre | **Hito 5** entero (siete partes); después, lo que pidan las decisiones o las pruebas del titular | **Decidir la plataforma**; grabar la voz; empezar pruebas con niños, con la presentación nueva |
+| 23 al 29 de noviembre | Lo que pidan las decisiones o las pruebas del titular (el Hito 5 se terminó el 22) | **Decidir la plataforma**; grabar la voz; empezar pruebas con niños, con la presentación nueva |
 | 30 de noviembre al 13 de diciembre | Lo que salga de las pruebas con niños; salón por archivos si se elige B | Terminar las pruebas con niños |
 | Desde el 14 de diciembre | Si se elige C: cuentas, salón en vivo, privacidad y métricas | Revisión legal del aviso de privacidad |
 

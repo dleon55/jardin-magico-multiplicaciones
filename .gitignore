@@ -2,3 +2,5 @@ node_modules/
 test-results/
 playwright-report/
 ux*/
+# Capturas sueltas en la raíz: no son del sitio (pruebas/archivos.spec.mjs lo vigila).
+/*.png
