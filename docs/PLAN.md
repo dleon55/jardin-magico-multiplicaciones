@@ -3,7 +3,7 @@
 El Jardín Mágico de las Multiplicaciones: de un buen juego de tablas a uno de
 calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
-**Actualizado: 22 de noviembre de 2026.**
+**Actualizado: 23 de noviembre de 2026.**
 - El estado del día a día está en el
   [issue de estado #20](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/20).
 - El detalle de cada cambio, con su PR, está en el [CHANGELOG](../CHANGELOG.md).
@@ -17,9 +17,10 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | **Todo lo que no necesita servidor, hecho** | Los cinco temas nuevos (#71 cerrado), turnos en un aparato, guía de pruebas y opciones de plataforma. Lo demás espera las decisiones del titular (#66, #72) |
 | 4 · El mundo vivo (nueva presentación) | [#117](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/117) | **7 de 7** | **Completo** el 22 de noviembre: el mundo como inicio (#118), Lumi que crece (#120), los tres tonos (#122), «Enséñale a Lumi» (#124), la Expedición de hoy (#126), los retos con código (#128) y el progreso en un solo lugar (#130) |
 | 5 · Pulido de la presentación nueva | [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/137) | **9 de 9** | **Completo** el 22 de noviembre, sin dependencias externas: inicio simple (#133), lo nuevo para adultos (#135), la compuerta más rápida (#138), Brote sin leer (#139), la bienvenida con el mundo y el tono (#140), los ajustes para adultos (#141), el QR de los retos (#142), un mundo más vivo (#143) y el presupuesto de peso (#144) |
+| 6 · Enseñanza a la medida y uso real | [#145](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/145) | **2 de 8** | **En curso**, sin dependencias externas |
 
 **Cifras al día:**
-- 59 PRs fusionados desde que empezó el plan (#73 a #144), cada uno verificado en el sitio publicado.
+- 60 PRs fusionados desde que empezó el plan (#73 a #146), cada uno verificado en el sitio publicado.
 - La compuerta de calidad (`npm run comprobar`) tiene **1632 pruebas en verde** (unos 24 minutos con 4 procesos), en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
 - El juego, en varios archivos desde #96: `index.html` pesa 544 KB (135 KB comprimido, como lo sirve el sitio), más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`: 224 KB de texto comprimido en total, con tope de 270 en una prueba. Sin dependencias externas, y funciona sin internet.
@@ -120,6 +121,23 @@ Seguimiento en [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/
 que cambien el formato del código se deciden tras ver cómo se usan los
 actuales; voz grabada (#51); plataforma (#66); pruebas con niñas y niños (#72).
 
+## Hito 6 · Enseñanza a la medida y uso real
+
+Ocho mejoras que no dependen de nadie más. Siguen siendo hipótesis: nada de
+los hitos 4 y 5 se ha probado con niñas y niños. Seguimiento en
+[#145](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/145).
+
+| Parte | Estado | Objetivo | Cómo se implementa | Hecho cuando |
+|-------|--------|----------|--------------------|--------------|
+| 6.1 Compuerta más corta | **Descartada con datos** | Acortar cada entrega | Se midió: las pruebas de pura lógica son unos 300 s de los 2 743 que corre la tableta (el 11 %), así que quitarlas de la tableta ahorraría poco más de un minuto de 24 | No compensa el riesgo de perder cobertura; la compuerta se queda como está |
+| 6.2 Lumi se equivoca como quien juega | **Hecho** (#146) | Practicar justo lo que más falta | «Enséñale a Lumi» toma los errores guardados en las tablas (los tres más repetidos, de lo que aún no florece) | Lumi dice ese error y la explicación depende de la confusión |
+| 6.3 Candado sencillo para adultos | Sigue | Que la pantalla de adultos no sea un enlace cualquiera | Mantener presionado para entrar, con alternativa de teclado | Un toque corto no entra; mantener presionado sí |
+| 6.4 Brote sin voz en español | Pendiente | Que Brote no quede mudo | Si no hay voz, Lumi señala el botón que toca | En un aparato sin voz en español se ve la señal |
+| 6.5 Hoja para el salón | Pendiente | Jugar un reto sin aparato | Hoja imprimible con el QR, el código y las diez preguntas | Cabe en una hoja carta |
+| 6.6 Cuando ya se sabe todo | Pendiente | Mantener lo aprendido | Un repaso semanal corto con algo que cuidar en el mundo | Con las ocho tablas sabidas, el inicio propone el repaso |
+| 6.7 Antes de multiplicar, para Brote | Pendiente | Contenido propio para 6 años | Contar de 2 en 2, grupos iguales y dobles | Un lugar o juego nuevo con sus pruebas |
+| 6.8 Cargar tarde lo que casi no se usa | Pendiente | Aligerar la primera visita | Medir qué pesa cada parte y decidir con el dato | La primera visita baja menos, o se descarta con datos |
+
 ## Pendientes
 
 ### De Claude (orden de trabajo)
@@ -131,8 +149,8 @@ actuales; voz grabada (#51); plataforma (#66); pruebas con niñas y niños (#72)
 | 3 | Convertir en issues los hallazgos de las pruebas con niños | #72 | **Las sesiones del titular** | Con la plantilla de la guía |
 | 4 | Lo que se decida con servidor: cuentas, salón en vivo, privacidad, métricas | #66, #67 | **Decisión del titular** | Solo con la opción C o D |
 
-**Con el Hito 5 completo, todo lo que queda depende de una decisión o una
-tarea del titular.** Ya hay ocho temas nuevos: los cinco de #71, las fracciones decimales
+**Fuera del Hito 6 (en curso, sin dependencias), todo lo que queda depende de
+una decisión o una tarea del titular.** Ya hay ocho temas nuevos: los cinco de #71, las fracciones decimales
 (#102), las medidas de tiempo (#105) y el calendario (#108). Si se quieren
 más, se abre un issue nuevo y se hacen con el mismo método.
 
@@ -177,6 +195,8 @@ gantt
     section Hito 5 (sin dependencias)
     Inicio simple y lo nuevo para adultos          :done,    h5a, 2026-11-22, 1d
     Las siete partes restantes (5.1 a 5.7)         :done,    h5b, 2026-11-22, 1d
+    section Hito 6 (sin dependencias)
+    Ocho mejoras de enseñanza y uso real          :active,  h6, 2026-11-23, 3d
     section Hito 3 con servidor (si se decide)
     Decisión de plataforma (titular)               :crit,    h3d, 2026-11-23, 10d
     Salón por archivos (opción B)                  :         h3b2, after h3d, 5d

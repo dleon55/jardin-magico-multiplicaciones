@@ -43,6 +43,8 @@ recorre, con cinco lugares ordenados de lo más fácil a lo más avanzado.
 cuál es la buena, y Lumi lo entiende con la explicación de ese error.
 - Sus errores son los típicos de cada tema, los mismos que el juego usa como
   opciones falsas. Una de cada cuatro veces acierta.
+- También repite los errores que quien juega ha tenido en las tablas (sin
+  decir de quién eran): corregirla practica lo que más falta.
 - Las preguntas salen de las tablas ya empezadas y de los temas de los
   lugares despiertos.
 - La vista para las personas adultas y el informe dicen cuántas rondas

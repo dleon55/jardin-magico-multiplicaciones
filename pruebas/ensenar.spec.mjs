@@ -225,3 +225,81 @@ test.describe("en el mundo vivo", () => {
     for (const alto of await page.locator(".btn-ensenar").evaluateAll((bs) => bs.map((b) => b.getBoundingClientRect().height))) expect(alto).toBeGreaterThanOrEqual(44);
   });
 });
+
+// --- Hito 6.2: Lumi se equivoca como quien juega ---
+/** Deja guardados unos fallos: [a, b, lo que se respondió]. */
+const fallar = (page, fallos) => page.evaluate((fallos) => { for (const [a, b, dada] of fallos) registrarIntento(a, b, false, { dada }); }, fallos);
+
+test("los errores propios: de las tablas, contados y del más repetido al menos; sin lo que ya floreció ni respuestas raras", async ({ page }) => {
+  await alMenu(page);
+  expect(await page.evaluate(() => erroresPropios())).toEqual([]);
+  await fallar(page, [[6, 8, 42], [7, 9, 16], [6, 8, 42], [8, 6, 42], [7, 9, 16], [3, 4, 13], [3, 4, 0], [5, 5, 25]]);
+  await page.evaluate(() => {
+    registrarIntento(2, 9, false, {});                       // falló sin respuesta guardada (por tiempo): no cuenta
+    registrarIntento(9, 9, false, { dada: 80 });             // 9 × 9 florece después: su error ya no se repasa
+    const d = (k) => new Date(Date.parse(hoy()) - k * 86400000).toISOString().slice(0, 10);
+    hechos[claveHecho(9, 9)] = [...hechos[claveHecho(9, 9)], { d: d(1), m: "e", ok: 1, ms: 2000 }, { d: d(0), m: "e", ok: 1, ms: 2000 }];
+  });
+  expect(await page.evaluate(() => estadoHecho(9, 9))).toBe("florecida");
+  expect(await page.evaluate(() => erroresPropios())).toEqual([
+    { a: 6, b: 8, r: 42, veces: 3 },   // 6 × 8 y 8 × 6 son la misma planta
+    { a: 7, b: 9, r: 16, veces: 2 },
+    { a: 3, b: 4, r: 13, veces: 1 },
+  ]);
+});
+
+test("una duda propia: Lumi dice justo lo que se respondió, con su explicación según la confusión", async ({ page }) => {
+  await alMenu(page);
+  await fallar(page, [[6, 8, 42], [6, 8, 42], [7, 9, 16], [7, 9, 36], [6, 8, 30], [4, 7, 31]]);
+  const dudas = await page.evaluate(() => erroresPropios().map((e) => { const p = dudaPropia([e], 0); return { texto: p.texto, lumiDice: p.lumiDice, porQue: p.porQue[p.lumiDice], respuesta: p.respuesta, propia: p.propia, opciones: p.opciones.map((o) => o.valor).sort((x, y) => x - y), explicadas: Object.keys(p.porQue).length }; }));
+  const de = (r) => dudas.find((d) => d.lumiDice === r);
+  expect(de(42)).toMatchObject({ texto: "6 × 8", respuesta: 48, propia: true, porQue: "42 es 6 × 7, la de al lado. 6 × 8 = 48." });
+  expect(de(16).porQue).toBe("7 + 9 es sumar. 7 × 9 son 7 filas de 9: 63.");
+  expect(de(36).porQue).toBe("36 tiene las mismas cifras, pero al revés. 7 × 9 = 63.");
+  expect(de(30).porQue).toBe("30 es 6 × 5, otra de la misma tabla. 6 × 8 = 48.");
+  expect(de(31).porQue).toBe("31 no es. 4 × 7 son 4 filas de 7: 28.");
+  for (const d of dudas) {
+    expect(d.opciones).toContain(d.respuesta);
+    expect(d.opciones).toContain(d.lumiDice);
+    expect(new Set(d.opciones).size).toBe(d.opciones.length);
+    expect(d.opciones.length).toBe(4);            // la buena, la propia y dos más, todas explicadas
+    expect(d.explicadas).toBe(3);
+    expect(d.opciones.every((o) => o > 0)).toBe(true);
+  }
+  // Con la tabla del 1, «una fila menos» daría cero: no se ofrece.
+  expect(await page.evaluate(() => dudaPropia([{ a: 1, b: 7, r: 8, veces: 1 }], 0).opciones.map((o) => o.valor).sort((x, y) => x - y))).toEqual([7, 8, 14]);
+  // Lumi se equivoca con ese error, no con otra falsa: con cualquier azar por encima de su acierto.
+  const dichas = await page.evaluate(() => { const p = dudaPropia([{ a: 6, b: 8, r: 42, veces: 2 }], 0); return [0.25, 0.4, 0.7, 0.999].map((azar) => nuevaDuda(p, azar).dicha.valor); });
+  expect(dichas).toEqual([42, 42, 42, 42]);
+  // Y a veces acierta, como siempre.
+  expect(await page.evaluate(() => { const d = nuevaDuda(dudaPropia([{ a: 6, b: 8, r: 42, veces: 2 }], 0), 0.1); return [d.acierta, d.dicha.valor]; })).toEqual([true, 48]);
+});
+
+test("se elige entre los tres errores más repetidos, y entran en la ronda tanto como las tablas", async ({ page }) => {
+  await alMenu(page);
+  await fallar(page, [[6, 8, 42], [6, 8, 42], [6, 8, 42], [7, 9, 16], [7, 9, 16], [3, 4, 13], [3, 4, 13], [2, 6, 14]]);
+  const vistos = await page.evaluate(() => [0, 0.2, 0.34, 0.5, 0.67, 0.9, 0.999].map((azar) => dudaPropia(erroresPropios(), azar).lumiDice));
+  expect(vistos).toEqual([42, 42, 13, 13, 16, 16, 16]);   // en el empate a dos veces, primero la más chica (3 × 4); nunca el cuarto (14)
+  // En muchas dudas de un jardín que solo tiene tablas: cerca de la mitad son propias.
+  const propias = await page.evaluate(() => { let n = 0; for (let i = 0; i < 400; i++) if (preguntaParaLumi().propia) n++; return n; });
+  expect(propias).toBeGreaterThan(140);
+  expect(propias).toBeLessThan(260);
+  // Sin errores guardados, ninguna.
+  await page.evaluate(() => { hechos = {}; });
+  expect(await page.evaluate(() => { let n = 0; for (let i = 0; i < 200; i++) if (preguntaParaLumi().propia) n++; return n; })).toBe(0);
+});
+
+test("en la pantalla: Lumi repite el error propio y, al corregirla, se le explica sin decir de quién era", async ({ page }) => {
+  await alMenu(page);
+  await fallar(page, [[6, 8, 42], [6, 8, 42]]);
+  await ronda(page, [["dudaPropia()", 0.9]]);
+  await expect(page.locator("#ensenar-pregunta")).toHaveText("6 × 8");
+  await expect(page.locator("#ensenar-dice")).toHaveText("Yo digo que es 42. ¿Está bien?");
+  await page.click(".ensenar-no");
+  await page.click('.ensenar-opcion[data-valor="48"]');
+  await expect(page.locator("#ensenar-nota")).toHaveText("Dile a Lumi: «42 es 6 × 7, la de al lado. 6 × 8 = 48.» Le enseñaste: +1 estrella.");
+  const pantalla = await page.locator("#screen-ensenar").innerText();
+  expect(pantalla).not.toMatch(/tu error|te equivocaste tú|respondiste/i);
+  // Corregir a Lumi no cambia lo guardado de esa multiplicación.
+  expect(await page.evaluate(() => intentosDe(6, 8).length)).toBe(2);
+});
