@@ -26,6 +26,10 @@ function jugarMucho(page) {
     for (const clave of Object.keys(CLASES_OTROS)) for (let i = 0; i < 10; i++) registrarOtro(clave, i % 3 !== 0);
     almacen.guardar("misiones", JSON.stringify({ dias: [dia(0), dia(1), dia(3)] }));
     aventuraGuardada.alcanzado = 5; aventuraGuardada.estrellas = { "0-0": 3 }; aventuraGuardada.mejores = { "0-0": 500 }; guardarAventura();
+    // Lo de las actividades nuevas (Enséñale a Lumi, expediciones y retos) también va en la hoja.
+    almacen.guardar("actividad", JSON.stringify({ ensenar: { rondas: 12, dudas: 60, bien: 47, atrapados: 31, pasados: 9, ultimo: dia(0) },
+      retos: { creados: 4, recibidos: 6, superados: 3, aciertos: 78, preguntas: 100, ultimo: dia(1) } }));
+    almacen.guardar("expediciones", JSON.stringify([dia(3), dia(1), dia(0)]));
   });
 }
 
