@@ -34,6 +34,9 @@ recorre, con cinco lugares ordenados de lo más fácil a lo más avanzado.
   Cada etapa le suma hojas, frutos o una flor, y lo anuncia al volver al
   inicio. Nunca encoge, aunque una tabla se marchite.
 - La Aventura y «En equipo» quedan a un toque, bajo el mundo.
+- El mundo se mueve despacio (el sol, la niebla, las flores, los
+  banderines), abrir un lugar suena, y con tres días seguidos de meta sale
+  un arcoíris. «Menos movimiento» lo deja quieto.
 
 **Enséñale a Lumi.** Lumi da su respuesta a una pregunta («Yo digo que es
 3:70. ¿Está bien?») y quien juega decide. Si Lumi se equivocó, se le enseña

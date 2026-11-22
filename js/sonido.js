@@ -367,12 +367,13 @@ const SONIDOS = {
     jefe: [[0, "G4", 0.18, 0.7], [0.16, "C5", 0.18, 0.75], [0.32, "E5", 0.18, 0.8], [0.48, "G5", 0.6, 0.9], [0.48, "C6", 0.6, 0.55]],
     comprar: [[0, "A5", 0.08, 0.6], [0.08, "E6", 0.3, 0.7]],
     entrar: [[0, "C5", 0.14, 0.7], [0.12, "E5", 0.14, 0.7], [0.24, "G5", 0.3, 0.75]],
+    lugar: [[0, "G5", 0.1, 0.6], [0.08, "C6", 0.24, 0.65]],   // al abrir un lugar del mundo
 };
 // Ajuste de cada efecto, medido sin conexión (RMS de los 100 ms más
 // fuertes): los de logro quedan parejos (≈ 0,10), los grandes apenas
 // más fuertes (≈ 0,12), el fallo más suave (≈ 0,07) y el toque, casi
 // un susurro (≈ 0,03).
-const AJUSTE_SONIDO = { toque: 1.5, acierto: 0.94, fallo: 1.43, racha: 1.19, florecer: 0.95, nivel: 0.73, vencer: 1.85, jefe: 0.81, comprar: 1.32, entrar: 1 };
+const AJUSTE_SONIDO = { toque: 1.5, acierto: 0.94, fallo: 1.43, racha: 1.19, florecer: 0.95, nivel: 0.73, vencer: 1.85, jefe: 0.81, comprar: 1.32, entrar: 1, lugar: 1.25 };
 const VOLUMEN_EFECTOS = 0.32;
 let salidaEfectos = null;
 
