@@ -298,3 +298,69 @@ for (const [nombre, tam] of [["teléfono en vertical", { width: 360, height: 640
     expect(axe.violations.map((v) => v.id), testInfo.project.name).toEqual([]);
   });
 }
+
+// --- Hito 6.5: la hoja para el salón ---
+test("«Imprimir la hoja» arma una hoja con el QR, el código y las diez preguntas, sin respuestas", async ({ page }) => {
+  await alFinalDeUnReto(page, 8);
+  await page.evaluate(() => { window.__impresiones = 0; window.print = () => { window.__impresiones++; }; });
+  await page.click("#btn-reto-hoja");
+  expect(await page.evaluate(() => [window.__impresiones, document.body.classList.contains("imprimiendo")])).toEqual([1, true]);
+  const hoja = page.locator("#informe");
+  await expect(hoja.locator("h1")).toHaveText("Reto del Jardín Mágico");
+  await expect(hoja.locator("header p")).toHaveText("Diez multiplicaciones de las tablas del 2 y del 5. La marca a vencer: 8 de 10.");
+  await expect(hoja.locator(".hoja-codigo")).toHaveText("NKW K4S");
+  const base = await page.evaluate(() => location.origin + location.pathname);
+  await expect(hoja.locator(".hoja-enlace")).toHaveText(`${base}?reto=NKWK4S`);
+  // El QR de la hoja lleva ese mismo enlace.
+  expect(leerQR(matrizDeSvg(await hoja.locator(".hoja-qr").innerHTML()))).toBe(`${base}?reto=NKWK4S`);
+  // Las diez preguntas del reto, en su orden, con renglón y sin la respuesta.
+  const preguntas = await page.evaluate(() => retoEnJuego.preguntas.map((q) => [q.texto, q.respuesta]));
+  await expect(hoja.locator(".hoja-preguntas li")).toHaveText(preguntas.map(([texto]) => `${texto} = ______`));
+  const renglones = await hoja.locator(".hoja-preguntas li").allTextContents();
+  preguntas.forEach(([, respuesta], i) => expect(renglones[i].replace(/^\d+ × \d+/, ""), `renglón ${i + 1}`).not.toContain(String(respuesta)));
+  await expect(hoja).toContainText("Nombre: ______");
+  await expect(hoja).toContainText("no lleva las respuestas ni datos de quien creó el reto");
+  await expect(hoja).not.toContainText("Ana");
+  // Al terminar de imprimir, la pantalla vuelve a ser la de siempre.
+  await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+  expect(await page.evaluate(() => document.body.classList.contains("imprimiendo"))).toBe(false);
+  await expect(page.locator("#reto-fin")).toBeVisible();
+});
+
+test("la hoja cabe en una sola hoja carta, también con el enlace más largo y todas las tablas", async ({ page, browserName }) => {
+  test.skip(browserName !== "chromium", "page.pdf solo existe en Chromium");
+  await page.goto("./");
+  await page.fill("#player-name", "Ana");
+  await page.click("#screen-welcome button:has-text('Comenzar')");
+  await page.evaluate(() => {
+    window.print = () => {};
+    mostrarRetos();
+    empezarReto({ tablas: [2, 3, 4, 5, 6, 7, 8, 9], semilla: 1023, marca: 10 });
+    for (let i = 0; i < 10; i++) { const q = retoEnJuego.preguntas[retoEnJuego.n - 1]; responderReto(q.respuesta, document.querySelector(".reto-opcion")); siguientePreguntaDeReto(); }
+    imprimirHojaDeReto();
+  });
+  await page.emulateMedia({ media: "print" });
+  // Impresa, solo se ve la hoja.
+  await expect(page.locator("#informe")).toBeVisible();
+  await expect(page.locator("#screen-reto")).toBeHidden();
+  // El QR impreso: entre 4 y 7 cm de lado (a 96 px por pulgada), cuadrado. (Se mide antes del PDF: al acabar de imprimir, la hoja se oculta.)
+  const qr = await page.locator("#informe .hoja-qr svg").boundingBox();
+  expect(Math.abs(qr.width - qr.height)).toBeLessThan(1);
+  expect(qr.width).toBeGreaterThan(4 * 37.8);
+  expect(qr.width).toBeLessThan(7 * 37.8);
+  const pdf = await page.pdf({ preferCSSPageSize: true, printBackground: true });
+  expect((pdf.toString("latin1").match(/\/Type\s*\/Page(?!s)/g) || []).length).toBe(1);
+  expect(pdf.toString("latin1")).toMatch(/\/MediaBox\s*\[\s*0 0 612 792\s*\]/);
+});
+
+test("sin un reto terminado no se imprime nada, y el botón es táctil", async ({ page }) => {
+  await page.goto("./");
+  await page.fill("#player-name", "Ana");
+  await page.click("#screen-welcome button:has-text('Comenzar')");
+  await page.evaluate(() => { window.__impresiones = 0; window.print = () => { window.__impresiones++; }; mostrarRetos(); imprimirHojaDeReto(); });
+  expect(await page.evaluate(() => [window.__impresiones, document.body.classList.contains("imprimiendo"), document.getElementById("informe").children.length])).toEqual([0, false, 0]);
+  await alFinalDeUnReto(page);
+  const caja = await page.locator("#btn-reto-hoja").boundingBox();
+  expect(caja.height).toBeGreaterThanOrEqual(44);
+  await expect(page.locator("#btn-reto-hoja")).toHaveText("Imprimir la hoja");
+});

@@ -9,6 +9,11 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-23
 
+- **Hoja para el salón** (#149, Hito 6.5): al terminar un reto, «Imprimir
+  la hoja» arma una hoja carta con el QR, el código y el enlace para quien
+  tiene aparato, y las diez preguntas con su renglón para quien no. Sin
+  respuestas y sin datos de quien creó el reto. Se imprime o se guarda como
+  PDF con el diálogo del navegador.
 - **Brote sin voz** (#148, Hito 6.4): Brote se apoya en la voz; si está
   apagada o el aparato no tiene voz en español, una flecha señala el botón
   de la expedición. Sale también si se sabe tarde que no hay voz, y se queda

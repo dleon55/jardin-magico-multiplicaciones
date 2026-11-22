@@ -68,6 +68,8 @@ código de seis signos («NKW K4S») o un enlace.
   y al terminar tiene su propio código para la revancha.
 - «Mostrar código QR» abre en grande el QR del enlace, para proyectarlo en
   el salón. Lo dibuja el propio juego, sin bibliotecas ni internet.
+- «Imprimir la hoja» da una hoja carta con el QR, el código y las diez
+  preguntas con su renglón, para quien no tiene aparato.
 - Cada acierto da una estrella y cuenta para la meta del día. No cambia el
   jardín ni el mapa.
 
