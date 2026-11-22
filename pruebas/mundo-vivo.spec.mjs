@@ -155,18 +155,30 @@ test("los juegos de un lugar son un diálogo: Escape cierra, el foco vuelve y la
   await expect(page.locator("#screen-selector")).toBeVisible();
 });
 
-test("«Menú en lista» en Ajustes cambia a la lista de siempre, y se recuerda", async ({ page }) => {
+test("«Menú en lista», en la pantalla de adultos, cambia a la lista de siempre, y se recuerda", async ({ page }) => {
   await alMundo(page);
+  // Ya no está en Ajustes, a mano de quien juega (Hito 5.4).
   await page.click("#ajustes summary");
-  await page.click('.ajuste[data-ajuste="lista"]');
+  await expect(page.locator('#ajustes .ajuste[data-ajuste="lista"]')).toHaveCount(0);
+  await page.click("#ajustes summary");
+  await page.click("#btn-adultos-menu");
+  const boton = page.locator('#inicio-adultos .ajuste[data-ajuste="lista"]');
+  await expect(boton).toHaveAttribute("aria-pressed", "false");
+  await expect(boton.locator(".estado")).toHaveText("No");
+  await expect(boton).toHaveAccessibleDescription(/Con el menú en lista se ve todo de una vez/);
+  await boton.click();
+  await expect(boton).toHaveAttribute("aria-pressed", "true");
+  await expect(boton.locator(".estado")).toHaveText("Sí");
+  await page.click("#screen-adultos .btn-volver");
   await expect(page.locator("#mundo-vivo")).toBeHidden();
   await expect(page.locator("#menu-lista")).toBeVisible();
   await expect(page.locator("#btn-porcentajes")).toBeVisible();   // en la lista nada duerme
   await page.reload();
   await page.click(".btn-perfil >> nth=0");
   await expect(page.locator("#menu-lista")).toBeVisible();
-  await page.click("#ajustes summary");
-  await page.click('.ajuste[data-ajuste="lista"]');
+  await page.click("#btn-adultos-menu");
+  await page.click('#inicio-adultos .ajuste[data-ajuste="lista"]');
+  await page.click("#screen-adultos .btn-volver");
   await expect(page.locator("#mundo-vivo")).toBeVisible();
   await expect(page.locator(".lugar-mundo")).toHaveCount(5);
 });

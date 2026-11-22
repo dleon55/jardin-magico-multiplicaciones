@@ -57,7 +57,7 @@ test("Enséñale a Lumi: cuenta las rondas, las dudas resueltas y los errores de
   await page.click(`.ensenar-opcion[data-valor="${buena}"]`);
   await page.click("#ensenar-sigue");
   await expect(page.locator("#ensenar-cuenta")).toHaveText("2 de 5");
-  expect((await actividad(page)).ensenar).toEqual({ rondas: 1, dudas: 5, bien: 2, atrapados: 2, pasados: 1, ultimo: "2026-11-14" });
+  expect((await actividad(page)).ensenar).toEqual({ rondas: 1, dudas: 5, bien: 2, atrapados: 2, pasados: 1, ultimo: "2026-11-14", dias: ["2026-11-14"] });
   expect(await lineas(page)).toEqual(["Enséñale a Lumi: 1 ronda; resolvió 2 de 5 dudas. Notó 2 de 3 errores de Lumi."]);
   // Dejar una ronda a medias no cuenta como ronda.
   await page.evaluate(() => { mostrarEnsenar(); backToSelector(); });
@@ -76,13 +76,13 @@ test("retos con código: los creados, los recibidos, los aciertos y las marcas s
     }
   }, [marca, aciertos]);
   await jugar(null, 8);
-  expect((await actividad(page)).retos).toEqual({ creados: 1, recibidos: 0, superados: 0, aciertos: 8, preguntas: 10, ultimo: "2026-11-14" });
+  expect((await actividad(page)).retos).toEqual({ creados: 1, recibidos: 0, superados: 0, aciertos: 8, preguntas: 10, ultimo: "2026-11-14", dias: ["2026-11-14"] });
   expect(await lineas(page)).toEqual(["Retos con código: 8 de 10 bien en 1 reto."]);
   await jugar(6, 9);   // recibido y superado
   expect(await lineas(page)).toEqual(["Retos con código: 17 de 20 bien en 2 retos. Superó la marca en 1 de 1 recibido."]);
   await jugar(6, 6);   // empate: no la supera
   await jugar(6, 2);   // por debajo
-  expect((await actividad(page)).retos).toEqual({ creados: 1, recibidos: 3, superados: 1, aciertos: 25, preguntas: 40, ultimo: "2026-11-14" });
+  expect((await actividad(page)).retos).toEqual({ creados: 1, recibidos: 3, superados: 1, aciertos: 25, preguntas: 40, ultimo: "2026-11-14", dias: ["2026-11-14"] });
   expect(await lineas(page)).toEqual(["Retos con código: 25 de 40 bien en 4 retos. Superó la marca en 1 de 3 recibidos."]);
   // Salir a medias no cuenta.
   await page.evaluate(() => { mostrarRetos(); empezarReto({ tablas: [2], semilla: 1, marca: null }); backToSelector(); });
@@ -150,8 +150,50 @@ test("lo guardado dañado no rompe nada, y viaja en la copia de seguridad", asyn
   const vacia = await page.evaluate(() => ACTIVIDAD_VACIA);
   for (const malo of ["no es json", "null", "[]", '"hola"', '{"ensenar":7,"retos":null}']) expect(await limpia(malo)).toEqual(vacia);
   expect(await limpia(JSON.stringify({ ensenar: { rondas: -3, dudas: 2.5, bien: "9", atrapados: 4, ultimo: "ayer", extra: 1 }, otra: { x: 1 }, retos: { ultimo: "2026-11-14" } })))
-    .toEqual({ ensenar: { ...vacia.ensenar, atrapados: 4 }, retos: { ...vacia.retos, ultimo: "2026-11-14" } });
+    .toEqual({ ensenar: { ...vacia.ensenar, atrapados: 4 }, retos: { ...vacia.retos, ultimo: "2026-11-14", dias: ["2026-11-14"] } });
   await page.evaluate(() => anotarActividad("retos", { creados: 1, aciertos: 7, preguntas: 10 }));
   expect(JSON.parse(await page.evaluate(() => Object.values(armarCopia().datos)[0].actividad)).retos).toMatchObject({ creados: 1, aciertos: 7 });
   expect(await page.evaluate(() => ACTIVIDAD_VACIA.retos.creados)).toBe(0);   // anotar no ensucia la plantilla
+});
+
+test("«Cuándo practica» cuenta también los días de solo Enséñale a Lumi, expedición o reto", async ({ page }) => {
+  await entrar(page);
+  const practicados = async () => {
+    await page.evaluate(() => mostrarAdultos());
+    return (await tarjeta(page).locator(".sr-only", { hasText: ": practicó" }).allTextContents()).map((t) => t.split(":")[0]);
+  };
+  expect(await practicados()).toEqual([]);
+  // Hoy, un reto; ayer, una ronda de Lumi (guardada); anteayer, una expedición.
+  await page.evaluate(() => {
+    almacen.guardar("actividad", JSON.stringify({ ensenar: { rondas: 1, dudas: 5, bien: 3, dias: ["2026-11-13"] } }));
+    almacen.guardar("expediciones", JSON.stringify(["2026-11-12"]));
+    anotarActividad("retos", { creados: 1, aciertos: 7, preguntas: 10 });
+  });
+  expect(await page.evaluate(() => diasDeActividad(perfilActual).sort())).toEqual(["2026-11-12", "2026-11-13", "2026-11-14"]);
+  expect(await practicados()).toEqual(["12 de noviembre", "13 de noviembre", "14 de noviembre"]);
+  // Y el informe dice lo mismo.
+  await page.evaluate(() => { window.print = () => {}; });
+  await tarjeta(page).locator(".btn-informe").click();
+  await expect(page.locator("#informe")).toContainText("Practicó 3 de los últimos");
+  await expect(page.locator("#informe")).toContainText("(el último, el 14 de noviembre)");
+});
+
+test("los días de cada actividad: sin repetir, los últimos 60, y lo guardado antes conserva su último día", async ({ page }) => {
+  await entrar(page);
+  await page.evaluate(() => { anotarActividad("ensenar", { atrapados: 1 }); anotarActividad("ensenar", { rondas: 1, dudas: 5, bien: 1 }); });
+  expect((await actividad(page)).ensenar.dias).toEqual(["2026-11-14"]);
+  expect((await actividad(page)).retos.dias).toEqual([]);
+  // Lo guardado antes de llevar los días solo tenía «ultimo».
+  expect(await page.evaluate(() => limpiarActividad(JSON.stringify({ retos: { creados: 2, ultimo: "2026-11-09" } })).retos.dias)).toEqual(["2026-11-09"]);
+  expect(await page.evaluate(() => limpiarActividad(JSON.stringify({ retos: { ultimo: "2026-11-09", dias: ["2026-11-09", "2026-11-08", "2026-11-08", "ayer", 7] } })).retos.dias)).toEqual(["2026-11-09", "2026-11-08"]);
+  expect(await page.evaluate(() => limpiarActividad(JSON.stringify({ retos: { dias: "2026-11-09" } })).retos.dias)).toEqual([]);
+  const largos = await page.evaluate(() => {
+    const dias = Array.from({ length: 70 }, (_, i) => `2025-${String(1 + Math.floor(i / 28)).padStart(2, "0")}-${String(1 + (i % 28)).padStart(2, "0")}`);
+    almacen.guardar("actividad", JSON.stringify({ retos: { creados: 70, dias } }));
+    anotarActividad("retos", { creados: 1 });
+    const guardado = JSON.parse(almacen.leer("actividad")).retos.dias;
+    return [guardado.length, guardado[0] === dias[11], guardado.at(-1)];
+  });
+  expect(largos).toEqual([60, true, "2026-11-14"]);
+  expect(await page.evaluate(() => ACTIVIDAD_VACIA.retos.dias)).toEqual([]);   // la plantilla no se ensucia
 });

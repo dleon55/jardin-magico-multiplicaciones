@@ -9,6 +9,12 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-22
 
+- **Ajustes para adultos** (#141, Hito 5.4):
+  - «Menú en lista» sale de Ajustes y pasa a la pantalla «Para las personas
+    adultas», con su explicación: ya no está a mano de quien juega para
+    saltarse los lugares dormidos.
+  - «Cuándo practica» (en la vista de adultos y el informe) cuenta también
+    los días en que solo se jugó «Enséñale a Lumi», una expedición o un reto.
 - **La bienvenida presenta el mundo y el tono** (#140, Hito 5.3): la guía
   del primer día pasa de 5 a 7 pasos.
   - Un paso pregunta cómo se quiere jugar (Brote, Explora o Pro, con Explora

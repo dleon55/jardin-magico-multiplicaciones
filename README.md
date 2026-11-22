@@ -84,9 +84,9 @@ en la bienvenida o en «Mi mundo y mi personaje», y cada jardín tiene el suyo.
   propia en ese juego, nunca con otras personas. Con «Sin prisa» o en equipo
   no se mide.
 - La enseñanza es la misma en los tres: preguntas, pistas y repaso.
-- En Ajustes, **«Menú en lista»** cambia a la lista de siempre, donde nada
-  duerme: es la vista para lectores de pantalla y para las personas adultas.
-  Se recuerda en el dispositivo.
+- En la pantalla «Para las personas adultas», **«Menú en lista»** cambia a
+  la lista de siempre, donde nada duerme: es la vista para lectores de
+  pantalla y para las personas adultas. Se recuerda en el dispositivo.
 
 **Seguir.** En el menú, un botón grande con Lumi propone lo que toca, para que
 el niño no tenga que decidir:
