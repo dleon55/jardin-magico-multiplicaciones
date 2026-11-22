@@ -912,6 +912,7 @@ npm run construir   # obligatorio después de tocar index.html, js/ o juego.css
 npm test            # pruebas en Chromium, escritorio y tablet
 npm run servir      # http://localhost:4173/jardin-magico-multiplicaciones/
 npm run comprobar   # compuerta antes de fusionar: construcción al día + pruebas
+node herramientas/medir-carga.mjs   # cuánto tarda en cargar con el procesador frenado y red lenta
 ```
 
 `npm run construir` hace dos cosas:

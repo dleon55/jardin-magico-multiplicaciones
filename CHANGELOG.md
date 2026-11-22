@@ -9,6 +9,15 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-22
 
+- **Presupuesto de peso** (#144, Hito 5.7): sin cambios en el juego.
+  - Una prueba pone tope a lo que se descarga la primera vez, comprimido
+    como lo sirve el sitio: 165 KB para `index.html` y 270 KB de texto en
+    total (hoy, 135 y 224), más las fuentes y los iconos.
+  - `herramientas/medir-carga.mjs` mide la carga con el procesador frenado y
+    red lenta. En el sitio publicado, con 4× y 4G lenta: listo en 1,9 s.
+  - Se quitaron 12 capturas de pantalla sueltas (2,6 MB) que estaban en la
+    raíz del repositorio desde la bienvenida guiada y se publicaban con el
+    sitio; una prueba vigila que no vuelvan.
 - **Un mundo más vivo** (#143, Hito 5.6):
   - El sol late, la niebla deriva, las zetas flotan y las flores y los
     banderines se mecen: despacio, solo con `transform`, y nada con «Menos
