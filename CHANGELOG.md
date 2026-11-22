@@ -7,6 +7,16 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-23
+
+- **Lumi se equivoca como quien juega** (#146, Hito 6.2): en «Enséñale a
+  Lumi», Lumi repite los errores que quien juega ha tenido en las tablas (de
+  lo que aún no florece), tomados de los tres más repetidos.
+  - Al corregirla, la explicación depende de la confusión: la de al lado,
+    sumar, las cifras al revés u otra de la misma tabla.
+  - Entran en la ronda tanto como las tablas. No se dice de quién era el
+    error, y corregir a Lumi no cambia lo guardado.
+
 ## 2026-11-22
 
 - **Presupuesto de peso** (#144, Hito 5.7): sin cambios en el juego.
