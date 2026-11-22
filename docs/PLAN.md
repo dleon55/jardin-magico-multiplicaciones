@@ -3,7 +3,7 @@
 El Jardín Mágico de las Multiplicaciones: de un buen juego de tablas a uno de
 calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
-**Actualizado: 21 de noviembre de 2026.**
+**Actualizado: 22 de noviembre de 2026.**
 - El estado del día a día está en el
   [issue de estado #20](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/20).
 - El detalle de cada cambio, con su PR, está en el [CHANGELOG](../CHANGELOG.md).
@@ -145,9 +145,14 @@ gantt
     División con residuo y turnos                  :done,    h3b, 2026-11-16, 1d
     Separar arte y datos en archivos               :done,    h3s, 2026-11-17, 1d
     Más temas (múltiplos, área, decimales, %)      :done,    h3t, 2026-11-17, 2d
-    Pruebas con niños (titular)                    :         h3n, 2026-11-17, 14d
+    Tres temas más (décimos, tiempo, calendario)   :done,    h3u, 2026-11-18, 1d
+    Pruebas con niños (titular)                    :         h3n, 2026-11-23, 14d
+    section Hito 4
+    Lumi en los temas y revisión visual            :done,    h4a, 2026-11-18, 3d
+    Mundo, Lumi que crece, tonos y Enséñale a Lumi :done,    h4b, 2026-11-21, 1d
+    Expedición, retos con código y Mi progreso     :done,    h4c, 2026-11-21, 2d
     section Hito 3 con servidor (si se decide)
-    Decisión de plataforma (titular)               :crit,    h3d, 2026-11-17, 10d
+    Decisión de plataforma (titular)               :crit,    h3d, 2026-11-23, 10d
     Salón por archivos (opción B)                  :         h3b2, after h3d, 5d
     Cuentas y sincronización (opción C)            :         h3e, after h3d, 7d
     Aviso de privacidad y métricas                 :         h3g, after h3e, 5d
@@ -155,8 +160,8 @@ gantt
 
 | Semana | Claude | Titular |
 |--------|--------|---------|
-| 16 al 22 de noviembre | **Hecho:** separar en archivos, los cuatro temas que faltaban y el guion de la voz | Probar lo nuevo en el teléfono; leer el documento de plataforma |
-| 23 al 29 de noviembre | Lo que pidan las decisiones o las pruebas del titular | **Decidir la plataforma**; grabar la voz; empezar pruebas con niños |
+| 16 al 22 de noviembre | **Hecho:** separar en archivos, los temas que faltaban, el guion de la voz y el Hito 4 entero (la presentación nueva) | Probar lo nuevo en el teléfono; leer el documento de plataforma |
+| 23 al 29 de noviembre | Lo que pidan las decisiones o las pruebas del titular | **Decidir la plataforma**; grabar la voz; empezar pruebas con niños, con la presentación nueva |
 | 30 de noviembre al 13 de diciembre | Lo que salga de las pruebas con niños; salón por archivos si se elige B | Terminar las pruebas con niños |
 | Desde el 14 de diciembre | Si se elige C: cuentas, salón en vivo, privacidad y métricas | Revisión legal del aviso de privacidad |
 
