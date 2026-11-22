@@ -39,9 +39,9 @@ test("al empezar: el mundo en lugar de la lista, con el huerto despierto y lo de
   await expect(lugar(page, "mercado")).toContainText("Despierta con 7 tablas más");
   // El foco, en el encabezado del mundo (no en el de la lista, que no se ve).
   await expect(page.locator("#mundo-titulo")).toBeFocused();
-  // «Seguir», la meta y el progreso siguen donde estaban.
+  // «Seguir» y la meta siguen donde estaban; el progreso, en una sola tarjeta (Hito 4.7).
   await expect(page.locator("#btn-seguir")).toBeVisible();
-  await expect(page.locator("#btn-camino")).toBeVisible();
+  await expect(page.locator("#btn-progreso")).toBeVisible();
 });
 
 test("un lugar dormido no se abre: dice qué tablas faltan, entero", async ({ page }) => {
