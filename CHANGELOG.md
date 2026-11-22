@@ -9,6 +9,14 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-22
 
+- **La bienvenida presenta el mundo y el tono** (#140, Hito 5.3): la guía
+  del primer día pasa de 5 a 7 pasos.
+  - Un paso pregunta cómo se quiere jugar (Brote, Explora o Pro, con Explora
+    marcado) y lo elegido queda en el jardín.
+  - El último paso muestra el mundo en pequeño, con el huerto despierto y el
+    bosque dormido, antes de ir a la primera tabla.
+  - Sigue cabiendo sin desplazarse en teléfono vertical y acostado, y se
+    puede saltar.
 - **Brote sin leer** (#139, Hito 5.2): el tono Brote, para quien aún no lee.
   - Dice en voz lo que toca hoy (al entrar y al volver al inicio) y el
     resumen de «Mi progreso».

@@ -134,9 +134,11 @@ Todo lo demás sigue abajo, en «Juego libre: elige tú».
 2. le pide su nombre (si quiere);
 3. le pide que elija mundo;
 4. le pide que elija personaje;
-5. le enseña a responder con 2 × 3, dibujado como 2 filas de 3 puntos (hay
+5. le pregunta cómo quiere jugar (Brote, Explora o Pro);
+6. le enseña a responder con 2 × 3, dibujado como 2 filas de 3 puntos (hay
    que dar con la respuesta, y si falla, Lumi lo anima);
-6. lo lleva a descubrir la tabla del 2, de donde a la primera pregunta hay un
+7. le muestra su mundo en pequeño: el huerto despierto y el bosque dormido;
+8. lo lleva a descubrir la tabla del 2, de donde a la primera pregunta hay un
    toque.
 
 Lumi dice cada paso en voz alta. La guía se puede saltar, y en un dispositivo
