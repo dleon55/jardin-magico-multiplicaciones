@@ -237,6 +237,15 @@
                         <div class="elegir-personaje grid grid-cols-5 sm:grid-cols-7 gap-2" data-nombre="guia-personaje"></div>
                     </fieldset>
                 </section>
+                <section data-paso="tono" class="hidden">
+                    <fieldset class="text-left">
+                        <legend class="sr-only">Elige cómo quieres jugar</legend>
+                        <div class="elegir-tono grid grid-cols-3 gap-2" data-nombre="guia-tono"></div>
+                    </fieldset>
+                </section>
+                <section data-paso="lugares" class="hidden">
+                    <div id="guia-lugares" class="guia-lugares mx-auto" role="img" aria-label="Tu mundo: el Huerto de las tablas, despierto, y el Bosque de dividir, dormido bajo la niebla"></div>
+                </section>
                 <section data-paso="practica" class="hidden space-y-3">
                     <div class="puntos-practica mx-auto" role="img" aria-label="2 filas de 3 puntos">
                         <span></span><span></span><span></span><span></span><span></span><span></span>
@@ -2927,11 +2936,12 @@
         //
         // La primera vez, el niño caía en un formulario y luego en un menú
         // lleno de opciones. Ahora Lumi lo guía, una cosa por pantalla: se
-        // presenta, pide el nombre (si quiere), el mundo y el personaje, le
-        // enseña a responder con 2 × 3 y lo lleva a descubrir su primera tabla.
+        // presenta, pide el nombre (si quiere), el mundo, el personaje y el tono,
+        // le enseña a responder con 2 × 3, le muestra cómo es su mundo (los
+        // lugares que despiertan) y lo lleva a descubrir su primera tabla.
         // Solo sale en un dispositivo sin jardines que nunca la vio; se puede
         // saltar, y saltarla también cuenta como vista.
-        const PASOS_GUIA = ["hola", "nombre", "mundo", "personaje", "practica"];
+        const PASOS_GUIA = ["hola", "nombre", "mundo", "personaje", "tono", "practica", "lugares"];
         const PRIMERA_TABLA = 2;
         let pasoGuia = 0;
         let guiaAcerto = false;
@@ -2945,7 +2955,11 @@
             guiaAcerto = false;
             document.getElementById("guia-nombre").value = "";
             const raiz = document.getElementById("screen-guia");
-            pintarElecciones(raiz, MUNDO_INICIAL, PERSONAJE_INICIAL);
+            pintarElecciones(raiz, MUNDO_INICIAL, PERSONAJE_INICIAL, TONO_INICIAL);
+            // El mundo en pequeño: el primer lugar despierto y el siguiente dormido.
+            const lugares = document.getElementById("guia-lugares");
+            lugares.innerHTML = svgMundo(new Set(LUGARES.slice(1).map((l) => l.id)), 0);
+            lugares.firstElementChild.setAttribute("viewBox", "0 95 370 440");
             raiz.querySelectorAll(".btn-guia-op").forEach((b) => {
                 b.disabled = false;
                 b.className = b.className.replace(/ ?(border-green-600|bg-green-100|border-red-600|bg-red-100)/g, "");
@@ -2964,7 +2978,9 @@
                 nombre: { titulo: "¿Cómo te llamas?", texto: "Así sabré de quién es el jardín. Si no quieres, sigue sin escribirlo.", boton: "Seguir", cara: "contenta" },
                 mundo: { titulo: `${nombre ? `${nombre}, elige` : "Elige"} tu mundo`, texto: "Es donde crecerá tu jardín. Puedes cambiarlo cuando quieras.", boton: "Seguir", cara: "sorprendida" },
                 personaje: { titulo: "Elige tu personaje", texto: "Te acompañará en el jardín.", boton: "Seguir", cara: "contenta" },
-                practica: { titulo: "Vamos a practicar", texto: `${tu}2 × 3 son 2 filas de 3 puntos. ¿Cuántos puntos hay? Toca la respuesta.`, boton: "¡A mi jardín!", cara: "pensando" },
+                tono: { titulo: "¿Cómo quieres jugar?", texto: "Elige el que más te guste. Puedes cambiarlo cuando quieras.", boton: "Seguir", cara: "contenta" },
+                practica: { titulo: "Vamos a practicar", texto: `${tu}2 × 3 son 2 filas de 3 puntos. ¿Cuántos puntos hay? Toca la respuesta.`, boton: "Seguir", cara: "pensando" },
+                lugares: { titulo: "Así es tu mundo", texto: "Cada lugar tiene juegos. Los que duermen despiertan con las tablas que aprendas.", boton: "¡A mi primera tabla!", cara: "sorprendida" },
             }[paso];
         }
 
@@ -3039,7 +3055,7 @@
         function terminarGuia() {
             const raiz = document.getElementById("screen-guia");
             marcarGuiaVista();
-            crearJugador(document.getElementById("guia-nombre").value, elegidoEn(raiz, "guia-mundo"), elegidoEn(raiz, "guia-personaje"));
+            crearJugador(document.getElementById("guia-nombre").value, elegidoEn(raiz, "guia-mundo"), elegidoEn(raiz, "guia-personaje"), elegidoEn(raiz, "guia-tono"));
             entrarAlJardin();
             elegirTabla(PRIMERA_TABLA);
         }

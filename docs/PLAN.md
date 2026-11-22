@@ -16,10 +16,10 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 2 · Un solo camino y mejor enseñanza | [#46](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/46) | **7 de 7** | **Cerrado** el 16 de noviembre |
 | 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | **Todo lo que no necesita servidor, hecho** | Los cinco temas nuevos (#71 cerrado), turnos en un aparato, guía de pruebas y opciones de plataforma. Lo demás espera las decisiones del titular (#66, #72) |
 | 4 · El mundo vivo (nueva presentación) | [#117](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/117) | **7 de 7** | **Completo** el 22 de noviembre: el mundo como inicio (#118), Lumi que crece (#120), los tres tonos (#122), «Enséñale a Lumi» (#124), la Expedición de hoy (#126), los retos con código (#128) y el progreso en un solo lugar (#130) |
-| 5 · Pulido de la presentación nueva | [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/137) | **4 de 9** | **En curso**, sin dependencias externas: inicio simple (#133), lo nuevo para adultos (#135), la compuerta más rápida (#138) y Brote sin leer (#139), hechos. Sigue la bienvenida |
+| 5 · Pulido de la presentación nueva | [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/137) | **5 de 9** | **En curso**, sin dependencias externas. Hecho: inicio simple (#133), lo nuevo para adultos (#135), la compuerta más rápida (#138), Brote sin leer (#139) y la bienvenida con el mundo y el tono (#140). Sigue: ajustes para adultos |
 
 **Cifras al día:**
-- 54 PRs fusionados desde que empezó el plan (#73 a #139), cada uno verificado en el sitio publicado.
+- 55 PRs fusionados desde que empezó el plan (#73 a #140), cada uno verificado en el sitio publicado.
 - La compuerta de calidad (`npm run comprobar`) tiene **1586 pruebas en verde**, en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
 - El juego, en varios archivos desde #96: `index.html` pesa 453 KB, más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`. Sin dependencias externas, y funciona sin internet.
@@ -33,7 +33,7 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | F1.1 Guía de estilo | #48 | #73 | [`ESTILO.md`](ESTILO.md): colores como variables, reglas medibles del dibujo, movimiento, iconos |
 | F1.2 Mascota | #52 | #74 | **Lumi**, con 6 caras, en la bienvenida, la partida y la victoria |
 | F1.8 Celebraciones | #49 | #75 | Racha con globo de Lumi, florecer con brillo y bono, victoria con ritmo, confeti propio |
-| F1.10 Bienvenida guiada | #58 | #76 | 5 pasos con Lumi hasta la primera tabla (6 toques); se puede saltar |
+| F1.10 Bienvenida guiada | #58 | #76 | Pasos con Lumi hasta la primera tabla (5 al principio; 7 desde #140, con el tono y el mundo); se puede saltar |
 | Lumi en los temas nuevos | #45 | #111 | En los 8 temas nuevos, Lumi lleva un objeto del tema, lo presenta con una frase y da un truco al segundo fallo seguido |
 | F1.3 Héroes | #53 | #77 | 8 héroes SVG con tres poses (quieto, lanzando, golpeado) |
 | F1.4 Enemigos y jefes | #54 | #77 | 6 enemigos y sus jefes con corona; «pof» al vencer |
@@ -110,8 +110,8 @@ Seguimiento en [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/
 | Lo nuevo, para adultos | **Hecho** (#135) | Que quien acompaña vea lo nuevo | Clave `actividad` por jardín; líneas en la vista de adultos y el informe | El informe sigue en una hoja |
 | 5.1 Compuerta más rápida | **Hecho** (#138) | Acortar cada entrega | Un proceso por núcleo en `playwright.config.mjs` (`PROCESOS=2` vuelve a lo de antes) | Medido en 4 núcleos: de 28 a 23 minutos. El tiempo está repartido en 1 580 pruebas de unos 2 segundos, sin un punto caliente; para bajar más habría que dejar de repetir en tableta las pruebas de pura lógica |
 | 5.2 Brote sin leer | **Hecho** (#139) | Que 6 años jueguen sin leer | En tono Brote: cada pantalla nueva se dice en voz al abrirse; partidas y rondas más cortas; menos botones bajo el mundo | Una prueba recorre el inicio, «Enséñale a Lumi», la Expedición y «Mi progreso» en Brote y comprueba lo dicho y lo corto |
-| 5.3 La bienvenida presenta el mundo y el tono | Sigue | Que el primer día se entienda el mundo | Un paso de la guía pregunta el tono (tres fichas) y otro muestra el mundo con un lugar despierto y uno dormido | La guía sigue cabiendo en teléfono vertical y acostado, y se puede saltar |
-| 5.4 Ajustes para adultos | Pendiente | Que el atajo del menú no esté a mano de quien juega, y que «Cuándo practica» sea completo | «Menú en lista» pasa a la pantalla de adultos; `actividad` guarda los días y «Cuándo practica» los cuenta | Las pruebas que usan la lista siguen pasando; un día con solo un reto cuenta como practicado |
+| 5.3 La bienvenida presenta el mundo y el tono | **Hecho** (#140) | Que el primer día se entienda el mundo | Un paso de la guía pregunta el tono (tres fichas) y otro muestra el mundo con un lugar despierto y uno dormido | La guía sigue cabiendo en teléfono vertical y acostado, y se puede saltar |
+| 5.4 Ajustes para adultos | Sigue | Que el atajo del menú no esté a mano de quien juega, y que «Cuándo practica» sea completo | «Menú en lista» pasa a la pantalla de adultos; `actividad` guarda los días y «Cuándo practica» los cuenta | Las pruebas que usan la lista siguen pasando; un día con solo un reto cuenta como practicado |
 | 5.5 Retos para el salón | Pendiente | Mandar un reto sin teclear | Código QR dibujado por el propio juego (sin bibliotecas) con el enlace del reto, para proyectar o imprimir | Una prueba decodifica el QR dibujado y obtiene el enlace |
 | 5.6 Un mundo más vivo | Pendiente | Que el mundo no sea un dibujo fijo | Animaciones pequeñas solo con `transform` (apagadas con «Menos movimiento»), un sonido al entrar a un lugar y un detalle que cambia con la racha | Accesibilidad y «Menos movimiento» en verde; sin trabajo en reposo |
 | 5.7 Presupuesto de peso | Pendiente | Que el juego no se vuelva pesado | Medir la carga con el procesador frenado y fijar topes de tamaño por archivo en una prueba | La prueba falla si un archivo pasa su tope |

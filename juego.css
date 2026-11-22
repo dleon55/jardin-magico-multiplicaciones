@@ -778,3 +778,8 @@ html.calma *, html.calma *::before, html.calma *::after {
 
 /* Brote sin leer (Hito 5.2): los retos con código piden leer y escribir. */
 body[data-tono="brote"] #btn-reto { display: none; }
+
+/* La bienvenida presenta el mundo (Hito 5.3): el mapa en pequeño. */
+.guia-lugares { width: min(100%, 15rem); border-radius: 1rem; overflow: hidden; border: 3px solid var(--contorno); background: var(--mundo-cielo); }
+.guia-lugares > svg { width: 100%; height: 100%; display: block; }
+@media (max-height: 700px) { .guia-lugares { width: min(100%, 9rem); } }
