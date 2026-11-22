@@ -9,6 +9,10 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-23
 
+- **Brote sin voz** (#148, Hito 6.4): Brote se apoya en la voz; si está
+  apagada o el aparato no tiene voz en español, una flecha señala el botón
+  de la expedición. Sale también si se sabe tarde que no hay voz, y se queda
+  quieta con «Menos movimiento». Explora y Pro no cambian.
 - **Candado sencillo en la pantalla de adultos** (#147, Hito 6.3): para
   entrar a «Para las personas adultas» hay que mantener presionado un
   momento (1,5 s); un toque corto solo lo explica.

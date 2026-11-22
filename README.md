@@ -82,7 +82,7 @@ en la bienvenida o en «Mi mundo y mi personaje», y cada jardín tiene el suyo.
 
 | Tono | Para quién (orientación) | Qué cambia |
 |------|--------------------------|------------|
-| Brote | 6 a 8 años | Rótulos de una palabra, más grandes y sin letra chica; Lumi más grande. Dice en voz lo que toca hoy y el progreso; partidas de 5 aciertos y rondas de Lumi de 3 dudas; sin retos con código |
+| Brote | 6 a 8 años | Rótulos de una palabra, más grandes y sin letra chica; Lumi más grande. Dice en voz lo que toca hoy y el progreso; partidas de 5 aciertos y rondas de Lumi de 3 dudas; sin retos con código. Sin voz en español, una flecha señala el botón que toca |
 | Explora | 8 a 10 años | El de siempre; es el que queda si no se elige |
 | Pro | 11 años o más | El mundo de noche, letra sobria, «Correcto.» sin emojis, precisión y tiempos |
 

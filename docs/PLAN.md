@@ -17,10 +17,10 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 3 · Plataforma | [#47](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/47) | **Todo lo que no necesita servidor, hecho** | Los cinco temas nuevos (#71 cerrado), turnos en un aparato, guía de pruebas y opciones de plataforma. Lo demás espera las decisiones del titular (#66, #72) |
 | 4 · El mundo vivo (nueva presentación) | [#117](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/117) | **7 de 7** | **Completo** el 22 de noviembre: el mundo como inicio (#118), Lumi que crece (#120), los tres tonos (#122), «Enséñale a Lumi» (#124), la Expedición de hoy (#126), los retos con código (#128) y el progreso en un solo lugar (#130) |
 | 5 · Pulido de la presentación nueva | [#137](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/137) | **9 de 9** | **Completo** el 22 de noviembre, sin dependencias externas: inicio simple (#133), lo nuevo para adultos (#135), la compuerta más rápida (#138), Brote sin leer (#139), la bienvenida con el mundo y el tono (#140), los ajustes para adultos (#141), el QR de los retos (#142), un mundo más vivo (#143) y el presupuesto de peso (#144) |
-| 6 · Enseñanza a la medida y uso real | [#145](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/145) | **3 de 8** | **En curso**, sin dependencias externas |
+| 6 · Enseñanza a la medida y uso real | [#145](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/145) | **4 de 8** | **En curso**, sin dependencias externas |
 
 **Cifras al día:**
-- 61 PRs fusionados desde que empezó el plan (#73 a #147), cada uno verificado en el sitio publicado.
+- 62 PRs fusionados desde que empezó el plan (#73 a #148), cada uno verificado en el sitio publicado.
 - La compuerta de calidad (`npm run comprobar`) tiene **1632 pruebas en verde** (unos 24 minutos con 4 procesos), en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
 - El juego, en varios archivos desde #96: `index.html` pesa 544 KB (135 KB comprimido, como lo sirve el sitio), más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`: 224 KB de texto comprimido en total, con tope de 270 en una prueba. Sin dependencias externas, y funciona sin internet.
@@ -132,8 +132,8 @@ los hitos 4 y 5 se ha probado con niñas y niños. Seguimiento en
 | 6.1 Compuerta más corta | **Descartada con datos** | Acortar cada entrega | Se midió: las pruebas de pura lógica son unos 300 s de los 2 743 que corre la tableta (el 11 %), así que quitarlas de la tableta ahorraría poco más de un minuto de 24 | No compensa el riesgo de perder cobertura; la compuerta se queda como está |
 | 6.2 Lumi se equivoca como quien juega | **Hecho** (#146) | Practicar justo lo que más falta | «Enséñale a Lumi» toma los errores guardados en las tablas (los tres más repetidos, de lo que aún no florece) | Lumi dice ese error y la explicación depende de la confusión |
 | 6.3 Candado sencillo para adultos | **Hecho** (#147) | Que la pantalla de adultos no sea un enlace cualquiera | Mantener presionado para entrar, con alternativa de teclado | Un toque corto no entra; mantener presionado sí |
-| 6.4 Brote sin voz en español | Sigue | Que Brote no quede mudo | Si no hay voz, Lumi señala el botón que toca | En un aparato sin voz en español se ve la señal |
-| 6.5 Hoja para el salón | Pendiente | Jugar un reto sin aparato | Hoja imprimible con el QR, el código y las diez preguntas | Cabe en una hoja carta |
+| 6.4 Brote sin voz en español | **Hecho** (#148) | Que Brote no quede mudo | Si no hay voz, una flecha señala el botón que toca | En un aparato sin voz en español se ve la señal |
+| 6.5 Hoja para el salón | Sigue | Jugar un reto sin aparato | Hoja imprimible con el QR, el código y las diez preguntas | Cabe en una hoja carta |
 | 6.6 Cuando ya se sabe todo | Pendiente | Mantener lo aprendido | Un repaso semanal corto con algo que cuidar en el mundo | Con las ocho tablas sabidas, el inicio propone el repaso |
 | 6.7 Antes de multiplicar, para Brote | Pendiente | Contenido propio para 6 años | Contar de 2 en 2, grupos iguales y dobles | Un lugar o juego nuevo con sus pruebas |
 | 6.8 Cargar tarde lo que casi no se usa | Pendiente | Aligerar la primera visita | Medir qué pesa cada parte y decidir con el dato | La primera visita baja menos, o se descarta con datos |
