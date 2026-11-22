@@ -9,6 +9,12 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-23
 
+- **Candado sencillo en la pantalla de adultos** (#147, Hito 6.3): para
+  entrar a «Para las personas adultas» hay que mantener presionado un
+  momento (1,5 s); un toque corto solo lo explica.
+  - Con el teclado o un lector de pantalla se activa dos veces.
+  - Se puede quitar desde dentro («Pedir mantener presionado») y se recuerda
+    en el dispositivo.
 - **Lumi se equivoca como quien juega** (#146, Hito 6.2): en «Enséñale a
   Lumi», Lumi repite los errores que quien juega ha tenido en las tablas (de
   lo que aún no florece), tomados de los tres más repetidos.

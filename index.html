@@ -306,7 +306,7 @@
                     ¡Comenzar a jugar! <span aria-hidden="true">🌱</span>
                 </button>
             </div>
-            <button type="button" onclick="mostrarAdultos()" class="enlace-tactil text-sm font-bold text-gray-700 underline hover:text-green-800">
+            <button type="button" id="btn-adultos-bienvenida" class="entrada-adultos enlace-tactil text-sm font-bold text-gray-700 underline hover:text-green-800">
                 <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-adultos"/></svg> Para las personas adultas
             </button>
         </div>
@@ -558,7 +558,7 @@
             </div>
             <!-- Para las personas adultas: aparte, al final, como en la bienvenida. -->
             <p class="text-center pt-2 border-t border-dashed border-gray-200">
-                <button type="button" id="btn-adultos-menu" onclick="mostrarAdultos()" class="enlace-tactil mt-1 text-sm font-bold text-gray-700 underline hover:text-green-800"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-adultos"/></svg> Para las personas adultas</button>
+                <button type="button" id="btn-adultos-menu" class="entrada-adultos enlace-tactil mt-1 text-sm font-bold text-gray-700 underline hover:text-green-800"><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-adultos"/></svg> Para las personas adultas</button>
             </p>
         </div>
 
@@ -1064,6 +1064,11 @@
                 <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border-2 border-gray-300 hover:bg-sky-50 text-gray-900 font-bold" data-ajuste="lista" aria-pressed="false" aria-describedby="inicio-adultos-detalle">
                     <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-elegir"/></svg> Menú en lista</span><span class="estado font-bold">No</span>
                 </button>
+                <!-- El candado de esta pantalla (Hito 6.3): se puede quitar desde dentro. -->
+                <p id="candado-detalle" class="text-sm text-gray-800">Para entrar a esta pantalla hay que mantener presionado «Para las personas adultas» un momento. Con el teclado o un lector de pantalla, se activa dos veces.</p>
+                <button type="button" class="ajuste w-full flex justify-between items-center px-3 py-2 min-h-11 rounded-xl border-2 border-gray-300 hover:bg-sky-50 text-gray-900 font-bold" data-ajuste="candado" aria-pressed="true" aria-describedby="candado-detalle">
+                    <span><svg class="icono" aria-hidden="true" focusable="false"><use href="#i-candado"/></svg> Pedir mantener presionado</span><span class="estado font-bold">Sí</span>
+                </button>
             </section>
 
             <!-- Todo vive en el navegador de este dispositivo: Safari lo borra
@@ -1543,7 +1548,7 @@
         // al sistema operativo (y a sus cambios); true o false, lo que se eligió
         // aquí. Si se guardara el valor derivado del sistema, cambiar la voz
         // congelaría "calma" para siempre.
-        const ajustes = { voz: true, efectos: true, musica: true, volumenMusica: 5, velocidad: "normal", calma: null, lista: false };
+        const ajustes = { voz: true, efectos: true, musica: true, volumenMusica: 5, velocidad: "normal", calma: null, lista: false, candado: true };
         // Los juegos de un lugar del mundo vivo, si están abiertos (ver «EL MUNDO VIVO»).
         let lugarAbierto = null;
         let qrAbierto = false;   // el QR de un reto, en grande
@@ -2551,6 +2556,65 @@
         // --- PARA LAS PERSONAS ADULTAS ---
         let adultosDesde = "screen-welcome";
         const DIAS_VISTOS = 14;
+
+        // --- EL CANDADO DE LA PANTALLA DE ADULTOS (Hito 6.3) ---
+        //
+        // Ahí están la copia de seguridad, el informe y «Menú en lista»: no debe
+        // ser un enlace cualquiera. Para entrar hay que mantener presionado un
+        // momento; un toque corto solo lo explica. Con el teclado o un lector
+        // de pantalla no se puede «mantener», así que se activa dos veces. Se
+        // puede quitar desde dentro (ajuste «candado»).
+        const ESPERA_ADULTOS_MS = 1500;
+        let esperaAdultos = null;   // el reloj de quien está presionando
+
+        function avisoAdultos(boton, texto) {
+            let aviso = boton.nextElementSibling;
+            if (!aviso?.classList.contains("aviso-adultos")) {
+                aviso = document.createElement("span");
+                aviso.className = "aviso-adultos block min-h-5 text-sm font-bold text-indigo-900";
+                aviso.setAttribute("role", "status");
+                boton.after(aviso);
+            }
+            aviso.textContent = texto;
+        }
+
+        function prepararEntradaAdultos(boton) {
+            const soltar = (decir) => {
+                if (!esperaAdultos) return;
+                clearTimeout(esperaAdultos);
+                esperaAdultos = null;
+                boton.classList.remove("presionando");
+                if (decir) avisoAdultos(boton, "Para entrar, mantén presionado un momento.");
+            };
+            boton.addEventListener("pointerdown", () => {
+                if (!ajustes.candado) return;
+                soltar(false);
+                boton.classList.add("presionando");
+                avisoAdultos(boton, "Sigue presionando…");
+                esperaAdultos = setTimeout(() => {
+                    esperaAdultos = null;
+                    boton.classList.remove("presionando");
+                    avisoAdultos(boton, "");
+                    mostrarAdultos();
+                }, ESPERA_ADULTOS_MS);
+            });
+            for (const evento of ["pointerup", "pointerleave", "pointercancel"]) boton.addEventListener(evento, () => soltar(true));
+            // Mantener presionado en un teléfono abre el menú del navegador: aquí no.
+            boton.addEventListener("contextmenu", (e) => { if (ajustes.candado) e.preventDefault(); });
+            boton.addEventListener("click", (e) => {
+                if (!ajustes.candado) { mostrarAdultos(); return; }
+                if (e.detail !== 0) return;   // con el dedo o el ratón decide el tiempo presionado
+                if (boton.dataset.confirmar === "1") {
+                    delete boton.dataset.confirmar;
+                    avisoAdultos(boton, "");
+                    mostrarAdultos();
+                } else {
+                    boton.dataset.confirmar = "1";
+                    avisoAdultos(boton, "Esta parte es para personas adultas. Actívalo otra vez para entrar.");
+                }
+            });
+        }
+        document.querySelectorAll(".entrada-adultos").forEach(prepararEntradaAdultos);
 
         function mostrarAdultos() {
             cancelarEspera();

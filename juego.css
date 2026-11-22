@@ -801,3 +801,7 @@ body[data-tono="brote"] #btn-reto { display: none; }
 /* El QR de un reto, en grande (Hito 5.5): tan grande como quepa sin desplazarse
    (el título, el texto y el código ocupan unos 13rem), siempre cuadrado. */
 .qr-dibujo { width: min(100%, max(9.5rem, calc(100vh - 13.5rem))); }
+
+/* El candado de adultos (Hito 6.3): mientras se presiona, se nota; y el teléfono no ofrece copiar ni menú. */
+.entrada-adultos { touch-action: none; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.entrada-adultos.presionando { background: #e0e7ff; border-radius: 0.5rem; }
