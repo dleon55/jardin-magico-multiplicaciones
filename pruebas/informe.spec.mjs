@@ -102,10 +102,11 @@ test("dice cuándo practica, la meta, las fracciones, los retos y la Aventura", 
   await jugarMucho(page);
   await abrirInforme(page);
   const informe = page.locator("#informe");
-  await expect(informe).toContainText("Practicó 3 de los últimos 14 días");
+  // Tres días con tablas y uno más (hace 3 días) con solo una expedición.
+  await expect(informe).toContainText("Practicó 4 de los últimos 14 días");
   await expect(informe).toContainText("Cumplió la meta del día (acertar 10) 3 veces.");
   await expect(informe.locator(".informe-dias span")).toHaveCount(14);
-  await expect(informe.locator(".informe-dias .si")).toHaveCount(3);
+  await expect(informe.locator(".informe-dias .si")).toHaveCount(4);
   // Una línea por tema (las cinco clases de cada uno, 6 de 10 cada una).
   await expect(informe).toContainText("De sus últimas respuestas en cada tema:");
   await expect(informe).toContainText("Fracciones: 30 de 50 bien.");
