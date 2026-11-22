@@ -18,8 +18,8 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 4 · El mundo vivo (nueva presentación) | [#117](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/117) | **7 de 7** | **Completo** el 22 de noviembre: el mundo como inicio (#118), Lumi que crece (#120), los tres tonos (#122), «Enséñale a Lumi» (#124), la Expedición de hoy (#126), los retos con código (#128) y el progreso en un solo lugar (#130) |
 
 **Cifras al día:**
-- 50 PRs fusionados desde que empezó el plan (#73 a #130), cada uno verificado en el sitio publicado.
-- La compuerta de calidad (`npm run comprobar`) tiene **1530 pruebas en verde**, en escritorio y tableta.
+- 51 PRs fusionados desde que empezó el plan (#73 a #133), cada uno verificado en el sitio publicado.
+- La compuerta de calidad (`npm run comprobar`) tiene **1550 pruebas en verde**, en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
 - El juego, en varios archivos desde #96: `index.html` pesa 453 KB, más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`. Sin dependencias externas, y funciona sin internet.
 
@@ -96,6 +96,7 @@ lo elige quien juega.
 | 4.5 Expedición de hoy | **Hecho** (#126) | Dos paradas (tablas y «Enséñale a Lumi») y un banderín por día en el mundo |
 | 4.6 Retos con código | **Hecho** (#128) | Diez multiplicaciones en un código de seis signos o un enlace, sin cuentas, servidor ni nombres |
 | 4.7 El progreso en un solo lugar | **Hecho** (#130) | «Mi progreso»: camino, jardín, mapa y vivero resumidos en una pantalla; cada tarjeta abre el detalle |
+| Inicio simple (después del hito) | **Hecho** (#133) | Con el mundo, la Expedición ocupa el lugar de «Seguir», la meta va compacta tras el mundo y el encabezado pierde el lema |
 
 ## Pendientes
 
