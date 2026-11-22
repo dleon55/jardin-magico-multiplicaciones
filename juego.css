@@ -812,3 +812,12 @@ body[data-tono="brote"] #btn-reto { display: none; }
 .senal-brote { display: flex; justify-content: center; color: var(--contorno); }
 .senal-brote.hidden { display: none; }
 .senal-brote svg { width: 2.5rem; height: 2.5rem; }
+
+/* La hoja de un reto (Hito 6.5): se imprime con el mismo mecanismo que el informe. */
+.informe .hoja-entrada { display: flex; gap: 1.2rem; align-items: center; margin-top: 0.6rem; }
+.informe .hoja-qr { flex: none; width: 5.5cm; }
+.informe .hoja-qr svg { width: 100%; height: auto; display: block; }
+.informe .hoja-codigo { font-family: ui-monospace, 'Courier New', monospace; font-size: 22pt; font-weight: 800; letter-spacing: 0.15em; }
+.informe .hoja-enlace { font-size: 8.5pt; color: #4b5563; word-break: break-all; }
+.informe .hoja-preguntas { columns: 2; column-gap: 2rem; margin: 0.5rem 0 0; padding-left: 1.6rem; font-size: 16pt; line-height: 2.3; }
+.informe .hoja-preguntas li { break-inside: avoid; }

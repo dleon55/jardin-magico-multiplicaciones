@@ -1161,6 +1161,8 @@
                     <p id="reto-copiado" role="status" aria-live="polite" class="min-h-6 text-sm font-bold text-indigo-900"></p>
                     <!-- Para el salón (Hito 5.5): el enlace como código QR, en grande, para proyectarlo. -->
                     <button type="button" id="btn-reto-qr" onclick="abrirQRDeReto()" class="w-full bubble-font bg-white hover:bg-indigo-50 border-4 border-indigo-200 text-gray-900 text-lg px-3 py-3 rounded-2xl shadow-md min-h-11">Mostrar código QR</button>
+                    <!-- Hoja para el salón (Hito 6.5): el QR, el código y las diez preguntas, para quien no tiene aparato. -->
+                    <button type="button" id="btn-reto-hoja" onclick="imprimirHojaDeReto()" class="w-full bubble-font bg-white hover:bg-indigo-50 border-4 border-indigo-200 text-gray-900 text-lg px-3 py-3 rounded-2xl shadow-md min-h-11">Imprimir la hoja</button>
                 </section>
                 <div class="grid grid-cols-2 gap-3">
                     <button type="button" id="btn-reto-otra" onclick="repetirReto()" class="bubble-font bg-white hover:bg-sky-50 border-4 border-sky-200 text-gray-900 text-lg px-3 py-3 rounded-2xl shadow-md min-h-11">Jugar otra vez</button>
@@ -6282,6 +6284,46 @@
             qrAbierto = false;
             document.getElementById("qr-fondo").classList.add("hidden");
             if (devolverFoco) document.getElementById("btn-reto-qr").focus({ preventScroll: true });
+        }
+
+        /**
+         * La hoja del reto, para imprimir: el QR y el código para quien tiene
+         * aparato, y las diez preguntas con su renglón para quien no. Sin
+         * respuestas, y sin nombres ni datos de quien lo creó.
+         */
+        function armarHojaDeReto(r) {
+            const el = (tag, texto, clase) => {
+                const e = document.createElement(tag);
+                if (clase) e.className = clase;
+                if (texto !== undefined) e.textContent = texto;
+                return e;
+            };
+            const cabecera = el("header");
+            cabecera.append(el("h1", "Reto del Jardín Mágico"),
+                el("p", `Diez multiplicaciones de ${tablasDeReto(r.tablas)}. La marca a vencer: ${r.bien} de ${RETO_PREGUNTAS}.`, "informe-quien"));
+            const entrada = el("section", undefined, "hoja-entrada");
+            const qr = el("div", undefined, "hoja-qr");
+            qr.innerHTML = svgQR(enlaceDeReto(r.codigo));
+            const como = el("div");
+            como.append(el("h2", "Con un teléfono o una tableta"),
+                el("p", "Apunta la cámara al código QR, o abre el juego, entra a «Retos con código» y escribe:"),
+                el("p", codigoALaVista(r.codigo), "hoja-codigo"),
+                el("p", enlaceDeReto(r.codigo), "hoja-enlace"));
+            entrada.append(qr, como);
+            const papel = el("section");
+            const lista = el("ol", undefined, "hoja-preguntas");
+            for (const pregunta of r.preguntas) lista.append(el("li", `${pregunta.texto} = ______`));
+            papel.append(el("h2", "En papel"), el("p", "Nombre: ______________________________    Aciertos: ____ de 10"), lista);
+            return [cabecera, entrada, papel,
+                el("footer", "Son las mismas diez preguntas que salen en el juego con este código. La hoja no lleva las respuestas ni datos de quien creó el reto.")];
+        }
+
+        function imprimirHojaDeReto() {
+            const r = retoEnJuego;
+            if (r?.paso !== "fin") return;
+            document.getElementById("informe").replaceChildren(...armarHojaDeReto(r));
+            document.body.classList.add("imprimiendo");
+            window.print();
         }
 
         /** Las mismas diez, contra la misma marca. */
