@@ -9,6 +9,13 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-22
 
+- **Un mundo más vivo** (#143, Hito 5.6):
+  - El sol late, la niebla deriva, las zetas flotan y las flores y los
+    banderines se mecen: despacio, solo con `transform`, y nada con «Menos
+    movimiento».
+  - Abrir un lugar tiene su sonido.
+  - Con tres días seguidos cumpliendo la meta, sale un arcoíris en el cielo
+    del mundo; al romperse la racha, se va.
 - **Retos para el salón: código QR** (#142, Hito 5.5): al terminar un reto,
   «Mostrar código QR» abre en grande el QR de su enlace, con las tablas, la
   marca a vencer y el código escrito, para proyectarlo y abrirlo con la

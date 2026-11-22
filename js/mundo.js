@@ -37,6 +37,7 @@ const FLORES_MUNDO = [[190, 150], [230, 215], [285, 265], [300, 330], [180, 300]
 // Dónde se plantan los banderines de la Expedición de hoy (uno por día
 // completado): a un lado del sendero, lejos de los lugares y de las flores.
 const BANDERINES_MUNDO = [[325, 150], [335, 235], [28, 395], [60, 445], [345, 725], [345, 775], [40, 820], [50, 895], [330, 1040], [335, 1160]];
+const RACHA_ARCOIRIS = 3;   // días seguidos con la meta para que salga el arcoíris
 const COLORES_FLOR_MUNDO = ["#fb7185", "#facc15", "#a78bfa", "#fb923c", "#38bdf8"];
 const TRAZO_MUNDO = 'stroke="var(--contorno)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"';
 
@@ -114,9 +115,14 @@ function florDelMundo([x, y], i) {
  * aprendido, los lugares y la niebla sobre los que duermen. Decorativo: los
  * botones de cada lugar van encima, en HTML.
  */
-function svgMundo(dormidos, flores, banderines = 0) {
+function svgMundo(dormidos, flores, banderines = 0, racha = 0) {
     const rio = "M-20 610 C70 560 150 700 250 640 S340 600 400 650";
     let s = `<svg class="mundo-arte" viewBox="0 0 ${MUNDO_ANCHO} ${MUNDO_ALTO}" aria-hidden="true" focusable="false">`;
+    // Con tres días seguidos cumpliendo la meta, sale el arcoíris (detrás del pasto).
+    if (racha >= RACHA_ARCOIRIS) {
+        s += `<g class="arcoiris-mundo" fill="none" stroke-width="7" stroke-linecap="round">` +
+            [["#fb7185", 62], ["#facc15", 54], ["#38bdf8", 46]].map(([color, r]) => `<path d="M${105 - r} 100a${r} ${r} 0 0 1 ${2 * r} 0" stroke="${color}"/>`).join("") + `</g>`;
+    }
     s += `<path d="M0 90 Q90 50 185 80 T370 70 V${MUNDO_ALTO} H0Z" fill="var(--mundo-pasto)"/>`;
     s += [[60, 280, 70], [300, 520, 80], [70, 800, 75], [310, 1000, 70], [200, 1200, 90]].map(([x, y, r]) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 0.55}" fill="var(--mundo-pasto-2)"/>`).join("");
     s += `<circle class="mundo-sol" cx="318" cy="46" r="22" fill="var(--sol)" stroke="var(--contorno)" stroke-width="3"/>`;

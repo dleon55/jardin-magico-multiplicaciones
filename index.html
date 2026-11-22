@@ -6456,7 +6456,7 @@
             const florecidas = cuentaPorEstado().florecida;
             // Con la primera flor ya se ve una en el camino; con las 54, todas.
             const flores = florecidas === 0 ? 0 : Math.max(1, Math.round((florecidas / plantas().length) * FLORES_MUNDO.length));
-            mapa.innerHTML = svgMundo(dormidos, flores, leerExpediciones().length);
+            mapa.innerHTML = svgMundo(dormidos, flores, leerExpediciones().length, rachaActual());
             for (const lugar of LUGARES) {
                 const faltan = faltanParaLugar(lugar);
                 const b = document.createElement("button");
@@ -6550,6 +6550,7 @@
             }));
             document.getElementById("lugar-fondo").classList.remove("hidden");
             titulo.focus();
+            sonar("lugar");
             speak(`${lugar.nombre}. ${lugar.sub}`);
         }
 
