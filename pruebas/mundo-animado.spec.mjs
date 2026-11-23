@@ -35,6 +35,7 @@ test.describe("con movimiento", () => {
     await alMundo(page);
     await poblar(page);
     await conMovimiento(page);
+    await expect.poll(async () => (await animacion(page, PIEZAS[0][0]))[0]).toBe("mundo-late");   // el cambio de preferencia tarda un instante
     for (const [selector, nombre] of PIEZAS) {
       const [n, veces, dura] = await animacion(page, selector);
       expect(n, selector).toBe(nombre);
@@ -52,7 +53,7 @@ test.describe("con movimiento", () => {
     await alMundo(page);
     await poblar(page);
     await conMovimiento(page);
-    expect((await animacion(page, PIEZAS[0][0]))[0]).toBe("mundo-late");
+    await expect.poll(async () => (await animacion(page, PIEZAS[0][0]))[0]).toBe("mundo-late");
     await page.evaluate(() => { ajustes.calma = true; aplicarAjustes(); });
     for (const [selector] of PIEZAS) expect((await animacion(page, selector))[0], selector).toBe("none");
   });

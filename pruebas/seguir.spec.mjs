@@ -92,6 +92,8 @@ test("con todas las tablas empezadas, repasa lo que está casi para que florezca
 
 test("con todo florecido, la Aventura; y si ya la terminó, un reto de lógica", async ({ page }) => {
   await alMenu(page);
+  // Con el repaso de la semana ya hecho (si no, iría antes: pruebas/repaso.spec.mjs).
+  await page.evaluate(() => almacen.guardar("repasos", JSON.stringify([lunesDe(hoy())])));
   for (const n of ORDEN) await ponerTabla(page, n, "florecida");
   await refrescar(page);
   // El camino (#46) propone el primer mundo que no ha jugado.

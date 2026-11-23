@@ -757,6 +757,7 @@
             <p id="victoria-estatus" class="victoria-estatus hidden flex items-center justify-center gap-3 bg-lime-50 border-2 border-lime-300 text-green-900 font-bold rounded-2xl px-4 py-2 max-w-md mx-auto"></p>
             <p id="victoria-estrellas" class="text-amber-900 font-bold max-w-md mx-auto"></p>
             <p id="victoria-mision" class="hidden bg-sky-50 border-2 border-sky-200 text-sky-900 font-bold rounded-2xl px-4 py-2 max-w-md mx-auto"></p>
+            <p id="victoria-repaso" class="hidden bg-amber-50 border-2 border-amber-300 text-amber-900 font-bold rounded-2xl px-4 py-2 max-w-md mx-auto"></p>
 
             <div id="victoria-expedicion" class="hidden bg-teal-50 border-2 border-teal-300 rounded-2xl px-4 py-3 max-w-md mx-auto space-y-2">
                 <p class="font-bold text-teal-900">Expedición de hoy: primera parada lista. ¡Falta una!</p>
@@ -1391,7 +1392,7 @@
         // Lo que es de cada jardín y viaja en la copia de seguridad. «vistos»:
         // el estado de cada planta la última vez que se abrió «Mi jardín», para
         // animar lo que cambió desde entonces (también al pasar a otro equipo).
-        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico", "estatus", "lumi", "marcas", "expediciones", "actividad"];
+        const DEL_PERFIL = ["nombre", "estrellas", "intentos", "hechos", "compras", "misiones", "descubiertas", "otros", "aventura", "letra", "vistos", "diagnostico", "estatus", "lumi", "marcas", "expediciones", "actividad", "repasos"];
         let perfilActual = "p1";
 
         const almacen = {
@@ -5794,6 +5795,8 @@
             if (nueva) return { tipo: "tabla", tabla: nueva, que: `Tabla del ${nueva}`, detalle: "Nueva: vamos a descubrirla.", cara: "sorprendida" };
             const casi = hechosQueFaltan().length;
             if (casi > 0) return { tipo: "falta", que: "Que florezca lo que falta", detalle: casi === 1 ? "Una está casi: escríbela rápido y florecerá." : `${casi} están casi: escríbelas rápido y florecerán.`, cara: "contenta" };
+            // Con todas las tablas sabidas, una vez por semana toca repasarlas todas (Hito 6.6).
+            if (repasoPendiente()) return { tipo: "repaso", que: "Repaso de la semana", detalle: "Diez de todas las tablas, para que nada se olvide.", cara: "contenta" };
             const ultimoNivel = AVENTURA_MUNDOS.length * NIVELES_POR_MUNDO - 1;
             if (!sinAventura && (aventuraGuardada.alcanzado ?? 0) < ultimoNivel) return { tipo: "aventura", que: "La Aventura", detalle: "¡Todo tu jardín floreció! Ve por el siguiente nivel.", cara: "celebrando" };
             return { tipo: "logica", que: "Un reto de lógica", detalle: "¡Todo tu jardín floreció! Pon a prueba tu cabeza.", cara: "celebrando" };
@@ -5820,7 +5823,44 @@
             else if (p.tipo === "falta") startTable("falta");
             else if (p.tipo === "aventura") mostrarAventura();
             else if (p.tipo === "diagnostico") empezarDiagnostico();
+            else if (p.tipo === "repaso") startTable("mix");
             else startTable("logica");
+        }
+
+        // --- REPASO DE LA SEMANA (Hito 6.6) ---
+        //
+        // Cuando ya se saben las ocho tablas, el mundo está completo y no queda
+        // nada nuevo. Las flores ya se marchitan solas si no se practican; el
+        // repaso se adelanta: una vez por semana, diez preguntas de todas las
+        // tablas mezcladas (el Desafío del Arcoíris). Al ganarlo, el sol del
+        // mundo brilla con rayos hasta el lunes siguiente, y hay 5 estrellas.
+        const BONO_REPASO = 5;
+        const TABLAS_DEL_REPASO = [2, 3, 4, 5, 6, 7, 8, 9];
+
+        /** El lunes de la semana de una fecha (AAAA-MM-DD): así se nombra cada semana. */
+        function lunesDe(fecha) {
+            const dia = new Date(`${fecha}T00:00:00Z`).getUTCDay();   // 0 = domingo
+            return fechaMenos(fecha, (dia + 6) % 7);
+        }
+
+        /** Las semanas con el repaso hecho (por su lunes), sin repetir. */
+        function leerRepasos(guardado = almacen.leer("repasos")) {
+            try {
+                const semanas = JSON.parse(guardado || "[]");
+                return Array.isArray(semanas) ? [...new Set(semanas.filter(esFecha))] : [];
+            } catch (e) { return []; }
+        }
+
+        const repasoHechoEstaSemana = () => leerRepasos().includes(lunesDe(hoy()));
+        const repasoPendiente = () => TABLAS_DEL_REPASO.every((n) => tablaSabida(n)) && !repasoHechoEstaSemana();
+
+        /** Al ganar el Desafío con el repaso pendiente: se anota la semana y se premia. Devuelve lo que se dice, o "". */
+        function anotarRepaso() {
+            if (currentTable !== "mix" || equipo || !repasoPendiente()) return "";
+            const semanas = [...leerRepasos(), lunesDe(hoy())].slice(-60);
+            almacen.guardar("repasos", JSON.stringify(semanas));
+            ganarEstrellas(BONO_REPASO);
+            return `¡Repaso de la semana hecho! Ganaste ${BONO_REPASO} estrellas más. Llevas ${semanas.length === 1 ? "1 semana" : `${semanas.length} semanas`} cuidando lo que sabes.`;
         }
 
         // --- EXPEDICIÓN DE HOY (Hito 4.5) ---
@@ -6571,7 +6611,7 @@
             const florecidas = cuentaPorEstado().florecida;
             // Con la primera flor ya se ve una en el camino; con las 54, todas.
             const flores = florecidas === 0 ? 0 : Math.max(1, Math.round((florecidas / plantas().length) * FLORES_MUNDO.length));
-            mapa.innerHTML = svgMundo(dormidos, flores, leerExpediciones().length, rachaActual());
+            mapa.innerHTML = svgMundo(dormidos, flores, leerExpediciones().length, rachaActual(), repasoHechoEstaSemana());
             for (const lugar of LUGARES) {
                 const faltan = faltanParaLugar(lugar);
                 const b = document.createElement("button");
@@ -6608,7 +6648,8 @@
             // Más grande con cada etapa.
             lumiMapa.style.width = `${(15 + etapaLumi * 2) * ({ brote: 1.15, pro: 0.8 }[tonoActual()] ?? 1)}%`;
             lumiMapa.appendChild(lumiSuelta("contenta"));
-            document.getElementById("mundo-etapa").textContent = textoEtapaLumi();
+            document.getElementById("mundo-etapa").textContent = textoEtapaLumi() +
+                (repasoHechoEstaSemana() ? " Repaso de la semana: hecho." : repasoPendiente() ? " Esta semana toca repaso." : "");
             document.getElementById("mundo-datos").textContent = tonoActual() === "pro" ? datosPro() : "";
             mapa.appendChild(lumiMapa);
             document.getElementById("mundo-aviso").textContent = "";
@@ -7364,6 +7405,10 @@
             const avisoMision = document.getElementById("victoria-mision");
             avisoMision.classList.toggle("hidden", !metaEnEstaPartida);
             avisoMision.innerText = metaEnEstaPartida ? `☀️ ¡Meta de hoy cumplida! Ganaste ${BONO_MISION} estrellas más.` : "";
+            // El repaso de la semana, también antes de contar las estrellas.
+            const avisoRepaso = document.getElementById("victoria-repaso");
+            avisoRepaso.textContent = anotarRepaso();
+            avisoRepaso.classList.toggle("hidden", !avisoRepaso.textContent);
 
             const ganadas = globalStars - estrellasAlEmpezar;
             const antojo = siguienteAntojo();

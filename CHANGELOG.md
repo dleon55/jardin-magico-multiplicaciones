@@ -9,6 +9,13 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-23
 
+- **Repaso de la semana** (#150, Hito 6.6): cuando ya se saben las ocho
+  tablas, una vez por semana el inicio propone diez preguntas de todas
+  mezcladas (el Desafío del Arcoíris).
+  - Al ganarlo se anota la semana, hay 5 estrellas y el sol del mundo brilla
+    con rayos hasta el lunes siguiente.
+  - Complementa al riego: las flores ya se marchitaban si no se practican;
+    el repaso se adelanta. Las semanas son de cada jardín y van en la copia.
 - **Hoja para el salón** (#149, Hito 6.5): al terminar un reto, «Imprimir
   la hoja» arma una hoja carta con el QR, el código y el enlace para quien
   tiene aparato, y las diez preguntas con su renglón para quien no. Sin

@@ -188,8 +188,8 @@ test("la primera parada es siempre de tablas: si «Seguir» propone la Aventura,
   await page.click("#btn-expedicion");
   await pasarDescubrir(page);
   expect(await page.evaluate(() => currentTable)).toBe(3);
-  // Con todo florecido, «Seguir» manda a la Aventura y la expedición a un reto de lógica.
-  await page.evaluate(() => backToSelector());
+  // Con todo florecido (y el repaso de la semana ya hecho), «Seguir» manda a la Aventura y la expedición a un reto de lógica.
+  await page.evaluate(() => { backToSelector(); almacen.guardar("repasos", JSON.stringify([lunesDe(hoy())])); });
   await saber(page, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
   expect(await page.evaluate(() => [siguientePaso().tipo, siguientePaso(true).tipo])).toEqual(["aventura", "logica"]);
   await expect(page.locator("#expedicion-parada-1")).toHaveText("Un reto de lógica");

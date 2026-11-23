@@ -79,6 +79,10 @@ el mapa de tablas y el vivero.
 - Cada tarjeta abre su pantalla completa, y «Menú» vuelve a Mi progreso.
 - Con el «Menú en lista» siguen los cuatro botones de siempre.
 
+**Repaso de la semana.** Con las ocho tablas sabidas, una vez por semana el
+inicio propone diez preguntas de todas mezcladas. Al ganarlas, el sol del
+mundo brilla con rayos hasta el lunes siguiente y hay 5 estrellas.
+
 **Tres tonos.** El mismo juego para distintas edades. Lo elige quien juega,
 en la bienvenida o en «Mi mundo y mi personaje», y cada jardín tiene el suyo.
 
