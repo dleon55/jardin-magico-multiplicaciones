@@ -115,7 +115,7 @@ function florDelMundo([x, y], i) {
  * aprendido, los lugares y la niebla sobre los que duermen. Decorativo: los
  * botones de cada lugar van encima, en HTML.
  */
-function svgMundo(dormidos, flores, banderines = 0, racha = 0) {
+function svgMundo(dormidos, flores, banderines = 0, racha = 0, solConRayos = false) {
     const rio = "M-20 610 C70 560 150 700 250 640 S340 600 400 650";
     let s = `<svg class="mundo-arte" viewBox="0 0 ${MUNDO_ANCHO} ${MUNDO_ALTO}" aria-hidden="true" focusable="false">`;
     // Con tres días seguidos cumpliendo la meta, sale el arcoíris (detrás del pasto).
@@ -125,6 +125,13 @@ function svgMundo(dormidos, flores, banderines = 0, racha = 0) {
     }
     s += `<path d="M0 90 Q90 50 185 80 T370 70 V${MUNDO_ALTO} H0Z" fill="var(--mundo-pasto)"/>`;
     s += [[60, 280, 70], [300, 520, 80], [70, 800, 75], [310, 1000, 70], [200, 1200, 90]].map(([x, y, r]) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 0.55}" fill="var(--mundo-pasto-2)"/>`).join("");
+    // Con el repaso de la semana hecho, el sol brilla con rayos.
+    if (solConRayos) {
+        s += `<g class="rayos-sol" stroke="var(--sol)" stroke-width="5" stroke-linecap="round">` + [0, 45, 90, 135, 180, 225, 270, 315].map((g) => {
+            const [c, n] = [Math.cos((g * Math.PI) / 180), Math.sin((g * Math.PI) / 180)];
+            return `<path d="M${(318 + 29 * c).toFixed(1)} ${(46 + 29 * n).toFixed(1)}L${(318 + 38 * c).toFixed(1)} ${(46 + 38 * n).toFixed(1)}"/>`;
+        }).join("") + `</g>`;
+    }
     s += `<circle class="mundo-sol" cx="318" cy="46" r="22" fill="var(--sol)" stroke="var(--contorno)" stroke-width="3"/>`;
     s += `<path d="${rio}" fill="none" stroke="var(--contorno)" stroke-width="62" stroke-linecap="round"/><path d="${rio}" fill="none" stroke="var(--mundo-agua)" stroke-width="56" stroke-linecap="round"/>`;
     s += `<path d="M-20 600 C70 550 150 690 250 630 S340 590 400 640" fill="none" stroke="var(--brillo)" stroke-width="6" stroke-dasharray="18 26" stroke-linecap="round"/>`;
