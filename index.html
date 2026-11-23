@@ -518,6 +518,11 @@
                     <span>Enséñale a Lumi</span>
                     <span class="text-xs subtitulo font-semibold">Lumi se equivoca: dile cuál es la buena</span>
                 </button>
+                <!-- Solo en Brote (juego.css): lo que prepara las tablas (Hito 6.7). -->
+                <button type="button" id="btn-semillero" onclick="mostrarSemillero()" class="col-span-2 bubble-font bg-gradient-to-r from-lime-100 to-green-200 hover:from-lime-200 hover:to-green-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex-col items-center gap-1">
+                    <span>Antes de multiplicar</span>
+                    <span class="text-xs subtitulo font-semibold">Contar de 2 en 2, grupos iguales y dobles</span>
+                </button>
                 <button type="button" id="btn-reto" onclick="mostrarRetos()" class="col-span-2 bubble-font bg-gradient-to-r from-indigo-100 to-violet-200 hover:from-indigo-200 hover:to-violet-300 text-gray-900 py-3 px-2 rounded-2xl shadow-md hover:shadow-lg transition text-lg flex flex-col items-center gap-1">
                     <span>Retos con código</span>
                     <span class="text-xs subtitulo font-semibold">Diez multiplicaciones para mandarle a alguien</span>
@@ -1106,6 +1111,28 @@
         <!-- ================= ENSÉÑALE A LUMI ================= -->
         <!-- Lumi da su respuesta y quien juega dice si está bien; si no, le
              enseña la buena. Sus errores son los típicos de cada tema. -->
+        <!-- ANTES DE MULTIPLICAR (Hito 6.7, js/semillero.js): contar a saltos, grupos
+             iguales y dobles, para quien aún no llega a las tablas. -->
+        <div id="screen-semillero" class="hidden space-y-4">
+            <div class="flex justify-between items-center">
+                <button onclick="backToSelector()" class="btn-volver text-sm font-bold text-gray-700 hover:text-green-800 transition flex items-center gap-1">
+                    <svg class="icono" aria-hidden="true" focusable="false"><use href="#i-volver"/></svg> Menú <span class="solo-teclado text-xs font-normal">(Esc)</span>
+                </button>
+                <p id="semillero-cuenta" class="text-sm font-bold text-green-900 bg-lime-50 border-2 border-lime-300 rounded-full px-3 py-1 empty:hidden"></p>
+            </div>
+            <h2 data-foco class="bubble-font text-2xl text-green-800 text-center">Antes de multiplicar</h2>
+            <div class="max-w-md mx-auto space-y-3">
+                <div class="flex items-center gap-3">
+                    <span id="lumi-semillero" class="lumi-caja flex-none w-16 h-16" data-lumi="contenta"></span>
+                    <p id="semillero-pregunta" tabindex="-1" class="flex-1 bubble-font text-2xl text-green-900 bg-lime-50 border-2 border-lime-300 rounded-2xl px-3 py-3 text-center"></p>
+                </div>
+                <div id="semillero-dibujo" class="flex justify-center empty:hidden"></div>
+                <div id="semillero-opciones" class="grid grid-cols-3 gap-3"></div>
+                <p id="semillero-nota" role="status" aria-live="polite" class="min-h-12 text-center font-bold text-indigo-900"></p>
+                <button type="button" id="semillero-sigue" onclick="siguienteDeSemillero()" class="hidden w-full bubble-font bg-green-700 hover:bg-green-800 text-white text-lg px-6 py-3 rounded-2xl shadow-md min-h-11"></button>
+            </div>
+        </div>
+
         <!-- RETOS CON CÓDIGO (Hito 4.6, js/retos.js): diez multiplicaciones que se
              mandan con un código o un enlace. Sin cuentas, sin servidor, sin nombres. -->
         <div id="screen-reto" class="hidden space-y-4">
@@ -1366,6 +1393,7 @@
     <script src="js/ensenar.js"></script>
     <script src="js/retos.js"></script>
     <script src="js/qr.js"></script>
+    <script src="js/semillero.js"></script>
     <!-- Script del Juego -->
     <script>
         // --- ALMACENAMIENTO ---
@@ -3032,7 +3060,7 @@
         // mueve el foco al encabezado de la pantalla nueva: sin esto, quien
         // navega con teclado o lector de pantalla se queda con el foco en un
         // botón que acaba de desaparecer, y no sabe dónde está.
-        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-camino", "screen-equipo", "screen-ensenar", "screen-reto", "screen-progreso", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
+        const PANTALLAS = ["screen-diagnostico", "screen-guia", "screen-welcome", "screen-selector", "screen-game", "screen-victory", "screen-mapa", "screen-camino", "screen-equipo", "screen-ensenar", "screen-reto", "screen-semillero", "screen-progreso", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-adultos", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-aventura-juego"];
         let pantallaActual = "screen-welcome";
         // La Expedición de hoy en curso: { paso: 1 | 2 }. Solo vive en las pantallas
         // de sus paradas: salir a cualquier otra la cancela, sin quitar nada.
@@ -3391,7 +3419,7 @@
                 return;
             }
 
-            if (["screen-mapa", "screen-camino", "screen-equipo", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-ensenar", "screen-reto", "screen-progreso"].includes(pantallaActual) && evento.key === "Escape") {
+            if (["screen-mapa", "screen-camino", "screen-equipo", "screen-jardin", "screen-vivero", "screen-descubrir", "screen-mundo", "screen-fracciones", "screen-aventura", "screen-ensenar", "screen-reto", "screen-semillero", "screen-progreso"].includes(pantallaActual) && evento.key === "Escape") {
                 evento.preventDefault();
                 backToSelector();
                 return;
@@ -6135,6 +6163,93 @@
             pon("datos", [r.banderines ? `${cuentaBanderines(r.banderines)} de expedición` : "", r.racha >= 2 ? `${r.racha} días seguidos con la meta` : ""].filter(Boolean).join(" · "));
         }
 
+        // --- ANTES DE MULTIPLICAR (js/semillero.js) ---
+        //
+        // Rondas de seis preguntas con dibujo, una oportunidad cada una. Lumi
+        // dice cada pregunta en voz: es el juego de quien aún no lee.
+        const piezaSemillero = (id) => document.getElementById(`semillero-${id}`);
+
+        function mostrarSemillero() {
+            initAudio();
+            cancelarEspera();
+            callarVoz();
+            semillero = { preguntas: rondaDeSemillero(), n: 0, bien: 0, paso: "pregunta" };
+            mostrarPantalla("screen-semillero");
+            siguienteDeSemillero();
+        }
+
+        function siguienteDeSemillero() {
+            const s = semillero;
+            if (!s) return;
+            if (s.paso === "fin") { backToSelector(); return; }
+            if (s.n >= SEMILLERO_PREGUNTAS) { terminarSemillero(); return; }
+            const pregunta = s.preguntas[s.n];
+            s.n++;
+            s.paso = "pregunta";
+            piezaSemillero("cuenta").textContent = `${s.n} de ${SEMILLERO_PREGUNTAS}`;
+            piezaSemillero("nota").textContent = "";
+            piezaSemillero("sigue").classList.add("hidden");
+            piezaSemillero("pregunta").textContent = pregunta.texto;
+            piezaSemillero("dibujo").innerHTML = pregunta.dibujo;
+            lumi("lumi-semillero", "pensando");
+            piezaSemillero("opciones").replaceChildren(...pregunta.opciones.map((valor) => {
+                const b = document.createElement("button");
+                b.type = "button";
+                b.className = "semillero-opcion bubble-font bg-white hover:bg-sky-50 border-4 border-sky-200 text-gray-900 text-3xl rounded-2xl shadow-md px-2 py-4 min-h-11";
+                b.dataset.valor = String(valor);
+                b.textContent = String(valor);
+                b.onclick = () => responderSemillero(valor, b);
+                return b;
+            }));
+            piezaSemillero("pregunta").focus({ preventScroll: true });
+            speak(pregunta.voz);
+        }
+
+        function responderSemillero(valor, boton) {
+            const s = semillero;
+            if (!s || s.paso !== "pregunta") return;
+            s.paso = "respondida";
+            const pregunta = s.preguntas[s.n - 1];
+            const acerto = valor === pregunta.respuesta;
+            for (const b of piezaSemillero("opciones").querySelectorAll("button")) {
+                b.disabled = true;
+                if (Number(b.dataset.valor) === pregunta.respuesta) b.classList.add("ensenar-buena");
+            }
+            if (acerto) {
+                s.bien++;
+                ganarEstrellas(1);
+                avanzarMision("acierto");
+                sonar("acierto");
+            } else boton.classList.add("ensenar-mala");
+            const nota = acerto ? `¡Bien! ${pregunta.explicacion}` : pregunta.porQue[valor];
+            piezaSemillero("nota").textContent = nota;
+            lumi("lumi-semillero", acerto ? "celebrando" : "animando");
+            const sigue = piezaSemillero("sigue");
+            sigue.textContent = s.n >= SEMILLERO_PREGUNTAS ? "Terminar" : "Siguiente";
+            sigue.classList.remove("hidden");
+            sigue.focus();
+            speak(textoParaVoz(nota));
+        }
+
+        function terminarSemillero() {
+            const s = semillero;
+            s.paso = "fin";
+            const dicho = s.bien === SEMILLERO_PREGUNTAS ? "¡Todas! Ya casi estás para las tablas."
+                : s.bien === 0 ? "Hoy costó. Mira los dibujos con calma y prueba otra vez."
+                : `Acertaste ${s.bien} de ${SEMILLERO_PREGUNTAS}. ¡Vas muy bien!`;
+            piezaSemillero("cuenta").textContent = "";
+            piezaSemillero("pregunta").textContent = dicho;
+            piezaSemillero("dibujo").innerHTML = "";
+            piezaSemillero("opciones").replaceChildren();
+            piezaSemillero("nota").textContent = s.bien ? `Ganaste ${s.bien === 1 ? "1 estrella" : `${s.bien} estrellas`}.` : "";
+            lumi("lumi-semillero", s.bien ? "celebrando" : "animando");
+            const sigue = piezaSemillero("sigue");
+            sigue.textContent = "Volver al inicio";
+            sigue.classList.remove("hidden");
+            sigue.focus();
+            speak(dicho);
+        }
+
         // --- RETOS CON CÓDIGO (js/retos.js) ---
         //
         // Crear un reto es jugarlo: al terminar, el código lleva la marca. Quien
@@ -6598,7 +6713,7 @@
             extras.replaceChildren(...[["btn-aventura-mundo", "La Aventura", mostrarAventura, "bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-700 hover:to-fuchsia-700 text-white"],
                 ["btn-equipo-mundo", "En equipo", mostrarEquipo, "bg-gradient-to-r from-rose-200 to-pink-200 hover:from-rose-300 hover:to-pink-300 text-gray-900"],
                 ["btn-ensenar-mundo", "Enséñale a Lumi", mostrarEnsenar, "col-span-2 bg-gradient-to-r from-yellow-100 to-amber-200 hover:from-yellow-200 hover:to-amber-300 text-gray-900"],
-                ...(esBrote() ? [] : [["btn-reto-mundo", "Retos con código", () => mostrarRetos(), "col-span-2 bg-gradient-to-r from-indigo-100 to-violet-200 hover:from-indigo-200 hover:to-violet-300 text-gray-900"]])].map(([id, texto, accion, color]) => {
+                ...(esBrote() ? [["btn-semillero-mundo", "Antes de multiplicar", mostrarSemillero, "col-span-2 bg-gradient-to-r from-lime-100 to-green-200 hover:from-lime-200 hover:to-green-300 text-gray-900"]] : [["btn-reto-mundo", "Retos con código", () => mostrarRetos(), "col-span-2 bg-gradient-to-r from-indigo-100 to-violet-200 hover:from-indigo-200 hover:to-violet-300 text-gray-900"]])].map(([id, texto, accion, color]) => {
                 const boton = document.createElement("button");
                 boton.type = "button";
                 boton.id = id;

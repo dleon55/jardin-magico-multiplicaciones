@@ -100,11 +100,11 @@ test.describe("con el mundo a la vista", () => {
     expect(await page.evaluate(() => ensenar.total)).toBe(5);
   });
 
-  test("no se ofrecen los retos con código, y bajo el mundo quedan tres botones", async ({ page }) => {
+  test("no se ofrecen los retos con código: en su lugar va «Antes de multiplicar» (Hito 6.7)", async ({ page }) => {
     await entrar(page, "brote");
-    await expect(page.locator("#mundo-extras button")).toHaveCount(3);
+    await expect(page.locator("#mundo-extras button")).toHaveCount(4);
     await expect(page.locator("#btn-reto-mundo")).toHaveCount(0);
-    expect(await page.locator("#mundo-extras button").allTextContents()).toEqual(["La Aventura", "En equipo", "Enséñale a Lumi"]);
+    expect(await page.locator("#mundo-extras button").allTextContents()).toEqual(["La Aventura", "En equipo", "Enséñale a Lumi", "Antes de multiplicar"]);
     // En Explora siguen los cuatro.
     await page.evaluate(() => { perfilEnUso().tono = "explora"; mostrarPantalla("screen-selector"); });
     await expect(page.locator("#mundo-extras button")).toHaveCount(4);
