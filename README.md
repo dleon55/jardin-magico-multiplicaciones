@@ -88,7 +88,7 @@ en la bienvenida o en «Mi mundo y mi personaje», y cada jardín tiene el suyo.
 
 | Tono | Para quién (orientación) | Qué cambia |
 |------|--------------------------|------------|
-| Brote | 6 a 8 años | Rótulos de una palabra, más grandes y sin letra chica; Lumi más grande. Dice en voz lo que toca hoy y el progreso; partidas de 5 aciertos y rondas de Lumi de 3 dudas; sin retos con código. Sin voz en español, una flecha señala el botón que toca |
+| Brote | 6 a 8 años | Rótulos de una palabra, más grandes y sin letra chica; Lumi más grande. Dice en voz lo que toca hoy y el progreso; partidas de 5 aciertos y rondas de Lumi de 3 dudas; sin retos con código; en su lugar, «Antes de multiplicar» (contar a saltos, grupos iguales y dobles). Sin voz en español, una flecha señala el botón que toca |
 | Explora | 8 a 10 años | El de siempre; es el que queda si no se elige |
 | Pro | 11 años o más | El mundo de noche, letra sobria, «Correcto.» sin emojis, precisión y tiempos |
 
@@ -907,6 +907,7 @@ módulos), para que lo que declaran siga siendo global:
 | `js/ensenar.js` | «Enséñale a Lumi»: cómo se arman las dudas de Lumi |
 | `js/retos.js` | Retos con código: el código, sus preguntas y el enlace |
 | `js/qr.js` | El código QR del enlace de un reto, dibujado sin bibliotecas |
+| `js/semillero.js` | «Antes de multiplicar»: contar a saltos, grupos iguales y dobles |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
@@ -982,7 +983,7 @@ a la vez.
 | Archivo | Qué es |
 | --- | --- |
 | `index.html` | El juego: estructura y script principal |
-| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js`, `js/mundo.js`, `js/ensenar.js`, `js/retos.js`, `js/qr.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
+| `js/datos.js`, `js/arte.js`, `js/sonido.js`, `js/multiplos.js`, `js/area.js`, `js/dinero.js`, `js/porcentajes.js`, `js/decimales.js`, `js/tiempo.js`, `js/calendario.js`, `js/mundo.js`, `js/ensenar.js`, `js/retos.js`, `js/qr.js`, `js/semillero.js` | Datos, arte, sonido y temas (ver «Desarrollo») |
 | `juego.css` | Estilos propios del juego |
 | `estilos.css` | Hoja de estilos generada; no se edita a mano |
 | `estilos/entrada.css` | Entrada de Tailwind |

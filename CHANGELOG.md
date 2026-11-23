@@ -9,6 +9,15 @@ está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
 ## 2026-11-23
 
+- **Antes de multiplicar** (#151, Hito 6.7): un juego propio para el tono
+  Brote, para quien aún no llega a las tablas.
+  - Tres ideas que las preparan, con dibujo y para elegir entre tres: contar
+    a saltos (de 2, 5, 10 o 3), grupos iguales (filas de puntos) y dobles.
+  - Rondas de seis preguntas, una oportunidad cada una, dichas en voz. Las
+    opciones falsas son los tropiezos de siempre, cada uno con su
+    explicación.
+  - Cada acierto da una estrella y cuenta para la meta del día; no toca el
+    jardín ni el mapa. Vive en `js/semillero.js`.
 - **Repaso de la semana** (#150, Hito 6.6): cuando ya se saben las ocho
   tablas, una vez por semana el inicio propone diez preguntas de todas
   mezcladas (el Desafío del Arcoíris).
