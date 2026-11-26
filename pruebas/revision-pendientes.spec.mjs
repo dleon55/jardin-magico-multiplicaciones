@@ -131,7 +131,7 @@ test("las fichas de mundo de una misma fila miden lo mismo", async ({ page }) =>
   for (const alturas of filas) expect(new Set(alturas).size).toBe(1);
 });
 
-test("13 personajes en 7 columnas: nadie queda solo en un renglón", async ({ page }) => {
+test("13 personajes en 5 columnas en el teléfono (para que midan 44 px): nadie queda solo en un renglón", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 640 });
   await alMenu(page);
   await page.evaluate(() => mostrarMiMundo());
@@ -139,7 +139,7 @@ test("13 personajes en 7 columnas: nadie queda solo en un renglón", async ({ pa
     const tops = fs.map((f) => Math.round(f.getBoundingClientRect().top));
     return [...new Set(tops)].map((t) => tops.filter((x) => x === t).length);
   });
-  expect(porFila).toEqual([7, 6]);
+  expect(porFila).toEqual([5, 5, 3]);
 });
 
 test("en equipo, con uno solo las tablas esperan (y al tocarlas dicen qué falta); con dos, se activan", async ({ page }) => {

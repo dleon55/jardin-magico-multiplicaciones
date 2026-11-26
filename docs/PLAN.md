@@ -3,7 +3,7 @@
 El Jardín Mágico de las Multiplicaciones: de un buen juego de tablas a uno de
 calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
-**Actualizado: 23 de noviembre de 2026.**
+**Actualizado: 26 de noviembre de 2026.**
 - El estado del día a día está en el
   [issue de estado #20](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/20).
 - El detalle de cada cambio, con su PR, está en el [CHANGELOG](../CHANGELOG.md).
@@ -20,8 +20,8 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 6 · Enseñanza a la medida y uso real | [#145](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/145) | **8 de 8** | **Completo** el 23 de noviembre: seis partes hechas (#146 a #151) y dos descartadas con datos (la compuerta más corta y la carga tardía) |
 
 **Cifras al día:**
-- 65 PRs fusionados desde que empezó el plan (#73 a #151), cada uno verificado en el sitio publicado.
-- La compuerta de calidad (`npm run comprobar`) tiene **1715 pruebas en verde** (unos 26 minutos con 4 procesos), en escritorio y tableta.
+- 66 PRs fusionados desde que empezó el plan (#73 a #152), cada uno verificado en el sitio publicado.
+- La compuerta de calidad (`npm run comprobar`) tiene **1731 pruebas en verde** (unos 26 minutos con 4 procesos), en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
 - El juego, en varios archivos desde #96: `index.html` pesa 544 KB (135 KB comprimido, como lo sirve el sitio), más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`: 224 KB de texto comprimido en total, con tope de 270 en una prueba. Sin dependencias externas, y funciona sin internet.
 

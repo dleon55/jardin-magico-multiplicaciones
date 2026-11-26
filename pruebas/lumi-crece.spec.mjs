@@ -123,7 +123,7 @@ test.describe("en el mundo vivo", () => {
     expect(await page.locator(".lumi-mundo > svg.lumi").getAttribute("data-etapa")).toBe("1");
     await saber(page, [4, 9, 6, 7, 8]);
     // Con las ocho sabidas, además avisa del repaso de la semana (Hito 6.6).
-    await expect(page.locator("#mundo-etapa")).toHaveText("Lumi es un árbol en flor: ¡sabes las ocho tablas! Esta semana toca repaso.");
+    await expect(page.locator("#mundo-etapa")).toHaveText("Lumi es un árbol en flor: ¡sabes todas las tablas! Esta semana toca repaso.");
     await expect.poll(async () => (await page.locator(".lumi-mundo").boundingBox()).width).toBeGreaterThan(ancho0 * 1.3);
   });
 });
