@@ -56,7 +56,7 @@ test("la tarjeta dice las dos paradas, lo que se gana y cómo salir", async ({ p
   await expect(page.locator("#expedicion-titulo")).toHaveText("Expedición de hoy");
   await expect(page.locator(".expedicion-paradas li")).toHaveText(["1Parada 1: Tabla del 2", "2Parada 2: Enséñale a Lumi"]);
   await expect(page.locator("#expedicion-estado")).toHaveText("Dos paradas cortas y plantas un banderín en tu mundo.");
-  await expect(page.locator("#btn-expedicion")).toHaveText("Salir de expedición");
+  await expect(page.locator("#btn-expedicion")).toHaveText("Empezar la expedición");
   await expect(page.locator("#btn-expedicion")).toHaveAccessibleDescription("Dos paradas cortas y plantas un banderín en tu mundo.");
   await expect(page.locator(".banderin-mundo")).toHaveCount(0);
   // Va antes del mapa, en el lugar de «Seguir» (pruebas/inicio-simple.spec.mjs).
@@ -122,7 +122,7 @@ test("al otro día se planta otro banderín, con su premio", async ({ page }) =>
   await page.evaluate((d) => almacen.guardar("expediciones", JSON.stringify([d])), ayer);
   await refrescar(page);
   await expect(page.locator("#expedicion-estado")).toHaveText("Llevas 1 banderín. ¡Planta el de hoy!");
-  await expect(page.locator("#btn-expedicion")).toHaveText("Salir de expedición");
+  await expect(page.locator("#btn-expedicion")).toHaveText("Empezar la expedición");
   await expect(page.locator(".banderin-mundo")).toHaveCount(1);
   await page.click("#btn-expedicion");
   await pasarDescubrir(page);

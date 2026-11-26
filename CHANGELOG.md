@@ -7,6 +7,26 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-26
+
+- **Revisión de los Hitos 4 a 6** (#152): se recorrió todo lo nuevo como quien
+  juega (31 estados, en teléfono, teléfono grande, acostado y tableta, en los
+  tres tonos) midiendo desbordes, botones chicos, textos cortados y
+  accesibilidad, y mirando las capturas. No había nada roto; se corrigieron
+  siete detalles:
+  - El botón de la expedición decía «Salir de expedición», que se lee como
+    irse: ahora dice «Empezar la expedición».
+  - En Brote sin voz, la flecha seguía señalando la expedición ya hecha.
+  - Lumi decía «sabes las ocho tablas» junto a un mapa que dice «9 de 9»:
+    ahora dice «todas las tablas».
+  - En los retos, la explicación de qué es un reto se quita al jugar y al
+    terminar.
+  - Con el teléfono acostado, un reto y «Antes de multiplicar» se responden
+    sin desplazarse: pregunta o dibujo a la izquierda, respuestas a la derecha.
+  - Los personajes de la bienvenida y de «Mi mundo y mi personaje» medían 38 px
+    de ancho en teléfonos angostos (venía de antes): ahora van de cinco en
+    cinco y pasan de 44 px.
+
 ## 2026-11-23
 
 - **Antes de multiplicar** (#151, Hito 6.7): un juego propio para el tono

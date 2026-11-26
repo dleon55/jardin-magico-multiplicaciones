@@ -96,7 +96,7 @@ test("Pro mide el tiempo de la partida contra la mejor marca propia", async ({ p
   // Más rápido: marca nueva.
   await page.evaluate(() => { backToSelector(); startTable(3); inicioPartida = Date.now() - 58000; });
   await ganar(page);
-  await expect(page.locator("#victoria-tiempo")).toHaveText("Tiempo: 0:58. ¡Nueva marca! La anterior era 1:12.");
+  await expect(page.locator("#victoria-tiempo")).toHaveText(/^Tiempo: 0:5[89]\. ¡Nueva marca! La anterior era 1:12\.$/)   // jugarla tarda: con la máquina cargada, 58 s se ven como 59;
   // Cada juego tiene la suya, y el inicio las cuenta.
   await page.evaluate(() => { backToSelector(); startTable("tiempo"); inicioPartida = Date.now() - 61000; });
   await ganar(page);

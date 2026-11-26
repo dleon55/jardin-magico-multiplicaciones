@@ -294,7 +294,7 @@
                 </fieldset>
                 <fieldset class="text-left">
                     <legend class="block text-gray-700 font-bold text-center w-full mb-1">Elige tu personaje</legend>
-                    <div class="elegir-personaje grid grid-cols-7 gap-1" data-nombre="personaje"></div>
+                    <div class="elegir-personaje grid grid-cols-5 sm:grid-cols-7 gap-1" data-nombre="personaje"></div>
                 </fieldset>
                 <fieldset class="text-left">
                     <legend class="block text-gray-700 font-bold text-center w-full mb-1">¿Cómo quieres jugar?</legend>
@@ -1037,7 +1037,7 @@
             </fieldset>
             <fieldset class="max-w-md mx-auto">
                 <legend class="block text-gray-700 font-bold text-center w-full mb-1">Personaje</legend>
-                <div class="elegir-personaje grid grid-cols-7 gap-1" data-nombre="personaje-cambio"></div>
+                <div class="elegir-personaje grid grid-cols-5 sm:grid-cols-7 gap-1" data-nombre="personaje-cambio"></div>
             </fieldset>
             <fieldset class="max-w-md mx-auto">
                 <legend class="block text-gray-700 font-bold text-center w-full mb-1">¿Cómo quieres jugar?</legend>
@@ -1121,7 +1121,7 @@
                 <p id="semillero-cuenta" class="text-sm font-bold text-green-900 bg-lime-50 border-2 border-lime-300 rounded-full px-3 py-1 empty:hidden"></p>
             </div>
             <h2 data-foco class="bubble-font text-2xl text-green-800 text-center">Antes de multiplicar</h2>
-            <div class="max-w-md mx-auto space-y-3">
+            <div id="semillero-cuerpo" class="max-w-md mx-auto space-y-3">
                 <div class="flex items-center gap-3">
                     <span id="lumi-semillero" class="lumi-caja flex-none w-16 h-16" data-lumi="contenta"></span>
                     <p id="semillero-pregunta" tabindex="-1" class="flex-1 bubble-font text-2xl text-green-900 bg-lime-50 border-2 border-lime-300 rounded-2xl px-3 py-3 text-center"></p>
@@ -1144,7 +1144,7 @@
             </div>
             <div class="text-center space-y-1">
                 <h2 data-foco class="bubble-font text-2xl text-indigo-800">Retos con código</h2>
-                <p class="text-gray-700 text-sm max-w-md mx-auto">Diez multiplicaciones para mandarle a alguien. Quien reciba tu código juega las mismas diez.</p>
+                <p id="reto-intro" class="text-gray-700 text-sm max-w-md mx-auto">Diez multiplicaciones para mandarle a alguien. Quien reciba tu código juega las mismas diez.</p>
             </div>
 
             <div id="reto-inicio" class="max-w-md mx-auto space-y-4">
@@ -5922,7 +5922,6 @@
             const p = ajustes.lista === true ? null : paradaUno();
             document.getElementById("expedicion").classList.toggle("hidden", !p);
             document.getElementById("seguir").classList.toggle("hidden", Boolean(p));
-            document.getElementById("expedicion-senal").classList.toggle("hidden", !brotePideSenal());
             if (!p) return;
             lumi("lumi-expedicion", p.cara);
             const sigue = siguientePaso();
@@ -5936,8 +5935,10 @@
                 : dias.length ? `Llevas ${cuentaBanderines(dias.length)}. ¡Planta el de hoy!`
                 : "Dos paradas cortas y plantas un banderín en tu mundo.";
             const boton = document.getElementById("btn-expedicion");
-            boton.textContent = hecha ? "Repetir la expedición" : "Salir de expedición";
+            boton.textContent = hecha ? "Repetir la expedición" : "Empezar la expedición";
             boton.dataset.hecha = hecha ? "1" : "0";
+            // La flecha señala lo que toca hoy: con la expedición ya hecha, no insiste.
+            document.getElementById("expedicion-senal").classList.toggle("hidden", hecha || !brotePideSenal());
         }
 
         function empezarExpedicion() {
@@ -6265,6 +6266,8 @@
 
         function verParteDeReto(parte) {
             for (const p of ["inicio", "juego", "fin"]) piezaReto(p).classList.toggle("hidden", p !== parte);
+            // La explicación es para elegir qué hacer; al jugar y al terminar solo estorba.
+            piezaReto("intro").classList.toggle("hidden", parte !== "inicio");
         }
 
         /** La pantalla de retos; con `codigo`, el que llegó en un enlace. */
@@ -6699,7 +6702,7 @@
         function textoEtapaLumi() {
             const e = etapaGuardadaLumi();
             const sig = ETAPAS_LUMI[e + 1];
-            if (!sig) return `Lumi es ${ETAPAS_LUMI[e].nombre}: ¡sabes las ocho tablas!`;
+            if (!sig) return `Lumi es ${ETAPAS_LUMI[e].nombre}: ¡sabes todas las tablas!`;
             const faltan = Math.max(1, sig.desde - tablasSabidasLumi());
             return `Lumi es ${ETAPAS_LUMI[e].nombre}. Con ${faltan === 1 ? "1 tabla" : `${faltan} tablas`} más será ${sig.nombre}.`;
         }
