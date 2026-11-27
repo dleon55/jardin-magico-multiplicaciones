@@ -47,6 +47,13 @@ cuál es la buena, y Lumi lo entiende con la explicación de ese error.
   decir de quién eran): corregirla practica lo que más falta.
 - Las preguntas salen de las tablas ya empezadas y de los temas de los
   lugares despiertos.
+- En «Para las personas adultas» hay **ayuda** (seis preguntas que se abren
+  al tocarlas) y un botón **«Ver un jardín de ejemplo»**, que crea un jardín
+  ya avanzado para conocer el juego sin tocar el de nadie.
+- La vista de adultos y el informe cuentan también «Antes de multiplicar» y
+  el repaso de la semana.
+- Para presentar el juego a una escuela: `docs/para-escuelas.html` (carta y
+  hoja para docentes con el código QR, para imprimir).
 - La vista para las personas adultas y el informe dicen cuántas rondas
   lleva y cuántos errores de Lumi notó; también los días de expedición y
   cómo le fue en los retos con código.

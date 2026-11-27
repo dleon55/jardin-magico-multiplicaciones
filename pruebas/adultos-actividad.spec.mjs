@@ -150,7 +150,7 @@ test("lo guardado dañado no rompe nada, y viaja en la copia de seguridad", asyn
   const vacia = await page.evaluate(() => ACTIVIDAD_VACIA);
   for (const malo of ["no es json", "null", "[]", '"hola"', '{"ensenar":7,"retos":null}']) expect(await limpia(malo)).toEqual(vacia);
   expect(await limpia(JSON.stringify({ ensenar: { rondas: -3, dudas: 2.5, bien: "9", atrapados: 4, ultimo: "ayer", extra: 1 }, otra: { x: 1 }, retos: { ultimo: "2026-11-14" } })))
-    .toEqual({ ensenar: { ...vacia.ensenar, atrapados: 4 }, retos: { ...vacia.retos, ultimo: "2026-11-14", dias: ["2026-11-14"] } });
+    .toEqual({ ensenar: { ...vacia.ensenar, atrapados: 4 }, retos: { ...vacia.retos, ultimo: "2026-11-14", dias: ["2026-11-14"] }, semillero: vacia.semillero });
   await page.evaluate(() => anotarActividad("retos", { creados: 1, aciertos: 7, preguntas: 10 }));
   expect(JSON.parse(await page.evaluate(() => Object.values(armarCopia().datos)[0].actividad)).retos).toMatchObject({ creados: 1, aciertos: 7 });
   expect(await page.evaluate(() => ACTIVIDAD_VACIA.retos.creados)).toBe(0);   // anotar no ensucia la plantilla

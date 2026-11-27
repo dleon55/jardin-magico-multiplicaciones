@@ -1,0 +1,105 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jardín Mágico · carta y hoja para docentes (borrador)</title>
+<style>
+:root{--tinta:#1f2937;--verde:#166534;--suave:#f0fdf4;--borde:#bbf7d0;--nota:#fef3c7}
+body{margin:0;background:#e5e7eb;color:var(--tinta);font:16px/1.55 Georgia,"Times New Roman",serif}
+.hoja{background:#fff;max-width:720px;margin:16px auto;padding:40px 48px;box-shadow:0 1px 6px rgba(0,0,0,.15)}
+h1{font:700 26px/1.2 system-ui,sans-serif;color:var(--verde);margin:0 0 4px}
+h2{font:700 17px/1.3 system-ui,sans-serif;color:var(--verde);margin:22px 0 6px}
+.sub{font:15px system-ui,sans-serif;color:#4b5563;margin:0 0 18px}
+.hueco{background:var(--nota);padding:0 4px;border-radius:3px;font-family:system-ui,sans-serif;font-size:.9em}
+.borrador{font:700 12px system-ui,sans-serif;letter-spacing:.08em;color:#92400e;background:var(--nota);display:inline-block;padding:3px 8px;border-radius:4px;margin-bottom:14px}
+ul,ol{margin:6px 0;padding-left:22px} li{margin:3px 0}
+.caja{background:var(--suave);border:2px solid var(--borde);border-radius:12px;padding:14px 16px;margin:14px 0}
+.qr{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.qr svg{width:170px;height:170px;flex:none}
+.url{font:700 15px ui-monospace,monospace;word-break:break-all}
+table{border-collapse:collapse;width:100%;font:14px/1.4 system-ui,sans-serif;margin:8px 0}
+td,th{border:1px solid #d1d5db;padding:6px 8px;text-align:left;vertical-align:top} th{background:var(--suave)}
+@media (max-width:600px){.hoja{padding:24px 16px;margin:0 0 12px}}
+@media print{body{background:#fff}.hoja{box-shadow:none;margin:0;max-width:none;page-break-after:always}.borrador{display:none}}
+</style></head><body>
+
+<section class="hoja">
+<span class="borrador">BORRADOR PARA REVISIÓN · lo amarillo se llena antes de enviar</span>
+<p><span class="hueco">Ciudad de México, a __ de ________ de 2026</span></p>
+<p><span class="hueco">Nombre de la persona (coordinación de primaria / dirección)</span><br>
+<span class="hueco">Nombre del colegio y campus</span></p>
+<p><strong>Asunto: propuesta de piloto gratuito de un juego para aprender las tablas de multiplicar</strong></p>
+<p>Estimada <span class="hueco">maestra / maestro ________</span>:</p>
+<p>Le escribo para poner a disposición del colegio <strong>Jardín Mágico de las Multiplicaciones</strong>, un juego educativo en español para que niñas y niños de primaria aprendan las tablas del 1 al 9 con soltura. Es gratuito, no tiene publicidad y se abre desde un enlace, sin instalar nada.</p>
+<p>Lo que creo que puede interesarle:</p>
+<ul>
+<li><strong>Enseña, no solo pregunta.</strong> Cada tabla se descubre con dibujos antes de practicarla; cuando alguien se equivoca, el juego explica por qué y vuelve a preguntar justo eso más adelante.</li>
+<li><strong>Se ajusta a cada quien.</strong> Tiene tres niveles de acompañamiento, desde quien todavía está aprendiendo a contar en grupos hasta quien ya busca mejorar su tiempo.</li>
+<li><strong>Cuida los datos.</strong> No pide cuentas, correos ni contraseñas. Lo que cada estudiante avanza se queda en el aparato donde juega; nada se envía a un servidor.</li>
+<li><strong>Sirve en el salón.</strong> La docente puede proyectar un reto con código QR o imprimirlo, y consultar un informe por estudiante con lo que ya domina y lo que le cuesta.</li>
+<li><strong>Funciona en lo que ya tienen.</strong> Teléfono, tableta o computadora, y sigue funcionando sin internet después de la primera visita.</li>
+</ul>
+<p>Con la misma franqueza: el juego está terminado y revisado técnicamente, pero <strong>todavía no se ha probado de forma ordenada con niñas y niños</strong>. Por eso no le propongo adoptarlo, sino un piloto pequeño:</p>
+<div class="caja">
+<strong>Propuesta de piloto</strong>
+<ul>
+<li>Un grupo de <span class="hueco">2.º, 3.º o 4.º</span>, con su docente.</li>
+<li>Dos o tres sesiones de 15 a 20 minutos, a lo largo de <span class="hueco">dos semanas</span>.</li>
+<li>Sin costo y sin compromiso. No se recogen datos personales del alumnado.</li>
+<li>Al final, una conversación breve con la docente sobre qué funcionó y qué no; con eso se mejora el juego.</li>
+</ul>
+</div>
+<p>Si le parece, con gusto se lo muestro en diez minutos, en persona o por videollamada. Puede probarlo desde ahora en:</p>
+<p class="url">https://dleon55.github.io/jardin-magico-multiplicaciones/</p>
+<p>Agradezco su tiempo y quedo a sus órdenes.</p>
+<p>Atentamente,<br><br>
+<span class="hueco">Nombre y apellidos</span><br>
+<span class="hueco">Teléfono · correo</span><br>
+<span class="hueco">Relación con el colegio, si la hay (por ejemplo: madre/padre de familia)</span></p>
+</section>
+
+<section class="hoja">
+<span class="borrador">BORRADOR PARA REVISIÓN</span>
+<h1>Jardín Mágico de las Multiplicaciones</h1>
+<p class="sub">Hoja para docentes · las tablas del 1 al 9, paso a paso</p>
+<div class="caja qr"><svg class="qr" viewBox="0 0 41 41" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><rect width="41" height="41" fill="#fff"/><path d="M4 4h1v1h-1zM5 4h1v1h-1zM6 4h1v1h-1zM7 4h1v1h-1zM8 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM13 4h1v1h-1zM14 4h1v1h-1zM20 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM23 4h1v1h-1zM24 4h1v1h-1zM26 4h1v1h-1zM27 4h1v1h-1zM28 4h1v1h-1zM30 4h1v1h-1zM31 4h1v1h-1zM32 4h1v1h-1zM33 4h1v1h-1zM34 4h1v1h-1zM35 4h1v1h-1zM36 4h1v1h-1zM4 5h1v1h-1zM10 5h1v1h-1zM13 5h1v1h-1zM14 5h1v1h-1zM19 5h1v1h-1zM21 5h1v1h-1zM24 5h1v1h-1zM25 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM4 6h1v1h-1zM6 6h1v1h-1zM7 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM13 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM24 6h1v1h-1zM25 6h1v1h-1zM26 6h1v1h-1zM27 6h1v1h-1zM30 6h1v1h-1zM32 6h1v1h-1zM33 6h1v1h-1zM34 6h1v1h-1zM36 6h1v1h-1zM4 7h1v1h-1zM6 7h1v1h-1zM7 7h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM12 7h1v1h-1zM14 7h1v1h-1zM19 7h1v1h-1zM21 7h1v1h-1zM26 7h1v1h-1zM27 7h1v1h-1zM28 7h1v1h-1zM30 7h1v1h-1zM32 7h1v1h-1zM33 7h1v1h-1zM34 7h1v1h-1zM36 7h1v1h-1zM4 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM15 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM19 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM25 8h1v1h-1zM26 8h1v1h-1zM27 8h1v1h-1zM30 8h1v1h-1zM32 8h1v1h-1zM33 8h1v1h-1zM34 8h1v1h-1zM36 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM14 9h1v1h-1zM15 9h1v1h-1zM18 9h1v1h-1zM21 9h1v1h-1zM22 9h1v1h-1zM24 9h1v1h-1zM25 9h1v1h-1zM26 9h1v1h-1zM28 9h1v1h-1zM30 9h1v1h-1zM36 9h1v1h-1zM4 10h1v1h-1zM5 10h1v1h-1zM6 10h1v1h-1zM7 10h1v1h-1zM8 10h1v1h-1zM9 10h1v1h-1zM10 10h1v1h-1zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h1v1h-1zM31 10h1v1h-1zM32 10h1v1h-1zM33 10h1v1h-1zM34 10h1v1h-1zM35 10h1v1h-1zM36 10h1v1h-1zM12 11h1v1h-1zM13 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM20 11h1v1h-1zM22 11h1v1h-1zM25 11h1v1h-1zM26 11h1v1h-1zM4 12h1v1h-1zM6 12h1v1h-1zM7 12h1v1h-1zM8 12h1v1h-1zM9 12h1v1h-1zM10 12h1v1h-1zM13 12h1v1h-1zM14 12h1v1h-1zM15 12h1v1h-1zM16 12h1v1h-1zM17 12h1v1h-1zM18 12h1v1h-1zM20 12h1v1h-1zM21 12h1v1h-1zM22 12h1v1h-1zM23 12h1v1h-1zM24 12h1v1h-1zM28 12h1v1h-1zM30 12h1v1h-1zM31 12h1v1h-1zM32 12h1v1h-1zM33 12h1v1h-1zM34 12h1v1h-1zM4 13h1v1h-1zM8 13h1v1h-1zM12 13h1v1h-1zM13 13h1v1h-1zM17 13h1v1h-1zM20 13h1v1h-1zM21 13h1v1h-1zM22 13h1v1h-1zM23 13h1v1h-1zM24 13h1v1h-1zM25 13h1v1h-1zM26 13h1v1h-1zM27 13h1v1h-1zM30 13h1v1h-1zM31 13h1v1h-1zM33 13h1v1h-1zM34 13h1v1h-1zM36 13h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM10 14h1v1h-1zM12 14h1v1h-1zM14 14h1v1h-1zM17 14h1v1h-1zM18 14h1v1h-1zM19 14h1v1h-1zM20 14h1v1h-1zM21 14h1v1h-1zM25 14h1v1h-1zM29 14h1v1h-1zM30 14h1v1h-1zM32 14h1v1h-1zM34 14h1v1h-1zM35 14h1v1h-1zM4 15h1v1h-1zM5 15h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM12 15h1v1h-1zM13 15h1v1h-1zM17 15h1v1h-1zM19 15h1v1h-1zM22 15h1v1h-1zM25 15h1v1h-1zM27 15h1v1h-1zM29 15h1v1h-1zM30 15h1v1h-1zM32 15h1v1h-1zM33 15h1v1h-1zM34 15h1v1h-1zM35 15h1v1h-1zM4 16h1v1h-1zM5 16h1v1h-1zM7 16h1v1h-1zM9 16h1v1h-1zM10 16h1v1h-1zM12 16h1v1h-1zM15 16h1v1h-1zM16 16h1v1h-1zM18 16h1v1h-1zM19 16h1v1h-1zM20 16h1v1h-1zM21 16h1v1h-1zM23 16h1v1h-1zM26 16h1v1h-1zM27 16h1v1h-1zM31 16h1v1h-1zM32 16h1v1h-1zM33 16h1v1h-1zM35 16h1v1h-1zM36 16h1v1h-1zM7 17h1v1h-1zM9 17h1v1h-1zM11 17h1v1h-1zM14 17h1v1h-1zM15 17h1v1h-1zM17 17h1v1h-1zM19 17h1v1h-1zM21 17h1v1h-1zM22 17h1v1h-1zM23 17h1v1h-1zM24 17h1v1h-1zM25 17h1v1h-1zM27 17h1v1h-1zM30 17h1v1h-1zM33 17h1v1h-1zM35 17h1v1h-1zM36 17h1v1h-1zM8 18h1v1h-1zM9 18h1v1h-1zM10 18h1v1h-1zM12 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM15 18h1v1h-1zM16 18h1v1h-1zM19 18h1v1h-1zM20 18h1v1h-1zM21 18h1v1h-1zM24 18h1v1h-1zM25 18h1v1h-1zM26 18h1v1h-1zM28 18h1v1h-1zM29 18h1v1h-1zM30 18h1v1h-1zM32 18h1v1h-1zM33 18h1v1h-1zM34 18h1v1h-1zM35 18h1v1h-1zM7 19h1v1h-1zM9 19h1v1h-1zM11 19h1v1h-1zM13 19h1v1h-1zM14 19h1v1h-1zM15 19h1v1h-1zM19 19h1v1h-1zM22 19h1v1h-1zM23 19h1v1h-1zM25 19h1v1h-1zM26 19h1v1h-1zM29 19h1v1h-1zM30 19h1v1h-1zM31 19h1v1h-1zM33 19h1v1h-1zM34 19h1v1h-1zM5 20h1v1h-1zM7 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM11 20h1v1h-1zM12 20h1v1h-1zM14 20h1v1h-1zM19 20h1v1h-1zM21 20h1v1h-1zM27 20h1v1h-1zM28 20h1v1h-1zM29 20h1v1h-1zM31 20h1v1h-1zM32 20h1v1h-1zM36 20h1v1h-1zM6 21h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM12 21h1v1h-1zM13 21h1v1h-1zM14 21h1v1h-1zM15 21h1v1h-1zM18 21h1v1h-1zM20 21h1v1h-1zM22 21h1v1h-1zM23 21h1v1h-1zM24 21h1v1h-1zM27 21h1v1h-1zM30 21h1v1h-1zM31 21h1v1h-1zM33 21h1v1h-1zM34 21h1v1h-1zM36 21h1v1h-1zM4 22h1v1h-1zM9 22h1v1h-1zM10 22h1v1h-1zM11 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM14 22h1v1h-1zM15 22h1v1h-1zM18 22h1v1h-1zM19 22h1v1h-1zM25 22h1v1h-1zM26 22h1v1h-1zM29 22h1v1h-1zM30 22h1v1h-1zM31 22h1v1h-1zM32 22h1v1h-1zM34 22h1v1h-1zM6 23h1v1h-1zM7 23h1v1h-1zM12 23h1v1h-1zM13 23h1v1h-1zM18 23h1v1h-1zM24 23h1v1h-1zM25 23h1v1h-1zM29 23h1v1h-1zM31 23h1v1h-1zM32 23h1v1h-1zM33 23h1v1h-1zM34 23h1v1h-1zM36 23h1v1h-1zM5 24h1v1h-1zM6 24h1v1h-1zM7 24h1v1h-1zM10 24h1v1h-1zM12 24h1v1h-1zM13 24h1v1h-1zM15 24h1v1h-1zM16 24h1v1h-1zM21 24h1v1h-1zM26 24h1v1h-1zM28 24h1v1h-1zM29 24h1v1h-1zM31 24h1v1h-1zM32 24h1v1h-1zM33 24h1v1h-1zM35 24h1v1h-1zM36 24h1v1h-1zM4 25h1v1h-1zM5 25h1v1h-1zM7 25h1v1h-1zM9 25h1v1h-1zM12 25h1v1h-1zM15 25h1v1h-1zM17 25h1v1h-1zM18 25h1v1h-1zM19 25h1v1h-1zM20 25h1v1h-1zM21 25h1v1h-1zM23 25h1v1h-1zM24 25h1v1h-1zM27 25h1v1h-1zM30 25h1v1h-1zM34 25h1v1h-1zM36 25h1v1h-1zM4 26h1v1h-1zM6 26h1v1h-1zM9 26h1v1h-1zM10 26h1v1h-1zM12 26h1v1h-1zM15 26h1v1h-1zM22 26h1v1h-1zM24 26h1v1h-1zM26 26h1v1h-1zM29 26h1v1h-1zM33 26h1v1h-1zM34 26h1v1h-1zM35 26h1v1h-1zM4 27h1v1h-1zM6 27h1v1h-1zM7 27h1v1h-1zM9 27h1v1h-1zM12 27h1v1h-1zM14 27h1v1h-1zM18 27h1v1h-1zM20 27h1v1h-1zM25 27h1v1h-1zM31 27h1v1h-1zM32 27h1v1h-1zM33 27h1v1h-1zM34 27h1v1h-1zM35 27h1v1h-1zM4 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM11 28h1v1h-1zM13 28h1v1h-1zM16 28h1v1h-1zM21 28h1v1h-1zM24 28h1v1h-1zM26 28h1v1h-1zM28 28h1v1h-1zM29 28h1v1h-1zM30 28h1v1h-1zM31 28h1v1h-1zM32 28h1v1h-1zM36 28h1v1h-1zM12 29h1v1h-1zM13 29h1v1h-1zM20 29h1v1h-1zM22 29h1v1h-1zM23 29h1v1h-1zM24 29h1v1h-1zM28 29h1v1h-1zM32 29h1v1h-1zM34 29h1v1h-1zM36 29h1v1h-1zM4 30h1v1h-1zM5 30h1v1h-1zM6 30h1v1h-1zM7 30h1v1h-1zM8 30h1v1h-1zM9 30h1v1h-1zM10 30h1v1h-1zM14 30h1v1h-1zM16 30h1v1h-1zM17 30h1v1h-1zM19 30h1v1h-1zM20 30h1v1h-1zM21 30h1v1h-1zM22 30h1v1h-1zM24 30h1v1h-1zM25 30h1v1h-1zM27 30h1v1h-1zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h1v1h-1zM35 30h1v1h-1zM4 31h1v1h-1zM10 31h1v1h-1zM12 31h1v1h-1zM13 31h1v1h-1zM14 31h1v1h-1zM16 31h1v1h-1zM17 31h1v1h-1zM20 31h1v1h-1zM25 31h1v1h-1zM26 31h1v1h-1zM27 31h1v1h-1zM28 31h1v1h-1zM32 31h1v1h-1zM33 31h1v1h-1zM34 31h1v1h-1zM35 31h1v1h-1zM4 32h1v1h-1zM6 32h1v1h-1zM7 32h1v1h-1zM8 32h1v1h-1zM10 32h1v1h-1zM12 32h1v1h-1zM14 32h1v1h-1zM15 32h1v1h-1zM16 32h1v1h-1zM18 32h1v1h-1zM21 32h1v1h-1zM22 32h1v1h-1zM23 32h1v1h-1zM26 32h1v1h-1zM28 32h1v1h-1zM29 32h1v1h-1zM30 32h1v1h-1zM31 32h1v1h-1zM32 32h1v1h-1zM33 32h1v1h-1zM36 32h1v1h-1zM4 33h1v1h-1zM6 33h1v1h-1zM7 33h1v1h-1zM8 33h1v1h-1zM10 33h1v1h-1zM12 33h1v1h-1zM13 33h1v1h-1zM18 33h1v1h-1zM19 33h1v1h-1zM21 33h1v1h-1zM22 33h1v1h-1zM23 33h1v1h-1zM24 33h1v1h-1zM25 33h1v1h-1zM28 33h1v1h-1zM29 33h1v1h-1zM32 33h1v1h-1zM33 33h1v1h-1zM34 33h1v1h-1zM35 33h1v1h-1zM36 33h1v1h-1zM4 34h1v1h-1zM6 34h1v1h-1zM7 34h1v1h-1zM8 34h1v1h-1zM10 34h1v1h-1zM12 34h1v1h-1zM13 34h1v1h-1zM14 34h1v1h-1zM17 34h1v1h-1zM19 34h1v1h-1zM20 34h1v1h-1zM21 34h1v1h-1zM24 34h1v1h-1zM26 34h1v1h-1zM27 34h1v1h-1zM30 34h1v1h-1zM31 34h1v1h-1zM33 34h1v1h-1zM4 35h1v1h-1zM10 35h1v1h-1zM13 35h1v1h-1zM14 35h1v1h-1zM16 35h1v1h-1zM17 35h1v1h-1zM18 35h1v1h-1zM20 35h1v1h-1zM23 35h1v1h-1zM25 35h1v1h-1zM26 35h1v1h-1zM27 35h1v1h-1zM29 35h1v1h-1zM30 35h1v1h-1zM32 35h1v1h-1zM33 35h1v1h-1zM34 35h1v1h-1zM4 36h1v1h-1zM5 36h1v1h-1zM6 36h1v1h-1zM7 36h1v1h-1zM8 36h1v1h-1zM9 36h1v1h-1zM10 36h1v1h-1zM12 36h1v1h-1zM13 36h1v1h-1zM14 36h1v1h-1zM15 36h1v1h-1zM16 36h1v1h-1zM21 36h1v1h-1zM22 36h1v1h-1zM26 36h1v1h-1zM27 36h1v1h-1zM28 36h1v1h-1zM29 36h1v1h-1zM31 36h1v1h-1zM35 36h1v1h-1z" fill="#000"/></svg>
+<div><strong>Para abrirlo</strong><br>Apunte la cámara al código o escriba la dirección:<br><span class="url">https://dleon55.github.io/jardin-magico-multiplicaciones/</span><br>No se instala nada ni se crea cuenta.</div></div>
+
+<h2>La primera vez (2 minutos)</h2>
+<ol>
+<li>Cada estudiante escribe su nombre de pila y elige un personaje y un mundo.</li>
+<li>Elige cómo quiere que le acompañen: <strong>Brote</strong> (con más ayuda y dibujos), <strong>Explora</strong> (el de serie) o <strong>Pro</strong> (con tiempo y marcas propias).</li>
+<li>Unas preguntas cortas averiguan qué tablas ya sabe, para no empezar por ahí.</li>
+</ol>
+
+<h2>Una sesión de 15 minutos</h2>
+<table>
+<tr><th>Momento</th><th>Qué hace el grupo</th></tr>
+<tr><td>5 min</td><td><strong>Expedición de hoy</strong>: dos paradas cortas que el juego elige para cada quien.</td></tr>
+<tr><td>5 min</td><td><strong>Enséñale a Lumi</strong>: el personaje se equivoca a propósito y el estudiante lo corrige. Explicar afianza lo aprendido.</td></tr>
+<tr><td>5 min</td><td><strong>Reto del salón</strong>: la docente crea un reto, lo proyecta como código QR (o lo imprime) y todo el grupo responde las mismas diez preguntas.</td></tr>
+</table>
+
+<h2>Para la docente</h2>
+<ul>
+<li><strong>«Para las personas adultas»</strong> (se mantiene presionado el botón un momento): muestra por estudiante qué tablas domina, cuáles le cuestan y cuáles confunde, y permite imprimir un informe.</li>
+<li><strong>Varios estudiantes en un mismo aparato:</strong> cada quien tiene su jardín; se cambia con «Cambiar de jugador».</li>
+<li><strong>Guardar una copia:</strong> el avance vive en el aparato. Desde la misma pantalla se guarda una copia en un archivo y se recupera después.</li>
+<li><strong>Para conocerlo antes de la clase:</strong> en esa misma pantalla hay una ayuda breve y el botón «Ver un jardín de ejemplo», que abre un jardín ya avanzado sin tocar el de nadie.</li>
+<li><strong>Menos movimiento y sonido:</strong> en «Ajustes» se apagan la voz, los sonidos y las animaciones.</li>
+</ul>
+
+<h2>Lo que conviene saber</h2>
+<ul>
+<li>El avance <strong>no pasa de un aparato a otro</strong>: conviene que cada estudiante use siempre el mismo.</li>
+<li>Si se borran los datos del navegador, se pierde el avance que no tenga copia.</li>
+<li>La voz depende de cada aparato; si no tiene voz en español, el juego funciona igual, en silencio.</li>
+<li>Es un piloto: todavía no se ha probado de forma ordenada con niñas y niños. Sus observaciones son justo lo que se busca.</li>
+</ul>
+
+<h2>Qué nos ayudaría que observara</h2>
+<ul>
+<li>¿Dónde se atoran o preguntan «¿y ahora qué hago?»</li>
+<li>¿Qué texto no entienden o no leen?</li>
+<li>¿Quieren seguir cuando se acaba el tiempo?</li>
+</ul>
+<p>Contacto: <span class="hueco">nombre · teléfono · correo</span></p>
+</section>
+</body></html>
