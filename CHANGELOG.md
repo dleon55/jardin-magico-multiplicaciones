@@ -7,6 +7,23 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-27
+
+- **Listo para escuelas** (#153, Hito 7): lo que necesita una docente o una
+  familia que no conoce el juego.
+  - **Ayuda** en «Para las personas adultas»: seis preguntas que se abren al
+    tocarlas (por dónde empezar, los tres tonos, cuándo florece una
+    multiplicación, cómo usarlo con un grupo, varios jardines en un aparato,
+    qué se guarda y dónde).
+  - **Jardín de ejemplo**: un botón crea un jardín «Ejemplo» ya avanzado
+    (tres tablas sabidas, una a medias, tropiezos y varios días de práctica)
+    para ver el juego sin tocar el de nadie. Se borra como cualquier jardín.
+  - La vista de adultos y el informe cuentan también **«Antes de
+    multiplicar»** y el **repaso de la semana**.
+  - `docs/PRUEBAS-CON-NINOS.md`, al día con el juego de hoy: once tareas.
+  - `docs/para-escuelas.html`: carta de presentación y hoja para docentes con
+    el código QR, para imprimir.
+
 ## 2026-11-26
 
 - **Revisión de los Hitos 4 a 6** (#152): se recorrió todo lo nuevo como quien

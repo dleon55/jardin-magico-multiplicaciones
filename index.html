@@ -1064,6 +1064,37 @@
             </div>
             <div id="adultos-perfiles" class="space-y-3"></div>
 
+            <!-- Ayuda para quien acompaña (Hito 7): lo que más se pregunta, sin salir del juego. -->
+            <section id="ayuda-adultos" aria-labelledby="ayuda-adultos-titulo" class="bg-white border-2 border-gray-200 rounded-2xl p-3 space-y-2">
+                <h3 id="ayuda-adultos-titulo" class="bubble-font text-xl text-gray-900">Cómo usarlo en casa o en el salón</h3>
+                <details class="ayuda-adulto">
+                    <summary>¿Por dónde se empieza?</summary>
+                    <p>Por la «Expedición de hoy»: dos paradas cortas que el juego elige según lo que cada quien ya sabe. Con 10 a 15 minutos al día basta; es mejor poco y seguido que mucho de una vez.</p>
+                </details>
+                <details class="ayuda-adulto">
+                    <summary>¿Qué son Brote, Explora y Pro?</summary>
+                    <p>Tres maneras de acompañar. Brote da más ayuda, partidas más cortas y un juego para antes de las tablas. Explora es la de serie. Pro mide el tiempo contra la mejor marca propia. Se cambia en «Mi mundo y mi personaje», sin perder nada.</p>
+                </details>
+                <details class="ayuda-adulto">
+                    <summary>¿Cuándo florece una multiplicación?</summary>
+                    <p>Cuando se escribe bien y rápido (6 segundos o menos) en dos días distintos. Por eso un jardín no florece en una tarde: el juego espera a ver que se recuerda al día siguiente. Lo que se olvida se marchita y pide riego.</p>
+                </details>
+                <details class="ayuda-adulto">
+                    <summary>¿Cómo se usa con un grupo?</summary>
+                    <p>En «Retos con código» se juega un reto y, al terminar, «Mostrar código QR» lo pone en grande para proyectarlo; «Imprimir la hoja» lo lleva al papel. Todo el grupo responde las mismas diez preguntas. El código no dice quién lo creó.</p>
+                </details>
+                <details class="ayuda-adulto">
+                    <summary>¿Varias personas en un mismo aparato?</summary>
+                    <p>Cada quien tiene su jardín. Se cambia con «Cambiar de jugador» y se agrega uno nuevo escribiendo otro nombre. Aquí arriba se ve el avance de cada jardín y se imprime su informe.</p>
+                </details>
+                <details class="ayuda-adulto">
+                    <summary>¿Qué se guarda y dónde?</summary>
+                    <p>Solo en este aparato; nada se envía a ningún lado ni se piden cuentas. El avance no pasa solo de un aparato a otro: para llevarlo o protegerlo, usa «Guardar una copia», más abajo.</p>
+                </details>
+                <p id="ejemplo-detalle" class="text-sm text-gray-800">Para ver el juego ya avanzado sin tocar el jardín de nadie, crea uno de ejemplo: trae tablas sabidas, otras a medias y varios días de práctica. Se borra desde aquí cuando quieras.</p>
+                <button type="button" id="btn-ejemplo" onclick="abrirJardinDeEjemplo()" aria-describedby="ejemplo-detalle" class="w-full bg-white hover:bg-green-50 border-2 border-green-300 text-green-900 font-bold px-3 py-2 min-h-11 rounded-xl">Ver un jardín de ejemplo</button>
+            </section>
+
             <!-- Cómo se ve el inicio (Hito 5.4): antes estaba en Ajustes, a mano de quien
                  juega, y dejaba saltarse los lugares que aún duermen. -->
             <section id="inicio-adultos" aria-labelledby="inicio-adultos-titulo" class="bg-white border-2 border-gray-200 rounded-2xl p-3 space-y-2">
@@ -2177,6 +2208,34 @@
             cargarPerfilActual();
         }
 
+        // --- JARDÍN DE EJEMPLO (Hito 7) ---
+        // Para que una docente o una familia vea el juego ya avanzado sin tocar el
+        // jardín de nadie: un perfil más, con nombre fijo, que se borra como cualquiera.
+        const NOMBRE_EJEMPLO = "Ejemplo";
+
+        /** Lo sembrado: tres tablas sabidas, una a medias, dos tropiezos y cuatro días de práctica. */
+        function sembrarJardinDeEjemplo() {
+            const dia = (k) => fechaMenos(hoy(), k);
+            const bien = (d) => ({ d, m: "e", ok: 1, ms: 2500 });
+            for (const a of [2, 5, 3]) for (let b = 1; b <= 10; b++) hechos[claveHecho(a, b)] = [bien(dia(3)), bien(dia(1))];
+            for (let b = 1; b <= 5; b++) hechos[claveHecho(4, b)] = [bien(dia(1))];
+            registrarIntento(6, 8, false, { dada: 42 });
+            registrarIntento(6, 8, false, { dada: 42 });   // guarda también lo sembrado arriba
+            ganarEstrellas(40);
+            almacen.guardar("diagnostico", "saltado");
+            almacen.guardar("expediciones", JSON.stringify([dia(3), dia(2), dia(1)]));
+        }
+
+        /** Entra al jardín de ejemplo; si no existe, lo crea y lo siembra. */
+        function abrirJardinDeEjemplo() {
+            let perfil = perfiles.find((p) => p.iniciado && p.nombre === NOMBRE_EJEMPLO);
+            const nuevo = !perfil;
+            if (nuevo) perfil = nuevoPerfil(NOMBRE_EJEMPLO, true);
+            usarPerfil(perfil.id);
+            if (nuevo) { sembrarJardinDeEjemplo(); cargarPerfilActual(); }
+            entrarAlJardin();
+        }
+
         const nombreDe = (p) => p.nombre || "Jardín sin nombre";
 
         /** Los intentos guardados de un perfil, sin cargarlo. */
@@ -2764,6 +2823,7 @@
         const ACTIVIDAD_VACIA = {
             ensenar: { rondas: 0, dudas: 0, bien: 0, atrapados: 0, pasados: 0, ultimo: "", dias: [] },
             retos: { creados: 0, recibidos: 0, superados: 0, aciertos: 0, preguntas: 0, ultimo: "", dias: [] },
+            semillero: { rondas: 0, bien: 0, preguntas: 0, ultimo: "", dias: [] },
         };
         const esFecha = (valor) => typeof valor === "string" && /^\d{4}-\d{2}-\d{2}$/.test(valor);
 
@@ -2801,9 +2861,12 @@
 
         /** Una línea por actividad jugada, para la vista de adultos y el informe. */
         function lineasDeActividad(id) {
-            const { ensenar: e, retos: r } = actividadDePerfil(id);
+            const { ensenar: e, retos: r, semillero: s } = actividadDePerfil(id);
             const dias = leerExpediciones(almacen.leerDe(id, "expediciones"));
             const lineas = [];
+            if (s.rondas > 0) {
+                lineas.push(`Antes de multiplicar (contar a saltos, grupos y dobles): ${s.bien} de ${s.preguntas} bien en ${s.rondas === 1 ? "1 ronda" : `${s.rondas} rondas`}.`);
+            }
             if (e.rondas > 0) {
                 const errores = e.atrapados + e.pasados;
                 lineas.push(`Enséñale a Lumi: ${e.rondas === 1 ? "1 ronda" : `${e.rondas} rondas`}; resolvió ${e.bien} de ${e.dudas} dudas.` +
@@ -2816,6 +2879,10 @@
             if (total > 0) {
                 lineas.push(`Retos con código: ${r.aciertos} de ${r.preguntas} bien en ${total === 1 ? "1 reto" : `${total} retos`}.` +
                     (r.recibidos > 0 ? ` Superó la marca en ${r.superados} de ${r.recibidos === 1 ? "1 recibido" : `${r.recibidos} recibidos`}.` : ""));
+            }
+            const semanas = leerRepasos(almacen.leerDe(id, "repasos"));
+            if (semanas.length > 0) {
+                lineas.push(`Repaso de la semana (ya sabe todas las tablas): hecho ${semanas.length === 1 ? "1 semana" : `${semanas.length} semanas`} (la última, la del ${fechaLarga([...semanas].sort().at(-1))}).`);
             }
             return lineas;
         }
@@ -2843,8 +2910,8 @@
 
         /** Los días con «Enséñale a Lumi», una expedición completa o un reto. */
         function diasDeActividad(id) {
-            const { ensenar: e, retos: r } = actividadDePerfil(id);
-            return [...e.dias, ...r.dias, ...leerExpediciones(almacen.leerDe(id, "expediciones"))];
+            const { ensenar: e, retos: r, semillero: s } = actividadDePerfil(id);
+            return [...e.dias, ...r.dias, ...s.dias, ...leerExpediciones(almacen.leerDe(id, "expediciones"))];
         }
 
         function diasDePractica(h, o = {}, otrosDias = []) {
@@ -6235,6 +6302,7 @@
         function terminarSemillero() {
             const s = semillero;
             s.paso = "fin";
+            anotarActividad("semillero", { rondas: 1, bien: s.bien, preguntas: SEMILLERO_PREGUNTAS });
             const dicho = s.bien === SEMILLERO_PREGUNTAS ? "¡Todas! Ya casi estás para las tablas."
                 : s.bien === 0 ? "Hoy costó. Mira los dibujos con calma y prueba otra vez."
                 : `Acertaste ${s.bien} de ${SEMILLERO_PREGUNTAS}. ¡Vas muy bien!`;

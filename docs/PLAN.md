@@ -3,7 +3,7 @@
 El Jardín Mágico de las Multiplicaciones: de un buen juego de tablas a uno de
 calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
-**Actualizado: 26 de noviembre de 2026.**
+**Actualizado: 27 de noviembre de 2026.**
 - El estado del día a día está en el
   [issue de estado #20](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/20).
 - El detalle de cada cambio, con su PR, está en el [CHANGELOG](../CHANGELOG.md).
@@ -20,8 +20,8 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 6 · Enseñanza a la medida y uso real | [#145](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/145) | **8 de 8** | **Completo** el 23 de noviembre: seis partes hechas (#146 a #151) y dos descartadas con datos (la compuerta más corta y la carga tardía) |
 
 **Cifras al día:**
-- 66 PRs fusionados desde que empezó el plan (#73 a #152), cada uno verificado en el sitio publicado.
-- La compuerta de calidad (`npm run comprobar`) tiene **1731 pruebas en verde** (unos 26 minutos con 4 procesos), en escritorio y tableta.
+- 67 PRs fusionados desde que empezó el plan (#73 a #153), cada uno verificado en el sitio publicado.
+- La compuerta de calidad (`npm run comprobar`) tiene **1745 pruebas en verde** (unos 26 minutos con 4 procesos), en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
 - El juego, en varios archivos desde #96: `index.html` pesa 544 KB (135 KB comprimido, como lo sirve el sitio), más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`: 224 KB de texto comprimido en total, con tope de 270 en una prueba. Sin dependencias externas, y funciona sin internet.
 
@@ -138,6 +138,21 @@ los hitos 4 y 5 se ha probado con niñas y niños. Seguimiento en
 | 6.7 Antes de multiplicar, para Brote | **Hecho** (#151) | Contenido propio para 6 años | Contar de 2 en 2, grupos iguales y dobles | Un lugar o juego nuevo con sus pruebas |
 | 6.8 Cargar tarde lo que casi no se usa | **Descartada con datos** | Aligerar la primera visita | Se midió: lo que podría cargarse tarde (los temas de los lugares dormidos, el QR y los retos) son 36 KB de 228 comprimidos, el 16 %: unas 0,2 s de los 1,9 s en 4G lenta. Además, el juego los baja igual en segundo plano para funcionar sin internet | No compensa tocar el motor del juego; el tope de peso (#144) sigue vigilando |
 
+## Hito 7 · Listo para escuelas
+
+Lo que hace falta para poner el juego en manos de una docente o una familia
+que no lo conoce. Tampoco depende de nadie más.
+
+| Parte | Estado | Objetivo | Cómo se implementa | Hecho cuando |
+|-------|--------|----------|--------------------|--------------|
+| 7.1 Revisión de los Hitos 4 a 6 | **Hecho** (#152) | Que lo nuevo no tenga cabos sueltos | Recorrido de 31 estados en cuatro tamaños y tres tonos, midiendo y mirando | Siete detalles corregidos, con sus pruebas |
+| 7.2 Guía de pruebas con niños al día | **Hecho** (#153) | Que las sesiones prueben el juego de hoy | Once tareas con la expedición, Lumi, los retos y «Antes de multiplicar» | `docs/PRUEBAS-CON-NINOS.md` no nombra nada que ya no exista |
+| 7.3 Ayuda para quien acompaña | **Hecho** (#153) | Que una persona adulta sepa usarlo sin que nadie se lo explique | Seis preguntas que se abren al tocarlas, en «Para las personas adultas» | Se lee en el teléfono y pasa la revisión de accesibilidad |
+| 7.4 Jardín de ejemplo | **Hecho** (#153) | Ver el juego avanzado sin tocar el jardín de nadie | Un perfil «Ejemplo» sembrado: tres tablas sabidas, una a medias, tropiezos y días de práctica | Se crea con un botón, no se duplica y se borra como cualquiera |
+| 7.5 Toda la actividad en la vista de adultos | **Hecho** (#153) | Que el informe no calle lo que se juega | «Antes de multiplicar» y el repaso de la semana se cuentan y se dicen | Aparecen en la tarjeta y en el informe |
+| 7.6 Material para escuelas | **Hecho** (#153) | Presentar el juego a un colegio | Carta de una página y hoja para docentes con el QR, en `docs/para-escuelas.html` | Se imprime en dos hojas |
+| 7.7 Partir `index.html` | **Pendiente** | Que el código sea más fácil de mantener | Sacar la lógica a archivos por tema | Sin cambios visibles y con la compuerta en verde |
+
 ## Pendientes
 
 ### De Claude (orden de trabajo)
@@ -197,6 +212,9 @@ gantt
     Las siete partes restantes (5.1 a 5.7)         :done,    h5b, 2026-11-22, 1d
     section Hito 6 (sin dependencias)
     Seis mejoras hechas y dos descartadas con datos :done,   h6, 2026-11-23, 1d
+    section Hito 7 (listo para escuelas)
+    Revisión, ayuda, jardín de ejemplo y material   :done,   h7, 2026-11-26, 2d
+    Partir index.html                               :         h7p, 2026-11-28, 3d
     section Hito 3 con servidor (si se decide)
     Decisión de plataforma (titular)               :crit,    h3d, 2026-11-23, 10d
     Salón por archivos (opción B)                  :         h3b2, after h3d, 5d

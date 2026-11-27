@@ -63,16 +63,26 @@ Reglas para quien guía:
 
 ### Tareas, en este orden
 
+Puestas al día el 27 de noviembre de 2026, con el inicio como un mundo, la
+Expedición de hoy, «Enséñale a Lumi», los retos con código y «Antes de
+multiplicar». Las diez no caben en una sesión de 20 minutos: de la 1 a la 6
+son las que importan; de la 7 a la 10, si hay tiempo o en una segunda sesión.
+
 | # | Se le pide | Qué observar | Funciona si… |
 |---|------------|--------------|--------------|
-| 1 | «Empieza a jugar» (nada más) | ¿Sigue la bienvenida de Lumi? ¿Escribe su nombre? ¿Cuántos toques hasta la primera pregunta? | Llega a la primera pregunta sin ayuda, en menos de 2 minutos |
-| 2 | «Juega una partida hasta el final» | ¿Entiende las opciones? ¿Nota el globo de Lumi en las rachas? ¿Sabe seguir tras un error? | Termina la partida sin ayuda |
-| 3 | «Si una no te sale, ¿cómo pedirías ayuda?» | ¿Encuentra «¿Necesitas ayuda mágica?»? ¿Toca el rectángulo, pone filas o lo parte? | Abre la ayuda y la usa para contestar |
-| 4 | «Vuelve al menú. ¿Qué harías ahora?» | ¿Usa el botón «Seguir»? Si sale «¿Qué tablas ya sabes?», ¿lo entiende o lo salta? | Elige algo con intención, no al azar |
-| 5 | «Enséñame tu jardín» | ¿Entiende las plantas? ¿Y el estatus de cada tabla (semilla, arbolito, árbol)? ¿Sabe qué hacer para que crezca? | Explica con sus palabras qué significa una planta o un árbol |
-| 6 | «¿Para qué sirven las estrellas?» | ¿Descubre el Vivero? ¿Entiende la meta de hoy? | Dice que se compran cosas, o compra algo |
-| 7 | «Juega un nivel de la Aventura» | ¿Elige héroe? ¿Entiende que hay que contestar para vencer? ¿Le estresa el tiempo? ¿Prueba «Sin prisa»? | Vence o pierde entendiendo por qué |
-| 8 | (Opcional, con un adulto) «Busquen juntos cómo va» | ¿El adulto encuentra «Para las personas adultas» y entiende lo que dice? | El adulto resume en una frase cómo va el niño |
+| 1 | «Empieza a jugar» (nada más) | ¿Sigue los siete pasos de la bienvenida de Lumi o toca «Saltar»? ¿Escribe su nombre? ¿Qué elige entre Brote, Explora y Pro, y por qué? | Llega al mundo sin ayuda, en menos de 2 minutos |
+| 2 | «¿Qué harías ahora?» | ¿Ve la tarjeta «Expedición de hoy»? ¿Entiende «Empezar la expedición»? ¿O toca un lugar del mundo? ¿Toca un lugar dormido y entiende por qué duerme? | Empieza algo con intención, no al azar |
+| 3 | «Termina la expedición» | ¿Entiende que son dos paradas? ¿Sabe seguir tras un error? ¿Nota el banderín al terminar? | Completa las dos paradas sin ayuda |
+| 4 | (Dentro de la expedición) «Enséñale a Lumi» | ¿Entiende que Lumi puede equivocarse? ¿Lee lo que Lumi dice? ¿Le divierte corregir o le confunde? | Corrige al menos un error de Lumi y dice con sus palabras qué pasó |
+| 5 | «Si una no te sale, ¿cómo pedirías ayuda?» | ¿Encuentra «¿Necesitas ayuda mágica?»? ¿Toca el rectángulo, pone filas o lo parte? | Abre la ayuda y la usa para contestar |
+| 6 | «Enséñame cómo vas» | ¿Encuentra «Mi progreso»? ¿Entiende las plantas, el mapa de tablas y qué le falta a Lumi para crecer? | Explica con sus palabras qué significa una planta o qué tabla sabe |
+| 7 | «¿Para qué sirven las estrellas?» | ¿Descubre el Vivero? ¿Entiende la meta de hoy? | Dice que se compran cosas, o compra algo |
+| 8 | «Juega un nivel de la Aventura» | ¿Elige héroe? ¿Entiende que hay que contestar para vencer? ¿Le estresa el tiempo? ¿Prueba «Sin prisa»? | Vence o pierde entendiendo por qué |
+| 9 | Solo en Brote, o si aún no llega a las tablas: «Juega Antes de multiplicar» | ¿Cuenta los puntos del dibujo o adivina? ¿Lee la explicación cuando falla? | Termina la ronda y acierta más al final que al principio |
+| 10 | (Con un adulto, o entre dos niños) «Mándale un reto» | ¿Encuentran «Retos con código»? ¿Entienden el código, el QR o el enlace? ¿Quien lo recibe sabe qué hacer? | La segunda persona juega las mismas diez preguntas |
+| 11 | (Opcional, con un adulto) «Busquen juntos cómo va» | ¿El adulto descubre que hay que mantener presionado «Para las personas adultas»? ¿Lee la ayuda? ¿Entiende lo que dice de quien juega? | El adulto resume en una frase cómo va el niño |
+
+Con el teléfono, girarlo una vez a media partida y anotar si se pierde algo.
 
 ### Preguntas al final
 
@@ -87,7 +97,7 @@ En palabras de niño, y sin insistir:
 ## Hoja de registro (una por niño)
 
 ```
-Niño: ____ (apodo)   Edad: __   Aparato: teléfono / tableta   Fecha: ____
+Niño: ____ (apodo)   Edad: __   Aparato: teléfono / tableta   Tono: Brote / Explora / Pro   Fecha: ____
 
 Tarea | Sin ayuda / Ayudado / No lo logró | Tiempo | Qué pasó (lo que hizo y dijo)
 1     |                                    |        |
@@ -98,6 +108,9 @@ Tarea | Sin ayuda / Ayudado / No lo logró | Tiempo | Qué pasó (lo que hizo y 
 6     |                                    |        |
 7     |                                    |        |
 8     |                                    |        |
+9     |                                    |        |
+10    |                                    |        |
+11    |                                    |        |
 
 Lo que más le gustó:
 Lo que no entendió:
