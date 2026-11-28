@@ -7,6 +7,15 @@ cambio. El estado actual y los pendientes están en el
 Cada versión publicada se reconoce por el sello de `sw.js`: el sitio en vivo
 está al día cuando su `sw.js` tiene el mismo sello que `main`.
 
+## 2026-11-28
+
+- **`index.html` partido, primera parte** (#154, Hito 7.7): ocho secciones del
+  script principal salieron a `js/juego-*.js` (misión y vivero, fracciones y
+  división, la ayuda que se toca, copias y actividad de adultos, la pantalla
+  de retos, Lumi crece, la Aventura y los trazos). No cambia nada de lo que
+  hace el juego. `index.html` pasa de 568 a 405 KB (de 140 a 99 comprimido);
+  lo que se descarga en total queda igual.
+
 ## 2026-11-27
 
 - **Listo para escuelas** (#153, Hito 7): lo que necesita una docente o una

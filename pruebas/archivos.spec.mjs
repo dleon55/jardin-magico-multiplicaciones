@@ -6,6 +6,10 @@ import { readFile, stat } from "node:fs/promises";
 
 const leer = (ruta) => readFile(new URL(`../${ruta}`, import.meta.url), "utf8");
 const ARCHIVOS_JS = ["js/datos.js", "js/arte.js", "js/sonido.js", "js/multiplos.js", "js/area.js", "js/dinero.js", "js/porcentajes.js", "js/decimales.js", "js/tiempo.js", "js/calendario.js", "js/mundo.js", "js/ensenar.js", "js/retos.js", "js/qr.js", "js/semillero.js"];
+// Partes del juego que salieron de index.html (Hito 7.7): también solo declaran,
+// pero sus funciones sí leen y guardan cuando se las llama.
+const ARCHIVOS_JUEGO = ["js/juego-mision.js", "js/juego-fracciones.js", "js/juego-ayuda.js", "js/juego-adultos.js", "js/juego-retos.js", "js/juego-lumi.js", "js/juego-aventura.js", "js/juego-trazos.js"];
+const TODOS_JS = [...ARCHIVOS_JS, ...ARCHIVOS_JUEGO];
 
 test("todo lo que index.html carga del sitio está en la lista del service worker, y existe", async () => {
   const html = await leer("index.html");
@@ -15,13 +19,13 @@ test("todo lo que index.html carga del sitio está en la lista del service worke
     .filter((u) => !/^(https?:|data:)/.test(u));
   for (const u of usados) expect(lista, `${u} se guarda para usar sin internet`).toContain(u);
   for (const a of lista.filter((x) => x !== "./")) await expect(stat(new URL(`../${a}`, import.meta.url))).resolves.toBeTruthy();
-  for (const a of [...ARCHIVOS_JS, "juego.css"]) expect(lista).toContain(a);
+  for (const a of [...TODOS_JS, "juego.css"]) expect(lista).toContain(a);
 });
 
 test("los scripts cargan antes del principal y en orden: datos, arte, sonido, temas", async ({ page }) => {
   await page.goto("./");
   const orden = await page.evaluate(() => [...document.scripts].map((s) => s.getAttribute("src") || "principal"));
-  expect(orden.slice(-ARCHIVOS_JS.length - 1)).toEqual([...ARCHIVOS_JS, "principal"]);
+  expect(orden.slice(-TODOS_JS.length - 1)).toEqual([...TODOS_JS, "principal"]);
   // Y su contenido está disponible para el principal.
   expect(await page.evaluate(() => [typeof MUNDOS, typeof svgHeroe, typeof svgPaisajeJardin, typeof svgPlanta, typeof sonar, typeof trucoPara])).toEqual(["object", "function", "function", "function", "function", "function"]);
 });
@@ -38,7 +42,7 @@ test("al cargar no hay errores (un orden mal hecho daría «no está definido»)
 test("nada se define dos veces: lo que se fue de index.html ya no está ahí", async () => {
   const html = await leer("index.html");
   const definiciones = [];
-  for (const archivo of ARCHIVOS_JS) {
+  for (const archivo of TODOS_JS) {
     const js = await leer(archivo);
     for (const m of js.matchAll(/^(?:function|const|let) ([A-Za-z_]\w*)/gm)) definiciones.push([archivo, m[1]]);
   }
@@ -52,9 +56,13 @@ test("los archivos aparte no leen ni guardan nada, ni hacen nada al cargar: solo
   // Así fue el primer intento: la carga de los perfiles se fue con los
   // mundos a js/datos.js, corría antes de que existiera el almacenamiento y
   // el error se tragaba en un try. Los perfiles guardados no se cargaban.
-  for (const archivo of ARCHIVOS_JS) {
+  for (const archivo of TODOS_JS) {
     const js = await leer(archivo);
-    expect(js, archivo).not.toMatch(/localStorage|almacen\.|PREFIJO/);
+    if (ARCHIVOS_JUEGO.includes(archivo)) {
+      // Leer y guardar, solo dentro de funciones: nunca en una línea que corre al cargar.
+      const alCargar = js.split("\n").filter((l) => /^(const|let) /.test(l) && !l.includes("=>") && /localStorage|almacen\.|document\.|perfil/.test(l));
+      expect(alCargar, `${archivo}: lee o toca la página al cargar`).toEqual([]);
+    } else expect(js, archivo).not.toMatch(/localStorage|almacen\.|PREFIJO/);
     const sueltas = js.split("\n").filter((l) => /^[A-Za-z_(\[]/.test(l) && !/^(const|let|function|async function) /.test(l)
       && !/^document\.addEventListener\(/.test(l));
     expect(sueltas, `${archivo}: código que corre al cargar`).toEqual([]);
@@ -71,8 +79,8 @@ test("las clases de Tailwind que solo usan los scripts también se compilan", as
 
 test("cada archivo se queda en un tamaño razonable", async () => {
   const kb = async (a) => (await stat(new URL(`../${a}`, import.meta.url))).size / 1000;
-  expect(await kb("index.html")).toBeLessThan(600);
-  for (const a of [...ARCHIVOS_JS, "juego.css"]) expect(await kb(a), a).toBeLessThan(150);
+  expect(await kb("index.html")).toBeLessThan(480);
+  for (const a of [...TODOS_JS, "juego.css"]) expect(await kb(a), a).toBeLessThan(150);
 });
 
 // PRESUPUESTO DE PESO (Hito 5.7). Lo que importa en un teléfono con red lenta
@@ -83,7 +91,8 @@ test("cada archivo se queda en un tamaño razonable", async () => {
 // comprimido, 44 KB de fuentes y 29 KB de iconos. Los topes dejan un margen
 // de un 20 %: si una prueba de aquí falla, hay que decidir si lo nuevo vale
 // lo que pesa, no subir el tope sin más.
-const TOPES_KB = { "index.html": 165, total: 270, fuentes: 50, iconos: 35 };
+// Al partir index.html (Hito 7.7) su parte bajó de 140 a 99 KB comprimidos, y su tope con ella.
+const TOPES_KB = { "index.html": 120, total: 270, fuentes: 50, iconos: 35 };
 
 test("lo que se descarga la primera vez cabe en su presupuesto, comprimido como lo sirve el sitio", async () => {
   const { gzipSync } = await import("node:zlib");

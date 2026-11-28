@@ -109,8 +109,11 @@ test.describe("con movimiento", () => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     const svg = page.locator("#lumi-partida > svg.lumi");
     expect(await svg.evaluate((e) => getComputedStyle(e).animationName)).toBe("lumi-respira");
+    // El saltito dura medio segundo: con la máquina cargada ya terminó cuando se
+    // mira. Se anota al empezar, que no depende de llegar a tiempo.
+    await page.evaluate(() => { window.__animaciones = []; document.addEventListener("animationstart", (e) => { if (e.target.closest?.("#lumi-partida")) window.__animaciones.push(e.animationName); }); });
     await responder(page, true);
-    expect(await svg.evaluate((e) => getComputedStyle(e).animationName)).toBe("lumi-salta");
+    await expect.poll(() => page.evaluate(() => window.__animaciones)).toContain("lumi-salta");
   });
 
   test("con «Menos movimiento» en Ajustes, Lumi se queda quieta", async ({ page }) => {
