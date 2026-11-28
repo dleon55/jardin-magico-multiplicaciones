@@ -3,7 +3,7 @@
 El Jardín Mágico de las Multiplicaciones: de un buen juego de tablas a uno de
 calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 
-**Actualizado: 27 de noviembre de 2026.**
+**Actualizado: 28 de noviembre de 2026.**
 - El estado del día a día está en el
   [issue de estado #20](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/20).
 - El detalle de cada cambio, con su PR, está en el [CHANGELOG](../CHANGELOG.md).
@@ -20,10 +20,10 @@ calidad comparable a los líderes, y después a una plataforma de aprendizaje.
 | 6 · Enseñanza a la medida y uso real | [#145](https://github.com/dleon55/jardin-magico-multiplicaciones/issues/145) | **8 de 8** | **Completo** el 23 de noviembre: seis partes hechas (#146 a #151) y dos descartadas con datos (la compuerta más corta y la carga tardía) |
 
 **Cifras al día:**
-- 67 PRs fusionados desde que empezó el plan (#73 a #153), cada uno verificado en el sitio publicado.
+- 68 PRs fusionados desde que empezó el plan (#73 a #154), cada uno verificado en el sitio publicado.
 - La compuerta de calidad (`npm run comprobar`) tiene **1745 pruebas en verde** (unos 26 minutos con 4 procesos), en escritorio y tableta.
 - Cada cambio pasó una **comprobación de mutaciones**: romper el código a propósito y ver que una prueba falla.
-- El juego, en varios archivos desde #96: `index.html` pesa 544 KB (135 KB comprimido, como lo sirve el sitio), más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`: 224 KB de texto comprimido en total, con tope de 270 en una prueba. Sin dependencias externas, y funciona sin internet.
+- El juego, en varios archivos desde #96: `index.html` pesa 405 KB (99 KB comprimido, como lo sirve el sitio; antes de partirlo en #154, 568 y 140), más el arte, el sonido, los datos, los estilos propios y un archivo por tema en `js/`: 224 KB de texto comprimido en total, con tope de 270 en una prueba. Sin dependencias externas, y funciona sin internet.
 
 ## Objetivos cumplidos
 
@@ -151,7 +151,7 @@ que no lo conoce. Tampoco depende de nadie más.
 | 7.4 Jardín de ejemplo | **Hecho** (#153) | Ver el juego avanzado sin tocar el jardín de nadie | Un perfil «Ejemplo» sembrado: tres tablas sabidas, una a medias, tropiezos y días de práctica | Se crea con un botón, no se duplica y se borra como cualquiera |
 | 7.5 Toda la actividad en la vista de adultos | **Hecho** (#153) | Que el informe no calle lo que se juega | «Antes de multiplicar» y el repaso de la semana se cuentan y se dicen | Aparecen en la tarjeta y en el informe |
 | 7.6 Material para escuelas | **Hecho** (#153) | Presentar el juego a un colegio | Carta de una página y hoja para docentes con el QR, en `docs/para-escuelas.html` | Se imprime en dos hojas |
-| 7.7 Partir `index.html` | **Pendiente** | Que el código sea más fácil de mantener | Sacar la lógica a archivos por tema | Sin cambios visibles y con la compuerta en verde |
+| 7.7 Partir `index.html` | **Primera parte hecha** (#154) | Que el código sea más fácil de mantener | Ocho secciones que solo declaran salieron a `js/juego-*.js`, sin cambiar una línea de lo que hacen: `index.html` pasó de 568 a 405 KB (de 140 a 99 comprimido). Queda dentro lo que corre al cargar (teclado, bienvenida, perfiles) y el núcleo de las preguntas | Sin cambios visibles y con la compuerta en verde |
 
 ## Pendientes
 
@@ -214,7 +214,7 @@ gantt
     Seis mejoras hechas y dos descartadas con datos :done,   h6, 2026-11-23, 1d
     section Hito 7 (listo para escuelas)
     Revisión, ayuda, jardín de ejemplo y material   :done,   h7, 2026-11-26, 2d
-    Partir index.html                               :         h7p, 2026-11-28, 3d
+    Partir index.html (primera parte)               :done,    h7p, 2026-11-28, 1d
     section Hito 3 con servidor (si se decide)
     Decisión de plataforma (titular)               :crit,    h3d, 2026-11-23, 10d
     Salón por archivos (opción B)                  :         h3b2, after h3d, 5d

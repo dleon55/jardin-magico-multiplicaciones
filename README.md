@@ -915,7 +915,18 @@ módulos), para que lo que declaran siga siendo global:
 | `js/retos.js` | Retos con código: el código, sus preguntas y el enlace |
 | `js/qr.js` | El código QR del enlace de un reto, dibujado sin bibliotecas |
 | `js/semillero.js` | «Antes de multiplicar»: contar a saltos, grupos iguales y dobles |
+| `js/juego-mision.js` | Parte del juego: las estrellas, el vivero y la misión del día |
+| `js/juego-fracciones.js` | Parte del juego: dividir con lo que sobra y fracciones de un número |
+| `js/juego-ayuda.js` | Parte del juego: la ayuda que se toca (el rectángulo de filas y columnas) |
+| `js/juego-adultos.js` | Parte del juego: las copias de seguridad y la actividad que ve la persona adulta |
+| `js/juego-retos.js` | Parte del juego: la pantalla de los retos con código |
+| `js/juego-lumi.js` | Parte del juego: Lumi crece contigo |
+| `js/juego-aventura.js` | Parte del juego: el camino y las operaciones de cada mundo de la Aventura |
+| `js/juego-trazos.js` | Parte del juego: reconocer las cifras escritas con el dedo |
 | `juego.css` | Estilos propios (los de Tailwind están en `estilos.css`) |
+
+Los `js/juego-*.js` salieron de `index.html` tal cual (Hito 7.7). También solo
+declaran, pero sus funciones sí leen y guardan cuando el principal las llama.
 
 Se cargan antes del script principal, en ese orden. Solo declaran: no leen
 ni guardan nada y no hacen nada al cargar, y lo que usan del principal lo
